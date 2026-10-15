@@ -48,3 +48,9 @@ A2 PRODUCT READY remains **NO**. Next work should choose a properly transactiona
 ## Actual CI evidence
 
 [Flutter CI #38738604483](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604483) **SUCCESS** on SHA 8de76f78521db8c06dbd574a55798a11b5c8cc8a (original implementation 3456ed5): Flutter Analyze No issues found, **50/50 tests PASS**, Web Release Build PASS, actual Chrome Demo integration PASS. Initial CI #38738342220 failed an analyzer nullable-receiver complaint; fixed using Dart 3 pattern binding. The code-only fix triggered a mandatory lesson/index gate, addressed in this documentation commit. [Android #38738604625](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604625) and [real BEN #38738604472](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604472) were still running at this documentation update.
+
+## Additional current-commit regression (verified)
+
+- [Real BEN Chrome #38738604472](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604472) **SUCCESS**, implementation SHA `8de76f78521db8c06dbd574a55798a11b5c8cc8a`: real pinned Python BEN service started, both existing Flutter Chrome cases passed (full game and BEN declarer controlling Dummy). This is an existing **fixed-board** regression, not actual corrupted-checkpoint recovery against BEN.
+- [Feature Learning Gate #38739357350](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38739357350) **SUCCESS**, docs/lesson follow-up SHA `73ae9f8df26eaee30fb6b8de801cd7d7d50f9388`.
+- [Android emulator #38738604625](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604625) **RUNNING** at this report update; even a successful general Android UI regression does not yet constitute a dedicated two-process rollback-and-consent test.
