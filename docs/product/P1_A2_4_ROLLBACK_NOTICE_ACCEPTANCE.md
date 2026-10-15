@@ -1,6 +1,6 @@
 # Phase A2.4 — Recovery notice for older checkpoint fallback
 
-**Initial status: IMPLEMENTED / CI NOT RUN.** This is a local-prototype safety improvement, not encrypted or transactional persistence.
+**Status 2026-10-15: A2.4 FLUTTER WEB ENGINEERING VERIFIED.** Not encrypted or transactionally durable. Android A2.4 device CI is separate and was still running at this report update.
 
 ## Background
 
@@ -30,3 +30,12 @@ Test: apps/bridge_academy_flutter/test/checkpoint_recovery_notice_test.dart.
 ## Remaining release blockers
 
 SharedPreferencesAsync remains plaintext, not guaranteed fsync/durable, not cryptographically authenticated. No multi-process compare-and-swap, secure erase, physical-device power-loss testing or remote BEN HTTP exactly-once deduplication. A2 PRODUCT READY remains false.
+
+## Executed acceptance evidence
+
+- [Flutter CI #38736272456](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38736272456) **SUCCESS** on SHA `d31ab7c71cfc1f53bbe035b539d036d49200da2d`: `flutter analyze` No issues found; **46/46 widget/session tests PASS**, including all four new A2.4 recovery cases; Web Release Build success and actual Chrome Demo end-to-end test success.
+- [Feature Learning Gate #38736272610](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38736272610) SUCCESS.
+- [Real BEN fixed-board Chrome regression #38735974943](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38735974943) SUCCESS on feature implementation SHA `47dcd6150afab4db16c3721d2700514fc9097ce6`. Existing real BEN scenarios are fixed-deal regression, not a corrupt-save recovery/in-flight HTTP deduplication test.
+- [Android emulator #38735974846](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38735974846) was IN PROGRESS at this documentation update; A2.4's four new adversarial tests currently ran in Flutter CI, not on Android hardware.
+- Initial Flutter CI #38735974861 failed one *test scrolling* assumption when the warning card pushed the Pass button offscreen. Fix commit `d31ab7c` uses WidgetTester.ensureVisible before the real Pass tap; rerun fully passed. Game logic was not weakened.
+- **Caveat:** recovery notification is in-memory per read and the repaired marker is not tagged "unacknowledged"; a second app restart before confirmation can remove the warning. This remains a P0 hardening item before product signoff, along with encrypted/transactional storage and concurrency protections.

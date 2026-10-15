@@ -3,7 +3,7 @@
 - Feature ID：M2-F16
 - Milestone：Phase A2.4 / P1.2
 - 類型：Checkpoint Store、Flutter Session 與 UI
-- 工程狀態：IMPLEMENTED（CI 尚待執行）
+- 工程狀態：ENGINEERING_VERIFIED（Flutter 46/46、Web Build、Chrome Demo PASS；Android 裝置回歸另驗）
 - 學習狀態：DELIVERED
 - 程式：apps/bridge_academy_flutter/lib/src/session_persistence.dart、bridge_session.dart、bridge_app.dart
 - 測試：apps/bridge_academy_flutter/test/checkpoint_recovery_notice_test.dart
@@ -31,7 +31,9 @@ BridgeSession.restoreSavedGame() 讀取狀態並設 recoveryNeedsConfirmation；
 
 四個案例：正常 Restore 不警告；上一代回退會標記且下次讀取清除標記；真人玩家未確認不能出牌、確認後可以合法 Pass Out；Bot 輪次恢復但未確認時不可偷偷自動推進。Widget Test 同時檢查繁中／英文與不公開暗牌。
 
-文件建立時新 CI：NOT RUN。前一階段真實 Android 兩次啟動與 force-stop [#38731973367](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38731973367) PASS，不是此次警告的驗收。
+實測 [Flutter CI #38736272456](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38736272456)：46/46 PASS、flutter analyze 無問題、Web Build 與 Chrome Demo PASS；[Feature Learning Gate #38736272610](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38736272610) PASS；[真 BEN 固定牌例 CI #38735974943](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38735974943) PASS。第一次 Flutter CI 因警告顯示後 Pass 按鈕超出螢幕範圍，點擊測試未捲動而失敗；修正 ensureVisible 後重新通過。
+
+限制補充：本輪的回退警告是單次讀取的記憶體訊號。如果 App 在使用者確認前再次重啟，已修正的 Marker 不會持續儲存「尚未確認」狀態，第二次啟動可能不再顯示警告；**這仍是正式產品前必須處理的 P0 風險**。前一階段真實 Android 兩次啟動與 force-stop [#38731973367](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38731973367) PASS，不是此次警告的驗收。
 
 限制：SharedPreferencesAsync 仍為明文、無 fsync/ACID、不能保證多分頁並行安全，遠端 BEN 請求亦沒有 exactly-once。不能宣稱正式產品 READY。
 
