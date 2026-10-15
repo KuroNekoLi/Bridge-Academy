@@ -3,7 +3,7 @@
 - Feature ID：M2-F11
 - Milestone：M2
 - 類型：Bridge Core 規則重播／Flutter 唯讀 UI
-- 工程狀態：ENGINEERING_VERIFIED（Bridge Core 44/44、Flutter 19/19、Web Build、真 Chrome 回放點擊 PASS；Android Emulator 回放觸控 PASS，實機另驗）
+- 工程狀態：ENGINEERING_VERIFIED（Bridge Core 47/47、Flutter 19/19、Web Build、真 Chrome 回放點擊 PASS；Android Emulator 回放觸控 PASS，實機另驗）
 - 學習狀態：DELIVERED（尚未實際作答）
 - 原始碼：packages/bridge_core/lib/src/single_player_coordinator.dart、apps/bridge_academy_flutter/lib/src/bridge_session.dart、bridge_app.dart
 - 測試與驗收：packages/bridge_core/test/completed_replay_test.dart、apps/bridge_academy_flutter/test/completed_replay_test.dart、docs/m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md
@@ -56,7 +56,7 @@ SinglePlayerCoordinator 在終局時從原本的 Deal、dealer 與 vulnerability
 
 `GameTranscript` 仍然含有**四家完整手牌**，只能留在受信任的 Domain 或離線測試；Flutter 畫面拿到的是 `PlayerView`，不能從 `toJson()` 取回 PBN、未公開的暗牌或完整事件歸檔。
 
-此補強的 **新測試執行結果於提交前為 NOT RUN**；實際 CI 證據以驗收報告為準，不能沿用先前 44/44 冒充新測試通過。
+**新測試確實執行成功：** [Bridge Core CI #38714671479](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38714671479)，Commit `7a9e331`，`dart analyze --fatal-infos` 無問題、**47/47 PASS**（原 44 筆＋3 個補強案例）。[Learning Gate #38714671483](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38714671483) PASS。四種起叫座位、X／XX 13 墩、三次 Pass 未結束、違法事件拒絕與 Immutable snapshot 均屬這次實測。
 
 ## 練習與自我檢驗
 **思考題：** 在第七墩第二張牌出現錯誤時，為什麼只儲存「第七墩誰贏」仍無法重現 BUG？至少要保存哪些原始事件資訊？
