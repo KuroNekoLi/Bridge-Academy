@@ -3,7 +3,7 @@
 - Feature ID：M2-F22
 - Milestone：A3.2 Bridge Table UI V2（叫牌盒元件抽離）
 - 類型：Flutter UI／單向資料流
-- 工程狀態：IMPLEMENTED；CI #38769224189 analyze import conflict 已修正；後續 CI #38769481251 有 68/69 Widget 通過，但 320px Row overflow 39px，已改為 Wrap 直接子元素／Tooltip，待重跑
+- 工程狀態：ENGINEERING_VERIFIED（Flutter/Web scoped；[CI #38769943196](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943196) 69/69 Widget PASS、Web Build PASS、Chrome Demo PASS；real BEN same-SHA still pending）
 - 學習狀態：DELIVERED（非 PRACTICED 或 MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/widgets/bridge_bidding_box.dart`、`apps/bridge_academy_flutter/lib/src/bridge_app.dart`
 - 驗收與測試：`apps/bridge_academy_flutter/test/a3_bidding_box_test.dart`（本次 CI 待確認）
@@ -45,7 +45,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ```
 
-新增測試會驗證選擇 2S 可送交 Core，以及開叫時按 X 會被 Core 拒絕、version 仍為 0。CI #38769224189 analyze FAIL（ambiguous_import，已使用 hide Card 修正）。CI #38769481251 analyzer 通過，但 69 筆 Widget 測試中 68 PASS、1 FAIL（320px Row 水平溢出 39px）；已移除 Row 標籤群組，保留 Tooltip 與 Wrap。修復後 CI 待驗；不可當成 PASS。Android 裝置／模擬器仍依使用者核准條件暫停。
+新增測試會驗證選擇 2S 可送交 Core，以及開叫時按 X 會被 Core 拒絕、version 仍為 0。CI #38769224189 analyze FAIL（ambiguous_import，已使用 hide Card 修正）。CI #38769481251 analyzer 通過，但 69 筆 Widget 測試中 68 PASS、1 FAIL（320px Row 水平溢出 39px）；已移除 Row 標籤群組，保留 Tooltip 與 Wrap。修復後 [CI #38769943196](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943196) `flutter analyze` **無問題**、**69/69 Widget PASS**、Web build 及 Chrome Demo PASS。真 BEN 同提交回歸 #38769943206 在撰寫時尚未完成；不是裝置 UX 驗收。Android 裝置／模擬器仍依使用者核准條件暫停。
 
 ## 練習與自我檢驗
 

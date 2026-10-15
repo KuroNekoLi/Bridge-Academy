@@ -15,6 +15,14 @@ Game Coordinator / API (single-player local coordinator; future server authority
     +---- Persistence (SQLite local → PostgreSQL service when needed)
 ~~~
 
+## A3 UI decomposition boundary (2026-10-16)
+
+- `BridgeAcademyApp` owns the app theme/locale and `BridgeSession` lifetime; `BridgeTable` is the temporary screen-level controller. The user-facing BoardHeader/TableSurface/SeatPanel/CurrentTrick/PlayerHand and controlled BiddingBox now live in `apps/bridge_academy_flutter/lib/src/widgets/`.
+- Widgets receive only the filtered `PlayerView`, board number, locale copy, visible UI state and typed callbacks. `BridgeSeatPanel` only shows Dummy cards after `dummyExposed`. The `BridgeBiddingBox` hoists level/strain selection through callbacks and forwards `Call` intent to BridgeSession; **canSubmit means input allowed, not every bid legal**. A Domain-derived legalCalls projection is needed before call buttons can be selectively disabled.
+- `BridgeSession` remains the only UI-side coordinator; it checks current PlayerView, paused/saving state and expected event version. Bridge Core decides legal auction/play actions, actor/hand owner, score, turn order. UI never owns privileged Deal, SessionArchiveStore or BEN transport.
+- Scoped evidence: [Flutter CI #38769943196](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943196) passed 69 Widget/session tests, analyze, Web build and Chrome Demo on `d4ddfee`. Device acceptance is on owner hold; no release GO.
+- Current Web persistence after A2.8 uses WebCrypto AES-GCM via an origin-local record, **not** the earlier A2.7 plaintext path. It remains vulnerable to same-origin malicious scripts and lacks SQLite ACID/multi-tab CAS, so deployment threat-model review is pending.
+
 ## A2.7 encrypted native transaction boundary (2026-10-15)
 - BridgeSession uses the existing SessionArchiveStore interface; Android/iOS default is EncryptedTransactionalSessionArchiveStore, a full SavedBoard AES-256-GCM ciphertext in a single SQLite row with atomic transaction, and secure-storage-held key. Plaintext migration happens only after authenticated and Bridge Core legal replay verification, encrypted commit, then legacy deletion.
 - Atomic row commit and authenticated encryption do NOT guarantee power-loss fsync, malicious process isolation, or cross-process CAS. Physical-device validation deferred by user until complete major features; no security release GO implied.

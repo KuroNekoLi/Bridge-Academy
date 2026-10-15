@@ -62,6 +62,11 @@ Verify 320/375/768px, zh-TW/en, text scaling, touch targets, focus, screen-reade
 - Preserve keys: `bridge_board`, `game_status`, `seat_N/E/S/W`, `dummy_revealed`, `dummy_card_*`, `hand_card_*`, `auction_controls`, `make_bid`, `pass`, `double`, `redouble`, `replay_panel`.
 - Abort/fix if a refactor breaks Chrome, hidden-hand privacy, Pass Out, Dummy ownership, or checkpoint restoration.
 
-## Status
+## Status and actual evidence (2026-10-16)
 
-A3.1 extracted UI and A3.2 initial BiddingBox extraction are committed with scoped Widget tests. Existing Flutter analyze, widget test, Web build and Chrome Demo were successful for A3.1 after the lint fix (CI #38768532495); full live BEN regression was still pending when this note was updated. A3.2 full legal-call projection, A3.3–A3.5 and actual device UX gates are NOT VERIFIED.
+**A3.1 + A3.2 component extraction: SCOPED FLUTTER/WEB VERIFIED**, not A3 release GO.
+- [Flutter CI #38769943196](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943196) on code commit `d4ddfee5c0c43b571f4e99cfcbac7c4229f74b52`: `flutter analyze --no-pub` **No issues found**, **69/69 Widget/Session tests PASS**, **Flutter Web release built**, Chrome Demo E2E **SUCCESS**.
+- [Feature Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943094) completed for the code commit; separate lessons M2-F21 and M2-F22 are delivered.
+- First extraction [A3.1 initial CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38768161432) had 3 interpolation lints; resolved. A3.2 initial [CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769224189) had Flutter/Bridge Core `Card` import conflict; resolved. [CI #38769481251](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769481251) caught a 320px Row overflow; resolved using independent Wrap selector children, then 69/69 passing.
+- Genuine BEN Chrome regression on the **same latest code commit**: [run #38769943206](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943206) **IN PROGRESS / NOT YET VERIFIED when authored**. Earlier A3.1 [real BEN run](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38768532549) passed; this is not proof of a later commit.
+- **Outstanding:** Core-origin `legalCalls` projection for enabling only legal bids; A3.3 four-seat polished layout / last trick toolbar / replay panel; A3.4 accessibility and screen reader on real devices; A3.5 final device/end-to-end acceptance. Android emulator and physical Android/iOS UX checks remain ON HOLD until owner approval.
