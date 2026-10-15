@@ -1,4 +1,5 @@
-import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_core/bridge_core.dart' hide Card;
+import 'package:bridge_core/bridge_core.dart' as bridge show Card;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -471,7 +472,7 @@ class _BridgeTableState extends State<BridgeTable> {
         ),
       );
 
-  Widget _cardButton(Card card, {required String prefix,
+  Widget _cardButton(bridge.Card card, {required String prefix,
       required AppCopy copy, required bool legal, required bool busy,
       required VoidCallback onTap}) {
     return OutlinedButton(
@@ -485,7 +486,7 @@ class _BridgeTableState extends State<BridgeTable> {
     );
   }
 
-  String _cardText(Card card) => '${switch (card.suit) {
+  String _cardText(bridge.Card card) => '${switch (card.suit) {
       Suit.clubs => "♣",
       Suit.diamonds => "♦",
       Suit.hearts => "♥",
