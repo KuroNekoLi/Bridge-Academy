@@ -39,9 +39,9 @@ Extract **BridgeBoardHeader**, **BridgeTableSurface**, **BridgeSeatPanel**, **Br
 
 Acceptance: active/passive seats; no concealed card widgets; dummy reveal; legal dummy interaction; board 2 locale metadata; prior widget & browser flows unchanged.
 
-### A3.2 — Controlled bidding interaction
+### A3.2 — Controlled bidding interaction (initial extraction committed; full legal-call UX pending)
 
-Move level/strain controls into stateless or locally scoped BiddingBox without a second rules implementation. Show Pass/Double/Redouble legality clearly; illegal calls must still be rejected by Bridge Core. Later tie meanings to verified ConventionProfile only. Keyboard/semantic labels and 320px overflow are gate conditions.
+Level/strain and Pass/X/XX buttons are now extracted into a controlled stateless `BridgeBiddingBox` (`widgets/bridge_bidding_box.dart`); `BridgeTable` owns the selected level/strain and `BridgeSession.submitCall` receives all intents. Existing behavior is preserved. Show Pass/Double/Redouble legality clearly; illegal calls must still be rejected by Bridge Core. Later tie meanings to verified ConventionProfile only. Keyboard/semantic labels and 320px overflow are gate conditions.
 
 ### A3.3 — Table orientation and contextual controls
 
@@ -64,4 +64,4 @@ Verify 320/375/768px, zh-TW/en, text scaling, touch targets, focus, screen-reade
 
 ## Status
 
-A3.1 implementation committed with scoped widget tests; automated CI status must be attached after actual execution. A3.2–A3.5 are NOT IMPLEMENTED unless their own acceptance evidence is added.
+A3.1 extracted UI and A3.2 initial BiddingBox extraction are committed with scoped Widget tests. Existing Flutter analyze, widget test, Web build and Chrome Demo were successful for A3.1 after the lint fix (CI #38768532495); full live BEN regression was still pending when this note was updated. A3.2 full legal-call projection, A3.3–A3.5 and actual device UX gates are NOT VERIFIED.

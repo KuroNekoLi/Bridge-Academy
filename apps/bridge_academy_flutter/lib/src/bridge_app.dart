@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app_copy.dart';
 import 'bridge_session.dart';
 import 'widgets/bridge_table_components.dart';
+import 'widgets/bridge_bidding_box.dart';
 import 'session_persistence.dart';
 import 'secure_session_persistence.dart';
 
@@ -407,71 +408,14 @@ class _BridgeTableState extends State<BridgeTable> {
 
   Widget _humanControls(PlayerView view, BridgeSession session, AppCopy copy) {
     if (view.phase == Phase.auction) {
-      return Card(
-        key: const Key('auction_controls'),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Wrap(
-            spacing: 12,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              DropdownButton<int>(
-                key: const Key('bid_level'),
-                value: _bidLevel,
-                items: [
-                  for (var n = 1; n <= 7; n++)
-                    DropdownMenuItem(value: n, child: Text('$n')),
-                ],
-                onChanged: (n) {
-                  if (n != null) setState(() => _bidLevel = n);
-                },
-              ),
-              DropdownButton<Strain>(
-                key: const Key('bid_strain'),
-                value: _bidStrain,
-                items: [
-                  for (final strain in Strain.values)
-                    DropdownMenuItem(
-                      value: strain,
-                      child: Text(copy.t(_strainKey(strain))),
-                    ),
-                ],
-                onChanged: (strain) {
-                  if (strain != null) setState(() => _bidStrain = strain);
-                },
-              ),
-              FilledButton(
-                key: const Key('make_bid'),
-                onPressed: view.canAct && !session.actionsPaused
-                    ? () => session.submitCall(Bid(_bidLevel, _bidStrain))
-                    : null,
-                child: Text(copy.t('call')),
-              ),
-              OutlinedButton(
-                key: const Key('pass'),
-                onPressed: view.canAct && !session.actionsPaused
-                    ? () => session.submitCall(const Pass())
-                    : null,
-                child: Text(copy.t('pass')),
-              ),
-              OutlinedButton(
-                key: const Key('double'),
-                onPressed: view.canAct && !session.actionsPaused
-                    ? () => session.submitCall(const DoubleCall())
-                    : null,
-                child: Text(copy.t('double')),
-              ),
-              OutlinedButton(
-                key: const Key('redouble'),
-                onPressed: view.canAct && !session.actionsPaused
-                    ? () => session.submitCall(const RedoubleCall())
-                    : null,
-                child: Text(copy.t('redouble')),
-              ),
-            ],
-          ),
-        ),
+      return BridgeBiddingBox(
+        copy: copy,
+        selectedLevel: _bidLevel,
+        selectedStrain: _bidStrain,
+        canSubmit: view.canAct && !session.actionsPaused,
+        onLevelChanged: (level) => setState(() => _bidLevel = level),
+        onStrainChanged: (strain) => setState(() => _bidStrain = strain),
+        onSubmitCall: session.submitCall,
       );
     }
     if (view.phase == Phase.play) {
@@ -606,13 +550,4 @@ class _BridgeTableState extends State<BridgeTable> {
         ),
       );
 
-  String _strainKey(Strain strain) => switch (strain) {
-    Strain.clubs => 'strainC',
-    Strain.diamonds => 'strainD',
-    Strain.hearts => 'strainH',
-    Strain.spades => 'strainS',
-    Strain.notrump => 'strainNT',
-  };
 }
-
-
