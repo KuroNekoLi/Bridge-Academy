@@ -2,7 +2,7 @@
 
 A contract bridge platform: start with a single human playing alongside three AI players, then expand to teaching, online tables and duplicate tournaments.
 
-**State (2026-10-15): Phase 0 documentation; production client/game core not implemented.** This repository is private. The phrase "open-source" in the initial description is a product aspiration, not a statement that this repository or its third-party dependencies have been released under a chosen license.
+**State (2026-10-15): Phase 0 merged; M1 pure Dart rules core implemented on PR #2, with 30/30 CI tests passing (one test covers 100 deterministic full deals). No production Flutter client or multiplayer server exists.** This repository is private. The phrase "open-source" in the initial description is a product aspiration, not a statement that this repository or its third-party dependencies have been released under a chosen license.
 
 ## Product progression
 1. **POC-001**: BEN API and one fixed deal — GO based on a Work execution report.
@@ -14,6 +14,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 7. **M5**: competitive operations, tournament integrity, accessibility and scale.
 
 ## Source of truth
+- [Bridge Core implementation](packages/bridge_core/README.md) and [M1 CI report](docs/m1/M1_IMPLEMENTATION_REPORT.md)
 - [Product vision](docs/PRODUCT_VISION.md)
 - [Roadmap and acceptance gates](docs/ROADMAP.md)
 - [Technical architecture](docs/ARCHITECTURE.md)
@@ -26,7 +27,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 - [AI instructions](AGENTS.md) and [specialized skills](skills/README.md)
 
 ## Current engineering entry point
-Do **not** fabricate new BEN test results or substitute DDS's omniscient play for real imperfect-information AI. For M1, first implement pure rules, typed actions, auctions and duplicate scoring without networking or UI. See the roadmap for test gates. The original Work artifacts and raw batch JSON are not currently committed here; documented POC figures are attributed to the user's reported Work acceptance summary.
+Do **not** fabricate new BEN test results or substitute DDS's omniscient play for real imperfect-information AI. M1 is implemented on [PR #2](https://github.com/KuroNekoLi/Bridge-Academy/pull/2), awaiting review and merge. Before M2, design a private PlayerView and prove it cannot leak other hands. See the roadmap for test gates. The original Work artifacts and raw batch JSON are not currently committed here; documented POC figures are attributed to the user's reported Work acceptance summary.
 
 ## Third-party sources
 BEN: https://github.com/lorserker/ben (GPL-3.0, verify precise commit and dependencies before distribution).
