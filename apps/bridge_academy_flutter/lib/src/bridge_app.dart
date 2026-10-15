@@ -118,7 +118,7 @@ class _BridgeTableState extends State<BridgeTable> {
                           ? null
                           : () {
                               setState(() => _replayIndex = null);
-                              return session.newGame(
+                              session.newGame(
                                 humanSeat: _selectedSeat,
                                 mode: _selectedMode,
                                 boardMode: _selectedBoard,
