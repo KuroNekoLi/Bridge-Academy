@@ -20,7 +20,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 - GO gate: independent golden score oracle; no illegal action changes state; complete deterministic replay; no UI/AI/network required.
 
 ## M2 — Flutter single-player MVP
-- M2-F05 Flutter table source with interaction/zh-TW/en under apps/bridge_academy_flutter; Flutter analyze, Widget Test and web-build gate documented at docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md. No production device acceptance implied.
+- M2-F05 Flutter table source with interaction/zh-TW/en under apps/bridge_academy_flutter; **Flutter Web CI PASS, 11/11 tests and release web build** at https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38678356482. Report: docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md. Native-device acceptance and whole M2 GO are still pending.
 - **M2-F04 FIXED-BOARD REAL BEN GO:** two live Dart/BEN games on Ubuntu 24.04 / Python 3.12, both 52 cards/13 tricks; second game completed **13 BEN-controlled Dummy turns**. Real CI https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38676615739 ; see docs/m2/M2_F04_REAL_BEN_ACCEPTANCE.md. Reduced sampling/PIMC off, not full M2 GO or production SLA.
 **IN PROGRESS:** M2-F01 PlayerView and M2-F02 SinglePlayerCoordinator are implemented with 40/40 combined Dart tests passing at [CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504); feature PR review remains open. This is **not** BEN-powered MVP or Flutter UI; see docs/m2/M2_FOUNDATION_REPORT.md. Learn While Building: each completed feature has a separate note in docs/learning/features/.
 - Human seat selectable; three AI seats; consistent public/hidden information.

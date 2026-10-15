@@ -3,11 +3,11 @@
 - Feature ID：M2-F05
 - Milestone：M2 單機橋牌
 - 類型：Flutter UI、狀態協調、i18n
-- 工程狀態：IMPLEMENTED（以 GitHub CI 為準）
+- 工程狀態：ENGINEERING_VERIFIED（Flutter Web、11/11 Widget／Session tests；裝置 QA 待驗）
 - 學習狀態：DELIVERED（使用者尚未作答）
 - 實作：apps/bridge_academy_flutter/lib/src/bridge_app.dart、bridge_session.dart、app_copy.dart
 - 測試：apps/bridge_academy_flutter/test/bridge_app_test.dart、bridge_session_test.dart
-- 實際證據：docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md（初稿時 CI NOT RUN）
+- 實際證據：[Flutter CI #38678356482](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38678356482)、docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md
 
 ## 功能目的與實際情境
 
@@ -56,7 +56,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ~~~
 
-測試涵蓋中英切換、初始資訊隱私、Pass Out、1NT 後首攻公開明手、莊家點擊明手的合法卡，以及非法 Double 不修改版本。CI 結果請參考 M2_F05_FLUTTER_TABLE_REPORT.md；本測試使用 Demo/Fake，與 M2-F04 真 BEN HTTP 測試不同。Web CI 通過亦不等於真實裝置 UX 已驗收。
+測試涵蓋中英切換、初始資訊隱私、Pass Out、1NT 後首攻公開明手、莊家點擊明手的合法卡，以及非法 Double 不修改版本。實際 GitHub Actions CI #38678356482：flutter analyze 無問題、11/11 Widget／Session 測試 PASS、Flutter Web Release Build PASS。測試使用 Demo/Fake，與 M2-F04 真 BEN HTTP 驗證不同；Web CI 通過不等於裝置 UX 或瀏覽器真 BEN 點擊驗收。
 
 ## 練習與自我檢驗
 
@@ -69,4 +69,3 @@ flutter build web --no-pub --release
 ## 下一步
 
 CI 通過後，做 Chrome 與 Android/iOS 實機 QA，再擴展真正 BEN 模式的 UI 互動測試、更多固定牌例及手機尺寸 UX。
-

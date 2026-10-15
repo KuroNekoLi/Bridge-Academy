@@ -41,7 +41,7 @@ the acting Bot's authorized original hand. Use a trusted HTTPS proxy.
     flutter test
     flutter build web --release
 
-GitHub CI: .github/workflows/flutter-single-player.yml.
+GitHub CI: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38678356482 — **11/11 Flutter tests PASS, analyze PASS, release Web build PASS**.
 M2-F04 true-BEN tests are separate evidence. Widget tests use demo/test Bots,
 so successful Flutter CI does NOT establish true BEN UI/browser/device
 acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
@@ -51,4 +51,3 @@ acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
 UI gesture -> BridgeSession -> SinglePlayerCoordinator -> BridgeGame.apply ->
 GameState -> PlayerView -> Flutter widget. Widgets never read raw GameState,
 hidden enemy hands, complete PBN, or BEN raw server responses.
-
