@@ -23,6 +23,28 @@ jobs:
         with:
           channel: stable
           cache: true
+      - name: Reclaim unused runner toolchains for Android AVD
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Disk space before reclaiming unrelated SDKs:"
+          df -h /
+          # Keep Android SDK, Java runtime and the Flutter SDK intact.
+          # These preinstalled CI image toolchains are not used by this job.
+          for directory in /usr/share/dotnet /usr/local/.ghcup /opt/ghc /usr/local/share/powershell /opt/hostedtoolcache/CodeQL; do
+            if [ -d "$directory" ]; then
+              echo "Removing unused CI toolchain: $directory"
+              sudo rm -rf -- "$directory"
+            fi
+          done
+          sudo apt-get clean
+          echo "Disk space after cleanup:"
+          df -h /
+          available_kb="$(df --output=avail / | tail -n 1 | tr -d ' ')"
+          if [ "$available_kb" -lt 12582912 ]; then
+            echo "Insufficient free disk for Android Emulator: require >= 12 GiB" >&2
+            exit 1
+          fi
       - name: Generate native Android host and resolve packages
         working-directory: apps/bridge_academy_flutter
         run: |
@@ -49,7 +71,7 @@ jobs:
           sdcard-path-or-size: 128M
           emulator-boot-timeout: 300
           disable-animations: true
-          emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -partition-size 2048
           script: |
             cd apps/bridge_academy_flutter
             flutter devices
