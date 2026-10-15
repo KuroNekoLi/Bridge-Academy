@@ -34,3 +34,40 @@ jobs:
       - name: Compile web release
         run: flutter build web --no-pub --release
 
+
+
+  browser-chrome:
+    name: Real ChromeDriver end-to-end (demo, not BEN)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/bridge_academy_flutter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate web project and install dependencies
+        run: |
+          flutter create --platforms=web --project-name=bridge_academy_flutter .
+          flutter pub get
+      - name: Install official ChromeDriver with Puppeteer browser manager
+        run: |
+          npx --yes @puppeteer/browsers install chromedriver@stable
+          DRIVER="$(find "$HOME/.cache/puppeteer/chromedriver" -type f -name chromedriver -perm -u+x | head -n 1)"
+          if [ -z "$DRIVER" ]; then
+            echo "ChromeDriver executable missing" >&2
+            exit 1
+          fi
+          echo "$DRIVER" --version
+          echo "CHROMEDRIVER=$DRIVER" >> "$GITHUB_ENV"
+      - name: Run headless Chrome browser integration test
+        run: |
+          "$CHROMEDRIVER" --port=4444 > "$RUNNER_TEMP/chromedriver.log" 2>&1 &
+          sleep 3
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/browser_table_test.dart \
+            -d web-server --browser-name=chrome
