@@ -106,7 +106,7 @@ void main() {
       } else if (view.phase == Phase.play) {
         expect(view.turn, Seat.east);
         defenderTurns++;
-        await tap(tester, 'hand_card_' + view.legalCards.first.code);
+        await tap(tester, 'hand_card_${view.legalCards.first.code}');
       } else {
         fail('Unexpected live game phase');
       }
@@ -130,8 +130,7 @@ void main() {
     // /lead was performed by human East, so no robot /lead is required.
     // ignore: avoid_print
     print('M2_F09_REAL_BEN_DECLARER_PASS dummyTurns=13 '
-        'defenderTurns=13 cards=52 tricks=13 routes=' +
-        requests.counts.toString());
+        'defenderTurns=13 cards=52 tricks=13 routes=${requests.counts}');
   });
 }
 
