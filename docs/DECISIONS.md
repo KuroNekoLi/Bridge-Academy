@@ -44,5 +44,8 @@ Each item has status and rationale. Proposed choices are not approved simply bec
 ## ADR-014 — Browser QA is a distinct integration gate (2026-10-15)
 M2-F06 adds browser-level ChromeDriver and responsive Flutter testing, independently of existing Dart Widget Tests. Keep model mode explicit: Demo tests cannot be called BEN integration. Device/browser target acceptance and real BEN UI interaction must use evidence from the matching executable, not inferred CLI results.
 
+## ADR-015 — Native BEN + Flutter Chrome UI gate (2026-10-15)
+M2-F07 must use pinned upstream BEN on localhost with matching actual ChromeDriver and Flutter integration_test. A route-counting transport must delegate to real HTTP; no mock/fallback acceptance. Full 52-card/13-trick and score verification are mandatory. Do not call this gate GO until GitHub Actions truly passes. BEN reduced sampling/PIMC-off remains an integration fixture, not production strategy/latency approval.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

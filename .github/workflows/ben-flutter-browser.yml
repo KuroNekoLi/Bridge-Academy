@@ -1,0 +1,136 @@
+name: BEN Flutter Chrome Real E2E (M2-F07)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/bridge_academy_flutter/lib/**"
+      - "apps/bridge_academy_flutter/integration_test/browser_ben_test.dart"
+      - "packages/bridge_ben_adapter/lib/**"
+      - "packages/bridge_core/lib/**"
+      - ".github/workflows/ben-flutter-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-ben:
+    name: Real BEN + Flutter Chrome UI
+    # BEN's prebuilt dds3 extension requires glibc >=2.38 and CPython 3.12.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout Bridge Academy
+        uses: actions/checkout@v4
+      - name: Checkout pinned BEN source
+        uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: 72653ec1b5c17116faea229e9b975ea5622aa1f7
+          path: third_party_ben
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben/requirements.txt
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install native BEN dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libboost-thread-dev libicu74
+          python -m pip install -r third_party_ben/requirements.txt
+      - name: BEN test configuration
+        run: |
+          cp third_party_ben/src/config/default_api.conf third_party_ben/src/config/ci_api.conf
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("third_party_ben/src/config/ci_api.conf")
+          cfg = p.read_text()
+          replacements = {
+              "consult_bba = True": "consult_bba = False",
+              "use_bba_rollout = True": "use_bba_rollout = False",
+              "use_bba_to_count_aces = True": "use_bba_to_count_aces = False",
+              "pimc_use_declaring = True": "pimc_use_declaring = False",
+              "pimc_use_defending = True": "pimc_use_defending = False",
+              "pimc_use_discarding = True": "pimc_use_discarding = False",
+              "sample_hands_play = 200": "sample_hands_play = 40",
+              "sample_hands_auction = 200": "sample_hands_auction = 40",
+              "sample_hands_opening_lead = 200": "sample_hands_opening_lead = 40",
+              "sample_boards_for_play = 5000": "sample_boards_for_play = 1000",
+              "sample_boards_for_auction = 30000": "sample_boards_for_auction = 3000",
+          }
+          for before, after in replacements.items():
+              if before not in cfg:
+                  raise SystemExit(f"BEN config key missing: {before}")
+              cfg = cfg.replace(before, after)
+          p.write_text(cfg)
+          PY
+      - name: Start REAL BEN API (not mock)
+        run: |
+          cd third_party_ben/src
+          nohup python gameapi.py \
+            --config config/ci_api.conf \
+            --host 127.0.0.1 \
+            --allowed-hosts 127.0.0.1,localhost \
+            --record false --verbose false \
+            > "$RUNNER_TEMP/ben-server.log" 2>&1 &
+          echo "BEN_PID=$!" >> "$GITHUB_ENV"
+      - name: Readiness probe (BEN capability endpoint)
+        run: |
+          python - <<'PY'
+          import json, time, urllib.request
+          for _ in range(180):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8085/",timeout=3) as res:
+                      result = json.load(res)
+                  if result.get("name"):
+                      print("REAL_BEN_READY:", result["name"])
+                      break
+              except Exception:
+                  time.sleep(2)
+          else:
+              raise SystemExit("BEN readiness timeout; inspect sanitized CI process output")
+          PY
+      - name: Generate Flutter Web platform and get dependencies
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          flutter create --platforms=web --project-name=bridge_academy_flutter .
+          flutter pub get
+      - name: Install ChromeDriver matched to installed Chrome
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          CHROME_VERSION="$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)"
+          if [ -z "$CHROME_VERSION" ]; then
+            echo "Unable to inspect installed Chrome version" >&2
+            exit 1
+          fi
+          npx --yes @puppeteer/browsers install "chromedriver@$CHROME_VERSION"
+          DRIVER="$(find "$PWD/chromedriver" -type f -name chromedriver -perm -u+x | head -n 1)"
+          if [ -z "$DRIVER" ]; then
+            echo "ChromeDriver not installed" >&2
+            exit 1
+          fi
+          "$DRIVER" --version
+          echo "CHROMEDRIVER=$DRIVER" >> "$GITHUB_ENV"
+      - name: Flutter Chrome + true BEN full-game acceptance
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          "$CHROMEDRIVER" --port=4444 > "$RUNNER_TEMP/chromedriver.log" 2>&1 &
+          sleep 3
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/browser_ben_test.dart \
+            -d web-server --browser-name=chrome \
+            --dart-define=BEN_BASE_URL=http://127.0.0.1:8085
+      - name: Sanitized diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "Real BEN process status:"
+          ps -p "$BEN_PID" -o pid,stat,etime || true
+          echo "BEN server logs intentionally NOT printed or uploaded: may contain private hand data."

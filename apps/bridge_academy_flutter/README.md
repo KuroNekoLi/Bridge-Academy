@@ -51,6 +51,11 @@ acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
 - Three responsive Widget Test widths: 320 / 375 / 768px.
 - Chrome test exercises Demo Bot, **not live BEN**; direct real BEN HTTP integration remains separately evidenced by M2-F04. See docs/m2/M2_F06_BROWSER_QA_REPORT.md.
 
+## M2-F07 Real BEN + Chrome E2E
+- Distinct real Python BEN native job with real Flutter Chrome browser UI and no mock/placeholder route.
+- Run through GitHub Actions workflow .github/workflows/ben-flutter-browser.yml, or install pinned BEN plus ChromeDriver locally and run browser_ben_test.dart. CI evidence: docs/m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md.
+- The test uses an artificial 3NT opening with reduced BEN PIMC/simulation parameters; success does not establish production AI quality or device UX.
+
 ## Trust boundary
 
 UI gesture -> BridgeSession -> SinglePlayerCoordinator -> BridgeGame.apply ->

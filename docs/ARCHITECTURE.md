@@ -54,6 +54,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - Responsive controls derive widths from LayoutBuilder parent constraints; phone/tablet Widget Tests run at 320, 375 and 768 logical pixels.
 - Current Chrome runner only uses the explicitly labelled deterministic Demo Bot. The separately verified real BEN Dart session must not be cited as proof of Chrome-to-BEN UI operation.
 
+## M2-F07 — True BEN + Chrome full-game boundary
+- The independent CI workflow ben-flutter-browser.yml starts real pinned BEN native Python 3.12 then matches ChromeDriver to runner Chrome and drives Flutter UI end-to-end.
+- browser_ben_test.dart selects actual BEN mode through the visible dropdown, injects an actual BenBotPolicy backed by BenHttpTransport (route-only counting wrapper), drives a complete 52/13 human-North game and checks non-mock success counts for /bid, /lead, /play.
+- Browser network/CORS and genuine asynchronous I/O are additional failure surfaces not proven by native Dart CLI tests or Demo Chrome tests. Do not log BEN private hand query URLs.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.
