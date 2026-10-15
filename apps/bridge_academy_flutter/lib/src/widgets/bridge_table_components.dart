@@ -122,7 +122,7 @@ class BridgeCurrentTrick extends StatelessWidget {
             Text(copy.t('currentTrick')),
             const SizedBox(height: 8),
             for (final play in view.currentTrick)
-              Text(play.handOwner.letter + ': ' + bridgeCardText(play.card)),
+              Text('${play.handOwner.letter}: ${bridgeCardText(play.card)}'),
             if (view.currentTrick.isEmpty) Text(copy.t('notYet')),
           ],
         ),
@@ -150,7 +150,7 @@ class BridgeSeatPanel extends StatelessWidget {
     final hasDummyCards = isDummy && view.dummyCards != null;
     final active = view.turn == seat;
     return Container(
-      key: Key('seat_' + seat.letter),
+      key: Key('seat_${seat.letter}'),
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(

@@ -35,7 +35,7 @@
 
 | M2-F19 | A2.7 AES-GCM 密文、交易式 SQLite 與舊檔遷移（[Flutter 60/60 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38744797200)，裝置驗收延後） | [M2-F19 教學](features/M2_F19_SECURE_TRANSACTIONAL_STORAGE.md) | [Secure Store](../../apps/bridge_academy_flutter/lib/src/secure_session_persistence.dart) · [故障注入測試](../../apps/bridge_academy_flutter/test/secure_checkpoint_test.dart) · [驗收](../product/P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F21 | A3.1 Bridge Table UI V2：座位、明手、牌號與手牌的 Presentation Widget 分層 | [M2-F21 教學](features/M2_F21_BRIDGE_TABLE_COMPONENTS.md) | [UI 元件](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart) · [Widget tests](../../apps/bridge_academy_flutter/test/a3_table_components_test.dart) · [A3 規格](../product/A3_BRIDGE_TABLE_V2_SPEC.md) | DELIVERED |
+| M2-F21 | A3.1 Bridge Table UI V2（首次 CI lint 修正待驗證）：座位、明手、牌號與手牌的 Presentation Widget 分層 | [M2-F21 教學](features/M2_F21_BRIDGE_TABLE_COMPONENTS.md) | [UI 元件](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart) · [Widget tests](../../apps/bridge_academy_flutter/test/a3_table_components_test.dart) · [A3 規格](../product/A3_BRIDGE_TABLE_V2_SPEC.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

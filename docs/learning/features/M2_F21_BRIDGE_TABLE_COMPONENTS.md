@@ -3,10 +3,10 @@
 - Feature ID：M2-F21
 - Milestone：A3.1 Bridge Table UI V2
 - 類型：Flutter UI／元件設計
-- 工程狀態：IMPLEMENTED（CI 驗證待更新）
+- 工程狀態：IMPLEMENTED（初次 CI #38768161432 的 analyze 因三個 prefer_interpolation_to_compose_strings lint 失敗，已改為 interpolation；修復後 CI 待確認）
 - 學習狀態：DELIVERED（不代表 PRACTICED／MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart`、`apps/bridge_academy_flutter/lib/src/bridge_app.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/a3_table_components_test.dart`，CI NOT RUN（待實際 Actions）
+- 驗收與測試：`apps/bridge_academy_flutter/test/a3_table_components_test.dart`，CI #38768161432 ANALYZE FAIL（3 項 lint；修復後待重跑）
 
 ## 功能目的與實際情境
 
@@ -54,7 +54,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ```
 
-新增 Widget 測試覆蓋 Board 2/英文局況、四方座位、未公開 Dummy 不渲染、Demo 定約後可點擊合法明手牌。**上述命令及 GitHub Actions 的執行結果尚未確認；不得記錄成 PASS。** 安卓模擬器和實機測試依使用者指示暫停。
+新增 Widget 測試覆蓋 Board 2/英文局況、四方座位、未公開 Dummy 不渲染、Demo 定約後可點擊合法明手牌。**GitHub Actions #38768161432 首次 flutter analyze 確認 FAIL（三項字串串接 lint），已針對三處改用字串 interpolation，待下一輪執行結果；不得記錄成 PASS。** 安卓模擬器和實機測試依使用者指示暫停。
 
 ## 練習與自我檢驗
 

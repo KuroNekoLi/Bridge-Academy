@@ -48,7 +48,7 @@ void main() {
     expect(find.byType(BridgePlayingCardButton), findsWidgets);
     final card = session.view!.legalCards.first;
     final oldVersion = session.view!.version;
-    await tapComponent(tester, 'dummy_card_' + card.code);
+    await tapComponent(tester, 'dummy_card_${card.code}');
     expect(session.view!.version, greaterThan(oldVersion));
   });
 }
