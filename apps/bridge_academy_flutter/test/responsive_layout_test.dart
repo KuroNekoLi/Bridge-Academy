@@ -32,6 +32,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.byKey(const Key('bridge_board')), findsOneWidget);
+
+      // Check the substantially denser board after the opening lead:
+      // 13 public Dummy cards in addition to the human hand.
+      final bidButton = find.byKey(const Key('make_bid'));
+      await tester.ensureVisible(bidButton);
+      await tester.tap(bidButton);
+      await tester.pumpAndSettle();
+      expect(session.view!.dummyExposed, true);
+      expect(tester.takeException(), isNull);
     });
   }
 }
