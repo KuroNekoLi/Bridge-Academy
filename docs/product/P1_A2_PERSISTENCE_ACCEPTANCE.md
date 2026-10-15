@@ -1,6 +1,6 @@
 # Phase A2 / M2-F13 — Local Checkpoint Acceptance
 
-**INITIAL STATUS: IMPLEMENTED / CI NOT RUN.** Best-effort restore prototype, not production durability sign-off.
+**STATUS 2026-10-15: CORE + FLUTTER WEB/CROME PLATFORM RESTORE ENGINEERING VERIFIED; ANDROID QA PENDING.** Best-effort restore prototype, not production durability sign-off.
 
 ## Scope
 - Trusted Coordinator exports GameTranscript.encode of its privileged GameState and reconstructs through GameTranscript.decode, which reapplies all historical actions via BridgeGame.apply.
@@ -32,4 +32,13 @@ No multi-tab concurrency, tamper-proofing, critical schema migration, server ide
 - cd packages/bridge_core && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded
 - cd apps/bridge_academy_flutter && flutter create --platforms=web --project-name=bridge_academy_flutter . && flutter pub get && flutter analyze && flutter test --reporter expanded && flutter build web --release
 
-**Observed CI: NOT RUN at authoring.** Record exact GitHub runs and code SHA after execution.
+## Actual executed evidence (2026-10-15)
+
+- [Bridge Core CI #38723931963](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38723931963): **55/55 PASS**, dart analyze --fatal-infos clean. Includes four new Coordinator restore tests (mid-auction, partial trick, per-bot-event awaited snapshots, bad version rejection), commit 4e6a23098a91ff02f8121729208875c6cb053080.
+- [Flutter CI #38724474420](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38724474420): **28/28 PASS**, flutter analyze no issues, Flutter web release build PASS; actual ChromeDriver integration **All tests passed**, including a real SharedPreferencesAsync Web backend read/write across two fresh BridgeSession instances. Code commit f959665904fed6625fbb930f6cc5d713e4fcf463.
+- Earlier Flutter CI #38723931935 failed solely because a legacy pure Widget starter test created the default native plugin without platform registration. [Fix #7b76554](https://github.com/KuroNekoLi/Bridge-Academy/commit/7b76554f848d2d0bcddbd238380e16e85650ecbe) injected a platform-independent BridgeSession in that test, leaving actual backend coverage to Chrome/Android.
+- [Feature Learning Gate #38723931932](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38723931932) PASS.
+- [Real BEN Chrome regression #38723931934](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38723931934) SUCCESS on initial persistence commit, testing original fixed-board BEN flows, not restart/idempotency.
+- [Android emulator backend #38724474457](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38724474457) was IN PROGRESS at this report update; do not claim Android persisted-backend PASS until completed.
+
+No genuine process kill, reboot, storage encryption, fsync or remote exactly-once guarantee has been verified.
