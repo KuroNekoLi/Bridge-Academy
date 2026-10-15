@@ -28,15 +28,18 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
     super.initState();
     _ownsSession = widget.session == null;
     // Native mobile uses AES-GCM + transactional SQLite with a secure key.
-    // Web remains a explicitly documented, best-effort legacy adapter until
-    // a Web-specific threat model and atomic browser storage are accepted.
+    // Web checkpoints are AES-GCM encrypted with a browser WebCrypto key.
+    // Browser single-key storage remains best effort (not SQLite or XSS-safe).
+    // Missing secure context/key must fail closed, never downgrade to plaintext.
     final mobile = !kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
     _session = widget.session ?? BridgeSession(
       archiveStore: mobile
           ? EncryptedTransactionalSessionArchiveStore.native()
-          : PreferencesSessionArchiveStore(),
+          : kIsWeb
+              ? EncryptedTransactionalSessionArchiveStore.browser()
+              : PreferencesSessionArchiveStore(),
     );
     if (_ownsSession) {
       // The session notifies BridgeTable when the saved game is loaded.
