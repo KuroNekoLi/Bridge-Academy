@@ -3,7 +3,7 @@
 - Feature ID：M2-F13
 - Milestone：Phase A2 / P1.2
 - 類型：Bridge Core + Flutter 本機資料層
-- 工程狀態：ENGINEERING_VERIFIED（Core／Flutter Web；Android 原生與真正強制終止另驗）
+- 工程狀態：ENGINEERING_VERIFIED（Core／Flutter Web／Chrome／Android 模擬器存檔恢復；真正強制終止、加密、事務保證另驗）
 - 學習狀態：DELIVERED
 - 原始碼：packages/bridge_core/lib/src/single_player_coordinator.dart；apps/bridge_academy_flutter/lib/src/session_persistence.dart；apps/bridge_academy_flutter/lib/src/bridge_session.dart
 - 驗收：docs/product/P1_A2_PERSISTENCE_ACCEPTANCE.md
@@ -31,7 +31,7 @@ Flutter SessionArchiveStore 只抽象 read / write / clear，測試注入 Memory
 
 執行 Bridge Core 的 dart analyze --fatal-infos、dart test --reporter expanded；Flutter 端執行 flutter pub get、flutter analyze、flutter test、flutter build web --release。新增測試包含 mid-auction、mid-trick、公開明手、Board Number、Pass Out 後恢復、寫入失敗與重試、版本竄改、全四家暗牌不公開。
 
-**已實際執行：** [Core CI #38723931963](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38723931963) 55/55 PASS、Dart Analyze 無問題；[Flutter CI #38724474420](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38724474420) 28/28 PASS、Flutter Analyze／Web Release Build／真 ChromeDriver SharedPreferencesAsync 存取及還原全部 PASS。Android 模擬器此版本測試仍待正式結果，真正 Process Kill／加密／交易 durability 尚未驗收。
+**已實際執行：** [Core CI #38723931963](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38723931963) 55/55 PASS、Dart Analyze 無問題；[Flutter CI #38724474420](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38724474420) 28/28 PASS、Flutter Analyze／Web Release Build／真 ChromeDriver SharedPreferencesAsync 存取及還原全部 PASS。[Android 模擬器 #38724474457](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38724474457) API 35 真 APK 及存檔恢復 3/3 PASS。真正 Process Kill／加密／交易 durability 仍未驗收。
 
 ## 練習與自我檢驗
 
