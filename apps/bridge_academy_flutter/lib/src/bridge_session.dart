@@ -120,9 +120,8 @@ class BridgeSession extends ChangeNotifier {
     notifyListeners();
     var accepted = false;
     try {
-      final store = _archiveStore;
-      if (store is RecoveryAwareSessionArchiveStore) {
-        await store.acknowledgeRecoveredCheckpoint();
+      if (_archiveStore case RecoveryAwareSessionArchiveStore recoveryStore) {
+        await recoveryStore.acknowledgeRecoveredCheckpoint();
       }
       _recoveryNeedsConfirmation = false;
       _errorCode = null;
