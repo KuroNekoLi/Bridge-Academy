@@ -12,6 +12,8 @@
 | M2-F01 | PlayerView、私有手牌的信任邊界 | [M2-F01 — PlayerView](features/M2_F01_PLAYER_VIEW.md) | [player_view.dart](../../packages/bridge_core/lib/src/player_view.dart) · [測試](../../packages/bridge_core/test/player_view_test.dart) · [驗收](../m2/M2_FOUNDATION_REPORT.md) | DELIVERED |
 | M2-F02 | 本地 Game Coordinator、樂觀並行控制 | [M2-F02 — Coordinator](features/M2_F02_LOCAL_COORDINATOR.md) | [coordinator](../../packages/bridge_core/lib/src/single_player_coordinator.dart) · [測試](../../packages/bridge_core/test/single_player_coordinator_test.dart) · [驗收](../m2/M2_FOUNDATION_REPORT.md) | DELIVERED |
 
+| M2-F03 | BEN Adapter，最低權限的 HTTP 參數、合法提案、timeout | [M2-F03 — BEN Adapter](features/M2_F03_BEN_ADAPTER.md) | [BenBotPolicy](../../packages/bridge_ben_adapter/lib/src/ben_bot_policy.dart) · [契約測試](../../packages/bridge_ben_adapter/test/ben_bot_policy_test.dart) · [驗收報告](../m2/M2_BEN_ADAPTER_REPORT.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 在 PR 中給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。

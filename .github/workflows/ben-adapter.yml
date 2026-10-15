@@ -1,0 +1,25 @@
+name: BEN Adapter Contract CI
+on:
+  push:
+    branches: [master, "feat/m2-ben-robot-adapter"]
+    paths: ["packages/bridge_ben_adapter/**", ".github/workflows/ben-adapter.yml"]
+  pull_request:
+    paths: ["packages/bridge_ben_adapter/**", ".github/workflows/ben-adapter.yml"]
+jobs:
+  dart:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/bridge_ben_adapter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Dependencies
+        run: dart pub get
+      - name: Strict analysis
+        run: dart analyze --fatal-infos
+      - name: Mock contract tests (not a real BEN server)
+        run: dart test --reporter expanded
+
