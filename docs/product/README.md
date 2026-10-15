@@ -24,15 +24,18 @@
 | **D：非同步 Duplicate** | 每日相同牌組、比較 MP／IMP、好友挑戰 | 需要伺服器權威資料和公平性設計 |
 | **E：真人線上平台** | 四人同步牌桌、房間、社群、比賽管理與斷線重連 | 長期目標 |
 
-### 為何這次要重排？
+### 已有成果與尚未完成的產品門檻
 
-先前 Core 47/47、Flutter Web、Android 模擬器及真 BEN 固定牌局 CI 已獲得驗收，但這些「工程 PASS」並不代表玩家能在正式環境持續玩牌。現存關鍵缺口：Board Number／Dealer／Vulnerability 未完整輪替、無持久化保存、真 BEN 尚無正式安全部署、牌桌 UX 尚未完成、未實測物理裝置與正式發布。
+- **A1 Board Management 已在 Core、BEN Adapter、Flutter Web 及固定 BEN 回歸中達到範圍內驗證**，不能再描述為缺少牌號／局況輪替。
+- **A2 本機中斷恢復／Web 與原生加密持久化已有實作與部分 CI 證據**，但尚未完成實機／瀏覽器部署安全／遠端 BEN exactly-once 的產品驗收。
+- **A3 牌桌 V2 尚未完成**；應以可重用 UI 元件重構，不在 `bridge_app.dart` 繼續堆疊功能。
+- **A4 正式 BEN HTTPS 部署、A5 多牌局歷史、A6 完整玩家旅程以及 A7 發布驗收**仍需要完成。
 
-## 下一個實作任務：Phase A1 Board Management
+## 下一個實作任務：Phase A3 Bridge Table UI V2
 
-從 Bridge Core 開始完成 **標準 16 副 Duplicate 牌號／發牌者／局況循環**，再在 Flutter 顯示牌號與局況，並區分「下一副」與「重新打同一副」。
+在保留既有 Core、BoardDefinition、PlayerView 與 A2 checkpoint 的前提下，先定義並拆分 BoardHeader、四方座位、PlayerHand、BiddingBox、TrickHistory、TableToolbar 的 UI 資料契約；優先改善手牌、局況、輪到誰與叫牌盒的基本操作。先設計和純 Flutter Widget/Chrome 驗證，不啟動 Android 模擬器或實機測試；等您另外核准再恢復裝置驗收。
 
-驗收要求：Board 1–32 規則正確、指定 Dealer 與局況確實進入 Coordinator、正確影響分數與 BEN 參數，並有繁體中文／英文介面及自動化測試。不得破壞已有的固定教學牌、Replay 或真 BEN 回歸測試。
+**每日挑戰優先級：** P1 可做「固定牌例、無排名」的每日練習體驗；真正跨使用者同牌比較、MP/IMP、排行榜及好友 PK 必須保留到具備伺服器公平性機制的 Phase D/P3。不可把單桌得分冒充 MP 或 IMP。
 
 **交接給 Codex/Work Agent 的方式：** 先讀 [AGENTS.md](../../AGENTS.md) → [Orchestrator Skill](../../skills/bridge-orchestrator/SKILL.md) → 三份產品文件 → [既有規則](../BRIDGE_RULES_BASELINE.md) → 相關程式碼。每一步維持使用者已核准的**直接 Push master、不開 PR**，每個行為功能附實際測試與繁體中文工程教學。
 
@@ -45,4 +48,4 @@
 - 沒有正式牌桌部署、裝置測試及 BEN 授權審查，不可標成可正式發行。
 - 效能數值屬**提議驗收門檻**而非已測試成果。
 
-**這回合只完成產品規劃與 Agent 工作規範的文件化；沒有修改遊戲邏輯，也沒有新增通過測試的功能。**
+**目前本產品文件屬需求與交付規劃；文件修訂本身不代表任何新的程式功能已通過測試。**
