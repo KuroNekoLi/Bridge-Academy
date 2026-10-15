@@ -1,11 +1,11 @@
 import 'package:bridge_core/bridge_core.dart' hide Card;
-import 'package:bridge_core/bridge_core.dart' as bridge show Card;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_copy.dart';
 import 'bridge_session.dart';
+import 'widgets/bridge_table_components.dart';
 import 'session_persistence.dart';
 import 'secure_session_persistence.dart';
 
@@ -201,7 +201,12 @@ class _BridgeTableState extends State<BridgeTable> {
               Text(copy.t('notStarted'), key: const Key('empty_state')),
             ] else ...[
               const SizedBox(height: 12),
-              _status(view, session, copy),
+              BridgeBoardHeader(
+                 boardNumber: session.board.number,
+                 view: view,
+                 busy: session.busy,
+                 copy: copy,
+               ),
               if (session.restoredFromStorage)
                 Text(copy.t('restoredGame'),
                     key: const Key('restored_game')),
@@ -259,7 +264,12 @@ class _BridgeTableState extends State<BridgeTable> {
                 Text(copy.t('waitingBot')),
               ],
               const SizedBox(height: 12),
-              _board(view, session, copy),
+              BridgeTableSurface(
+                 view: view,
+                 copy: copy,
+                 actionsPaused: session.actionsPaused,
+                 onPlayCard: session.submitCard,
+               ),
               const SizedBox(height: 8),
               _auctionHistory(view, copy),
               const SizedBox(height: 8),
@@ -376,123 +386,6 @@ class _BridgeTableState extends State<BridgeTable> {
         ],
       );
 
-  Widget _status(PlayerView view, BridgeSession session, AppCopy copy) {
-    return Card(
-      key: const Key('game_status'),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Wrap(
-          spacing: 24,
-          runSpacing: 6,
-          children: [
-            Text(copy.boardNumber(session.board.number),
-                key: const Key('board_number')),
-            Text(copy.dealer(view.dealer.letter),
-                key: const Key('board_dealer')),
-            Text(copy.vulnerability(view.vulnerability.name),
-                key: const Key('board_vulnerability')),
-            Text(copy.formatTurn(view.turn?.letter)),
-            Text(copy.contract(view.contract?.label ?? copy.t('notYet'))),
-            Text(copy.trickCount(view.completedTricks.length)),
-            if (view.nsScore != null) Text(copy.score(view.nsScore!)),
-            if (session.busy) const CircularProgressIndicator(strokeWidth: 2),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _board(PlayerView view, BridgeSession session, AppCopy copy) {
-    return Card(
-      key: const Key('bridge_board'),
-      color: const Color(0xFFE6F1E8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            _seatPanel(Seat.north, view, session, copy),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: _seatPanel(Seat.west, view, session, copy)),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: [
-                        Text(copy.t('currentTrick')),
-                        const SizedBox(height: 8),
-                        for (final played in view.currentTrick)
-                          Text('${played.handOwner.letter}: ${_cardText(played.card)}'),
-                        if (view.currentTrick.isEmpty)
-                          Text(copy.t('notYet')),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(child: _seatPanel(Seat.east, view, session, copy)),
-              ],
-            ),
-            _seatPanel(Seat.south, view, session, copy),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _seatPanel(Seat seat, PlayerView view, BridgeSession session,
-      AppCopy copy) {
-    final dummy = view.contract?.dummy == seat && view.dummyExposed;
-    final hasDummyCards = dummy && view.dummyCards != null;
-    final active = view.turn == seat;
-    return Container(
-      key: Key('seat_${seat.letter}'),
-      padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: active ? Theme.of(context).colorScheme.primary : Colors.grey,
-          width: active ? 2 : 1,
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Text(copy.seat(seat.letter),
-              style: const TextStyle(fontWeight: FontWeight.w600)),
-          if (seat == view.viewer)
-            Text(copy.t('yourSeat'))
-          else if (!hasDummyCards)
-            Text(copy.remaining(view.remainingCards[seat] ?? 0)),
-          if (hasDummyCards && seat != view.viewer) ...[
-            Text(copy.t('dummy'), key: const Key('dummy_revealed')),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 4,
-              children: [
-                for (final card in view.dummyCards!)
-                  _cardButton(
-                    card,
-                    prefix: 'dummy_card_',
-                    copy: copy,
-                    legal: view.canAct && active &&
-                        view.legalCards.contains(card),
-                    busy: session.actionsPaused,
-                    onTap: () => session.submitCard(card),
-                  ),
-              ],
-            ),
-          ],
-          if (seat != view.viewer && !hasDummyCards)
-            const Icon(Icons.style_outlined),
-        ],
-      ),
-    );
-  }
-
   Widget _auctionHistory(PlayerView view, AppCopy copy) => Card(
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -582,36 +475,11 @@ class _BridgeTableState extends State<BridgeTable> {
       );
     }
     if (view.phase == Phase.play) {
-      return Card(
-        key: const Key('hand_controls'),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(copy.t('cards')),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 5,
-                children: [
-                  for (final card in view.ownCards)
-                    _cardButton(
-                      card,
-                      prefix: 'hand_card_',
-                      copy: copy,
-                      legal: view.canAct && view.turn == view.viewer &&
-                          view.legalCards.contains(card),
-                      busy: session.actionsPaused,
-                      onTap: () => session.submitCard(card),
-                    ),
-                ],
-              ),
-              if (view.contract != null && !view.dummyExposed)
-                Text(copy.t('hidden'), key: const Key('dummy_hidden')),
-            ],
-          ),
-        ),
+      return BridgePlayerHand(
+        view: view,
+        copy: copy,
+        actionsPaused: session.actionsPaused,
+        onPlayCard: session.submitCard,
       );
     }
     return const SizedBox.shrink();
@@ -631,7 +499,7 @@ class _BridgeTableState extends State<BridgeTable> {
       eventLabel = '${copy.seat(action.actor.letter)}: ${action.call.code}';
     } else if (action is CardAction) {
       eventLabel = '${copy.seat(action.handOwner.letter)}: '
-          '${_cardText(action.card)}';
+          '${bridgeCardText(action.card)}';
       if (action.actor != action.handOwner) {
         eventLabel = '$eventLabel (${copy.t('replayBy')}: '
             '${copy.seat(action.actor.letter)})';
@@ -664,7 +532,7 @@ class _BridgeTableState extends State<BridgeTable> {
                 children: [
                   for (final play in view.currentTrick)
                     Text('${play.handOwner.letter}: '
-                        '${_cardText(play.card)}'),
+                        '${bridgeCardText(play.card)}'),
                 ],
               ),
             ],
@@ -679,14 +547,14 @@ class _BridgeTableState extends State<BridgeTable> {
               Text(copy.t('cards')),
               Wrap(spacing: 6, children: [
                 for (final card in view.ownCards)
-                  Text(_cardText(card)),
+                  Text(bridgeCardText(card)),
               ]),
             ],
             if (view.dummyCards != null && view.dummyCards!.isNotEmpty) ...[
               Text(copy.t('dummy')),
               Wrap(spacing: 6, children: [
                 for (final card in view.dummyCards!)
-                  Text(_cardText(card)),
+                  Text(bridgeCardText(card)),
               ]),
             ],
             const SizedBox(height: 8),
@@ -737,45 +605,6 @@ class _BridgeTableState extends State<BridgeTable> {
           ),
         ),
       );
-
-  Widget _cardButton(bridge.Card card, {required String prefix,
-      required AppCopy copy, required bool legal, required bool busy,
-      required VoidCallback onTap}) {
-    return OutlinedButton(
-      key: Key('$prefix${card.code}'),
-      onPressed: legal && !busy ? onTap : null,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        minimumSize: const Size(42, 40),
-      ),
-      // Keep text geometry stable when legality changes during an async
-      // bot turn. A changing suffix inside Text caused a Flutter Web
-      // TextPainter paint/layout size assertion on real Chrome.
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(_cardText(card)),
-          const SizedBox(width: 3),
-          ExcludeSemantics(
-            child: Icon(
-              Icons.check,
-              size: 13,
-              color: legal
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.transparent,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _cardText(bridge.Card card) => '${switch (card.suit) {
-      Suit.clubs => "♣",
-      Suit.diamonds => "♦",
-      Suit.hearts => "♥",
-      Suit.spades => "♠",
-    }}${card.rank.symbol}';
 
   String _strainKey(Strain strain) => switch (strain) {
     Strain.clubs => 'strainC',
