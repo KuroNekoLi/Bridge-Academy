@@ -1,6 +1,6 @@
 # M2-F04 — Real BEN HTTP Acceptance
 
-Status on initial commit: NOT RUN. Workflow and executable are created; only real run evidence may change this.
+Status 2026-10-15: **FIRST REAL BEN GAME PASS**. A second real game testing BEN-controlled declarer/dummy is added and awaiting separate execution proof.
 
 ## BEN provenance
 
@@ -23,12 +23,25 @@ Status on initial commit: NOT RUN. Workflow and executable are created; only rea
 
 PIMC disabled for declarer, defender and discarding, BBA-dependent paths disabled to avoid external .NET runtime, simulation samples reduced. These results do NOT represent BEN's default strength or throughput. The previous Work POC results apply to a separate integration/configuration.
 
-## Evidence status
+## Real run 1 — PASS (actual BEN, not mock)
 
-- Live server started: NOT RUN at authoring.
-- Actual BEN HTTP calls: NOT RUN at authoring.
-- Dart contract tests on old M2-F03: 13/13 PASS; these tests are mocks, and do not satisfy M2-F04.
-- CI URL and actual status: record after execution.
+- GitHub Actions: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38676215575 , commit 7e7397a5920cbb9a284bc6dcc0c4f146da8e0332, Linux Ubuntu 24.04 + Python 3.12.
+- BEN readiness: GIB as on BBO.
+- Actual HTTP response counts: /bid = 4, /lead = 1, /play = 25. **No MockClient, no fallback**.
+- Actual auction: 3NT, PASS, 6NT, PASS, PASS, PASS. Contract 6NT, North declarer.
+- Completed 13 tricks, 52 cards, terminal version 58 (6 auction events + 52 cards), final **NS −250**.
+- Dart full-deal execution elapsed 8,255 ms with PIMC disabled/reduced sampling. Not BEN default SLA or performance guarantee.
+- **Caveat:** North was controlled by deterministic human fixture, so this test verified live BEN opponents but not robot declarer controlling dummy.
+
+## Real run 2 — BEN robot declarer and dummy (pending)
+
+- Executable: packages/bridge_ben_adapter/bin/live_ben_dummy_smoke.dart, separate full board with human East defender and BEN controlling N/S and W.
+- Specific gate: at least one true BEN /play proposal with declarer Actor and Dummy Hand Owner, then full 52/13 completion. No fallback.
+- **Status: NOT VERIFIED** until fresh GitHub Actions produces an actual passing result.
+
+## Contract test evidence
+
+- M2-F03 Mock suite: 13/13 PASS. Separate from these real BEN acceptance runs.
 - Logs must be sanitized: BEN server may print hand cards and requests carry the acting robot's original private hand.
 
 ## Release gates
