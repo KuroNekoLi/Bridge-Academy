@@ -46,7 +46,7 @@
     # 已啟動 Android emulator-5554：
     bash scripts/android_process_restart_e2e.sh
 
-初稿 CI 尚未執行，狀態 NOT RUN。必須看到 GitHub Actions 原生 Android 工作成功、兩次真實 flutter drive 的 All tests passed 及 A2_3_ANDROID_REAL_PROCESS_RESTART_PASS，再將此功能標記為 ENGINEERING VERIFIED。
+**已完成基本回歸驗收：** [Flutter CI #38730229223](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38730229223)（Commit 824cc114）靜態分析無問題、42/42 Widget/Session 測試 PASS、Web Release Build 與真 Chrome Demo PASS；[Learning Gate #38730229181](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38730229181) PASS。**但 Android 跨行程測試 #38730229216 仍在執行中，尚不能標記 A2.3 工程驗收成功**。須看到兩次 flutter drive 成功與 A2_3_ANDROID_REAL_PROCESS_RESTART_PASS。
 
 ## 練習與自我檢驗
 

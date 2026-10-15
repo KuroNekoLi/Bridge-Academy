@@ -46,3 +46,9 @@ The first flutter drive can exit the app before force-stop is issued. This exerc
 The checkpoint currently stores all four hands in **plaintext** within Android application-private preferences: sandboxing is NOT encryption. Do not print raw PBN, HTTP URLs, private hands or transcript payloads. Test metadata contains only version and unsigned regression fingerprint.
 
 Next release blockers: secure transactional storage choices per Android/iOS/Web, real kill-during-write lifecycle fault injection, rollback warning when old generation is recovered, mobile hardware QA and backend-mediated idempotent BEN requests. Treat this feature as engineering validation only until actual CI finishes.
+
+## Verified non-device regression — latest implementation
+
+- [Flutter M2 Single Player #38730229223](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38730229223): SUCCESS, SHA `824cc114a40759558340f9aecdacd2215271a3f5`. `flutter analyze` no issues; **42/42 widget and session tests PASS**; Flutter Web Release Build PASS; real ChromeDriver Demo E2E success.
+- [Feature Learning Gate #38730229181](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38730229181): SUCCESS, same code SHA.
+- [Android emulator cross-process #38730229216](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38730229216): RUNNING at this report update. Flutter's 42 tests do **not** prove real OS force-stop/restore; see final Android job result before marking A2.3 VERIFIED.
