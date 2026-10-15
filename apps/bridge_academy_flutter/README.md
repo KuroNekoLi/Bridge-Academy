@@ -53,7 +53,7 @@ acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
 
 ## M2-F07 Real BEN + Chrome E2E
 - Distinct real Python BEN native job with real Flutter Chrome browser UI and no mock/placeholder route.
-- Run through GitHub Actions workflow .github/workflows/ben-flutter-browser.yml, or install pinned BEN plus ChromeDriver locally and run browser_ben_test.dart. CI evidence: docs/m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md.
+- Run through GitHub Actions workflow .github/workflows/ben-flutter-browser.yml, or install pinned BEN plus ChromeDriver locally and run browser_ben_test.dart. CI [#38681913862 SUCCESS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862) proves a fixed-deal Flutter Chrome UI game against actual BEN, with 52/13 and all three BEN HTTP routes. Full evidence/limits: docs/m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md.
 - The test uses an artificial 3NT opening with reduced BEN PIMC/simulation parameters; success does not establish production AI quality or device UX.
 
 ## Trust boundary

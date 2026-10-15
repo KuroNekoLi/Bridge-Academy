@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';

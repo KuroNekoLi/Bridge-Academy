@@ -3,7 +3,7 @@
 - Feature ID：M2-F07
 - Milestone：M2
 - 類型：Flutter 瀏覽器 E2E／Python BEN／HTTP
-- 工程狀態：IMPLEMENTED（真實 Chrome + BEN CI 尚未執行）
+- 工程狀態：ENGINEERING_VERIFIED（真實 Chrome + BEN [CI #38681913862](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862) PASS；本輪僅固定牌局，實機與正式效能未驗收）
 - 學習狀態：DELIVERED（尚未練習或答題）
 - 原始碼：apps/bridge_academy_flutter/integration_test/browser_ben_test.dart
 - CI：.github/workflows/ben-flutter-browser.yml
@@ -49,7 +49,7 @@ M2-F04 證明 Dart 呼叫真正 BEN 可以完成一副牌；M2-F06 證明 Chrome
 
     flutter drive --driver=test_driver/integration_test.dart --target=integration_test/browser_ben_test.dart -d web-server --browser-name=chrome --dart-define=BEN_BASE_URL=http://127.0.0.1:8085
 
-必須先啟動固定 SHA 的真正 BEN Python API 與相符版本 ChromeDriver。**文件撰寫時 CI 尚未執行，狀態 NOT RUN**；執行後更新 M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md，明確記錄真實 CI URL、SHA、HTTP 次數與 52/13 結果。這份驗收不可以借用先前 Mock／CLI／Demo UI 的 PASS。
+實際 [GitHub Actions #38681913862](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862) SUCCESS：真正 BEN Readiness PASS、Chrome/ChromeDriver 154 版本相符、Flutter UI 點擊真 BEN 完整牌局（52/13）、真實 /bid、/lead、/play 各至少 1 次成功回應，所有 browser assertions PASS。CI 沒有印出精確 API 次數或數字分數，因此文件不捏造。該 SHA 的獨立 Flutter analyze 工作曾因一個多餘 import 的 lint 失敗，後續已修正並重新驗收。
 
 ## 練習與自我檢驗
 
@@ -62,4 +62,3 @@ M2-F04 證明 Dart 呼叫真正 BEN 可以完成一副牌；M2-F06 證明 Chrome
 ## 下一步
 
 Chrome 真 BEN 完整對局通過後，依序擴充 BEN 當莊家的畫面測試，以及 Android 模擬器／iOS Android 實機的 UI、網路與 UX 驗收。Chrome PASS 不能替代手機裝置 PASS。
-

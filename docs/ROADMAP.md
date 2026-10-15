@@ -31,7 +31,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 - Performance and hosting benchmark with intended BEN settings (do not extrapolate POC-002 timings).
 
 - **M2-F06 REAL CHROME DEMO GO:** [CI #38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652) — Chrome 154 with matched ChromeDriver, actual browser-clicked Pass Out/restart/bid/dummy play; 14/14 Flutter tests at 320/375/768px; Flutter Web release built. Real BEN from Chrome and Android/iOS hardware QA are separate requirements. [Report](m2/M2_F06_BROWSER_QA_REPORT.md).
-- M2-F07: True native BEN + actual Flutter Chrome UI complete-game acceptance workflow and test (fixed North-human 3NT fixture). Gate status must come from real GitHub Actions execution, not older Dart CLI or Demo browser tests. [Acceptance report](m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md).
+- **M2-F07 TRUE BEN + CHROME FIXED-BOARD GO:** [CI #38681913862](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862) succeeded: real BEN native Python 3.12/TensorFlow, Chrome 154, actual Flutter UI complete game 52/13 and /bid /lead /play all real successful. Reduced samples/PIMC off, not full M2 production/native GO. [Acceptance report](m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md).
 
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.

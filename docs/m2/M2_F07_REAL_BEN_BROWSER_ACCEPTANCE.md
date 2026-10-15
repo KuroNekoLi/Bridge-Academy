@@ -1,6 +1,6 @@
 # M2-F07 — Real Flutter Chrome + native BEN full-deal acceptance
 
-**Status at authoring: IMPLEMENTED / LIVE BEN CHROME NOT RUN.** Only an actual passing GitHub Actions job may advance this gate to GO.
+**Status 2026-10-15: M2-F07 REAL BEN FLUTTER CHROME GO (fixed-board E2E).** Real Python BEN + actual Chrome test PASSED in [GitHub Actions #38681913862](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862), tested at Bridge Academy SHA 94cd911eae17d329056ba44ca5d050d3f6c25bd6. Native device, production and broad-board gates remain PENDING.
 
 ## Environment and provenance
 
@@ -34,9 +34,10 @@ Start the pinned native BEN API privately on port 8085; start a ChromeDriver mat
     flutter pub get
     flutter drive --driver=test_driver/integration_test.dart --target=integration_test/browser_ben_test.dart -d web-server --browser-name=chrome --dart-define=BEN_BASE_URL=http://127.0.0.1:8085
 
-Actual run: NOT RUN at document creation. Enter final job URL, SHA, Flutter/Chrome/BEN versions, actual success/failure, 52/13 validation, route counts, execution time, and failures after real execution. Earlier M2-F04 native Dart BEN and M2-F06 Demo Chrome are separate evidence, not this gate.
+Actual evidence: [CI #38681913862](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862) SUCCESS. Real BEN server replied REAL_BEN_READY: GIB as on BBO, ChromeDriver 154.0.8037.97 matched installed Chrome 154, Flutter stable via subosito/flutter-action. GitHub job *Flutter Chrome + true BEN full-game acceptance* passed and printed All tests passed. The passing browser test asserted: terminal game, exactly 13 completed tricks/52 cards, all four hands empty, a valid non-null final NS score, version = auction length + 52, human own-hand and exposed Dummy interactions, actual successful /bid, /lead and /play requests >=1 each, and no Demo fallback. **Exact endpoint counts and final numeric NS score were not emitted in the workflow log**; do not invent those numbers. The original Flutter analyze job for the same SHA failed one non-functional lint: unnecessary dart:async import in this integration test; fix is committed after this run and requires fresh validation. This report distinguishes genuine browser integration GO from full combined CI green.
+
+Earlier M2-F04 native Dart BEN and M2-F06 Demo Chrome remain separate evidence, not substitutes for this test.
 
 ## Limitations
 
 One fixed game with a predetermined human opening tests compatibility and basic bridge legality, not the model's bidding skill, BEN default latency, randomized deals, Android/iOS mobile network behavior, or device UX. M2 whole-project GO remains pending.
-
