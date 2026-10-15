@@ -4,11 +4,11 @@
 
 ## Purpose
 
-Existing Phase A2.1 already restores canonical GameTranscript and prevents bot progression after a failed write. The v1 adapter stores a SINGLE PLAINTEXT SharedPreferencesAsync string containing all 52 cards. This slice provides a reversible, failure-injectable two-slot commit protocol without changing BridgeGame, PlayerView, BEN Adapter or source-of-truth event data.
+Existing Phase A2.1 already restores canonical GameTranscript and prevents bot progression after a failed write. The v1 adapter stores a SINGLE PLAINTEXT SharedPreferencesAsync string containing all 52 cards. This slice provides a reversible, failure-injectable generation-aware two-slot commit protocol without changing BridgeGame, PlayerView, BEN Adapter or source-of-truth event data.
 
 ## Dataflow
 
-\`BridgeSession\` → \`SessionArchiveStore.write(SavedBoardCodec.encode(...))\` → validate legal archive → write inactive v2 JSON envelope → SHA-256 check + Bridge Core replay → write \`v2.active\` marker last. The previously committed slot remains untouched. On startup, read active and validate; if corrupt, validate the other slot and repair pointer (may lose the last one committed event); never silently fabricate a legal move. If there is no marker, ignore orphan v2 data and migrate only a valid v1 checkpoint after a successful v2 commit.
+`BridgeSession` → `SessionArchiveStore.write(SavedBoardCodec.encode(...))` → validate legal archive → write inactive v2 JSON envelope → SHA-256 check + Bridge Core replay → write `v2.active` marker (slot + generation) last. The previously committed slot remains untouched. On startup, read active and validate; if corrupt, validate the other slot only when its generation is exactly one older than the last committed marker; a newer uncommitted orphan must never become the fallback. Repair pointer only after successful validation (may lose the latest committed event); never silently fabricate a legal move. If there is no marker, ignore orphan v2 data and migrate only a valid v1 checkpoint after a successful v2 commit.
 
 Envelope version 2 is a **storage format** version; the canonical SavedBoardCodec and GameTranscript remain schema version 1. SHA-256 is a **checksum**, not authentication or encryption.
 
@@ -23,6 +23,7 @@ Envelope version 2 is a **storage format** version; the canonical SavedBoardCode
 | Corrupt active slot | fall back to prior legal state and repair marker | NOT RUN |
 | Tampered legal metadata with recomputed SHA | SavedBoardCodec rejects invalid version/board and falls back | NOT RUN |
 | Both corrupt | explicit FormatException, no restart fabrication | NOT RUN |
+| Corrupt committed + newer orphan | refuse to promote uncommitted next-generation checkpoint | NOT RUN |
 | First write interrupted | orphan unreferenced slot ignored | NOT RUN |
 | Existing v1 migration | validate/replay, v2 commit, then remove v1 only on success | NOT RUN |
 | Faulted migration | original valid v1 remains intact | NOT RUN |
@@ -30,8 +31,12 @@ Envelope version 2 is a **storage format** version; the canonical SavedBoardCode
 | Full session resume | PlayerView/Board Number/expected version/fingerprint consistent and private | NOT RUN |
 | Full Flutter analyze/tests, web build, Chrome/Android | no regressions | NOT RUN |
 
-Test source: \`apps/bridge_academy_flutter/test/checkpoint_store_test.dart\`.
-Commands: \`cd apps/bridge_academy_flutter && flutter pub get && flutter analyze && flutter test --reporter expanded && flutter build web --release\`.
+Test source: `apps/bridge_academy_flutter/test/checkpoint_store_test.dart`.
+Commands: `cd apps/bridge_academy_flutter && flutter pub get && flutter analyze && flutter test --reporter expanded && flutter build web --release`.
+
+## Design review finding
+
+An initial patch used only a slot letter as the active marker. That was insufficient to distinguish a previous committed backup from a never-committed newer slot if the current active payload were also corrupted. The corrected protocol stores monotonically increasing generation numbers both in the envelope and in the commit marker, and refuses fallback unless the other slot is exactly one generation older. A dedicated regression test covers this sequence.
 
 ## Remaining blockers: NOT PRODUCTION READY
 
