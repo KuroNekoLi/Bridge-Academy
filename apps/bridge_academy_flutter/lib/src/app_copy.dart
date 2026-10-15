@@ -66,6 +66,8 @@ class AppCopy {
     'contract': ['定約', 'Contract'],
     'notYet': ['未定', 'Pending'],
     'auction': ['叫牌紀錄', 'Auction history'],
+    'lastTrick': ['上一墩', 'Last trick'],
+    'close': ['關閉', 'Close'],
     'call': ['叫牌', 'Make bid'],
     'pass': ['不叫（Pass）', 'Pass'],
     'double': ['賭倍（X）', 'Double (X)'],

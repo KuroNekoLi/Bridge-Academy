@@ -43,9 +43,14 @@ Acceptance: active/passive seats; no concealed card widgets; dummy reveal; legal
 
 Level/strain and Pass/X/XX buttons are now extracted into a controlled stateless `BridgeBiddingBox` (`widgets/bridge_bidding_box.dart`); `BridgeTable` owns the selected level/strain and `BridgeSession.submitCall` receives all intents. Existing behavior is preserved. Show Pass/Double/Redouble legality clearly; illegal calls must still be rejected by Bridge Core. Later tie meanings to verified ConventionProfile only. Keyboard/semantic labels and 320px overflow are gate conditions.
 
-### A3.3 — Table orientation and contextual controls
+### A3.3 — Responsive table, contextual toolbar and replay (implemented; CI pending)
 
-Improve responsive four-seat layout (including East/West and declared Dummy), center trick visibility, compact auction history and last-trick action. Keep current test keys and all public turn labels. Replay remains read-only and must not mutate live game.
+- `BridgeTableSurface` adapts at its available content width 560px: narrow screens show North, West/East as equal flexible columns, then full-width current trick and South; wider screens put West / public trick / East in one row. All four compass seats stay distinct and exposed Dummy remains in its rightful seat; no private hands are provided.
+- `BridgeCurrentTrick` uses public-card Chips and a localized placeholder. `BridgeTableToolbar` offers modal public auction history and last *completed* trick with its winner, disabled until one trick exists; never expose any pending private cards.
+- `BridgeCompletedReplayPanel` is a separate readonly Widget observing immutable `CompletedReplay.frames[index].view` via selected index callback. The current BridgeSession is never mutated by replay or history dialogs.
+- Retain existing key and localization contracts. Automated tests cover 320/375/768 widths, Dummy, modal state nonmutation, completed-trick guard and earlier replay navigation. Run full Flutter analyze/tests/Web build/Chrome + true BEN regression; document actual outcomes. No device QA authorization.
+
+**Not included:** human-seat auto-rotation, high-fidelity visual themes, keyboard/screen-reader release validation or domain legalCalls; these remain separate explicit decisions/slices.
 
 ### A3.4 — Accessible polish
 

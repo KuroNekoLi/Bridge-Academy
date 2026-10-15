@@ -62,46 +62,57 @@ class BridgeTableSurface extends StatelessWidget {
   final bool actionsPaused;
   final ValueChanged<bridge.Card> onPlayCard;
 
+  BridgeSeatPanel _seat(Seat seat) => BridgeSeatPanel(
+        seat: seat,
+        view: view,
+        copy: copy,
+        actionsPaused: actionsPaused,
+        onPlayCard: onPlayCard,
+      );
+
   @override
   Widget build(BuildContext context) => Card(
         key: const Key('bridge_board'),
         color: const Color(0xFFE6F1E8),
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              BridgeSeatPanel(
-                seat: Seat.north, view: view, copy: copy,
-                actionsPaused: actionsPaused, onPlayCard: onPlayCard,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // A side-seat half-column cannot hold exposed dummy cards on a
+              // phone. Put current trick on its own row at narrow widths.
+              final compact = constraints.maxWidth < 560;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: BridgeSeatPanel(
-                      seat: Seat.west, view: view, copy: copy,
-                      actionsPaused: actionsPaused, onPlayCard: onPlayCard,
+                  _seat(Seat.north),
+                  if (compact) ...[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: _seat(Seat.west)),
+                        const SizedBox(width: 8),
+                        Expanded(child: _seat(Seat.east)),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    flex: 2,
-                    child: BridgeCurrentTrick(view: view, copy: copy),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: BridgeSeatPanel(
-                      seat: Seat.east, view: view, copy: copy,
-                      actionsPaused: actionsPaused, onPlayCard: onPlayCard,
+                    BridgeCurrentTrick(view: view, copy: copy),
+                  ] else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: _seat(Seat.west)),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 2,
+                          child: BridgeCurrentTrick(view: view, copy: copy),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(child: _seat(Seat.east)),
+                      ],
                     ),
-                  ),
+                  _seat(Seat.south),
                 ],
-              ),
-              BridgeSeatPanel(
-                seat: Seat.south, view: view, copy: copy,
-                actionsPaused: actionsPaused, onPlayCard: onPlayCard,
-              ),
-            ],
+              );
+            },
           ),
         ),
       );
@@ -115,15 +126,30 @@ class BridgeCurrentTrick extends StatelessWidget {
   final AppCopy copy;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => Padding(
+        key: const Key('current_trick'),
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            Text(copy.t('currentTrick')),
+            Text(copy.t('currentTrick'),
+                style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
-            for (final play in view.currentTrick)
-              Text('${play.handOwner.letter}: ${bridgeCardText(play.card)}'),
-            if (view.currentTrick.isEmpty) Text(copy.t('notYet')),
+            if (view.currentTrick.isEmpty)
+              Text(copy.t('notYet'))
+            else
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 6,
+                runSpacing: 4,
+                children: [
+                  for (final play in view.currentTrick)
+                    Chip(
+                      label: Text(
+                        '${play.handOwner.letter}: ${bridgeCardText(play.card)}',
+                      ),
+                    ),
+                ],
+              ),
           ],
         ),
       );
@@ -163,11 +189,14 @@ class BridgeSeatPanel extends StatelessWidget {
       child: Column(
         children: [
           Text(copy.seat(seat.letter),
+              maxLines: 2, textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontWeight: FontWeight.w600)),
           if (seat == view.viewer)
             Text(copy.t('yourSeat'))
           else if (!hasDummyCards)
-            Text(copy.remaining(view.remainingCards[seat] ?? 0)),
+            Text(copy.remaining(view.remainingCards[seat] ?? 0),
+                textAlign: TextAlign.center),
           if (hasDummyCards && seat != view.viewer) ...[
             Text(copy.t('dummy'), key: const Key('dummy_revealed')),
             Wrap(
