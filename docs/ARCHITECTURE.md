@@ -59,6 +59,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - browser_ben_test.dart selects actual BEN mode through the visible dropdown, injects an actual BenBotPolicy backed by BenHttpTransport (route-only counting wrapper), drives a complete 52/13 human-North game and checks non-mock success counts for /bid, /lead, /play.
 - Browser network/CORS and genuine asynchronous I/O are additional failure surfaces not proven by native Dart CLI tests or Demo Chrome tests. Do not log BEN private hand query URLs.
 
+## M2-F08/F09 — Android device and robot declarer
+- M2-F08 uses reactivecircus Android emulator runner API 35 x86_64 and the native integration_test driver for Flutter Android click-level smoke test; separate from browser and BEN AI inference.
+- M2-F09 wraps genuine BenBotPolicy in an audit observer and verifies actual robot declarer acts for public Dummy with 13 CardAction actor/handOwner checks, using real BEN Python + Flutter Chrome.
+- Genuine /lead route is not required for the robot in M2-F09: East, a human defender, leads the first trick.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.

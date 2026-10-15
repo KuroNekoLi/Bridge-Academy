@@ -1,4 +1,4 @@
-name: BEN Flutter Chrome Real E2E (M2-F07)
+name: BEN Flutter Chrome Real E2E (M2-F07/F09)
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - "apps/bridge_academy_flutter/lib/**"
       - "apps/bridge_academy_flutter/integration_test/browser_ben_test.dart"
+      - "apps/bridge_academy_flutter/integration_test/browser_ben_declarer_test.dart"
       - "packages/bridge_ben_adapter/lib/**"
       - "packages/bridge_core/lib/**"
       - ".github/workflows/ben-flutter-browser.yml"
@@ -125,6 +126,14 @@ jobs:
           flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/browser_ben_test.dart \
+            -d web-server --browser-name=chrome \
+            --dart-define=BEN_BASE_URL=http://127.0.0.1:8085
+      - name: Real BEN declarer controls Dummy through Chrome UI
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/browser_ben_declarer_test.dart \
             -d web-server --browser-name=chrome \
             --dart-define=BEN_BASE_URL=http://127.0.0.1:8085
       - name: Sanitized diagnostics on failure

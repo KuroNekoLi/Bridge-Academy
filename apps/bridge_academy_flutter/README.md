@@ -56,6 +56,11 @@ acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
 - Run through GitHub Actions workflow .github/workflows/ben-flutter-browser.yml, or install pinned BEN plus ChromeDriver locally and run browser_ben_test.dart. CI [#38681913862 SUCCESS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862) proves a fixed-deal Flutter Chrome UI game against actual BEN, with 52/13 and all three BEN HTTP routes. Full evidence/limits: docs/m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md.
 - The test uses an artificial 3NT opening with reduced BEN PIMC/simulation parameters; success does not establish production AI quality or device UX.
 
+## M2-F08/F09 device and robot declarer QA
+- Native Android API 35 emulator job: .github/workflows/flutter-android-emulator.yml. Test: integration_test/android_table_test.dart. It uses labeled Demo Bot only.
+- True BEN robot declarer Chrome job: .github/workflows/ben-flutter-browser.yml. Test: integration_test/browser_ben_declarer_test.dart, executed after M2-F07 live model test. Never substitute Demo or simulated AI.
+- M2-F08 and F09 each have separate Traditional Chinese lessons and acceptance reports under docs/learning/features and docs/m2.
+
 ## Trust boundary
 
 UI gesture -> BridgeSession -> SinglePlayerCoordinator -> BridgeGame.apply ->

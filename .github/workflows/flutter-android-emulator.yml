@@ -1,0 +1,52 @@
+name: Flutter Android Emulator QA (M2-F08)
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/bridge_academy_flutter/lib/**"
+      - "apps/bridge_academy_flutter/integration_test/android_table_test.dart"
+      - "apps/bridge_academy_flutter/pubspec.yaml"
+      - ".github/workflows/flutter-android-emulator.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-ui:
+    name: Android API 35 x86_64 device UI
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate native Android host and resolve packages
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          flutter create --platforms=android --project-name=bridge_academy_flutter .
+          flutter pub get
+          flutter doctor -v
+      - name: Enable KVM for emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Execute genuine Android emulator UI interaction
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          cores: 2
+          ram-size: 4096M
+          disable-animations: true
+          emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: |
+            cd apps/bridge_academy_flutter
+            flutter devices
+            flutter drive --driver=test_driver/integration_test.dart --target=integration_test/android_table_test.dart -d emulator-5554
+
