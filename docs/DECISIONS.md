@@ -50,5 +50,8 @@ M2-F07 must use pinned upstream BEN on localhost with matching actual ChromeDriv
 ## ADR-016 — M2-F10 separate deterministic fixtures from fresh local practice (2026-10-15)
 **ACCEPTED FOR SINGLE-PLAYER M2 ENGINEERING:** Keep the original training deal as the default to preserve reproducible benchmarks and true BEN integration tests. Offer explicitly selected fresh local deals via pure-Dart shuffled Deal; test random behavior with injected freshDealFactory and fixed seeds. Exact replay requires PBN, not only a seed. Do not expose raw four-hand deals through Flutter PlayerView or claim client-owned randomness ensures multiplayer fairness.
 
+## ADR-017 — M2-F11 Replay from canonical events, filtered to PlayerView (2026-10-15)
+**ACCEPTED FOR M2 IMPLEMENTATION:** No replay access before terminal state; construct historical player snapshots using BridgeGame.apply from the private starting Deal and authoritative GameEvent log, cross-check version/fingerprint/NS score. Return only immutable frames with seat-authorized PlayerView and publicly played action (never GameState, unfiltered GameTranscript, or full PBN). Flutter replay is read-only and limited to the current completed deal, without persistence, undo, DDS, or BEN re-evaluation.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

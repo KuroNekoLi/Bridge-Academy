@@ -84,6 +84,7 @@ class _BridgeTableState extends State<BridgeTable> {
   BoardMode _selectedBoard = BoardMode.training;
   int _bidLevel = 1;
   Strain _bidStrain = Strain.notrump;
+  int? _replayIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -115,11 +116,14 @@ class _BridgeTableState extends State<BridgeTable> {
                       key: const Key('new_game'),
                       onPressed: session.busy
                           ? null
-                          : () => session.newGame(
-                              humanSeat: _selectedSeat,
-                              mode: _selectedMode,
-                              boardMode: _selectedBoard,
-                            ),
+                          : () {
+                              setState(() => _replayIndex = null);
+                              return session.newGame(
+                                humanSeat: _selectedSeat,
+                                mode: _selectedMode,
+                                boardMode: _selectedBoard,
+                              );
+                            },
                       icon: const Icon(Icons.refresh),
                       label: Text(session.started
                           ? copy.t('restart')
@@ -176,8 +180,11 @@ class _BridgeTableState extends State<BridgeTable> {
               const SizedBox(height: 8),
               if (!session.finished)
                 _humanControls(view, session, copy)
-              else
+              else ...[
                 _finishCard(view, copy),
+                const SizedBox(height: 8),
+                _replayPanel(session, copy),
+              ],
             ],
               ],
             ),
@@ -489,6 +496,111 @@ class _BridgeTableState extends State<BridgeTable> {
       );
     }
     return const SizedBox.shrink();
+  }
+
+  /// Replay uses read-only PlayerView snapshots, never the live action UI.
+  Widget _replayPanel(BridgeSession session, AppCopy copy) {
+    final replay = session.completedReplay;
+    if (replay == null) return const SizedBox.shrink();
+    final index = (_replayIndex ?? replay.lastIndex)
+        .clamp(0, replay.lastIndex);
+    final frame = replay.frames[index];
+    final view = frame.view;
+    final action = frame.action;
+    String eventLabel;
+    if (action is CallAction) {
+      eventLabel = '${copy.seat(action.actor.letter)}: ${action.call.code}';
+    } else if (action is CardAction) {
+      eventLabel = '${copy.seat(action.handOwner.letter)}: '
+          '${_cardText(action.card)}';
+      if (action.actor != action.handOwner) {
+        eventLabel = '$eventLabel (${copy.t('replayBy')}: '
+            '${copy.seat(action.actor.letter)})';
+      }
+    } else {
+      eventLabel = copy.t('replayStart');
+    }
+
+    return Card(
+      key: const Key('replay_panel'),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(copy.t('replayTitle'),
+                style: Theme.of(context).textTheme.titleMedium),
+            Text(copy.replayProgress(index, replay.lastIndex),
+                key: const Key('replay_progress')),
+            const SizedBox(height: 6),
+            Text(eventLabel, key: const Key('replay_event')),
+            Text(copy.trickCount(view.completedTricks.length)),
+            Text(copy.contract(view.contract?.label ?? copy.t('notYet'))),
+            if (view.nsScore != null)
+              Text(copy.score(view.nsScore!)),
+            if (view.currentTrick.isNotEmpty) ...[
+              Text(copy.t('currentTrick')),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final play in view.currentTrick)
+                    Text('${play.handOwner.letter}: '
+                        '${_cardText(play.card)}'),
+                ],
+              ),
+            ],
+            if (view.completedTricks.isNotEmpty)
+              Text(copy.replayWinner(
+                  view.completedTricks.last.winner.letter)),
+            const SizedBox(height: 8),
+            for (final seat in Seat.values)
+              Text('${copy.seat(seat.letter)}: '
+                  '${copy.remaining(view.remainingCards[seat] ?? 0)}'),
+            if (view.ownCards.isNotEmpty) ...[
+              Text(copy.t('cards')),
+              Wrap(spacing: 6, children: [
+                for (final card in view.ownCards)
+                  Text(_cardText(card)),
+              ]),
+            ],
+            if (view.dummyCards != null && view.dummyCards!.isNotEmpty) ...[
+              Text(copy.t('dummy')),
+              Wrap(spacing: 6, children: [
+                for (final card in view.dummyCards!)
+                  Text(_cardText(card)),
+              ]),
+            ],
+            const SizedBox(height: 8),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              OutlinedButton(
+                key: const Key('replay_first'),
+                onPressed: index == 0 ? null
+                    : () => setState(() => _replayIndex = 0),
+                child: Text(copy.t('replayFirst')),
+              ),
+              OutlinedButton(
+                key: const Key('replay_previous'),
+                onPressed: index == 0 ? null
+                    : () => setState(() => _replayIndex = index - 1),
+                child: Text(copy.t('replayPrevious')),
+              ),
+              OutlinedButton(
+                key: const Key('replay_next'),
+                onPressed: index == replay.lastIndex ? null
+                    : () => setState(() => _replayIndex = index + 1),
+                child: Text(copy.t('replayNext')),
+              ),
+              OutlinedButton(
+                key: const Key('replay_last'),
+                onPressed: index == replay.lastIndex ? null
+                    : () => setState(() => _replayIndex = replay.lastIndex),
+                child: Text(copy.t('replayLast')),
+              ),
+            ]),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _finishCard(PlayerView view, AppCopy copy) => Card(

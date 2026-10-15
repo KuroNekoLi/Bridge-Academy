@@ -38,6 +38,7 @@ class BridgeSession extends ChangeNotifier {
   bool get started => _coordinator != null;
   bool get finished => _coordinator?.finished ?? false;
   PlayerView? get view => _coordinator?.humanView;
+  CompletedReplay? get completedReplay => _coordinator?.completedReplay;
   OpponentMode get mode => _mode;
   BoardMode get boardMode => _boardMode;
   Seat get humanSeat => _humanSeat;

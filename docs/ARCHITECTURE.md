@@ -69,6 +69,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - BridgeSession defaults to the historic fixed deal; the explicit BoardMode.fresh opt-in supplies a new shuffled local deal or test-injected deterministic factory; BEN mode remains orthogonal.
 - Only PlayerView flows to the UI. Exact cross-runtime replay uses an explicit PBN rather than a seed alone; neither seed nor raw four-hand PBN appears on an active player's screen.
 
+## M2-F11 — finished-game event replay and UI boundary
+- SinglePlayerCoordinator only exposes CompletedReplay when terminal; every snapshot is PlayerView.forSeat from a BridgeGame.apply replay, not GameTranscript.encode, and verifies terminal fingerprint/score.
+- BridgeSession forwards only filtered completed frames; Flutter read-only navigation steps through actual chronology, public contract/trick/winner/score and own/dummy visible information.
+- A new game discards the old in-memory replay. No persistent history, export or full-hand reveal is implied.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.

@@ -15,6 +15,10 @@ class AppCopy {
   String formatTurn(String? code) => code == null
       ? t('noTurn')
       : '${t('turn')}: ${seat(code)}';
+  String replayProgress(int index, int total) =>
+      '${t('replayStep')}: $index / $total';
+  String replayWinner(String seatCode) =>
+      '${t('replayTrickWinner')}: ${seat(seatCode)}';
   String remaining(int count) => '${t('remaining')}: $count';
   String trickCount(int count) => '${t('tricks')}: $count / 13';
   String score(int score) => "${t('nsScore')}: ${score > 0 ? '+' : ''}$score";
@@ -64,6 +68,15 @@ class AppCopy {
     'remaining': ['剩餘張數', 'Cards remaining'],
     'tricks': ['已完成墩數', 'Completed tricks'],
     'currentTrick': ['本墩出牌', 'Current trick'],
+    'replayTitle': ['牌局歷史回放', 'Deal replay'],
+    'replayStep': ['事件步驟', 'Event step'],
+    'replayStart': ['牌局開始（尚未叫牌）', 'Deal started (before auction)'],
+    'replayBy': ['操作者', 'Actor'],
+    'replayTrickWinner': ['上一墩贏家', 'Last trick winner'],
+    'replayFirst': ['第一步', 'First'],
+    'replayPrevious': ['上一步', 'Previous'],
+    'replayNext': ['下一步', 'Next'],
+    'replayLast': ['最後一步', 'Last'],
     'nsScore': ['南北方分數', 'North–South score'],
     'end': ['牌局結算', 'Deal result'],
     'passOut': ['四家 Pass Out，0 分', 'Four passes: Pass Out, 0 points'],

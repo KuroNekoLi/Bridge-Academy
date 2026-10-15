@@ -64,6 +64,10 @@ acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
 ## Fixed vs fresh board choice (M2-F10)
 The deal source selector defaults to the existing synthetic training deal for repeatable QA. Select Fresh shuffled deal for a new local practice board; it changes cards but not the explicit Demo vs BEN opponent choice. Each fresh local board has 52 unique cards and 13 cards per seat. This is not a production anti-cheat dealer or a persistence/replay implementation. [Acceptance](../../docs/m2/M2_F10_SHUFFLED_DEALS_ACCEPTANCE.md), [Lesson](../../docs/learning/features/M2_F10_SHUFFLED_DEALS.md).
 
+## M2-F11 terminal deal replay
+- Once the current game finishes, inspect chronological calls, individual cards, trick winners and final score with First/Previous/Next/Last. Replay is strictly read-only and reuses Bridge Core event application. Only authorized PlayerView frames reach Flutter; no full-hand PBN or opponent private cards are sent to the UI.
+- Pass Out is replayed as four chronological Pass actions. Current-game replay disappears on restart; persistence/export are future features. [Acceptance](../../docs/m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md), [Lesson](../../docs/learning/features/M2_F11_FINISHED_REPLAY.md).
+
 ## Trust boundary
 
 UI gesture -> BridgeSession -> SinglePlayerCoordinator -> BridgeGame.apply ->

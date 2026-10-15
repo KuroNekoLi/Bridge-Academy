@@ -32,6 +32,24 @@ class DeterministicTrainingBot implements BotPolicy {
   }
 }
 
+/// A historical snapshot after replaying exactly one canonical event.
+/// This is filtered through PlayerView and has no access to full Deal/PBN.
+class ReplayFrame {
+  const ReplayFrame(this.view, this.action);
+  final PlayerView view;
+  final GameAction? action;
+}
+
+/// Immutable, player-safe in-memory replay; created only for terminal games.
+class CompletedReplay {
+  CompletedReplay(Iterable<ReplayFrame> frames, this.historyFingerprint)
+      : frames = List.unmodifiable(frames);
+
+  final List<ReplayFrame> frames;
+  final String historyFingerprint;
+  int get lastIndex => frames.length - 1;
+}
+
 /// M2 local single-player authority: one human seat and three bot-controlled
 /// seats. No public unrestricted getter for the privileged GameState.
 class SinglePlayerCoordinator {
@@ -54,6 +72,33 @@ class SinglePlayerCoordinator {
 
   /// Only the authorized human seat is exposed, not an arbitrary Seat.
   PlayerView get humanView => PlayerView.forSeat(_state, humanSeat);
+
+  /// Rebuilds every event using BridgeGame.apply, which is the same authority
+  /// as live play. Never return GameState/GameTranscript to Flutter.
+  /// During an unfinished deal even the replay prefix is inaccessible.
+  CompletedReplay? get completedReplay {
+    if (!_state.isFinished) return null;
+    final frames = <ReplayFrame>[];
+    var history = GameState.start(
+      _state.deal, _state.dealer, _state.vulnerability,
+    );
+    frames.add(ReplayFrame(PlayerView.forSeat(history, humanSeat), null));
+    for (final event in _state.events) {
+      history = BridgeGame.apply(history, event.action);
+      if (history.version != event.version) {
+        throw const RuleViolation('Replay event version mismatch');
+      }
+      frames.add(ReplayFrame(
+        PlayerView.forSeat(history, humanSeat), event.action,
+      ));
+    }
+    if (!history.isFinished ||
+        history.historyFingerprint != _state.historyFingerprint ||
+        history.nsScore != _state.nsScore) {
+      throw const RuleViolation('Replay does not match final result');
+    }
+    return CompletedReplay(frames, history.historyFingerprint);
+  }
 
   /// Optimistic concurrency rejects duplicate and stale human interactions.
   void submitHuman(GameAction action, {required int expectedVersion}) {
