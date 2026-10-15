@@ -1,6 +1,6 @@
 # M2-F04 — Real BEN HTTP Acceptance
 
-Status 2026-10-15: **FIRST REAL BEN GAME PASS**. A second real game testing BEN-controlled declarer/dummy is added and awaiting separate execution proof.
+Status 2026-10-15: **GO for two fixed, real BEN + Dart integration games**, including BEN declarer controlling Dummy. True BEN server and native model were used; this is not a production/M2 overall GO.
 
 ## BEN provenance
 
@@ -33,11 +33,16 @@ PIMC disabled for declarer, defender and discarding, BBA-dependent paths disable
 - Dart full-deal execution elapsed 8,255 ms with PIMC disabled/reduced sampling. Not BEN default SLA or performance guarantee.
 - **Caveat:** North was controlled by deterministic human fixture, so this test verified live BEN opponents but not robot declarer controlling dummy.
 
-## Real run 2 — BEN robot declarer and dummy (pending)
+## Real run 2 — BEN robot declarer and dummy (PASS)
 
 - Executable: packages/bridge_ben_adapter/bin/live_ben_dummy_smoke.dart, separate full board with human East defender and BEN controlling N/S and W.
-- Specific gate: at least one true BEN /play proposal with declarer Actor and Dummy Hand Owner, then full 52/13 completion. No fallback.
-- **Status: NOT VERIFIED** until fresh GitHub Actions produces an actual passing result.
+- GitHub Actions: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38676615739 (workflow code commit 3258da785c2675f0fc26d6ffc69877f6e1e610b9). Status: SUCCESS.
+- Real BEN algorithm performed auction: 1NT, PASS, 3NT, PASS, PASS, PASS. Contract **3NT North**, final **NS +460**, 13 complete tricks/52 cards.
+- Real HTTP calls: /bid = 4, /play = 39. No mock, no alternative Bot. The opening lead was performed by deterministic Human East in this scenario, so /lead is correctly 0 here; previous real run proves the /lead endpoint.
+- **BEN-controlled declarer performed 13 Dummy hand turns**, with checked Actor = N (declarer), Hand Owner = S (dummy). This specifically verifies the hard API edge case not covered by the first run.
+- Dart second-game execution elapsed 10,274 ms under reduced sampling/PIMC disabled; not benchmark for defaults.
+- Full native workflow also reran the first game: 6NT North, 13/52, NS −250; /bid 4 /lead 1 /play 25, elapsed 5,960 ms in this run.
+- Result: **M2-F04 fixed-board BEN integration gate GO**, not all-gameplay/strategy-production acceptance.
 
 ## Contract test evidence
 
