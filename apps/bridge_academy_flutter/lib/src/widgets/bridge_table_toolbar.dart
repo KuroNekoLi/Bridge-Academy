@@ -1,4 +1,4 @@
-import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
