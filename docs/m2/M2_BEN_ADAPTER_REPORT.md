@@ -1,6 +1,6 @@
 # M2-F03 — BEN Robot Adapter Verification Report
 
-**Status at authoring:** implementation present, CI not yet executed. Real BEN integration NOT RUN in this conversation. Previously reported POC-001/002 runs are NOT proof this adapter works against the live server.
+**Status as of 2026-10-15:** BEN adapter **CONTRACT VERIFIED**, true BEN **LIVE INTEGRATION NOT RUN** for this specific adapter. Earlier POC-001/002 live BEN results belong to different code and cannot substitute for this test. Previously reported POC-001/002 runs are NOT proof this adapter works against the live server.
 
 ## Sources and version
 BEN upstream source: https://github.com/lorserker/ben/commit/72653ec1b5c17116faea229e9b975ea5622aa1f7 (2026-10-11 commit, checked 2026-10-15).
@@ -26,7 +26,7 @@ dart test --reporter expanded
 
 Contract tests cover /bid /lead /play, Dummy actor/handOwner, auction P-X-XX, vuln NS/EW/Both, public played history, private hand reconstruction, illegal proposals, malformed bid/card, injected HTTP 503, malformed JSON and timeout.
 
-**GitHub Actions result:** NOT RUN at initial creation — record actual CI URL, commit and test count after execution.
+**GitHub Actions contract result:** [BEN Adapter Contract CI #38675258016](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38675258016), commit 35f5d2ddb2ff9781547f415bd1047f940e41c73a, Dart SDK 3.13.5: dart pub get PASS, dart analyze --fatal-infos **No issues found**, dart test **13/13 PASS**. All tests explicitly use fake response transport/MockClient; this is not a BEN ML verification. [Feature Learning Gate #38675286627](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38675286627): PASS.
 **True BEN service:** NOT RUN for this adapter; POC-002 Work runs are separate evidence.
 
 ## Important integration caveats
