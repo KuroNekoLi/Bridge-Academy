@@ -5,7 +5,6 @@ import 'package:bridge_academy_flutter/src/secure_session_persistence.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
