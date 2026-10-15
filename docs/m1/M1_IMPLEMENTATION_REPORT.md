@@ -1,6 +1,16 @@
 # M1 — Bridge Core Implementation
 
-Status: IMPLEMENTED, VALIDATION PENDING until CI runs successfully on PR commit. Authored 2026-10-15.
+Status: IMPLEMENTED; ENGINEERING TEST GATE GO; PR #2 pending merge. Updated 2026-10-15.
+
+## CI evidence
+- Tested code commit: 5833d681442c7dfec4b99c94919875e78ffaaf2d.
+- GitHub Actions: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38671869760
+- Runner: Linux x64, Dart SDK 3.13.5.
+- dart pub get: PASS; dart analyze: PASS; dart test: **30/30 PASS**.
+- One test executes 100 fixed-seed complete non-AI deals with 52 cards, 13 tricks, mixed declarers/vulnerability/strains, scoring and deterministic replay.
+- First CI attempt failed due to an invalid pubspec version range; fixed and rerun.
+- This is NOT a rerun of BEN AI or a claim of production readiness.
+
 
 ## Scope and implementation
 
@@ -22,5 +32,5 @@ Status: IMPLEMENTED, VALIDATION PENDING until CI runs successfully on PR commit.
 
 ## Exit gate
 
-GO only once dart analyze and dart test pass on the exact GitHub commit, scored fixture discrepancies resolved, and the negative legality and privacy boundaries have been reviewed.
+M1 pure-rules executable test gate: PASS at the code commit above. Code review/PR merge remains pending. Privacy filtering (PlayerView), network authority and tournament-law completeness remain future milestones.
 
