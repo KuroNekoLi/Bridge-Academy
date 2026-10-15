@@ -37,8 +37,16 @@ void main() {
     expect(session.view!.auction.length, 4);
     expect(session.view!.nsScore, 0);
     expect(find.byKey(const Key('final_result')), findsOneWidget);
+    expect(find.byKey(const Key('replay_panel')), findsOneWidget);
+    expect(find.text('Event step: 4 / 4'), findsOneWidget);
+    await tapOnDevice(tester, 'replay_first');
+    expect(find.text('Event step: 0 / 4'), findsOneWidget);
+    await tapOnDevice(tester, 'replay_next');
+    expect(find.text('Event step: 1 / 4'), findsOneWidget);
+    await tapOnDevice(tester, 'replay_last');
 
     await tapOnDevice(tester, 'new_game');
+    expect(find.byKey(const Key('replay_panel')), findsNothing);
     expect(session.view!.auction, isEmpty);
     await tapOnDevice(tester, 'make_bid');
     expect(session.view!.phase, Phase.play);

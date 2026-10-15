@@ -3,7 +3,7 @@
 - Feature ID：M2-F11
 - Milestone：M2
 - 類型：Bridge Core 規則重播／Flutter 唯讀 UI
-- 工程狀態：IMPLEMENTED（CI 尚待驗證）
+- 工程狀態：ENGINEERING_VERIFIED（Bridge Core 44/44、Flutter 19/19、Web Build／既有 Chrome 回歸 PASS；新增 Chrome 回放點擊與 Android 原生回放操作仍待 CI）
 - 學習狀態：DELIVERED（尚未實際作答）
 - 原始碼：packages/bridge_core/lib/src/single_player_coordinator.dart、apps/bridge_academy_flutter/lib/src/bridge_session.dart、bridge_app.dart
 - 測試與驗收：packages/bridge_core/test/completed_replay_test.dart、apps/bridge_academy_flutter/test/completed_replay_test.dart、docs/m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md
@@ -44,7 +44,9 @@ SinglePlayerCoordinator 在終局時從原本的 Deal、dealer 與 vulnerability
     flutter test test/completed_replay_test.dart
     flutter analyze
 
-文件建立時為 NOT RUN；通過後需記錄新 Commit 的 GitHub CI、測試數量、回放 52 張／13 墩、Pass Out 四次 PASS 與真 Chrome／Android 的驗收界線。不能拿過往真 BEN 對局成功冒充這次回放 UI 已驗收。
+實測 [Bridge Core #38692682476](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38692682476) 44/44 PASS，完整 Pass Out、52 張／13 墩、回放規則與身份驗證均通過；[Flutter #38692937055](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38692937055) 19/19 PASS、flutter analyze 無問題、Web Build PASS、舊版 Demo Chrome 回歸 PASS。新增的 Chrome 回放 First／Next／Last 與 Android 模擬器觸控測試已寫入測試檔，還需要此次修改後真正跑完 CI 才能宣稱通過。
+
+實際踩到的 Dart/Flutter 問題：onPressed callback 預期回傳 void，直接 return session.newGame() 是回傳 Future<void>，編譯被拒絕；改為在 callback 內呼叫 session.newGame 而不回傳 Future，Flutter 回歸遂成功。專案 Learning Gate 亦要求每次改功能程式，都同步更新這份教材與索引。
 
 ## 練習與自我檢驗
 **思考題：** 在第七墩第二張牌出現錯誤時，為什麼只儲存「第七墩誰贏」仍無法重現 BUG？至少要保存哪些原始事件資訊？
@@ -55,4 +57,3 @@ SinglePlayerCoordinator 在終局時從原本的 Deal、dealer 與 vulnerability
 
 ## 下一步
 未來可以再做跨 App 重啟的歷史儲存和合法 PBN 匯出，但這些都要先確認持久化、終局暗牌揭露、玩家隱私與分享授權。
-
