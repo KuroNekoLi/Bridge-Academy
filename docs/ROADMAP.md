@@ -2,6 +2,12 @@
 
 Status snapshot: 2026-10-15. Each "done" requires executable evidence, not an assertion.
 
+## Product sequencing (separate from this historical CI ledger)
+
+The user approved a complete-playable-product roadmap inspired by 新睿 / BBO / BBO Trainer on 2026-10-15. See [PRD v1](product/BRIDGE_ACADEMY_PRD_V1.md), [Product Delivery Roadmap](product/PRODUCT_DELIVERY_ROADMAP.md), and [official-source competitor benchmark](product/COMPETITOR_BENCHMARK.md).
+
+**Next actionable feature = Phase A1 canonical Board Number / Dealer / Vulnerability;** preserve documented M1/M2 engineering history below. Passes on fixed BEN fixtures, Android emulator and 47/47 Core tests do not establish production AI, durable session resume or a release-ready product.
+
 ## POC-001 — real BEN, single fixed deal (reported GO)
 Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /bid, /lead, /play, /autoplay; E declarer at 3NT, 8 tricks, NS +50; all 52 cards and 13 tricks; independent legality and score check. Source = user-supplied Work summary. Raw responses and versions are **not yet imported into this repository**. See docs/poc/POC_001.md.
 

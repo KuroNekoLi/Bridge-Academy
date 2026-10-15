@@ -2,6 +2,8 @@
 
 These are repository-local Agent Skills in the open SKILL.md layout. Open **AGENTS.md** first; choose only the skill for the requested domain. Every skill has YAML frontmatter (name = directory, description = trigger), workflow, safety boundary and evidence required. Skills are task instructions, not a running background multi-agent system or an automatic permission grant.
 
+**Product baseline:** Start with [PRD v1](../docs/product/BRIDGE_ACADEMY_PRD_V1.md), [Delivery Roadmap](../docs/product/PRODUCT_DELIVERY_ROADMAP.md) and [Competitor Benchmark](../docs/product/COMPETITOR_BENCHMARK.md) when choosing the next user-visible slice. Do not derive product completion from the engineering milestones alone.
+
 | Task | Skill |
 | --- | --- |
 | Plan/coordinate constrained milestones | [bridge-orchestrator](bridge-orchestrator/SKILL.md) |

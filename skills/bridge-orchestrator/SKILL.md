@@ -18,6 +18,15 @@ Own **task breakdown, interfaces, sequencing, evidence collection and decision e
 - OSS provenance/rights: bridge-open-source-auditor
 - **Learning deliverables after every functional slice**: bridge-learning-mentor (mandatory cross-cutting collaboration, not a substitute for domain QA)
 
+## Product-sequencing rule (2026-10-15)
+
+For a product-planning or generic "continue development" request, review docs/product/BRIDGE_ACADEMY_PRD_V1.md, docs/product/PRODUCT_DELIVERY_ROADMAP.md and docs/product/COMPETITOR_BENCHMARK.md **before** choosing a slice. Preserve docs/ROADMAP.md as the historical engineering ledger; use PRD player journeys as the ultimate product acceptance gate. Next recommended A1 Board Management, not another replay feature. Separate:
+- technical-domain correctness (actual code and CI)
+- client/real-BEN E2E on specific devices
+- deployed product's durability/privacy/license/release readiness.
+
+Create a minimal execution contract from the earliest unverified P0 dependency. Do not mistake competitor documentation for an implemented feature or a redistribution license. Product spec changes need clear ADR/version updates; feature completion needs code/tests/learning note.
+
 ## Workflow
 1. Establish baseline (accepted ADRs, last proven test gate, exact scope).
 2. Write a compact execution contract: objective, exclusions, interface owners, file changes, acceptance tests and stop conditions.

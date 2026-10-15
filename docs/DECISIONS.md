@@ -53,5 +53,18 @@ M2-F07 must use pinned upstream BEN on localhost with matching actual ChromeDriv
 ## ADR-017 — M2-F11 Replay from canonical events, filtered to PlayerView (2026-10-15)
 **ACCEPTED FOR M2 IMPLEMENTATION:** No replay access before terminal state; construct historical player snapshots using BridgeGame.apply from the private starting Deal and authoritative GameEvent log, cross-check version/fingerprint/NS score. Return only immutable frames with seat-authorized PlayerView and publicly played action (never GameState, unfiltered GameTranscript, or full PBN). Flutter replay is read-only and limited to the current completed deal, without persistence, undo, DDS, or BEN re-evaluation.
 
+## ADR-018 — Product journey first; official-source benchmark and product gate (2026-10-15)
+
+**ACCEPTED PRODUCT DIRECTION.** The user approved evaluating 新睿橋牌 and Bridge Base Online as product benchmarks and writing docs/product/COMPETITOR_BENCHMARK.md, docs/product/BRIDGE_ACADEMY_PRD_V1.md and docs/product/PRODUCT_DELIVERY_ROADMAP.md before advancing functional implementation.
+
+1. Prioritize a **complete single-player one-human + three real AI experience** (play, durable resume, score, history, next board) before tournaments or human multiplayer. Adopt five delivery phases A Playable → B Training → C Analysis → D Async Duplicate → E Live Multiplayer.
+2. Distinguish MODULE ENGINEERING PASS from FEATURE READY and PRODUCT READY; reproducible fixed-board BEN CI is **not** evidence of production AI service or human-usable App.
+3. Product scope and sequencing live in docs/product; existing docs/ROADMAP.md remains historical engineering CI evidence. Bridge rules and security boundaries remain owned by docs/BRIDGE_RULES_BASELINE.md and docs/ARCHITECTURE.md.
+4. Next prioritized slice A1 is canonical 16-board Board Number/Dealer/Vulnerability plus localized presentation, with all existing replay, privacy and score rules preserved.
+5. Competitor functionality informs original design but does **not** authorize source/asset/puzzle/convention copying. BEN GPL, model weights and service privacy remain release blockers until reviewed.
+6. Proposed performance targets, revenue/account requirements, tournament method, actual default AI convention compatibility and launch platform eligibility are **NOT YET APPROVED** as technical facts; they need their own review and observed acceptance.
+
+No Bridge Core gameplay implementation was changed in this documentation-only decision commit.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

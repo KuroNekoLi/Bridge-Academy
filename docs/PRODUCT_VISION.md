@@ -1,5 +1,7 @@
 # Product Vision v0.1
 
+**Current product authority:** [PRD v1](product/BRIDGE_ACADEMY_PRD_V1.md) and [Product Delivery Roadmap](product/PRODUCT_DELIVERY_ROADMAP.md) (approved direction, 2026-10-15). This older v0.1 document is vision/context only. Existing detailed game invariants and accepted ADRs still take precedence for rules.
+
 ## User promise
 Bridge Academy makes contract bridge playable, understandable and eventually competitive for players on mobile and the web. The initial experience is one human + three believable AI players. Expand only after a trustworthy rules engine and repeatable bot integration exist.
 
@@ -31,4 +33,3 @@ Later: teaching lessons → personalized feedback → human tables → duplicate
 
 ## Open product decisions
 Commercial licensing model; default convention card and user customization extent; deployment cost ceiling; whether offline bots are required; native versus Web prioritization; tournament formats and director policy. Record decisions in docs/DECISIONS.md, not in agent prompts.
-
