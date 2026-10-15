@@ -183,9 +183,10 @@ class _BridgeTableState extends State<BridgeTable> {
   }
 
   Widget _modeSelector(AppCopy copy) => SizedBox(
-        width: 245,
+        width: 320,
         child: DropdownButtonFormField<OpponentMode>(
           key: const Key('mode_selector'),
+          isExpanded: true,
           initialValue: _selectedMode,
           decoration: InputDecoration(labelText: copy.t('mode')),
           items: [
@@ -193,6 +194,8 @@ class _BridgeTableState extends State<BridgeTable> {
               DropdownMenuItem(
                 value: mode,
                 child: Text(copy.t(mode == OpponentMode.demo ? 'demo' : 'live'),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                     style: const TextStyle(fontSize: 13)),
               ),
           ],
@@ -203,16 +206,18 @@ class _BridgeTableState extends State<BridgeTable> {
       );
 
   Widget _seatSelector(AppCopy copy) => SizedBox(
-        width: 145,
+        width: 185,
         child: DropdownButtonFormField<Seat>(
           key: const Key('seat_selector'),
+          isExpanded: true,
           initialValue: _selectedSeat,
           decoration: InputDecoration(labelText: copy.t('humanSeat')),
           items: [
             for (final seat in Seat.values)
               DropdownMenuItem(
                 value: seat,
-                child: Text(copy.seat(seat.letter)),
+                child: Text(copy.seat(seat.letter),
+                    overflow: TextOverflow.ellipsis, maxLines: 1),
               ),
           ],
           onChanged: (value) {
