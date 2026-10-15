@@ -7,7 +7,7 @@
 
 - **功能**指有獨立可驗證的行為，例如 Pass Out、PlayerView、BEN 首攻 Adapter、Flutter 叫牌盒。不是每個 class、commit 或註解都要各寫一篇。
 - 同一 PR 有三個獨立功能，就要三篇篇幅適中的 Feature Lesson。純格式修正、設定更新等不必虛構新功能。
-- 與功能同一個 PR 在 docs/learning/features/ 提交教學，更新 INDEX.md，連回實作與測試。
+- 與功能同一個 Commit／直接推送變更集在 docs/learning/features/ 提交教學，更新 INDEX.md，連回實作與測試。
 - 工程 PASS 不等於使用者已學會。只有教學寫完時標記 DELIVERED；使用者實際回答／操作後才能標 PRACTICED 或 MASTERED。
 - 程式註解解釋不直覺的決策；**註解不能取代教學**。也不必為了教學在產品程式碼塞滿教科書式註解。
 
@@ -34,7 +34,7 @@ Agent 先完成工程與測試；完成一個功能時同步寫 Feature Lesson�
 | Room migration | 事件版本與回放 | 需額外確認隱私與完整性 |
 | Android instrumented test | 牌局回放與固定種子測試 | 合法對局 ≠ AI 策略強 |
 
-## PR Review 的教學 Gate
+## Direct-Push 的教學 Gate
 Reviewer 逐一核對 Feature ID → Lesson → Implementation → Test，確認題目可答、解釋與真正原始碼相符、測試狀態沒有造假。CI 會做最低限度的檔案門檻檢查，但一個 PR 中多功能一對一對應仍需人工審查。
 
 另見 [Feature Index](INDEX.md)、AGENTS.md 與 skills/bridge-learning-mentor/SKILL.md。

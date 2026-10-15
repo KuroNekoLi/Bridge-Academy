@@ -20,6 +20,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 - GO gate: independent golden score oracle; no illegal action changes state; complete deterministic replay; no UI/AI/network required.
 
 ## M2 — Flutter single-player MVP
+- M2-F04 native BEN HTTP full-game smoke on Ubuntu 24.04/Python 3.12, fixed Human/BEN board: see docs/m2/M2_F04_REAL_BEN_ACCEPTANCE.md; workflow presence is not proof of live PASS.
 **IN PROGRESS:** M2-F01 PlayerView and M2-F02 SinglePlayerCoordinator are implemented with 40/40 combined Dart tests passing at [CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504); feature PR review remains open. This is **not** BEN-powered MVP or Flutter UI; see docs/m2/M2_FOUNDATION_REPORT.md. Learn While Building: each completed feature has a separate note in docs/learning/features/.
 - Human seat selectable; three AI seats; consistent public/hidden information.
 - M2-F03: first BEN Adapter HTTP + data boundary contract implementation (see docs/m2/M2_BEN_ADAPTER_REPORT.md). A real BEN server integration is still required; do not call mock contract tests a real model acceptance.

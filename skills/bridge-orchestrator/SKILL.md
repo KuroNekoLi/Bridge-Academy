@@ -25,7 +25,7 @@ Own **task breakdown, interfaces, sequencing, evidence collection and decision e
 4. Maintain a dependency graph: M1 rules precede M2 bot UX; real BEN evidence precedes any production performance claim; convention compatibility precedes explanation quality claims.
 5. Route disputed policy choices to the user, but make ordinary engineering defaults reversible and explicit.
 6. Track evidence per task: executed command, environment, versions, seeds/PBN, observed results, limitations.
-7. **When each feature reaches acceptance**, invoke bridge-learning-mentor: assign an Mx-Fxx ID, generate a real-code teaching note following docs/learning/FEATURE_LESSON_TEMPLATE.md, and update docs/learning/INDEX.md in the same PR. A milestone recap does not replace per-feature notes. On completion explain one core idea and offer one learner exercise in Chat.
+7. **When each feature reaches acceptance**, invoke bridge-learning-mentor: assign an Mx-Fxx ID, generate a real-code teaching note following docs/learning/FEATURE_LESSON_TEMPLATE.md, and update docs/learning/INDEX.md in the same direct-push change set. A milestone recap does not replace per-feature notes. On completion explain one core idea and offer one learner exercise in Chat.
 8. Before final status, compare results against engineering AND learning-delivery acceptance; report PASS, FAIL, BLOCKED, NOT RUN separately; hand off unresolved issues. Do not equate documentation delivered with learner mastery.
 9. When a formal new decision is accepted, update docs/DECISIONS.md and the affected source-of-truth doc in the same change.
 
