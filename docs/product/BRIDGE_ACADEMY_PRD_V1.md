@@ -5,6 +5,29 @@
 **Owner:** Product roadmap; implementation follows existing AGENTS.md and Bridge Core invariants.  
 **References:** [Competitor benchmark](COMPETITOR_BENCHMARK.md), [delivery roadmap](PRODUCT_DELIVERY_ROADMAP.md), ../BRIDGE_RULES_BASELINE.md, ../ARCHITECTURE.md, ../DECISIONS.md.
 
+## Product baseline alignment (2026-10-15; additive to v1)
+
+The five destinations remain **打牌／學院／複盤／比賽／我的**, but are staged by working player journeys rather than empty navigation. The **next UX delivery slice is the componentized Bridge Table V2 (A3/P1.3)**, in parallel with remaining P0 security and persistence hardening; a new milestone must not rebuild already verified A1 Board Management.
+
+**Requested 12-item delivery order:** board/dealer/vulnerability (A1, scoped Core/Web verified) → recoverable local game (A2, partly verified; native security and remote exactly-once not yet signed off) → table V2 (A3) → production BEN service (A4) → durable history/redeal (A5) → four-board and declarer practice (B1/B2) → verified convention hints (B3) → **optional early fixed-board daily practice** (B6, P1, *no public rankings*) → DDS postgame (C1) → authored lessons and progress (B4/C3) → async friends (D4) → authoritative live multiplayer (E). These priorities refer to *product work*, not automatic authorization to run device QA.
+
+**Daily challenge distinction:** early P1 local, fixed, reproducible board-of-the-day practice may ship as an unranked exercise. A real cross-player Duplicate contest, MP/IMP result, global leaderboard or friend PK remains **Phase D / P3** and needs an immutable server-held BoardSet, comparable field and anti-cheat policy. If a ranked daily challenge is intended to ship earlier, approve its backend/cost/security scope separately.
+
+**Device QA freeze:** At the owner's request, Android emulator/physical-device UI and E2E runs remain paused until explicit later approval (workflows: `flutter-android-emulator.yml`, `android-rollback-consent.yml`). Keep device acceptance as an **outstanding release gate**, never silently run it nor call the whole MVP ready without it. Flutter/Dart unit, static analysis, Web build and current browser/real-BEN CI may continue under existing policy.
+
+### Table UI V2 decomposition contract
+
+```text
+BridgeTableScreen
+├── BoardHeader (number, dealer, vulnerability, contract)
+├── BridgeTable (four seats, current trick, history, dummy ownership)
+├── PlayerHand (suit grouping, legal-card state, input/keyboard semantics)
+├── BiddingBox (levels, strains, Pass/Double/Redouble, explain-policy link)
+└── TableToolbar (auction, last trick, settings, help)
+```
+
+Widgets render a **seat-filtered immutable PlayerView** and emit typed actions to the session/coordinator; no business-rule/Dealer/Vulnerability computation in UI. Prefer small reusable widgets over further growth of `bridge_app.dart`. Legal call hints come from Bridge Core; conventional meanings require a versioned, supported ConventionProfile; strategy hints require explicit evidence/uncertainty and must not claim BEN follows SAYC or 2/1 without verification.
+
 ## 1. Product thesis
 
 Build a complete contract bridge product: **play → review → learn → improve → compete**. First provide a reliable **single-player one-human + three real BEN opponents** experience in an ordinary deployed application; then add learning and offline analysis; later fair duplicate challenges and fully authoritative multiplayer.
@@ -80,18 +103,19 @@ Player completes a frozen comparable BoardSet under a published scoring method, 
 | FR-013 | Comparable daily board sets and MP/IMP rankings | **P3** | Identical immutable board conditions; proper comparative baseline; server authority |
 | FR-014 | Human rooms, account/seat authorization, WebSocket, reconnect, spectators | **P4** | No unauthorized card disclosure; replay/idempotency/concurrency tests |
 | FR-015 | Portable history/PBN import-export (post-deal, permissioned) | **P1–P2** | PBN round-trip, version and privacy rules, imported untrusted transcript rejects tampering |
+| FR-016 | Optional fixed-seed daily **practice**, unranked | **P1 B6** | Stable local board identifier across users only if distribution identical; no MP/IMP, public leaderboard, false score comparisons or claim of competitive fairness |
 
 ## 5. Current repository snapshot (2026-10-15)
 
 | Slice | Evidence | Product interpretation |
 | --- | --- | --- |
-| Typed Bridge Core + seeded hands | Latest [47/47 Core CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38714671479) | Engineered rules baseline, not product certification |
-| Fixed and random local deal | [M2-F10 report](../m2/M2_F10_SHUFFLED_DEALS_ACCEPTANCE.md) | Deal variation exists but dealer/vul remain fixed in current BridgeSession |
+| Typed Bridge Core, board cycle + seeded hands | [A1 verified Core 51/51](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140398), later [A2 Core 55/55](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38723931963) | BoardDefinition cycle implemented and scoped Core/Web verified; not production sign-off |
+| Fixed/fresh dealing and board management | [A1 acceptance](P1_A1_BOARD_MANAGEMENT_ACCEPTANCE.md) | Dealer/vulnerability now derive from 1-based canonical BoardDefinition (not frozen N/None); fixed teaching PBN remains a special training fixture |
 | Flutter table, locale, Chrome | [M2-F11 report](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md) | Functional prototype; no polished production-ready table |
 | True BEN pinned Python in test env | [M2-F07](../m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md) and [M2-F09](../m2/M2_F09_BEN_DECLARER_UI_ACCEPTANCE.md) | Known fixed PBN E2E succeeds, production AI hosting is absent |
 | Android API 35 emulator UI | [M2-F08 report](../m2/M2_F08_ANDROID_EMULATOR_ACCEPTANCE.md) | Emulator smoke only, not physical Android/iOS |
-| Current-game terminal replay | [M2-F11 report](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md) | **In-memory only**, lost on new session or process death |
-| Persistence/history/auth/online competition | No verified implementation in scoped repo | **NOT IMPLEMENTED / NOT VERIFIED**, never treat as DONE |
+| Completed-board replay | [M2-F11 report](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md) | Replay exists; persistent multi-game history and searchable archive remain to deliver |
+| In-progress checkpoints and encrypted archives | [A2.7 Web/unit scope](P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md), [A2.8 Web browser encryption](P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md), [Flutter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38757222196) | Implemented with scoped CI, but native device/backup, deployment, same-origin/multitab threats, remote idempotency NOT accepted |\n| Durable multi-game history/auth/online competition | No completed end-to-end product gate | **NOT VERIFIED** / not ready for release |
 
 Note: existing docs/ROADMAP.md holds engineering chronology including historical POC/CI caveats; the new product roadmap does not delete or replace that evidence.
 
@@ -104,7 +128,7 @@ Note: existing docs/ROADMAP.md holds engineering chronology including historical
 - **Reliability:** safe AI timeout, bounded retries, no double-apply on reconnect; crash-safe session recovery. Collect anonymized error/failure rates, never raw private PBN.
 - **Performance SLOs (targets, not claims):** engineering proposal median visible bot turnaround <=2 s; p95 <=8 s under selected production BEN settings; 99% completed valid session transitions excluding deliberate disconnects. Measure on target hardware/service before approval and revise targets if economics require.
 - **Accessibility:** scalable type, 320px phone landscape/portrait where appropriate, color-independent legality, touch targets, VoiceOver/TalkBack review. Consider BBO-style rich keyboard navigation later.
-- **Testing:** unit, golden, browser integration, Android emulator, at least one physical Android and iOS test, end-to-end genuine BEN service, fault injection, privacy negative tests.
+- **Testing:** unit, golden, browser integration, genuine BEN service, fault injection and privacy negative tests continue as applicable. **Android emulator and physical Android/iOS UI/E2E testing are deliberately paused until owner approval**; remain mandatory before platform release, not silently waived.
 - **Legal:** review BEN GPL-3.0 license terms, model checkpoints, DDS and assets at pinned SHAs before public launch. REST separation does not automatically settle obligations; document actual delivery model.
 
 ## 7. Product READY gates (not code-only)
