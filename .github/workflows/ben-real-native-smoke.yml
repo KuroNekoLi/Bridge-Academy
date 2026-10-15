@@ -100,6 +100,12 @@ jobs:
         run: |
           dart pub get
           dart run bin/live_ben_smoke.dart
+      - name: Run real BEN declarer and dummy integration
+        env:
+          BEN_BASE_URL: http://127.0.0.1:8085
+          BEN_TIMEOUT_SECONDS: "120"
+        working-directory: packages/bridge_ben_adapter
+        run: dart run bin/live_ben_dummy_smoke.dart
       - name: Report server diagnostics on failure
         if: failure()
         shell: bash
