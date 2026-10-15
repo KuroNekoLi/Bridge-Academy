@@ -31,6 +31,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - AIProvider.propose(view, context, timeout) → Proposal + rawResponseId + providerVersion.
 - AnalysisProvider.analyze(completeDeal, history) → DoubleDummyAnalysis explicitly tagged.
 
+## M2 local foundation (initial implementation)
+- packages/bridge_core/lib/src/player_view.dart builds an explicit per-seat JSON-safe PlayerView; only own hand and exposed dummy cards are included, with public auction/tricks/counts. It is a privileged projector; authorization must be enforced by the coordinator/server.
+- packages/bridge_core/lib/src/single_player_coordinator.dart owns private GameState for one local human + three bots, offers humanView (no unrestricted per-seat getter), applies version-checked human actions and validates BotPolicy proposals through BridgeGame.apply.
+- DeterministicTrainingBot is intentionally **NOT BEN** and has no strategy-strength claim. BEN production adapter must separately prove API mapping and privacy. This local in-process coordinator is not multiplayer server authority.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.
@@ -44,4 +49,3 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - DDS is a double-dummy omniscient oracle, not a fair-play bot.
 - In M4, migrate authority to server; do not trust client state/hash/score.
 - POC RSS ~2.98 GiB and latency numbers are workload/config-specific (PIMC off/reduced sample).
-

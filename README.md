@@ -15,6 +15,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 
 ## Source of truth
 - [Bridge Core implementation](packages/bridge_core/README.md) and [M1 CI report](docs/m1/M1_IMPLEMENTATION_REPORT.md)
+- [M2 single-player foundation](docs/m2/M2_FOUNDATION_REPORT.md): filtered PlayerView and local Coordinator; BEN/Flutter not yet integrated.
 - [Product vision](docs/PRODUCT_VISION.md)
 - [Roadmap and acceptance gates](docs/ROADMAP.md)
 - [Technical architecture](docs/ARCHITECTURE.md)

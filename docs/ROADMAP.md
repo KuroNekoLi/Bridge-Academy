@@ -20,6 +20,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 - GO gate: independent golden score oracle; no illegal action changes state; complete deterministic replay; no UI/AI/network required.
 
 ## M2 — Flutter single-player MVP
+**IN PROGRESS:** M2-F01 PlayerView and M2-F02 SinglePlayerCoordinator are implemented with 40/40 combined Dart tests passing at [CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504); feature PR review remains open. This is **not** BEN-powered MVP or Flutter UI; see docs/m2/M2_FOUNDATION_REPORT.md. Learn While Building: each completed feature has a separate note in docs/learning/features/.
 - Human seat selectable; three AI seats; consistent public/hidden information.
 - AI adapter never executes illegal state transitions; explicit retry/error/fallback policy.
 - Auction, turn, hand, dummy, 13 tricks, Pass Out and score UI; zh-TW/en localized; responsive tablet/mobile.
@@ -42,4 +43,3 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 
 ## Stop conditions
 Block rollout on information leakage, illegal move acceptance, wrong duplicate scoring, unreplayable state, unexplained mismatch between BEN and Bridge Core, unreviewed third-party license obligations or untestable production reliability.
-
