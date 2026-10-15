@@ -1,6 +1,6 @@
 # M2-F06 — Flutter Web browser and responsive QA
 
-**Status (2026-10-15):** Flutter static analysis, 14/14 tests and Web release **PASS**. Real ChromeDriver session started but browser interaction gate has not passed; merged browser-lifecycle rerun is pending.
+**Status 2026-10-15: M2-F06 FLUTTER WEB/CHROME DEMO GO** — real Chrome integration test, 14/14 Flutter Widget/Session/Responsive tests, analysis and web release all passed. True BEN-through-Chrome and native device QA remain NOT RUN.
 
 ## Scope / decisions
 
@@ -29,14 +29,18 @@ Official Flutter documentation: https://docs.flutter.dev/testing/integration-tes
 
 | Gate | Status at authoring | Notes |
 | --- | --- | --- |
-| Flutter static analysis | PASS | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): No issues found |
-| Widget/session tests | PASS 14/14 | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): 320/375/768px cases included |
-| Flutter Web release compile | PASS | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): Built build/web |
-| Real ChromeDriver demo UI test | FAIL on earlier separated-case runner; rerun pending | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): genuine Chrome launched, second browser case raised framework multiple exceptions; latest merged-lifecycle rerun [#38679624664](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679624664) awaiting result |
+| Flutter static analysis | **PASS** | [CI #38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652): No issues found |
+| Widget/session tests | **PASS 14/14** | [CI #38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652), includes 320/375/768px and exposed Dummy |
+| Flutter Web release compile | **PASS** | [CI #38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652): Built build/web |
+| Real ChromeDriver demo UI test | **PASS** | [CI #38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652), real Chrome 154.0.8037.97 + ChromeDriver 154.0.8037.97; all browser interactions passed |
 | True BEN via Chrome UI | NOT RUN | Requires trusted BEN server with CORS and permitted host |
 | Real Android/iOS QA | NOT RUN | Cannot infer from Chrome |
 
-When run, record exact CI run URL, head SHA, complete test totals, screen widths, FAIL/GO, and remaining issues. Do not turn test scripts into PASS evidence.
+**Evidence:** final executed workflow [#38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652), SHA `138838e9681265a9d652012e0b6319be676ad0f3`: both jobs SUCCESS. Flutter 3.47.7 stable, Chrome / ChromeDriver 154.0.8037.97, 14/14 Dart/Flutter tests, no analysis issues, web release built, real Chrome integration PASS.
+
+**Root cause and repair:** a real Chrome click on Dummy card C2 revealed Flutter Web `TextPainter.paint` assertion (`debugSize == size`). The button changed its Text content from `♣2 ✓` to `♣2` when playability changed while its style/paint state was updated. The fix keeps card text geometry constant and uses a separate fixed-space check icon; subsequent real Chrome and 14 responsive/Widget tests passed. Prior CI failures are retained in GitHub history, not overwritten.
+
+**Limit:** Chrome uses explicit Demo mode with DeterministicTrainingBot; no real BEN HTTP was called from Chrome in this run. Earlier native BEN tests are not evidence for this browser gap. No actual Android/iOS physical device QA, accessibility screen-reader validation, app-store acceptance or multi-game randomized testing yet.
 
 ## Follow-up
 

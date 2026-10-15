@@ -30,7 +30,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 - End-to-end seeded golden deals; UX, accessibility and crash/error validation on real target.
 - Performance and hosting benchmark with intended BEN settings (do not extrapolate POC-002 timings).
 
-- M2-F06: additional ChromeDriver real-browser Demo UI integration test plus 320/375/768px responsive tests. Real BEN Chrome/UI and Android/iOS device acceptance remain separate requirements. [Acceptance report](m2/M2_F06_BROWSER_QA_REPORT.md).
+- **M2-F06 REAL CHROME DEMO GO:** [CI #38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652) — Chrome 154 with matched ChromeDriver, actual browser-clicked Pass Out/restart/bid/dummy play; 14/14 Flutter tests at 320/375/768px; Flutter Web release built. Real BEN from Chrome and Android/iOS hardware QA are separate requirements. [Report](m2/M2_F06_BROWSER_QA_REPORT.md).
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.

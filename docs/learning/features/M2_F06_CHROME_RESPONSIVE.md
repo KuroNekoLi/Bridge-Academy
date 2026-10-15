@@ -3,11 +3,11 @@
 - Feature ID：M2-F06
 - Milestone：M2 單機 UI 驗收
 - 類型：Flutter Web Integration Test／Responsive Layout
-- 工程狀態：IMPLEMENTED，CI 尚待實際驗證
+- 工程狀態：ENGINEERING_VERIFIED（Flutter 14/14、Flutter Web Release、真 Chrome Demo UI；BEN Chrome 與裝置 QA 待驗）
 - 學習狀態：DELIVERED；尚未作答
 - 實作：apps/bridge_academy_flutter/lib/src/bridge_app.dart、integration_test/browser_table_test.dart
 - 測試：apps/bridge_academy_flutter/test/responsive_layout_test.dart、.github/workflows/flutter-single-player.yml
-- 驗收：docs/m2/M2_F06_BROWSER_QA_REPORT.md；此文件初稿時瀏覽器 CI NOT RUN
+- 驗收：[GitHub Actions #38680520652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38680520652)、docs/m2/M2_F06_BROWSER_QA_REPORT.md
 
 ## 功能目的與實際情境
 
@@ -17,7 +17,7 @@ M2-F05 的 Widget Test 是 Flutter 模擬繪製環境，未真的啟動 Chrome�
 
 ## 主要程式碼導讀
 
-在 Flutter 畫面內不再將下拉選單寬度直接寫死，而是讓 LayoutBuilder 提供真實可用寬度：
+在 Flutter 畫面內不再將下拉選單寬度直接寫死，而是讓 LayoutBuilder 提供真實可用寬度。另有一個真 Chrome 測試才發現的細節：**合法出牌標記不能透過改變同一段文字的長度來更新**。原本標籤由 `♣2 ✓` 變成 `♣2` 時，在 Flutter Web 的 TextPainter 重繪階段出現 `debugSize == size` 斷言。因此改為固定牌面文字與獨立保留尺寸的勾選 Icon。這是實際 CI 揭露、修正後重測通過的差異：
 
 ~~~dart
 child: LayoutBuilder(
