@@ -12,7 +12,7 @@ We prioritized first-party help and product pages current on 2026-10-15. Officia
 
 | ID | Official source | Claim supported | Research caveat |
 | --- | --- | --- | --- |
-| XR-01 | [新睿橋牌官方功能介紹](https://www.xinruibridge.com.cn/help.jsp) | AI-supported competitions, daily pair tournaments, group/friend PK, replay, replay same deal, double dummy review, bidding hints, chat/social | Product description; detailed service rules and access vary |
+| XR-01 | [新睿橋牌官方功能介紹](https://learn.xinruibridge.com/help.jsp) | AI-supported competitions, daily pair tournaments, group/friend PK, replay, replay same deal, double dummy review, bidding hints, chat/social | Product description; detailed service rules and access vary |
 | XR-02 | [新睿橋牌 App Store 官方介紹](https://apps.apple.com/tw/app/%E6%96%B0%E7%9D%BF%E6%A1%A5%E7%89%8C/id946323876) | One human with three robots, bidding hints, replay, competitions, convention cards/social | Store listing; does not independently establish robot skill |
 | XR-03 | [新睿官方智能社群／教學介紹](https://www.xinruibridge.com/bridge/secjsp/sec_xy.jsp) | Partnership MP/IMP competitions, recorded plays, replay and replay same board | Explanatory publication, not live product QA |
 | BBO-01 | [BBO official practice catalog](https://news.bridgebase.com/about-practice/) | Bidding tables, teaching tables, constrained deals, Bridge Master, Minibridge | Some functions and subscriptions vary |
@@ -22,6 +22,14 @@ We prioritized first-party help and product pages current on 2026-10-15. Officia
 | BBO-05 | [BBO Instant Tournament guide](https://online.bridgebase.com/v2/about_IT.html) | Anytime robot tournament on comparable boards, MP/IMP | Competitive comparison must be grounded in defined peer results |
 | TR-01 | [BBO Team: BBO vs BBO Trainer (2026-05-26)](https://news.bridgebase.com/2026/05/26/bbo-trainer-infos/) | Trainer is a separate practice app: daily challenges, hand analysis, progress tracking, 1v1; BBO focuses on clubs, tournaments and robot/live play | Product positioning, not proof of pedagogy outcomes |
 | BBO-06 | [BBO 2025 Year in Review](https://news.bridgebase.com/2025/12/24/a-look-back-at-2025-on-bbo/) | BBO describes introducing GIBBO as its robot in 2025 | Do not treat historic GIB behavior as current universal robot behavior |
+
+## 2.1 Fresh official verification (2026-10-15)
+
+- [新睿官方操作說明](https://learn.xinruibridge.com/help.jsp) explicitly describes daily pair matches, friend/group PK, bidding hints, replay/retry, double-dummy results and leaderboard comparisons. The same help page discusses convention cards, but some descriptions are historical; **do not claim its older CCBA-only sentence exhaustively describes the live 2026 client**, since the [official current landing page](https://learn.xinruibridge.com/index.jsp) advertises multiple convention-card systems.
+- The specifically dated claim that 新睿 launched an **independent practice room in 2025** with designated-dealer controls was **not independently corroborated by a dated first-party announcement in this review**. Keep the idea as Bridge Academy product inspiration rather than a verified competitor release fact until first-party evidence is recorded.
+- [BBO's main site](https://www.bridgebase.com/) confirms Just Play, Bridge 4, Just Declare and five Bridge Master difficulty levels. [BBO's 2026-05-26 comparison](https://news.bridgebase.com/2026/05/26/bbo-trainer-infos/) describes Trainer as a separate daily-practice/analysis/progress app, including 1v1, not as the tournament service.
+- [BBO's Instant Tournament description](https://online.bridgebase.com/v2/about_IT.html) distinguishes MP from IMP, and describes how results are compared to prior players. **Bridge Academy will not label single-table duplicate points as MP/IMP without a comparison field**.
+- [ACBL Duplicate Laws, Law 2](https://web2.acbl.org/documentLibrary/laws/Law02.pdf) establishes a fixed 16-board dealer/vulnerability pattern. This is a rules source, not a competitor feature.
 
 ## 3. Feature comparison (source-based; not a parity score)
 
