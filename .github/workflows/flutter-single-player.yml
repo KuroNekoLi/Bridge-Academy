@@ -77,3 +77,7 @@ jobs:
             --driver=test_driver/integration_test.dart \
             --target=integration_test/browser_table_test.dart \
             -d web-server --browser-name=chrome
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/browser_secure_checkpoint_test.dart \
+            -d web-server --browser-name=chrome
