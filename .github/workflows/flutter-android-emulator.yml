@@ -34,6 +34,8 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+      - name: Runner disk diagnostics (no private contents)
+        run: df -h "$HOME" /usr/local/lib/android/sdk
       - name: Execute genuine Android emulator UI interaction
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -42,7 +44,10 @@ jobs:
           arch: x86_64
           profile: pixel_5
           cores: 2
-          ram-size: 4096M
+          ram-size: 2048M
+          disk-size: 2048M
+          sdcard-path-or-size: 128M
+          emulator-boot-timeout: 300
           disable-animations: true
           emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           script: |
