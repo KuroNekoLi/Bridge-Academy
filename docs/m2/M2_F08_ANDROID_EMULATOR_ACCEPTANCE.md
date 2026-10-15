@@ -22,3 +22,15 @@ Evidence source: [Android Actions #38685813955](https://github.com/KuroNekoLi/Br
 - [Initial Android CI #38685813955](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38685813955) **FAIL before Flutter device testing**: emulator fatal error during AVD boot: available runner disk 5597.93 MB; default userdata partition required 7372.80 MB. ADB subsequently could not find emulator-5554 until boot timeout. **No Android APK/UI tests ran in that job.**
 - Fix at commit 8638fbe383d176582bc587f2bac2ab70442417b3: set emulator runner disk-size 2048M, SD card 128M and RAM 2048M, plus disk diagnostics, and shorten boot timeout to 300s.
 - [Rerun Android CI #38687000645](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38687000645) — started. Its result is pending; do not mark Android GO before observing the final job conclusion.
+
+## Second actual failure — documented 2026-10-15
+
+[GitHub Actions #38687000645](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38687000645) ended **FAIL** before device UI execution. Despite `disk-size: 2048M` and 128M SD card, Android Emulator logged:
+`FATAL | Not enough space to create userdata partition. Available: 5474.33 MB ... need 7372.80 MB.`
+The config.ini did contain `disk.dataPartition.size=2048M`, but the emulator's effective userdata image requirement remained ~7.4 GB. Repeated ADB "device not found" entries were consequences of the failed boot, **not** app or bridge domain failures.
+
+### Third attempt — reclaim disk before creating AVD
+
+CI commit `3f5495aa5aefe47df18e8610086654f020d454d2`: prior to Android SDK/AVD creation, remove only unrelated preinstalled .NET, Haskell, PowerShell and CodeQL toolchains; preserve Flutter, Android and Java; require >=12 GiB available on /, print before/after disk snapshots. Also explicitly set Android Emulator `-partition-size 2048` in MB as documented by Android's official command-line interface. This addresses the **observed root cause** rather than assuming AVD config alone reduces disk usage.
+
+Third attempt status: **NOT YET VERIFIED**. The earlier failures remain linked; do not infer emulator GO from CI bootstrap or Web tests.
