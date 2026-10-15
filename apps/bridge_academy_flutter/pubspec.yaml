@@ -13,6 +13,7 @@ dependencies:
     path: ../../packages/bridge_core
   bridge_ben_adapter:
     path: ../../packages/bridge_ben_adapter
+  shared_preferences: ^2.5.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

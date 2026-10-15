@@ -69,5 +69,11 @@ No Bridge Core gameplay implementation was changed in this documentation-only de
 ## ADR-019 — Phase A1 board metadata is Domain-owned (2026-10-15)
 **ACCEPTED FOR IMPLEMENTATION (Core/Flutter engineering tests verified).** WBF Duplicate Law 2 defines 1-based Board Numbers, dealer order N/E/S/W and the 16-board vulnerability cycle. A pure-Dart BoardDefinition supplies metadata; BridgeSession passes it to the coordinator, so UI, Bridge Core score and BEN protocol all share the same source of truth. Current game re-deal keeps board number, replaySameBoard preserves physical cards, nextBoard is permitted only for terminal boards and advances sequence. The fixed teaching PBN may repeat with new board metadata only when explicitly chosen as a fixture, never marketed as a fair multi-board tournament. Persistence and server-authoritative competition are future separate gates. No existing legality/scoring reducer rule changed.
 
+## ADR-020 — A2 checkpoint prototype: event validation before trusting local saves (2026-10-15)
+
+**ACCEPTED FOR ENGINEERING PROTOTYPE, NOT PRODUCTION DURABILITY.** Store a versioned event transcript plus board metadata in an injectable local SessionArchiveStore. Validate every restored move with GameTranscript.decode + BridgeGame.apply and compare 1-based BoardDefinition metadata, event version and noncryptographic fingerprint. Commit each player action before bot execution; persist each legal bot event before requesting the next action. If write fails, stop and require explicit retry.
+
+Initial Flutter adapter uses SharedPreferencesAsync only to validate cross-platform restoration. The official library is not for critical data and does not promise fsync/durability, encryption or security against device access. This remains a release blocker until replaced with atomic, encrypted, migration-tested storage and real device kill/relaunch QA. An in-flight BEN HTTP request may be repeated after crash; no remote exactly-once guarantee until backend idempotency exists. Complete four-hand PBN stays in privileged local storage only, never ordinary UI or playing AI.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

@@ -2,6 +2,8 @@ import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/foundation.dart';
 
+import 'session_persistence.dart';
+
 enum OpponentMode { demo, ben }
 enum BoardMode { training, fresh }
 
@@ -14,28 +16,38 @@ class BridgeSession extends ChangeNotifier {
     Deal? fixedDeal,
     BotPolicy Function(OpponentMode mode)? botFactory,
     Deal Function()? freshDealFactory,
+    SessionArchiveStore? archiveStore,
   })  : _fixedDeal = fixedDeal ?? Deal.fromPbn(
           'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
           'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8',
         ),
         _botFactory = botFactory,
-        _freshDealFactory = freshDealFactory;
+        _freshDealFactory = freshDealFactory,
+        _archiveStore = archiveStore;
 
   final Deal _fixedDeal;
   final BotPolicy Function(OpponentMode mode)? _botFactory;
   final Deal Function()? _freshDealFactory;
+  final SessionArchiveStore? _archiveStore;
   SinglePlayerCoordinator? _coordinator;
   Deal? _activeDeal;
   BoardDefinition _board = BoardDefinition.forNumber(1);
   BenHttpTransport? _transport;
 
   bool _busy = false;
+  bool _saving = false;
+  bool _restoring = false;
+  bool _saveFailed = false;
+  bool _restoredFromStorage = false;
   String? _errorCode;
   OpponentMode _mode = OpponentMode.demo;
   BoardMode _boardMode = BoardMode.training;
   Seat _humanSeat = Seat.north;
 
-  bool get busy => _busy;
+  bool get busy => _busy || _saving || _restoring;
+  bool get restoring => _restoring;
+  bool get saveFailed => _saveFailed;
+  bool get restoredFromStorage => _restoredFromStorage;
   String? get errorCode => _errorCode;
   bool get started => _coordinator != null;
   bool get finished => _coordinator?.finished ?? false;
@@ -45,6 +57,87 @@ class BridgeSession extends ChangeNotifier {
   BoardMode get boardMode => _boardMode;
   Seat get humanSeat => _humanSeat;
   BoardDefinition get board => _board;
+
+  /// Rebuilds only a committed event sequence, never an in-flight AI proposal.
+  /// A restored bot turn is retried from its last committed version.
+  Future<bool> restoreSavedGame() async {
+    if (_archiveStore == null || busy || started) return false;
+    _restoring = true;
+    notifyListeners();
+    var restored = false;
+    var advanceBot = false;
+    try {
+      final raw = await _archiveStore.read();
+      if (raw == null) return false;
+      final snapshot = SavedBoardCodec.decode(raw);
+      final mode = OpponentMode.values.byName(snapshot.opponentMode);
+      final boardMode = BoardMode.values.byName(snapshot.boardMode);
+      final bot = _createBot(mode);
+      final coordinator = SinglePlayerCoordinator.restore(
+        trustedStorageArchive: snapshot.transcript,
+        humanSeat: snapshot.humanSeat, bot: bot,
+      );
+      _coordinator = coordinator;
+      _activeDeal = snapshot.state.deal;
+      _board = snapshot.board;
+      _humanSeat = snapshot.humanSeat;
+      _mode = mode;
+      _boardMode = boardMode;
+      _errorCode = null;
+      _restoredFromStorage = true;
+      restored = true;
+      advanceBot = !coordinator.finished && !coordinator.humanView.canAct;
+    } on FormatException {
+      _errorCode = 'errorCorruptSave';
+    } on RuleViolation {
+      _errorCode = 'errorCorruptSave';
+    } on TypeError {
+      _errorCode = 'errorCorruptSave';
+    } on RangeError {
+      _errorCode = 'errorCorruptSave';
+    } catch (_) {
+      _errorCode = 'errorStorage';
+    } finally {
+      _restoring = false;
+      notifyListeners();
+    }
+    if (advanceBot) await _advanceBots();
+    return restored;
+  }
+
+  Future<void> _persist() async {
+    if (_archiveStore == null || _coordinator == null) return;
+    try {
+      await _archiveStore.write(SavedBoardCodec.encode(
+        board: _board, humanSeat: _humanSeat,
+        opponentMode: _mode.name, boardMode: _boardMode.name,
+        coordinator: _coordinator!,
+      ));
+      _saveFailed = false;
+    } catch (_) {
+      _saveFailed = true;
+      rethrow;
+    }
+  }
+
+  /// Retry a failed local write before allowing any more cards or bot calls.
+  Future<void> retrySave() async {
+    if (!_saveFailed || busy) return;
+    _saving = true;
+    notifyListeners();
+    var successful = false;
+    try {
+      await _persist();
+      _errorCode = null;
+      successful = true;
+    } catch (_) {
+      _errorCode = 'errorSave';
+    } finally {
+      _saving = false;
+      notifyListeners();
+    }
+    if (successful) await _advanceBots();
+  }
 
   BotPolicy _createBot(OpponentMode mode) {
     if (_botFactory != null) return _botFactory(mode);
@@ -72,7 +165,7 @@ class BridgeSession extends ChangeNotifier {
     BoardMode boardMode = BoardMode.training,
     int? boardNumber,
   }) async {
-    if (_busy) return;
+    if (busy) return;
     final board = BoardDefinition.forNumber(boardNumber ?? _board.number);
     final deal = boardMode == BoardMode.training
         ? _fixedDeal
@@ -87,7 +180,7 @@ class BridgeSession extends ChangeNotifier {
   /// a new result. The current finished replay is replaced on restart.
   Future<void> replaySameBoard() async {
     final deal = _activeDeal;
-    if (_busy || deal == null || !finished) return;
+    if (busy || deal == null || !finished) return;
     await _beginBoard(
       board: _board, deal: deal, humanSeat: _humanSeat,
       mode: _mode, boardMode: _boardMode,
@@ -97,7 +190,7 @@ class BridgeSession extends ChangeNotifier {
   /// Only a finished board advances the sequential Duplicate board number.
   /// The player can still restart an unfinished board with newGame().
   Future<void> nextBoard() async {
-    if (_busy || !finished) return;
+    if (busy || !finished) return;
     await newGame(
       humanSeat: _humanSeat,
       mode: _mode,
@@ -121,6 +214,8 @@ class BridgeSession extends ChangeNotifier {
     _board = board;
     _activeDeal = deal;
     _errorCode = null;
+    _saveFailed = false;
+    _restoredFromStorage = false;
     _coordinator = SinglePlayerCoordinator(
       deal: deal,
       dealer: board.dealer,
@@ -128,13 +223,24 @@ class BridgeSession extends ChangeNotifier {
       humanSeat: humanSeat,
       bot: _createBot(mode),
     );
+    _saving = true;
     notifyListeners();
-    await _advanceBots();
+    var persisted = false;
+    try {
+      await _persist(); // Commit board before any first automated call.
+      persisted = true;
+    } catch (_) {
+      _errorCode = 'errorSave';
+    } finally {
+      _saving = false;
+      notifyListeners();
+    }
+    if (persisted) await _advanceBots();
   }
 
   Future<void> submitCall(Call call) async {
     final view = this.view;
-    if (_busy || view == null || view.phase != Phase.auction ||
+    if (busy || _saveFailed || view == null || view.phase != Phase.auction ||
         !view.canAct) {
       return;
     }
@@ -143,7 +249,7 @@ class BridgeSession extends ChangeNotifier {
 
   Future<void> submitCard(Card card) async {
     final view = this.view;
-    if (_busy || view == null || view.phase != Phase.play ||
+    if (busy || _saveFailed || view == null || view.phase != Phase.play ||
         !view.canAct || view.turn == null ||
         !view.legalCards.contains(card)) {
       return;
@@ -152,22 +258,30 @@ class BridgeSession extends ChangeNotifier {
   }
 
   Future<void> _submit(GameAction action, int expectedVersion) async {
+    if (busy || _saveFailed) return;
+    _saving = true;
+    notifyListeners();
+    var persisted = false;
     try {
       _coordinator!.submitHuman(action, expectedVersion: expectedVersion);
+      await _persist(); // Durable-intent checkpoint precedes any bot turn.
       _errorCode = null;
-      notifyListeners();
+      persisted = true;
     } on RuleViolation {
       _errorCode = 'errorInvalid';
+    } catch (_) {
+      _errorCode = 'errorSave';
+    } finally {
+      _saving = false;
       notifyListeners();
-      return;
     }
-    await _advanceBots();
+    if (persisted) await _advanceBots();
   }
 
   Future<void> retryBots() => _advanceBots();
 
   Future<void> _advanceBots() async {
-    if (_busy || _coordinator == null || _coordinator!.finished ||
+    if (busy || _saveFailed || _coordinator == null || _coordinator!.finished ||
         _coordinator!.humanView.canAct) {
       return;
     }
@@ -175,11 +289,14 @@ class BridgeSession extends ChangeNotifier {
     _errorCode = null;
     notifyListeners();
     try {
-      await _coordinator!.runBots(maxActions: 100);
+      await _coordinator!.runBots(
+        maxActions: 100,
+        afterCommittedAction: _archiveStore == null ? null : _persist,
+      );
     } catch (_) {
       // HTTP errors can contain credentials/private hands in upstream logs;
       // never show or log raw exception text on the player-facing UI.
-      _errorCode = 'errorBot';
+      _errorCode = _saveFailed ? 'errorSave' : 'errorBot';
     } finally {
       _busy = false;
       notifyListeners();

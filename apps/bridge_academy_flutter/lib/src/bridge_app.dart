@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_copy.dart';
 import 'bridge_session.dart';
+import 'session_persistence.dart';
 
 /// App composition: Flutter sees only PlayerView through BridgeSession.
 class BridgeAcademyApp extends StatefulWidget {
@@ -24,7 +25,13 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
   void initState() {
     super.initState();
     _ownsSession = widget.session == null;
-    _session = widget.session ?? BridgeSession();
+    _session = widget.session ?? BridgeSession(
+      archiveStore: PreferencesSessionArchiveStore(),
+    );
+    if (_ownsSession) {
+      // The session notifies BridgeTable when the saved game is loaded.
+      _session.restoreSavedGame();
+    }
   }
 
   @override
@@ -85,6 +92,30 @@ class _BridgeTableState extends State<BridgeTable> {
   int _bidLevel = 1;
   Strain _bidStrain = Strain.notrump;
   int? _replayIndex;
+  bool _syncedRestore = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.session.addListener(_syncRestoredSelection);
+    _syncRestoredSelection();
+  }
+
+  void _syncRestoredSelection() {
+    if (_syncedRestore || !widget.session.restoredFromStorage) return;
+    _syncedRestore = true;
+    setState(() {
+      _selectedSeat = widget.session.humanSeat;
+      _selectedMode = widget.session.mode;
+      _selectedBoard = widget.session.boardMode;
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.session.removeListener(_syncRestoredSelection);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,12 +171,22 @@ class _BridgeTableState extends State<BridgeTable> {
                   ? 'demoNotice'
                   : 'liveNotice'),
             ),
+            if (session.restoring) ...[
+              const LinearProgressIndicator(key: Key('restore_progress')),
+              Text(copy.t('restoringGame')),
+            ],
+            if (view == null && session.errorCode != null)
+              Text(copy.t(session.errorCode!),
+                  key: const Key('error_message')),
             if (view == null) ...[
               const SizedBox(height: 24),
               Text(copy.t('notStarted'), key: const Key('empty_state')),
             ] else ...[
               const SizedBox(height: 12),
               _status(view, session, copy),
+              if (session.restoredFromStorage)
+                Text(copy.t('restoredGame'),
+                    key: const Key('restored_game')),
               if (session.errorCode != null) ...[
                 const SizedBox(height: 8),
                 Card(
@@ -157,7 +198,14 @@ class _BridgeTableState extends State<BridgeTable> {
                       children: [
                         Text(copy.t(session.errorCode!),
                             key: const Key('error_message')),
-                        if (!session.busy && !view.canAct && !session.finished)
+                        if (session.saveFailed && !session.busy)
+                          TextButton(
+                            key: const Key('retry_save'),
+                            onPressed: session.retrySave,
+                            child: Text(copy.t('retrySave')),
+                          ),
+                        if (!session.saveFailed && !session.busy &&
+                            !view.canAct && !session.finished)
                           TextButton(
                             key: const Key('retry_bot'),
                             onPressed: session.retryBots,

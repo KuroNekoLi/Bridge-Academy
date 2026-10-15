@@ -1,6 +1,7 @@
 import 'game.dart';
 import 'model.dart';
 import 'player_view.dart';
+import 'transcript.dart';
 
 /// A bot receives ONLY the seat-filtered PlayerView. It never receives Deal,
 /// GameState, full PBN or an omniscient double-dummy solver input.
@@ -62,12 +63,32 @@ class SinglePlayerCoordinator {
   }) : _state = GameState.start(deal, dealer, vulnerability),
        _bot = bot;
 
+  SinglePlayerCoordinator._restored(this._state, this.humanSeat, this._bot);
+
+  /// Restores an untrusted local checkpoint only after every historical
+  /// action is reapplied and validated by BridgeGame in GameTranscript.decode.
+  factory SinglePlayerCoordinator.restore({
+    required Map<String, dynamic> trustedStorageArchive,
+    required Seat humanSeat,
+    required BotPolicy bot,
+  }) => SinglePlayerCoordinator._restored(
+    GameTranscript.decode(trustedStorageArchive), humanSeat, bot,
+  );
+
   final Seat humanSeat;
   final BotPolicy _bot;
   GameState _state;
   bool _botRunning = false;
 
   int get version => _state.version;
+
+  /// PRIVILEGED: contains all four hands. Persist only in trusted local
+  /// storage; never send to Flutter widgets, logs or a playing AI.
+  Map<String, Object?> snapshotForTrustedStorage() =>
+      GameTranscript.encode(_state);
+
+  /// A regression hash only, not a cryptographic authentication tag.
+  String get historyFingerprint => _state.historyFingerprint;
   bool get finished => _state.isFinished;
 
   /// Only the authorized human seat is exposed, not an arbitrary Seat.
@@ -114,7 +135,10 @@ class SinglePlayerCoordinator {
 
   /// Drive bot seats until human input is needed or a terminal state is reached.
   /// A misbehaving bot action is rejected by Bridge Core without mutation.
-  Future<int> runBots({int maxActions = 60}) async {
+  Future<int> runBots({
+    int maxActions = 60,
+    Future<void> Function()? afterCommittedAction,
+  }) async {
     if (_botRunning) throw const RuleViolation('Bot runner is already active');
     if (maxActions <= 0) throw ArgumentError.value(maxActions, 'maxActions');
     _botRunning = true;
@@ -136,6 +160,9 @@ class SinglePlayerCoordinator {
         }
         _state = BridgeGame.apply(_state, proposal);
         applied++;
+        // Await persistence before the next AI decision: a process restart
+        // can replay the last committed action without fabricating a move.
+        if (afterCommittedAction != null) await afterCommittedAction();
       }
       return applied;
     } finally {

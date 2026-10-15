@@ -47,6 +47,8 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 
 - **Phase A1 / M2-F12 BOARD MANAGEMENT CORE+WEB VERIFIED:** WBF Law 2 BoardDefinition 16-board cycle, real session dealer/vulnerability, 1-based number, same-board replay vs next-board, localized UI and fake BEN wire contract. [Acceptance](product/P1_A1_BOARD_MANAGEMENT_ACCEPTANCE.md). [Core 51/51 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140398), [BEN Adapter 15/15 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140404), [Flutter 23/23 + Chrome Demo PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719447394). Real BEN / native regression separate.
 
+- **Phase A2 / M2-F13 local persistence prototype:** versioned checkpoint, trusted transcript restore, per-action saves and UI retry on storage failure; [acceptance](product/P1_A2_PERSISTENCE_ACCEPTANCE.md). CI PENDING; critical-data encrypted DB and real process-kill acceptance remain separate release gates.
+
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.
