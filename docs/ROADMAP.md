@@ -51,6 +51,8 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 
 - **A2.3 / M2-F15 ANDROID PROCESS-RESTART QA IMPLEMENTED, CI PENDING:** two distinct Flutter Android drive processes separated by OS force-stop, exact unfinished-game checkpoint and resumed legal play; see [acceptance](product/P1_A2_3_ANDROID_PROCESS_RESTART_ACCEPTANCE.md). No claim of encryption, kill-during-write or BEN idempotency.
 
+- **Phase A2.6 Android rollback-consent process QA (NOT RUN at authoring):** three separate instrumentation launches and two explicit ADB force-stops, pending installed-app storage warning must survive until actual acknowledgement; code [workflow](../.github/workflows/android-rollback-consent.yml), [acceptance](product/P1_A2_6_ANDROID_ROLLBACK_CONSENT_ACCEPTANCE.md). No storage engine changes; production encryption/transactional policy still open.
+
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.

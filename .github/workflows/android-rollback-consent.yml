@@ -1,0 +1,66 @@
+name: Android Rollback Consent Process QA (A2.6)
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/bridge_academy_flutter/integration_test/android_rollback_*.dart"
+      - "apps/bridge_academy_flutter/scripts/android_rollback_consent_e2e.sh"
+      - "apps/bridge_academy_flutter/lib/src/session_persistence.dart"
+      - "apps/bridge_academy_flutter/lib/src/bridge_session.dart"
+      - "apps/bridge_academy_flutter/lib/src/bridge_app.dart"
+      - ".github/workflows/android-rollback-consent.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  three-process-rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Reclaim unused CI SDK space
+        shell: bash
+        run: |
+          set -euo pipefail
+          for directory in /usr/share/dotnet /usr/local/.ghcup /opt/ghc /usr/local/share/powershell /opt/hostedtoolcache/CodeQL; do
+            if [ -d "$directory" ]; then sudo rm -rf -- "$directory"; fi
+          done
+          sudo apt-get clean
+          df -h /
+          available_kb="$(df --output=avail / | tail -n 1 | tr -d ' ')"
+          if [ "$available_kb" -lt 12582912 ]; then
+            echo "Android AVD requires >= 12 GiB free on root" >&2
+            exit 1
+          fi
+      - name: Generate Android host and install Flutter dependencies
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          flutter create --platforms=android --project-name=bridge_academy_flutter .
+          flutter pub get
+      - name: Enable emulator KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Android API 35: three launches with two genuine force-stops
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          cores: 2
+          ram-size: 2048M
+          disk-size: 2048M
+          sdcard-path-or-size: 128M
+          emulator-boot-timeout: 300
+          disable-animations: true
+          emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -partition-size 2048
+          script: cd apps/bridge_academy_flutter && bash scripts/android_rollback_consent_e2e.sh
+

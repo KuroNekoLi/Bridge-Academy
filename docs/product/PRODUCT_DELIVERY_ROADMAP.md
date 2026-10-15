@@ -78,6 +78,10 @@ Implement two-slot best-effort checkpoint storage with a commit pointer and SHA-
 
 **Stop condition:** if user-facing board number disagrees with coordinator dealer/vulnerability, do not ship. If fixed BEN regression requires an exception, it must be an explicit training-mode fixture decision, never silent divergence.
 
+### A2.6 in-flight device acceptance (2026-10-15)
+
+Add a **genuine Android API 35 three-process fault-injection test** after A2.5 durable rollback consent: Process A commits two versions and corrupts latest; Android force-stop; Process B restores previous version and displays warning, blocks action; second Android force-stop; Process C must display same warning until actual acknowledgement UI action. The test must verify no fabricated action, final 4 legal Pass events and saved state. [Acceptance](P1_A2_6_ANDROID_ROLLBACK_CONSENT_ACCEPTANCE.md). **IMPLEMENTED, CI NOT YET RUN AT AUTHORING.** Existing A2.3 two-process test is not a substitute. This does not solve plaintext SharedPreferences, fsync or multi-tab CAS.
+
 ## 4. Phase B — Practice & Teaching (P1–P2; after viable play)
 
 | Slice | Product output | Boundaries / acceptance |
