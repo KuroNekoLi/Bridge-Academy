@@ -2,7 +2,7 @@
 
 - Feature ID：M2-F04
 - Milestone：M2
-- 工程狀態：LIVE_VERIFICATION_PENDING（以實際 GitHub Actions 為準）
+- 工程狀態：第一副真 BEN 完整牌局已 VERIFIED；第二副 BOT 控制 Dummy 的實機案例待驗收
 - 學習狀態：DELIVERED
 - 來源：packages/bridge_ben_adapter/bin/live_ben_smoke.dart
 - 環境：.github/workflows/ben-real-native-smoke.yml
@@ -10,7 +10,7 @@
 
 ## 功能目的與實際情境
 
-M2-F03 的 13 個 MockClient 測試只證明 Adapter 的 HTTP 格式、資訊安全與錯誤處理，不能證明真正的 Python BEN 能完成牌局。M2-F04 使用固定四家合法手牌，讓 North 按固定策略操作，其餘三個座位由實際 BEN 模型透過 HTTP 決策。只有 52 張出牌、13 墩與最終計分都正確，才算完成。
+M2-F03 的 13 個 MockClient 測試只證明 Adapter 的 HTTP 格式、資訊安全與錯誤處理，不能證明真正的 Python BEN 能完成牌局。M2-F04 使用固定四家合法手牌，讓 North 按固定策略操作，其餘座位由實際 BEN 模型透過 HTTP 決策。第一副真實執行已成功：6NT North、13 墩、NS −250，BEN 實際回覆 /bid 四次、/lead 一次、/play 二十五次（CI #38676215575）。另外新增第二副案例，改由 Human East 防守、BEN 擔任莊家並代出 Dummy；第二副結果仍需獨立驗收。
 
 ## 主要程式碼導讀
 
@@ -46,7 +46,7 @@ dart pub get
 BEN_BASE_URL=http://127.0.0.1:8085 dart run bin/live_ben_smoke.dart
 ~~~
 
-也可以使用 GitHub Actions 工作流程 BEN Real Native Smoke。只有真正的 HTTP 服務、真實模型與 52/13 完成才可以標 PASS。若 workflow 無法安裝或啟動 BEN，應記 BLOCKED/FAIL 而非挪用舊 POC 成果。
+也可以使用 GitHub Actions 工作流程 BEN Real Native Smoke。第一副真實 PASS 證據：https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38676215575 。後續包含第二個執行程式 packages/bridge_ben_adapter/bin/live_ben_dummy_smoke.dart，用於檢查 Robot 莊家以 Actor 身分代打明手 Hand Owner。只有真正的 HTTP 服務、真實模型與 52/13 完成才可以標 PASS。若 workflow 無法安裝或啟動 BEN，應記 BLOCKED/FAIL 而非挪用舊 POC 成果。
 
 ## 練習與自我檢驗
 
