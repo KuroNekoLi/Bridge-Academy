@@ -49,6 +49,8 @@ await _records.replaceRecord({
 
 重現指令（在 Flutter App 目錄）：flutter pub get、flutter analyze、flutter test test/secure_checkpoint_test.dart、flutter test、flutter build web --release。
 
+第一輪 CI 發現 Dart nullable map indexing 型別與多餘 import 的 analyzer 問題，已修正並重跑；正式成功證據以後續 CI 為準，不能把前一輪失敗冒稱通過。
+
 初稿建立時 CI **NOT RUN**。新的測試使用 Fake SQL Atomic Store 和 Fake Key Provider，檢查密文沒有 PBN、寫入中斷保留舊版、錯誤金鑰拒絕、回退警告跨重啟、舊存檔遷移及事件驗證。不能把 Mock 資料庫測試當成 Android/iOS 安全儲存實測。
 
 依使用者要求，實際 Android／iOS 裝置驗收將在完整大功能完成後集中執行。Web 仍是既有 SharedPreferences，尚不能宣稱具備正式版的隱藏牌保密性。
