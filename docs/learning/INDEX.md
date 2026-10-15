@@ -20,7 +20,7 @@
 
 | M2-F06 | 真 ChromeDriver 整合測試／小螢幕 Responsive | [M2-F06 Chrome 測試](features/M2_F06_CHROME_RESPONSIVE.md) | [browser test](../../apps/bridge_academy_flutter/integration_test/browser_table_test.dart) · [responsive tests](../../apps/bridge_academy_flutter/test/responsive_layout_test.dart) · [驗收](../m2/M2_F06_BROWSER_QA_REPORT.md) | DELIVERED |
 
-| M2-F07 | Chrome 真 BEN、async I/O 與 Demo 防降級驗收（[真實 BEN CI PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38681913862)） | [M2-F07 真 BEN UI 教學](features/M2_F07_REAL_BEN_CHROME.md) | [browser BEN test](../../apps/bridge_academy_flutter/integration_test/browser_ben_test.dart) · [真實 CI 規則](../../.github/workflows/ben-flutter-browser.yml) · [驗收](../m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md) | DELIVERED |
+| M2-F07 | Chrome 真 BEN、async I/O 與 Demo 防降級驗收（[最新版真 BEN CI PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38682472896)） | [M2-F07 真 BEN UI 教學](features/M2_F07_REAL_BEN_CHROME.md) | [browser BEN test](../../apps/bridge_academy_flutter/integration_test/browser_ben_test.dart) · [真實 CI 規則](../../.github/workflows/ben-flutter-browser.yml) · [驗收](../m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
