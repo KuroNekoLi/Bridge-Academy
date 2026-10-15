@@ -34,13 +34,13 @@ This file is the entry point for Codex, Work and other coding agents. The reposi
 
 ## Mandatory feature-learning gate
 - A feature is user-observable or independently testable behavior with acceptance criteria, **not** each class or commit; routine chores without behavior do not need fabricated lessons.
-- For **each** completed feature: implementation + tests + docs/learning/features/Mx_Fxx_TOPIC.md + one row in docs/learning/INDEX.md **in the same PR**, with a matching mapping in its description. Use bridge-learning-mentor and docs/learning/FEATURE_LESSON_TEMPLATE.md.
+- For **each** completed feature: implementation + tests + docs/learning/features/Mx_Fxx_TOPIC.md + one row in docs/learning/INDEX.md **in the same direct-push change set**. No PR is required unless the user requests one. Use bridge-learning-mentor and docs/learning/FEATURE_LESSON_TEMPLATE.md.
 - Lessons teach the *actual code*, why the design was chosen, an Android/Kotlin analogy when useful, one alternative, pitfalls, accurate executed test evidence and a small learner exercise. Communicate a brief teaching checkpoint after the engineering update, without blocking development on the learner's answer.
 - Distinguish status: ENGINEERING_PASS, LESSON_DELIVERED, PRACTICED, MASTERED; last two require genuine learner participation. If lesson is absent, say FEATURE_DONE_LESSON_PENDING rather than DONE.
-- PR CI may verify file presence and template headings; domain correctness and one-note-per-feature mapping still require human review.
+- Direct-push CI verifies feature lesson presence and template headings on master; domain correctness and one-note-per-feature mapping still require review.
 
 ## Git policy
-Use topic branches and reviewable PRs; do not force-push master or rewrite history. Keep third-party modifications as explicit upstream patches with their own tests. Commit source and documentation, not generated secrets or unverifiable "passed" screenshots. If commands or repository operations are unavailable, report the blocker without claiming the commit exists.
+Approved workflow (2026-10-15): commit and push verified work directly to master, without opening PRs. Do not force-push or rewrite history. Record tests, learning notes and rollback guidance in the commit/report. Keep third-party modifications as explicit upstream patches with their own tests. Commit source and documentation, not generated secrets or unverifiable "passed" screenshots. If commands or repository operations are unavailable, report the blocker without claiming the commit exists.
 
 ## Task output format
 Goal / Feature IDs / Changed files / Design decision / Executed tests + command / Evidence / Lesson links and key idea / One learner question / Known limitations / Next step. A partial test does not imply complete acceptance.
