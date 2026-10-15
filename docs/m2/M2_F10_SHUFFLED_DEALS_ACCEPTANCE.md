@@ -1,6 +1,6 @@
 # M2-F10 — Fixed Training Board or Fresh Shuffled Deal
 
-**Status when authored: IMPLEMENTED / CI NOT RUN.**
+**Status 2026-10-15: M2-F10 BRIDGE CORE + FLUTTER WEB ENGINEERING GO.** Android/native and shuffled-deal BEN quality testing are separate gates.
 
 ## Goal and boundaries
 The Flutter app previously reused one synthetic deal for every game. M2-F10 preserves that training fixture and adds an explicit Fresh shuffled deal choice, independent of Demo/Live BEN opponent mode.
@@ -33,3 +33,11 @@ The user-visible Flutter board never exposes opponents' private cards. The local
 ## Evidence
 INITIAL: NOT RUN. Attach exact GitHub CI SHA and results after actual execution; never substitute existing M2-F07/F09 fixed-board BEN evidence.
 
+
+## Actual CI evidence and regression fixes
+
+- [Bridge Core CI #38690024308](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690024308): **42/42 PASS**, includes two M2-F10 shuffled-deal tests (100 distinct deterministic seeds / 52 unique cards / 13 per seat / PBN round trip and unseeded board invariants). Code SHA 7ee9281c34ccfa5e8b1ed5b3f95a21817d8adae3.
+- [Flutter CI #38690212528](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690212528): **16/16 PASS**, flutter analyze no issues, Flutter Web Release Build PASS and actual Chrome Demo UI PASS. Includes two fresh-deal session/widget tests; SHA 0bf05e6861e0fb43e6c03f71f2aa65727e2a91db.
+- [Feature Learning Gate #38690212485](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690212485): PASS.
+- Earlier Flutter CI #38690024287 caught an overly broad text matcher: two UI labels contained '不是 BEN' after localization update. Regression assertion was narrowed to the actual demo notice and the full suite passed.
+- These successes do **not** demonstrate production anti-cheat, Android native APK, randomized BEN play quality or platform-independent PRNG-seed stability.

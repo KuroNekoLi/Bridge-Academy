@@ -2,7 +2,7 @@
 
 - Feature ID：M2-F10
 - 類型：純 Dart Bridge Core + Flutter Session/UI
-- 工程狀態：IMPLEMENTED（CI 尚未驗收）
+- 工程狀態：ENGINEERING_VERIFIED（Core 42/42、Flutter 16/16、Web Build／Chrome PASS；Android 與正式 BEN 隨機對局另驗）
 - 學習狀態：DELIVERED，尚未練習
 - 程式：packages/bridge_core/lib/src/model.dart、apps/bridge_academy_flutter/lib/src/bridge_session.dart、bridge_app.dart
 - 測試：packages/bridge_core/test/shuffled_deals_test.dart、apps/bridge_academy_flutter/test/board_mode_test.dart
@@ -31,7 +31,7 @@ Flutter 新增 board_mode_selector；畫面仍只經 PlayerView 得到玩家有�
     flutter test test/board_mode_test.dart
     flutter analyze
 
-建立教材當下 CI NOT RUN。通過後將真實 GitHub Actions、commit 與測試數量補入驗收文件。Flutter Chrome、Android Emulator、真 BEN 是獨立的驗收層級。
+實際 [Bridge Core CI #38690024308](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690024308)：42/42 PASS；[Flutter CI #38690212528](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690212528)：16/16 PASS、靜態分析、Web Release Build、真 Chrome Demo UI 全部通過。Android Emulator 與真 BEN 隨機牌仍屬獨立驗收。
 
 ## 練習與自我檢驗
 **思考題：** 為什麼單元測試要注入固定 freshDealFactory，而不是呼叫 Random.secure 然後期待某張指定的 North 手牌？
@@ -39,4 +39,3 @@ Flutter 新增 board_mode_selector；畫面仍只經 PlayerView 得到玩家有�
 **5–15 分鐘小練習：** 將 Deal.shuffled(seed: 42) 輸出為 PBN，透過 Deal.fromPbn 還原，比較 N/E/S/W 的牌集合。
 
 **完成標準：** 能區分新牌隨機來源、固定種子測試、跨版本 PBN 精確重播，以及 PlayerView 的隱藏牌權限。
-

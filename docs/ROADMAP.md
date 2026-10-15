@@ -35,7 +35,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 
 - M2-F08: native Android API 35 emulator installation and genuine Flutter UI actions, fixed Demo Bot; see docs/m2/M2_F08_ANDROID_EMULATOR_ACCEPTANCE.md. Run evidence required for GO.
 - **M2-F09 TRUE BEN ROBOT DECLARER CHROME GO:** [CI #38685977544](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38685977544) PASS, genuine BEN bids North declarer and makes 13 legal South Dummy actions, 13 human East defender actions, 52 cards / 13 tricks; no mocks. See docs/m2/M2_F09_BEN_DECLARER_UI_ACCEPTANCE.md.
-- M2-F10: explicitly selectable fixed training PBN vs fresh shuffled 52-card local practice, deterministic seed tests and PBN round-trip. UI still consumes private PlayerView; M2-F07/F09 BEN fixed-board acceptance stays default. See docs/m2/M2_F10_SHUFFLED_DEALS_ACCEPTANCE.md; implementation requires executed CI for GO.
+- M2-F10: explicitly selectable fixed training PBN vs fresh shuffled 52-card local practice, deterministic seed tests and PBN round-trip. UI still consumes private PlayerView; M2-F07/F09 BEN fixed-board acceptance stays default. [Core 42/42 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690024308), [Flutter 16/16 + Chrome Web PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690212528). Web engineering GO; Android and random BEN quality are separate. See docs/m2/M2_F10_SHUFFLED_DEALS_ACCEPTANCE.md.
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.
