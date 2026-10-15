@@ -3,7 +3,7 @@
 - Feature ID：M2-F22
 - Milestone：A3.2 Bridge Table UI V2（叫牌盒元件抽離）
 - 類型：Flutter UI／單向資料流
-- 工程狀態：IMPLEMENTED，新的 CI 尚待執行
+- 工程狀態：IMPLEMENTED；首輪 CI #38769224189 flutter analyze 偵測到 Bridge Core Card 與 Flutter Material Card 的同名匯入衝突，已修正並等待再次執行
 - 學習狀態：DELIVERED（非 PRACTICED 或 MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/widgets/bridge_bidding_box.dart`、`apps/bridge_academy_flutter/lib/src/bridge_app.dart`
 - 驗收與測試：`apps/bridge_academy_flutter/test/a3_bidding_box_test.dart`（本次 CI 待確認）
@@ -45,7 +45,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ```
 
-新增測試會驗證選擇 2S 可送交 Core，以及開叫時按 X 會被 Core 拒絕、version 仍為 0。實際 CI 結果：NOT RUN / PENDING；不可當成 PASS。Android 裝置／模擬器仍依使用者核准條件暫停。
+新增測試會驗證選擇 2S 可送交 Core，以及開叫時按 X 會被 Core 拒絕、version 仍為 0。首次 CI #38769224189 的 analyze FAIL（ambiguous_import；已使用 hide Card 修正），修正後待重跑；不可當成 PASS。Android 裝置／模擬器仍依使用者核准條件暫停。
 
 ## 練習與自我檢驗
 
