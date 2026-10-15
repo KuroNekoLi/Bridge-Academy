@@ -51,5 +51,5 @@ PIMC disabled for declarer, defender and discarding, BBA-dependent paths disable
 
 ## Release gates
 
-Obtain a live full game first. Then test more deals, natural auctions, Dummy/declarer turns, BEN default settings, model/version/weights, operational resources, retry policy, private hand redaction and third-party licensing before production signoff.
+Two true BEN fixed-board deals (including dummy) have passed. Production signoff still requires broader independent deals and contracts, BEN default settings, concurrency/resource measurements, retry and timeout policy, logging/privacy checks, model/weights provenance and third-party licensing. Flutter/device acceptance is a separate M2 gate.
 
