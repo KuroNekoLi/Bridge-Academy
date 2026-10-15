@@ -42,7 +42,15 @@ void main() {
     // Print only booleans; never print checkpoint/key material.
     // ignore: avoid_print
     print('A2_8_DEFAULT_STORE_DIAGNOSTIC: recordPresent=${encrypted != null}');
-    expect(encrypted, isNotNull);
+    if (encrypted == null) {
+      final legacy = await tester.runAsync(() =>
+          SharedPreferencesAsync().getString(
+              'bridge_academy.local_game.v2.active'));
+      final fromWebStore = await tester.runAsync(secure.read);
+      fail('Encrypted key missing after real browser board. '
+          'Legacy active present: ${legacy != null}; '
+          'encrypted store readable: ${fromWebStore != null}');
+    }
     expect(encrypted, isNot(contains('dealPbn')));
     expect(encrypted, isNot(contains('humanSeat')));
 
