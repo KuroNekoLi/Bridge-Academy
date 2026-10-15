@@ -65,10 +65,10 @@ void main() {
       final first = _checkpoint();
       final second = _checkpoint(humanPassed: true);
       await store.write(first);
-      expect(keys.data[PreferencesSessionArchiveStore.activeKey], 'a');
+      expect((jsonDecode(keys.data[PreferencesSessionArchiveStore.activeKey]!) as Map<String, dynamic>)['slot'], 'a');
       expect(await store.read(), first);
       await store.write(second);
-      expect(keys.data[PreferencesSessionArchiveStore.activeKey], 'b');
+      expect((jsonDecode(keys.data[PreferencesSessionArchiveStore.activeKey]!) as Map<String, dynamic>)['slot'], 'b');
       expect(await store.read(), second);
       expect(keys.data[PreferencesSessionArchiveStore.slotAKey],
           contains('"storeVersion":2'));
@@ -84,7 +84,7 @@ void main() {
       await expectLater(store.write(_checkpoint(humanPassed: true)),
           throwsStateError);
       expect(await store.read(), previous);
-      expect(keys.data[PreferencesSessionArchiveStore.activeKey], 'a');
+      expect((jsonDecode(keys.data[PreferencesSessionArchiveStore.activeKey]!) as Map<String, dynamic>)['slot'], 'a');
     });
 
     test('interruption during marker commit preserves previously marked slot',
@@ -98,7 +98,7 @@ void main() {
           throwsStateError);
       expect(keys.data[PreferencesSessionArchiveStore.slotBKey], isNotNull);
       expect(await store.read(), previous);
-      expect(keys.data[PreferencesSessionArchiveStore.activeKey], 'a');
+      expect((jsonDecode(keys.data[PreferencesSessionArchiveStore.activeKey]!) as Map<String, dynamic>)['slot'], 'a');
     });
 
     test('read-back detects torn write before committing marker',
@@ -122,7 +122,7 @@ void main() {
       await store.write(_checkpoint(humanPassed: true));
       keys.data[PreferencesSessionArchiveStore.slotBKey] = 'corrupted';
       expect(await store.read(), previous);
-      expect(keys.data[PreferencesSessionArchiveStore.activeKey], 'a');
+      expect((jsonDecode(keys.data[PreferencesSessionArchiveStore.activeKey]!) as Map<String, dynamic>)['slot'], 'a');
       expect(SavedBoardCodec.decode((await store.read())!).state.version, 0);
     });
 
@@ -145,7 +145,20 @@ void main() {
       keys.data[PreferencesSessionArchiveStore.slotBKey] =
           jsonEncode(envelope);
       expect(await store.read(), previous);
-      expect(keys.data[PreferencesSessionArchiveStore.activeKey], 'a');
+      expect((jsonDecode(keys.data[PreferencesSessionArchiveStore.activeKey]!) as Map<String, dynamic>)['slot'], 'a');
+    });
+
+    test('uncommitted next generation cannot become recovery fallback',
+        () async {
+      final keys = _FaultyKeys();
+      final store = PreferencesSessionArchiveStore(keyValueStore: keys);
+      await store.write(_checkpoint()); // committed A generation 1
+      keys.failNextKey = PreferencesSessionArchiveStore.activeKey;
+      await expectLater(store.write(_checkpoint(humanPassed: true)),
+          throwsStateError); // B gen 2 written but never committed.
+      keys.data[PreferencesSessionArchiveStore.slotAKey] = 'corrupted';
+      // Returning B here would apply a never-committed human action.
+      await expectLater(store.read(), throwsFormatException);
     });
 
     test('two corrupt slots reject rather than fabricate a new game',
@@ -177,7 +190,7 @@ void main() {
       keys.data[PreferencesSessionArchiveStore.key] = old;
       expect(await store.read(), old);
       expect(keys.data.containsKey(PreferencesSessionArchiveStore.key), false);
-      expect(keys.data[PreferencesSessionArchiveStore.activeKey], 'a');
+      expect((jsonDecode(keys.data[PreferencesSessionArchiveStore.activeKey]!) as Map<String, dynamic>)['slot'], 'a');
       expect(SavedBoardCodec.decode((await store.read())!).board.number, 2);
     });
 
