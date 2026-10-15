@@ -29,12 +29,19 @@ void main() {
       key: ValueKey('a28_web_fresh_application'),
     ));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('web_checkpoint_caution')), findsOneWidget);
     await tapBrowser(tester, 'new_game');
+    expect(find.byKey(const Key('error_message')), findsNothing,
+        reason: 'The default browser store must persist initial board');
     await tapBrowser(tester, 'pass');
     expect(find.byKey(const Key('final_result')), findsOneWidget);
+    expect(find.byKey(const Key('error_message')), findsNothing);
 
     final encrypted = await tester.runAsync(() =>
         SharedPreferencesAsync().getString(BrowserSingleRecordArchiveStore.key));
+    // Print only booleans; never print checkpoint/key material.
+    // ignore: avoid_print
+    print('A2_8_DEFAULT_STORE_DIAGNOSTIC: recordPresent=${encrypted != null}');
     expect(encrypted, isNotNull);
     expect(encrypted, isNot(contains('dealPbn')));
     expect(encrypted, isNot(contains('humanSeat')));
