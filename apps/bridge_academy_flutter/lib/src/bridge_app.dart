@@ -489,7 +489,25 @@ class _BridgeTableState extends State<BridgeTable> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         minimumSize: const Size(42, 40),
       ),
-      child: Text('${_cardText(card)}${legal ? " ✓" : ""}'),
+      // Keep text geometry stable when legality changes during an async
+      // bot turn. A changing suffix inside Text caused a Flutter Web
+      // TextPainter paint/layout size assertion on real Chrome.
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(_cardText(card)),
+          const SizedBox(width: 3),
+          ExcludeSemantics(
+            child: Icon(
+              Icons.check,
+              size: 13,
+              color: legal
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.transparent,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
