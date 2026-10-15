@@ -81,6 +81,13 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - Fallback bot play may be deterministic legal-only, clearly marked degraded; never mislabel as BEN output.
 - Freeze adapter behavior around Pass Out: preserve BEN returned three-Pass transcript, terminal outcome PASS, set transcriptCompleteness=UNKNOWN; never append synthetic fourth call.
 
+## Phase A2.2 checkpoint hardening boundary
+
+- SessionArchiveStore retains the same JSON archive supplied by SavedBoardCodec; Bridge Core GameTranscript is the only event replay authority.
+- PreferencesSessionArchiveStore v2 uses inactive slot A/B → checksum/read-back + legal replay verification → active marker last. If active is corrupt, the previous valid slot may be recovered. Valid v1 single-key archive migrates after successful commit. Repository tests can inject I/O failures through CheckpointKeyValueStore.
+- SHA-256 detects **accidental corruption only**; all four private hands are STILL plaintext in SharedPreferences. Multi-key updates lack an ACID guarantee and untrusted local users may recompute hashes. This must be replaced with a reviewed encrypted transactional store before production public release, alongside true device kill/restart, migration and concurrency tests.
+- Do not pass privileged archives/slot payloads to Widgets or BEN or record them in logs.
+
 ## Security/performance
 - BEN runs in isolated service, not in Flutter; limit concurrent expensive requests, redact secrets.
 - DO NOT pass hidden completeDeal to ordinary bot calls; separately verify BEN API needs and implement safe information boundary.

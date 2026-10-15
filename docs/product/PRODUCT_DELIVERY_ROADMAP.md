@@ -46,14 +46,18 @@ Some tasks may be developed in parallel, but **the MVP acceptance run depends on
 | Slice | Visible deliverable | Tests / exact acceptance | Existing basis | Status |
 | --- | --- | --- | --- | --- |
 | **A1 / P1.1 Board Management** | Board Number, Dealer, Vulnerability, Replay Same Board, Next Board and fixed/fresh labels | Canonical 16-board dealer/vul cycle and repeat at 17; four seats; scoring; BEN wire/Flutter zh-TW/en | [M2-F12 acceptance](P1_A1_BOARD_MANAGEMENT_ACCEPTANCE.md) | **CORE/FLUTTER WEB + FIXED REAL BEN VERIFIED; ANDROID REGRESSION PENDING** |
-| **A2 / P1.2 Persistence** | Best-effort restore prototype with versioned transcript and read-only player projection | [M2-F13 acceptance](P1_A2_PERSISTENCE_ACCEPTANCE.md); reliable encrypted/transactional storage, real crash tests, server idempotency still required | Coordinator replay + SharedPreferencesAsync local checkpoint | **CORE + FLUTTER WEB + ANDROID EMULATOR PROTOTYPE VERIFIED — A2.2 RELEASE HARDENING PENDING** |
+| **A2 / P1.2 Persistence** | Best-effort restore prototype with versioned transcript and read-only player projection | [M2-F13 acceptance](P1_A2_PERSISTENCE_ACCEPTANCE.md); reliable encrypted/transactional storage, real crash tests, server idempotency still required | Coordinator replay + SharedPreferencesAsync local checkpoint | **A2.1 VERIFIED; A2.2 TWO-SLOT CHECKPOINT IMPLEMENTED / CI PENDING; RELEASE STORAGE ENCRYPTION + DEVICE KILL TEST PENDING** |
 | **A3 / P1.3 Table UX V2** | Legible four-seat table, compact bidding box, sortable legal cards, hand/trick feedback, correct dummy ownership, accessible controls | Real Android/iOS/Web manual + automated tasks; 320/375/768px; no overflow; TalkBack/VoiceOver feedback; no inaccessible controls | Functional single large Flutter table exists | PARTIAL |
 | **A4 / P1.4 Real BEN client delivery** | One-click real AI in installed/distributed app; no local Python prerequisite | Authenticated HTTPS and private hand data handling; BEN no silent Demo fallback; 4-seat/16-board matrix; measured p50/p95/errors with actual model settings; fail/retry | Real pinned Python BEN Chrome fixed-board CI; local HTTP GET dev integration | PARTIAL / PRODUCTION BLOCKED |
 | **A5 / P1.5 History + Same-deal retry** | Persistent finished-deal list, search/filter, replay and labeled training re-run | Survive app restart, import untrusted transcript safely, exact score replay, no original result double-count, no hidden-hand leak | In-memory finished replay exists | PARTIAL |
 | **A6 / P1.6 Multi-board E2E acceptance** | Repeated four+ board playable session, automatic board metadata, recoverable errors | 4 seats × fixed/fresh boards, Pass Out, X/XX, contract game, dummy, 52/13; device/real-AI playtest; CI+human observation | Existing fixed-board CI only | NOT VERIFIED |
 | **A7 / P1.7 Release readiness** | Real installable builds, privacy/license, localizations, telemetry safety, release checklist | Physical Android and iOS + Web smoke; crash/latency profiling, third-party review, device matrix | Android emulator smoke and Flutter Web build | PARTIAL |
 
-### A1 first execution contract (next Agent task)
+### A2.2 current execution slice
+
+Implement two-slot best-effort checkpoint storage with a commit pointer and SHA-256 accidental-corruption check, validated through the existing SavedBoardCodec and replay rules. Migrate previously verified v1 single-key local saves without deleting original before v2 commit. [Dedicated acceptance report](P1_A2_2_CHECKPOINT_HARDENING_ACCEPTANCE.md). This does NOT claim encrypted disk, fsync/ACID transaction, secure delete, tamper-proofing, concurrent-tab locking, physical-device kill/relaunch or BEN remote idempotency; these remain outstanding **P0 product release blockers**.
+
+### A1 first execution contract (historical)
 
 **Input:** existing Bridge Core Seat/Vulnerability/Deal; current BridgeSession.newGame with N/None; fixed & fresh board selector.
 

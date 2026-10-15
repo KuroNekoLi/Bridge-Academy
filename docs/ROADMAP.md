@@ -54,6 +54,8 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.
 - Instructor review, explanation uncertainty, benchmark practice boards.
 
+- **Phase A2.2 / M2-F14 checkpoint two-slot hardening (IMPLEMENTED / new CI PENDING):** alternate A/B snapshots, commit marker, legal replay/read-back, v1 migration and fault-injected tests. Does **not** provide encryption/ACID/fsync/multi-tab concurrency. [Acceptance](product/P1_A2_2_CHECKPOINT_HARDENING_ACCEPTANCE.md).
+
 ## M4 — multiplayer
 - Server-owned hidden state, authenticated player/action identity, WebSocket fan-out filtered by seat.
 - Rejoin/idempotency, network partitions, spectator restrictions, anti-collusion/privacy, audit events.

@@ -14,6 +14,7 @@ dependencies:
   bridge_ben_adapter:
     path: ../../packages/bridge_ben_adapter
   shared_preferences: ^2.5.4
+  crypto: ^3.0.6
 dev_dependencies:
   flutter_test:
     sdk: flutter

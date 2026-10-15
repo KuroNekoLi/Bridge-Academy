@@ -75,5 +75,9 @@ No Bridge Core gameplay implementation was changed in this documentation-only de
 
 Initial Flutter adapter uses SharedPreferencesAsync only to validate cross-platform restoration. The official library is not for critical data and does not promise fsync/durability, encryption or security against device access. This remains a release blocker until replaced with atomic, encrypted, migration-tested storage and real device kill/relaunch QA. An in-flight BEN HTTP request may be repeated after crash; no remote exactly-once guarantee until backend idempotency exists. Complete four-hand PBN stays in privileged local storage only, never ordinary UI or playing AI.
 
+## ADR-021 — A2.2 two-slot rollback checkpoint before encrypted release store (2026-10-15)
+
+**ACCEPTED FOR ENGINEERING HARDENING; release encryption gate remains OPEN.** Replace the single SharedPreferencesAsync checkpoint key with two independently validated slots plus a last-written active marker. Preserve the last committed checkpoint across a failed pending-slot write or marker write; after corruption, permit rollback to the previous fully validated legal transcript, never fabricate events. Support validation-led v1 migration; do not remove the old key before v2 commits. Use SHA-256 as a non-secret corruption checksum, **never call it encryption/HMAC**. SharedPreferences is not ACID or crash-durable; true encrypted local transactional storage, concurrency protection, truthful recovery warnings, physical-device kill/relaunch and BEN server idempotency remain release blockers. See docs/product/P1_A2_2_CHECKPOINT_HARDENING_ACCEPTANCE.md.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.
