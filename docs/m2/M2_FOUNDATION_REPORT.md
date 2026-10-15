@@ -1,6 +1,6 @@
 # M2 Foundation — PlayerView and local Coordinator
 
-**Stage:** M2-F01/M2-F02 implementation on feature branch. **Status:** ENGINEERING VALIDATION PENDING until GitHub Actions run. M2 overall is not complete.
+**Stage:** M2-F01/M2-F02 implemented and tested on feature PR #4. **Status:** FOUNDATION TEST GATE GO; overall M2 MVP IN PROGRESS (BEN and Flutter not yet integrated).
 
 ## Completed scope proposed in this PR
 
@@ -14,7 +14,10 @@
 - packages/bridge_core/test/player_view_test.dart — initial privacy, unexposed/exposed dummy, actor-specific legalCards, immutable collections.
 - packages/bridge_core/test/single_player_coordinator_test.dart — bot/human handoff, all 13 tricks, Pass Out, stale/illegal action refusal, observer BotPolicy sees filtered view.
 - Command: cd packages/bridge_core && dart pub get && dart analyze && dart test --reporter expanded
-- **CI evidence:** NOT RUN at authoring time; update with actual run URL and result once GitHub Actions completes. Never infer from M1's earlier 30/30 pass.
+- **CI evidence:** [Bridge Core CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504) executed on commit cb2d42687649ddea2d677739659a09a01ccb3972; Dart analyze step passed and **dart test 40/40 PASS** (10 new M2 test cases plus original 30). Original 100 seeded non-AI deal loop remains covered by M1 suite. [Feature Learning Gate #38673888302](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888302) PASS. Test run does not include real BEN or Flutter.
+
+## Reliability of evidence
+The CI log contains three nonfatal info-level string interpolation lint suggestions in the newly added tests; a follow-up formatting commit removes these and requires a fresh CI run. No unexecuted code is labeled VERIFIED. All test results above refer to the recorded original CI commit.
 
 ## Security limitations and next gates
 

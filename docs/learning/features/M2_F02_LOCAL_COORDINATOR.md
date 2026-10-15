@@ -3,11 +3,11 @@
 - Feature ID：M2-F02
 - Milestone：M2
 - 類型：Game Coordinator / 非同步流程
-- 工程狀態：IMPLEMENTED，正式驗收以 PR CI 為準
+- 工程狀態：VERIFIED（本輪測試已由 GitHub CI 驗收）
 - 學習狀態：DELIVERED（尚未作答）
 - 實作：packages/bridge_core/lib/src/single_player_coordinator.dart
 - 測試：packages/bridge_core/test/single_player_coordinator_test.dart
-- 測試證據：docs/m2/M2_FOUNDATION_REPORT.md（提交時 NOT RUN）
+- 測試證據：[Bridge Core CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504)、[M2 驗收報告](../../m2/M2_FOUNDATION_REPORT.md)
 
 ## 功能目的與實際情境
 
@@ -51,7 +51,7 @@ dart analyze
 
 測試內容：Bot 停在 Human 回合；Human 操作版本防重複；Bot 首攻後明手公開；完成 13 墩；四 Pass Out；非法 Bot 行動不改變權威狀態；Human 無法替其他座位行動。
 
-提交時這些測試尚未在本對話執行，真實 PASS/FAIL 請以 docs/m2/M2_FOUNDATION_REPORT.md 的 CI 證據為準。使用的 Bot 是 deterministic placeholder，與真 BEN POC 不可混稱。
+GitHub Actions 已真正執行，40/40 個測試案例 PASS（其中新增的 M2 Coordinator 測試 6 個）；CI 連結見文件頂部。使用的 Bot 是 deterministic placeholder，與真 BEN POC 不可混稱。
 
 ## 練習與自我檢驗
 

@@ -27,8 +27,8 @@ void main() {
         expect(view.toJson().containsKey('dealPbn'), false);
         for (final other in Seat.values.where((s) => s != seat)) {
           for (final card in game.hands[other]!) {
-            expect(json.contains('"' + card.code + '"'), false,
-                reason: 'leaked opponent card to ' + seat.name);
+            expect(json.contains('"${card.code}"'), false,
+                reason: 'leaked opponent card to ${seat.name}');
           }
         }
       }
@@ -54,7 +54,7 @@ void main() {
       expect(dummy.legalCards, isEmpty);
       final json = jsonEncode(declarer.toJson());
       for (final card in game.hands[Seat.east]!) {
-        expect(json.contains('"' + card.code + '"'), false);
+        expect(json.contains('"${card.code}"'), false);
       }
     });
 

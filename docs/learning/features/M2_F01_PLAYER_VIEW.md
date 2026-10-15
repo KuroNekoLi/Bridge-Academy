@@ -3,11 +3,11 @@
 - Feature ID：M2-F01
 - Milestone：M2
 - 類型：資料隔離
-- 工程狀態：IMPLEMENTED，正式驗收以 PR CI 為準
+- 工程狀態：VERIFIED（本輪測試已由 GitHub CI 驗收）
 - 學習狀態：DELIVERED（尚未實際作答）
 - 實作：packages/bridge_core/lib/src/player_view.dart
 - 測試：packages/bridge_core/test/player_view_test.dart
-- 測試證據：docs/m2/M2_FOUNDATION_REPORT.md（提交時 NOT RUN）
+- 測試證據：[Bridge Core CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504)、[M2 驗收報告](../../m2/M2_FOUNDATION_REPORT.md)
 
 ## 功能目的與實際情境
 
@@ -48,7 +48,7 @@ dart analyze
 
 測試涵蓋：四家各自只見本家 13 張、JSON 中沒有對方私有卡號、首攻前 Dummy 隱藏、首攻後 Dummy 公開、莊家代出 Dummy 才能取得 legalCards、集合不可直接修改。
 
-這不是 BEN 的真實神經網路測試。本文件起草時上述命令尚未在本對話執行，請以後續 docs/m2/M2_FOUNDATION_REPORT.md 的實際 CI 記錄為準。
+這不是 BEN 的真實神經網路測試。GitHub Actions 真正執行 Dart 測試及靜態分析，40/40 個測試案例通過（原 M1 30 個 + 新 M2 10 個）。實際證據見上方 CI 連結。
 
 ## 練習與自我檢驗
 
