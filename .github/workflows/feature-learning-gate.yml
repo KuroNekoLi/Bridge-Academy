@@ -1,6 +1,8 @@
 name: Feature Learning Gate
 
 on:
+  push:
+    branches: [master]
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -11,14 +13,14 @@ jobs:
   feature-learning:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR history
+      - name: Checkout history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Unit test the learning gate
+      - name: Verify gate unit tests
         run: python3 -m unittest discover -s scripts -p 'test_check_feature_lessons.py' -v
-      - name: Verify feature notes and index
+      - name: Verify lesson for changed production code
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
         run: python3 scripts/check_feature_lessons.py --base "$BASE_SHA" --head "$HEAD_SHA"

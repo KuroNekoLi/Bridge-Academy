@@ -1,0 +1,111 @@
+name: BEN Real Native Smoke (M2-F04)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packages/bridge_ben_adapter/**"
+      - ".github/workflows/ben-real-native-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-ben:
+    name: Real BEN + Dart Single Player
+    # BEN's prebuilt dds3 extension requires glibc >=2.38 and CPython 3.12.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout Bridge Academy
+        uses: actions/checkout@v4
+      - name: Checkout pinned BEN source
+        uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: 72653ec1b5c17116faea229e9b975ea5622aa1f7
+          path: third_party_ben
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben/requirements.txt
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install native BEN dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libboost-thread-dev libicu74
+          python -m pip install -r third_party_ben/requirements.txt
+      - name: BEN test configuration
+        run: |
+          cp third_party_ben/src/config/default_api.conf third_party_ben/src/config/ci_api.conf
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("third_party_ben/src/config/ci_api.conf")
+          cfg = p.read_text()
+          replacements = {
+              "consult_bba = True": "consult_bba = False",
+              "use_bba_rollout = True": "use_bba_rollout = False",
+              "use_bba_to_count_aces = True": "use_bba_to_count_aces = False",
+              "pimc_use_declaring = True": "pimc_use_declaring = False",
+              "pimc_use_defending = True": "pimc_use_defending = False",
+              "pimc_use_discarding = True": "pimc_use_discarding = False",
+              "sample_hands_play = 200": "sample_hands_play = 40",
+              "sample_hands_auction = 200": "sample_hands_auction = 40",
+              "sample_hands_opening_lead = 200": "sample_hands_opening_lead = 40",
+              "sample_boards_for_play = 5000": "sample_boards_for_play = 1000",
+              "sample_boards_for_auction = 30000": "sample_boards_for_auction = 3000",
+          }
+          for before, after in replacements.items():
+              if before not in cfg:
+                  raise SystemExit(f"BEN config key missing: {before}")
+              cfg = cfg.replace(before, after)
+          p.write_text(cfg)
+          PY
+      - name: Start REAL BEN API (not mock)
+        run: |
+          cd third_party_ben/src
+          nohup python gameapi.py \
+            --config config/ci_api.conf \
+            --host 127.0.0.1 \
+            --allowed-hosts 127.0.0.1,localhost \
+            --record false --verbose false \
+            > "$RUNNER_TEMP/ben-server.log" 2>&1 &
+          echo "BEN_PID=$!" >> "$GITHUB_ENV"
+      - name: Readiness probe (BEN capability endpoint)
+        run: |
+          python - <<'PY'
+          import json, time, urllib.request
+          for _ in range(180):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8085/",timeout=3) as res:
+                      result = json.load(res)
+                  if result.get("name"):
+                      print("REAL_BEN_READY:", result["name"])
+                      break
+              except Exception:
+                  time.sleep(2)
+          else:
+              raise SystemExit("BEN readiness timeout; inspect sanitized CI process output")
+          PY
+      - name: Run live Dart integration (no mock or fallback)
+        env:
+          BEN_BASE_URL: http://127.0.0.1:8085
+          BEN_TIMEOUT_SECONDS: "120"
+        working-directory: packages/bridge_ben_adapter
+        run: |
+          dart pub get
+          dart run bin/live_ben_smoke.dart
+      - name: Report server diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "BEN process status:"
+          ps -p "$BEN_PID" -o pid,stat,etime || true
+          # BEN can print hands in its logs; NEVER upload or print raw logs.
+          echo "BEN log intentionally redacted (may contain player hands)."
+

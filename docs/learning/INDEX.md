@@ -14,6 +14,8 @@
 
 | M2-F03 | BEN Adapter，最低權限的 HTTP 參數、合法提案、timeout | [M2-F03 — BEN Adapter](features/M2_F03_BEN_ADAPTER.md) | [BenBotPolicy](../../packages/bridge_ben_adapter/lib/src/ben_bot_policy.dart) · [契約測試](../../packages/bridge_ben_adapter/test/ben_bot_policy_test.dart) · [驗收報告](../m2/M2_BEN_ADAPTER_REPORT.md) | DELIVERED |
 
+| M2-F04 | 真 BEN HTTP 完整牌局測試 | [M2-F04 教學](features/M2_F04_REAL_BEN_SMOKE.md) | [實測程式](../../packages/bridge_ben_adapter/bin/live_ben_smoke.dart) · [驗收紀錄](../m2/M2_F04_REAL_BEN_ACCEPTANCE.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 在 PR 中給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。
