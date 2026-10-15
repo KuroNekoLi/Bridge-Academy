@@ -2,7 +2,16 @@
 
 A contract bridge platform: start with a single human playing alongside three AI players, then expand to teaching, online tables and duplicate tournaments.
 
-**State (2026-10-15): M1 rules CI verified; M2-F01/F02 coordinator and privacy projection verified; M2-F03 BEN Adapter verified by contract tests; M2-F04 two true BEN fixed-board integrations passed. M2-F05 Flutter interactive client is under development. Production mobile and multiplayer services are not yet released.** This repository is private. The phrase "open-source" in the initial description is a product aspiration, not a statement that this repository or its third-party dependencies have been released under a chosen license.
+**State (2026-10-15):** Bridge Core 47/47 tests passed; M2 has a functional Flutter table, Android emulator and Chrome integration, pinned real-BEN fixed-board tests, random local deals and current-completed-game replay. **Consumer-ready single-player MVP is NOT released**: dealer/vulnerability board cycle, durable resume/history, production BEN delivery, device QA and deployment/licensing remain open. See the product release gates below. This repository is private. The phrase "open-source" in the initial description is a product aspiration, not a statement that this repository or its third-party dependencies have been released under a chosen license.
+
+## Product scope & next implementation
+
+- [繁體中文產品導覽](docs/product/README.md)
+- [Competitor benchmark — 新睿 / BBO / BBO Trainer](docs/product/COMPETITOR_BENCHMARK.md) — official-source comparisons and non-copying boundary.
+- [Bridge Academy PRD v1](docs/product/BRIDGE_ACADEMY_PRD_V1.md) — product vision, functional requirements, player journeys, release acceptance.
+- [Product Delivery Roadmap](docs/product/PRODUCT_DELIVERY_ROADMAP.md) — Phase A single-player MVP → B training → C analysis → D async duplicate → E live multiplayer.
+
+**NEXT:** Phase A1, canonical Board Number / Dealer / Vulnerability (16-board duplicate cycle) and next-board UX. The existing [engineering roadmap](docs/ROADMAP.md) remains the chronological test ledger and must not be overwritten.
 
 ## Product progression
 1. **POC-001**: BEN API and one fixed deal — GO based on a Work execution report.

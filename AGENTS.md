@@ -2,6 +2,17 @@
 
 This file is the entry point for Codex, Work and other coding agents. The repository docs, not old chats or model memory, are the working source of truth. User-approved product decisions outrank agent assumptions. In a contradiction, report it and request a decision before silently changing the baseline.
 
+## Product-level source of truth (approved 2026-10-15)
+
+Before choosing the next feature, read:
+1. docs/product/BRIDGE_ACADEMY_PRD_V1.md — **what the complete product must do**, user journeys, privacy, MVP release gates;
+2. docs/product/PRODUCT_DELIVERY_ROADMAP.md — **what comes next**, dependency order, scope and product-vs-engineering acceptance;
+3. docs/product/COMPETITOR_BENCHMARK.md — verified 新睿／BBO／BBO Trainer inspiration, **not** a license to copy code/assets;
+4. docs/ROADMAP.md — **historical engineering milestone and CI ledger**, retained without rebranding earlier successes;
+5. docs/BRIDGE_RULES_BASELINE.md and docs/DECISIONS.md — authoritative game invariants and accepted ADRs.
+
+For generic "下一步" requests choose the earliest **unverified P0 player journey** in the product roadmap (currently A1 Board Management), not an arbitrary next M2-Fxx number. A technical test PASS is not consumer Product READY. Never silently rebuild an existing feature just to match a proposed milestone title. Repository source of truth is code + executed evidence.
+
 ## On every task
 1. Read README.md, docs/DECISIONS.md, docs/ARCHITECTURE.md, docs/BRIDGE_RULES_BASELINE.md and the relevant milestone in docs/ROADMAP.md.
 2. Select the smallest applicable skill in skills/README.md; do not activate unrelated skills for decoration.
