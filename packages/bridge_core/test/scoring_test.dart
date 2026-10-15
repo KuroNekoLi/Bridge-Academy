@@ -32,8 +32,8 @@ void main() {
         7, Vulnerability.none, -230),
     ];
     for (final (contract, tricks, vul, expected) in cases) {
-      test(contract.label + ' ' + contract.declarer.letter +
-          ' $tricks tricks, ' + vul.name, () {
+      test('${contract.label} ${contract.declarer.letter} $tricks tricks, '
+          '${vul.name}', () {
         expect(DuplicateScore.score(contract, tricks, vul), expected);
       });
     }

@@ -45,7 +45,7 @@ class Card {
   const Card(this.suit, this.rank);
   final Suit suit;
   final Rank rank;
-  String get code => suit.pbn + rank.symbol;
+  String get code => '${suit.pbn}${rank.symbol}';
   @override
   bool operator ==(Object other) =>
       other is Card && other.suit == suit && other.rank == rank;
@@ -74,9 +74,11 @@ class Contract {
   Seat get dummy => declarer.partner;
   Seat get openingLeader => declarer.next;
   int get targetTricks => level + 6;
-  String get label => '$level' + strain.code +
-      (doubling == Doubling.doubled ? 'X' :
-       doubling == Doubling.redoubled ? 'XX' : '');
+  String get label {
+    final suffix = doubling == Doubling.doubled ? 'X' :
+        doubling == Doubling.redoubled ? 'XX' : '';
+    return '$level${strain.code}$suffix';
+  }
 }
 
 sealed class Call {
@@ -93,7 +95,7 @@ final class Bid extends Call {
   final int level;
   final Strain strain;
   @override
-  String get code => '$level' + strain.code;
+  String get code => '$level${strain.code}';
 }
 final class DoubleCall extends Call {
   const DoubleCall();
@@ -134,7 +136,7 @@ final class CallAction extends GameAction {
   final Seat actor;
   final Call call;
   @override
-  String get code => 'B:' + actor.letter + ':' + call.code;
+  String get code => 'B:${actor.letter}:${call.code}';
 }
 final class CardAction extends GameAction {
   const CardAction(this.actor, this.handOwner, this.card);
@@ -143,13 +145,13 @@ final class CardAction extends GameAction {
   final Seat handOwner;
   final Card card;
   @override
-  String get code => 'P:' + actor.letter + ':' + handOwner.letter + ':' + card.code;
+  String get code => 'P:${actor.letter}:${handOwner.letter}:${card.code}';
 }
 class GameEvent {
   const GameEvent(this.version, this.action);
   final int version;
   final GameAction action;
-  String get canonical => '$version' + ':' + action.code;
+  String get canonical => '$version:${action.code}';
 }
 
 class Deal {
@@ -214,7 +216,7 @@ class Deal {
       }
       parts.add(groups.join('.'));
     }
-    return 'N:' + parts.join(' ');
+    return 'N:${parts.join(' ')}';
   }
 
   /// Deterministic fixture, not an RNG-generated competitive deal.

@@ -73,8 +73,8 @@ class GameState {
   /// Non-cryptographic deterministic fingerprint of initial PBN + event log.
   /// This is for regression/replay, NOT security, authentication or consensus.
   String get historyFingerprint {
-    final seed = deal.toPbn() + '|' + dealer.letter + '|' +
-        vulnerability.name + '|' + events.map((e) => e.canonical).join('|');
+    final seed = '${deal.toPbn()}|${dealer.letter}|${vulnerability.name}|'
+        '${events.map((e) => e.canonical).join('|')}';
     var hash = 0x811c9dc5;
     for (final unit in seed.codeUnits) {
       hash = ((hash ^ unit) * 0x01000193) & 0xffffffff;
