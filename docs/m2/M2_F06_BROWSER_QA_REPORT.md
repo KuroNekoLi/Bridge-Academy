@@ -1,6 +1,6 @@
 # M2-F06 — Flutter Web browser and responsive QA
 
-**Status:** IMPLEMENTED; CI / actual Chrome validation **NOT RUN at report creation**.
+**Status (2026-10-15):** Flutter static analysis, 14/14 tests and Web release **PASS**. Real ChromeDriver session started but browser interaction gate has not passed; merged browser-lifecycle rerun is pending.
 
 ## Scope / decisions
 
@@ -29,10 +29,10 @@ Official Flutter documentation: https://docs.flutter.dev/testing/integration-tes
 
 | Gate | Status at authoring | Notes |
 | --- | --- | --- |
-| Flutter static analysis | NOT RUN | New integration_test dependency and responsive widgets |
-| Widget/session tests | NOT RUN | Includes 3 new small-screen cases |
-| Flutter Web release compile | NOT RUN | Existing Flutter CI |
-| Real ChromeDriver demo UI test | NOT RUN | Separate browser-chrome CI job |
+| Flutter static analysis | PASS | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): No issues found |
+| Widget/session tests | PASS 14/14 | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): 320/375/768px cases included |
+| Flutter Web release compile | PASS | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): Built build/web |
+| Real ChromeDriver demo UI test | FAIL on earlier separated-case runner; rerun pending | [CI #38679346659](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679346659): genuine Chrome launched, second browser case raised framework multiple exceptions; latest merged-lifecycle rerun [#38679624664](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38679624664) awaiting result |
 | True BEN via Chrome UI | NOT RUN | Requires trusted BEN server with CORS and permitted host |
 | Real Android/iOS QA | NOT RUN | Cannot infer from Chrome |
 
