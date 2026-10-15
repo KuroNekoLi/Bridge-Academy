@@ -1,6 +1,6 @@
 # M2-F11 — Terminal Deal History and Rule-Checked Playback
 
-**Engineering status 2026-10-15: BRIDGE CORE + FLUTTER WEB GO; NEW REPLAY DEVICE/CHROME INTERACTION PENDING.** The existing Demo Chrome regression succeeded, but the new First/Next/Last browser and Android touch checks are only newly implemented; do not mark their new coverage PASS before corresponding CI.
+**Engineering status 2026-10-15: M2-F11 CORE + FLUTTER WEB + REAL CHROME REPLAY GO.** Actual native Android emulator replay-touch QA remains separately PENDING.
 
 ## Scope
 A player can review the **current finished deal** from event zero through all auction calls and public card actions, and inspect per-step trick progress, contract, last trick winner and final NS score. Buttons: First, Previous, Next and Last; zh-TW/en copy.
@@ -39,7 +39,9 @@ Actual executed evidence:
 - [Bridge Core CI #38692682476](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38692682476) PASS (44/44 tests including post-terminal Pass Out and full 52-card replay, version/fingerprint, Dummy privacy).
 - [Flutter CI #38692937055](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38692937055) PASS: flutter analyze clean, 19/19 Flutter session/Widget tests including M2-F11, Web Release Build, previous Demo Chrome interaction regression. Tested source SHA ed856602ad6ea5a72121bbd1b2c853ed4afc3967.
 - Initial Flutter CI #38692682306 FAILED analyzer/compiler because Flutter onPressed expects a void callback, not a returned Future<void>; source fix ed856602 removed the invalid return and Flutter CI went green. Initial separate Learning Gate #38692937032 flagged a source-only fix commit lacking matching lesson/index update; this evidence update is committed with the new browser/Android replay checks and the lesson/index in the same change set.
-- **Pending at this version:** browser-test-specific playback stepper clicks, new Android emulator replay-touch coverage, and fresh real-BEN regression at the new head. Previous Demo Chrome success only proves the old browser workflow, not the new replay navigation commands. Exact CI URLs/conclusions will be inserted when run.
+- **New replay browser click acceptance PASS:** [Flutter CI #38693616403](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616403), source SHA b380ba231b599b8ef0d6d2cf732499a2c8fb2d9b. 19/19 Flutter tests, analyze clean, Web Release Build PASS; genuine Chrome/ChromeDriver integration test explicitly clicked replay First → Next → Last after Pass Out, verified event steps and removal after restart.
+- **Real BEN regression PASS:** [CI #38692937041](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38692937041), source SHA ed856602ad6ea5a72121bbd1b2c853ed4afc3967. Both real-BEN Chrome full-deal variants passed; not proof of replay clicks or AI strategy quality.
+- **Android replay touch pending:** [Emulator CI #38693616421](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616421) still in progress when this report was written. Initial native run #38692682504 failed on the now-fixed Flutter callback compile error; no native replay pass can be claimed from that run.
 
 
 ## Limitations
