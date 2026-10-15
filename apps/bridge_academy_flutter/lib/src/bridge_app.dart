@@ -1,11 +1,13 @@
 import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:bridge_core/bridge_core.dart' as bridge show Card;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_copy.dart';
 import 'bridge_session.dart';
 import 'session_persistence.dart';
+import 'secure_session_persistence.dart';
 
 /// App composition: Flutter sees only PlayerView through BridgeSession.
 class BridgeAcademyApp extends StatefulWidget {
@@ -25,8 +27,16 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
   void initState() {
     super.initState();
     _ownsSession = widget.session == null;
+    // Native mobile uses AES-GCM + transactional SQLite with a secure key.
+    // Web remains a explicitly documented, best-effort legacy adapter until
+    // a Web-specific threat model and atomic browser storage are accepted.
+    final mobile = !kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS);
     _session = widget.session ?? BridgeSession(
-      archiveStore: PreferencesSessionArchiveStore(),
+      archiveStore: mobile
+          ? EncryptedTransactionalSessionArchiveStore.native()
+          : PreferencesSessionArchiveStore(),
     );
     if (_ownsSession) {
       // The session notifies BridgeTable when the saved game is loaded.

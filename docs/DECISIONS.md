@@ -2,6 +2,9 @@
 
 Each item has status and rationale. Proposed choices are not approved simply because they appear here.
 
+## ADR-023 — A2.7 authenticated native transactional checkpoints (2026-10-15)
+**ACCEPTED FOR IMPLEMENTATION, CI PENDING.** Use AES-256-GCM with fresh nonce for complete four-hand transcript, 256-bit secret in native secure storage, atomic SQLite row commit containing encrypted active and prior generation with durable recoveryPending, and validated legacy SharedPreferences migration. BridgeSession still depends on SessionArchiveStore and never emits privileged transcripts to UI. Web intentionally retains legacy storage and is **not production confidential**. The owner requested delaying Android/iOS physical-device QA until major product features are complete; fake database/crypto tests cannot prove native power-loss behavior. Key-loss, backup policy, browser threat model, cross-process CAS and BEN network exactly-once remain open. [Report](product/P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md).
+
 ## ADR-022 — A2.5 consent survives restart (2026-10-15)
 **ACCEPTED AND FLUTTER WEB ENGINEERING VERIFIED ([CI #38738604483](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604483), 50/50 PASS).** After two-slot checkpoint rollback, requiring explicit acknowledgment only in BridgeSession memory is unsafe: a second application launch makes the previous valid checkpoint appear ordinary. Include optional recoveryPending in the active commit marker; persist it with the marker repair, and clear only after awaited explicit player consent. A write error leaves human/bot actions paused. Existing v2 markers without the field default to false for migration compatibility. This is a best-effort local UI safeguard, **not** encryption/ACID/fsync, anti-cheat or remote BEN exactly-once. Follow-up: evaluate secure transactional storage and physical device failures.
 

@@ -15,6 +15,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
     +---- Persistence (SQLite local → PostgreSQL service when needed)
 ~~~
 
+## A2.7 encrypted native transaction boundary (2026-10-15)
+- BridgeSession uses the existing SessionArchiveStore interface; Android/iOS default is EncryptedTransactionalSessionArchiveStore, a full SavedBoard AES-256-GCM ciphertext in a single SQLite row with atomic transaction, and secure-storage-held key. Plaintext migration happens only after authenticated and Bridge Core legal replay verification, encrypted commit, then legacy deletion.
+- Atomic row commit and authenticated encryption do NOT guarantee power-loss fsync, malicious process isolation, or cross-process CAS. Physical-device validation deferred by user until complete major features; no security release GO implied.
+- Web remains SharedPreferencesAsync plaintext and needs a separate browser threat model; do not silently treat it as secure. Browser frontend still possesses full local privileged Deal for solo play, so a multiplayer fairness model needs server authority.
+
 ## A2.5 persistence consent boundary (2026-10-15)
 - Checkpoint restoration can fall back to a previous legally verified version. The app must not silently resume if the newest committed generation was lost.
 - The local checkpoint commit marker includes an optional boolean recoveryPending that survives separate app launches. BridgeSession awaits clearing the durable-intent marker before unpausing human or AI input; failed acknowledgment stays blocked.
