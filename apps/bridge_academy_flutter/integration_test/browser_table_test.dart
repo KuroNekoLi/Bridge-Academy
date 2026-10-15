@@ -11,6 +11,10 @@ Future<void> tapControl(WidgetTester tester, String key) async {
   await tester.pump();
   await tester.tap(finder);
   await tester.pumpAndSettle();
+  final pendingError = tester.takeException();
+  if (pendingError != null) {
+    fail('Browser action $key: $pendingError');
+  }
 }
 
 void main() {
