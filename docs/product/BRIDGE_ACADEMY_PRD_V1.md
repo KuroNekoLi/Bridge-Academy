@@ -115,7 +115,8 @@ Player completes a frozen comparable BoardSet under a published scoring method, 
 | True BEN pinned Python in test env | [M2-F07](../m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md) and [M2-F09](../m2/M2_F09_BEN_DECLARER_UI_ACCEPTANCE.md) | Known fixed PBN E2E succeeds, production AI hosting is absent |
 | Android API 35 emulator UI | [M2-F08 report](../m2/M2_F08_ANDROID_EMULATOR_ACCEPTANCE.md) | Emulator smoke only, not physical Android/iOS |
 | Completed-board replay | [M2-F11 report](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md) | Replay exists; persistent multi-game history and searchable archive remain to deliver |
-| In-progress checkpoints and encrypted archives | [A2.7 Web/unit scope](P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md), [A2.8 Web browser encryption](P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md), [Flutter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38757222196) | Implemented with scoped CI, but native device/backup, deployment, same-origin/multitab threats, remote idempotency NOT accepted |\n| Durable multi-game history/auth/online competition | No completed end-to-end product gate | **NOT VERIFIED** / not ready for release |
+| In-progress checkpoints and encrypted archives | [A2.7 Web/unit scope](P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md), [A2.8 Web browser encryption](P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md), [Flutter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38757222196) | Implemented with scoped CI, but native device/backup, deployment, same-origin/multitab threats, remote idempotency NOT accepted |
+| Durable multi-game history/auth/online competition | No completed end-to-end product gate | **NOT VERIFIED** / not ready for release |
 
 Note: existing docs/ROADMAP.md holds engineering chronology including historical POC/CI caveats; the new product roadmap does not delete or replace that evidence.
 
