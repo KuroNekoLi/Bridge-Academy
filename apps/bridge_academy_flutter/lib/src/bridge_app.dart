@@ -181,6 +181,11 @@ class _BridgeTableState extends State<BridgeTable> {
                   ? 'demoNotice'
                   : 'liveNotice'),
             ),
+            if (kIsWeb)
+              Text(
+                copy.t('webCheckpointCaution'),
+                key: const Key('web_checkpoint_caution'),
+              ),
             if (session.restoring) ...[
               const LinearProgressIndicator(key: Key('restore_progress')),
               Text(copy.t('restoringGame')),

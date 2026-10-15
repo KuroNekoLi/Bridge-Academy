@@ -2,6 +2,10 @@
 
 Each item has status and rationale. Proposed choices are not approved simply because they appear here.
 
+## ADR-024 — A2.8 encrypted Web local checkpoints, not a transaction guarantee (2026-10-15)
+
+**ACCEPTED FOR IMPLEMENTATION; CI PENDING.** Web must not continue persisting four private hands in plaintext SharedPreferences. Reuse SavedBoardCodec and AES-256-GCM, browser WebCrypto-backed key via flutter_secure_storage and a **single origin-local record** in SharedPreferencesAsync, with validated-then-committed legacy plaintext migration. On HTTPS/localhost failures **fail closed** and never silently write plaintext. Surface localized browser-security notice. Web key handling is experimental; same-origin XSS/hostile extensions, cross-tab CAS and crash durability remain open. Not SQLite ACID or release approval. [Acceptance](product/P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md).
+
 ## ADR-023 — A2.7 authenticated native transactional checkpoints (2026-10-15)
 **ACCEPTED FOR IMPLEMENTATION, CI PENDING.** Use AES-256-GCM with fresh nonce for complete four-hand transcript, 256-bit secret in native secure storage, atomic SQLite row commit containing encrypted active and prior generation with durable recoveryPending, and validated legacy SharedPreferences migration. BridgeSession still depends on SessionArchiveStore and never emits privileged transcripts to UI. Web intentionally retains legacy storage and is **not production confidential**. The owner requested delaying Android/iOS physical-device QA until major product features are complete; fake database/crypto tests cannot prove native power-loss behavior. Key-loss, backup policy, browser threat model, cross-process CAS and BEN network exactly-once remain open. [Report](product/P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md).
 

@@ -38,6 +38,10 @@ class AppCopy {
     'live': ['真正 BEN API', 'Live BEN API'],
     'humanSeat': ['玩家座位', 'Your seat'],
     'newGame': ['開始新牌局', 'Start new deal'],
+    'webCheckpointCaution': [
+      '瀏覽器存檔使用加密，仍無法防範同網站惡意程式。請使用受信任的 HTTPS 網站；清除瀏覽器資料將無法恢復牌局。',
+      'Browser saves are encrypted, but do not protect against malicious same-site scripts. Use trusted HTTPS sites; clearing browser data prevents recovery.',
+    ],
     'boardNumber': ['牌號', 'Board'],
     'dealer': ['發牌者', 'Dealer'],
     'vulnerability': ['局況', 'Vulnerability'],

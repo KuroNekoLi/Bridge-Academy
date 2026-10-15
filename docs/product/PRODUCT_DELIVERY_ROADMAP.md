@@ -82,6 +82,10 @@ Implement two-slot best-effort checkpoint storage with a commit pointer and SHA-
 
 Add a **genuine Android API 35 three-process fault-injection test** after A2.5 durable rollback consent: Process A commits two versions and corrupts latest; Android force-stop; Process B restores previous version and displays warning, blocks action; second Android force-stop; Process C must display same warning until actual acknowledgement UI action. The test must verify no fabricated action, final 4 legal Pass events and saved state. [Acceptance](P1_A2_6_ANDROID_ROLLBACK_CONSENT_ACCEPTANCE.md). **IMPLEMENTED, CI NOT YET RUN AT AUTHORING.** Existing A2.3 two-process test is not a substitute. This does not solve plaintext SharedPreferences, fsync or multi-tab CAS.
 
+### A2.8 Browser encrypted checkpoint integration (2026-10-15)
+
+**Implemented, new CI pending:** Close plaintext Web-hand storage by routing default Flutter Web sessions to an AES-256-GCM encrypted single-record LocalStorage adapter using flutter_secure_storage WebCrypto keys and validation-first legacy migration. Real Chrome WebCrypto reload acceptance, localized browser risk notice, and key/tamper/recovery tests. Best-effort browser persistence, **not** SQLite ACID, XSS isolation, cross-tab CAS or hardware-bound confidentiality. Native device QA is deferred per owner decision. [Acceptance](P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md).
+
 ### A2.7 secure storage (2026-10-15)
 
 Implemented native Android/iOS encrypted SQLite checkpoint adapter, AES-GCM, key in platform secure storage, commit/recovery in one SQL row, validation-first migration. [Dedicated acceptance](P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md). **CI NOT RUN at drafting; user explicitly deferred physical Android/iOS device QA until larger product capabilities are complete.** Web SharedPreferences still plaintext and remains unapproved for production confidential-hand storage. Device crypto, backup/restore, fsync, concurrent sessions and remote BEN idempotency need separate release gates.

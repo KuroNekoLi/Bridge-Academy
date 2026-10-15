@@ -53,6 +53,8 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 
 - **Phase A2.6 Android rollback-consent process QA (NOT RUN at authoring):** three separate instrumentation launches and two explicit ADB force-stops, pending installed-app storage warning must survive until actual acknowledgement; code [workflow](../.github/workflows/android-rollback-consent.yml), [acceptance](product/P1_A2_6_ANDROID_ROLLBACK_CONSENT_ACCEPTANCE.md). No storage engine changes; production encryption/transactional policy still open.
 
+- **Phase A2.8 Web-encrypted checkpoint integration IMPLEMENTED / NEW CI PENDING:** browser checkpoints AES-GCM sealed with WebCrypto key; legacy migration, Chrome browser reload checks, still needs deployment security and concurrency policy. [Report](product/P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md).
+
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.

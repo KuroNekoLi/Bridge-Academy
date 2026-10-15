@@ -73,3 +73,7 @@ The deal source selector defaults to the existing synthetic training deal for re
 UI gesture -> BridgeSession -> SinglePlayerCoordinator -> BridgeGame.apply ->
 GameState -> PlayerView -> Flutter widget. Widgets never read raw GameState,
 hidden enemy hands, complete PBN, or BEN raw server responses.
+
+## A2.8 browser storage boundary
+
+Web defaults to an AES-GCM encrypted local checkpoint with a browser WebCrypto-backed key and legacy plaintext checkpoint migration. Browser requires HTTPS or localhost; clearing browser/origin storage loses recovery. This is **best-effort single-key LocalStorage**, not native SQLite transaction, XSS protection or cloud backup. Android/iOS continue using encrypted SQLite. [Acceptance](../../docs/product/P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md), [Lesson](../../docs/learning/features/M2_F20_WEB_ENCRYPTED_CHECKPOINT.md).

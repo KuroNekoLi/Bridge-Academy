@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'session_persistence.dart';
 
@@ -101,6 +102,42 @@ final class SqfliteAtomicArchiveRecordStore
   }
 }
 
+/// Browser-only *single-key* encrypted checkpoint record.
+///
+/// SharedPreferencesAsync uses origin-local LocalStorage on Web. Updating one
+/// record avoids cross-key torn markers, but is NOT an ACID/fsync guarantee,
+/// cross-tab compare-and-swap or protection against same-origin JavaScript.
+/// This adapter must never be used as a substitute for native SQLite.
+final class BrowserSingleRecordArchiveStore
+    implements AtomicArchiveRecordStore {
+  BrowserSingleRecordArchiveStore({SharedPreferencesAsync? preferences})
+      : _preferences = preferences ?? SharedPreferencesAsync();
+
+  static const key = 'bridge_academy.encrypted_web_checkpoint.v1';
+  final SharedPreferencesAsync _preferences;
+
+  @override
+  Future<Map<String, dynamic>?> readRecord() async {
+    final raw = await _preferences.getString(key);
+    if (raw == null) return null;
+    if (raw.length > 512 * 1024) {
+      throw const FormatException('Oversized browser archive');
+    }
+    final decoded = jsonDecode(raw);
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('Invalid browser archive');
+    }
+    return decoded;
+  }
+
+  @override
+  Future<void> replaceRecord(Map<String, dynamic> record) =>
+      _preferences.setString(key, jsonEncode(record));
+
+  @override
+  Future<void> clearRecord() => _preferences.remove(key);
+}
+
 /// Android/iOS encrypted checkpoint store. All four hands are encrypted with
 /// random-nonce AES-256-GCM and never serialized in plaintext in SQLite.
 ///
@@ -122,6 +159,25 @@ final class EncryptedTransactionalSessionArchiveStore
         keys: NativeArchiveEncryptionKeyProvider(),
         legacy: PreferencesSessionArchiveStore(),
       );
+
+  /// WebCrypto-backed key (experimental flutter_secure_storage Web) and one
+  /// encrypted origin-local record. NOT native SQL transaction semantics.
+  ///
+  /// Requires HTTPS or localhost. Missing WebCrypto/key fails closed without
+  /// writing the privileged game as plaintext. A successful encryption does
+  /// not defend against XSS, malicious extensions or other same-origin code.
+  factory EncryptedTransactionalSessionArchiveStore.browser({
+    SharedPreferencesAsync? preferences,
+    ArchiveEncryptionKeyProvider? keys,
+    SessionArchiveStore? legacy,
+  }) {
+    final prefs = preferences ?? SharedPreferencesAsync();
+    return EncryptedTransactionalSessionArchiveStore(
+      records: BrowserSingleRecordArchiveStore(preferences: prefs),
+      keys: keys ?? NativeArchiveEncryptionKeyProvider(),
+      legacy: legacy ?? PreferencesSessionArchiveStore(preferences: prefs),
+    );
+  }
 
   static const _version = 3;
   static final _algorithm = AesGcm.with256bits();
