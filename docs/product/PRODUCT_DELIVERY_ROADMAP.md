@@ -3,6 +3,14 @@
 **Baseline:** 2026-10-15 · **Goal:** complete BBO/新睿-inspired *playable bridge product*, not a collection of green CI badges.  
 **References:** [PRD v1](BRIDGE_ACADEMY_PRD_V1.md), [benchmark](COMPETITOR_BENCHMARK.md), ../ROADMAP.md (historic engineering ledger).
 
+## 2026-10-15 delivery alignment and current action
+
+**Existing authority remains intact.** A1 (canonical board metadata) is scoped engineering-verified; A2 includes verified Core/Web resume and later native/Web encrypted checkpoint implementations, **not a fully validated cross-device/production recovery solution**. The next **feature-development** slice is **A3 Bridge Table UI V2 design + component decomposition**. A2 deployment security, native durability, browser concurrency, and BEN request idempotency continue as explicit P0 blockers. No device or emulator run is authorized to resolve them yet.
+
+**Device-test hold:** owner has paused all real Android/iOS and Android emulator UI/E2E testing until a separate explicit approval. The related GitHub workflows have auto-trigger removed and jobs hard-skipped. Keep A7 device QA in release criteria, but do not schedule, re-enable, or dispatch it; use pure Dart, Flutter analyze/widget, Web builds and existing allowed browser/BEN checks meanwhile. Documentation-only changes do not count as code verification.
+
+**Daily challenge sequencing:** B6/P1 = optional **unranked, reproducible daily practice** on fixed original board sets, with local learning feedback; **D1–D4/P3** = official async duplicate comparison and any ranked daily competition/friend PK. B6 must not claim global fairness, MP/IMP, real peer rankings or anti-cheat authority. This separates a low-cost retention experiment from the server-backed tournament product.
+
 ## 1. Status taxonomy and gates
 
 - **VERIFIED_ENGINEERING:** a scoped component has run real tests and met stated assertions, with SHA+CI evidence.
@@ -11,42 +19,41 @@
 - **IN_PROGRESS / NOT IMPLEMENTED / BLOCKED:** evidence-based; a designed interface is NOT implementation.
 - **LESSON_DELIVERED** is separate from engineering status; learner PRACTICED/MASTERED requires participation.
 
-Today's baseline: Bridge Core, Web/Chrome Demo, a pinned native BEN Chrome fixture, Android emulator and in-memory finished replay have evidence. **No publicly hosted BEN endpoint, persistent session, complete mobile release, tournament server or user studies have been verified.**
+Today's baseline: Bridge Core, Web/Chrome Demo, a pinned native BEN Chrome fixture, Android emulator and in-memory finished replay have evidence. **No publicly hosted BEN endpoint, fully release-accepted persistent session, complete mobile release, tournament server or user studies have been verified.** Scoped local Web persistence and native encryption code exist; native-device and deployed-service acceptance are pending.
 
 ## 2. Critical dependency graph
 
-~~~text
-Existing M1 Bridge Core / M2 local Coordinator / PlayerView / BEN prototype
-                         |
-                   A1 Board metadata
-                         |
-               A2 Durable game resume
-                         |
-             A3 Production table UX
-                         |
-          A4 Real BEN delivery boundary ----- Licensing / privacy / cost decision
-                         |
-                A5 Durable history
-                         |
-              A6 Multi-board playtest
-                         |
-               SINGLE PLAYER MVP GO
-                     /          \
-       B Training & Review     C Async duplicate
-               |                       |
-       D DDS/learning       server-owned board sets + comparative scoring
-                                       |
-                             E Live multiplayer
-~~~
+```text
+M1 Bridge Core + M2 PlayerView/Coordinator/BEN prototype
+                 |
+      A1 Board metadata [verified]
+                 |
+      A2 Resume and security [scoped; outstanding release gates]
+                 |
+      A3 Table UI V2 [next feature slice]
+                 |
+      A4 Production BEN integration -- licensing/privacy/cost review
+                 |
+      A5 Persistent history / safe replay
+                 |
+      A6 Four-board golden path and A7 release/device acceptance [device QA on hold]
+                 |
+           SINGLE-PLAYER MVP
+             /      |      \\
+  B Practice/Teach  C Analysis  D Async competition (server-backed)
+   incl. B6 daily    DDS/review      MP/IMP, friend challenges
+   unranked practice                       |
+                                 E Live multiplayer/community
+```
 
-Some tasks may be developed in parallel, but **the MVP acceptance run depends on all A gates**. Separate module PASS does not automatically prove the end-to-end player journey.
+The graph represents completion dependencies and **does not authorize Android device test execution**. Different slices may be designed or implemented concurrently; no product gate can be marked READY based on isolated CI evidence alone.
 
 ## 3. Phase A — Playable Single Player (P0; next implementation)
 
 | Slice | Visible deliverable | Tests / exact acceptance | Existing basis | Status |
 | --- | --- | --- | --- | --- |
 | **A1 / P1.1 Board Management** | Board Number, Dealer, Vulnerability, Replay Same Board, Next Board and fixed/fresh labels | Canonical 16-board dealer/vul cycle and repeat at 17; four seats; scoring; BEN wire/Flutter zh-TW/en | [M2-F12 acceptance](P1_A1_BOARD_MANAGEMENT_ACCEPTANCE.md) | **CORE/FLUTTER WEB + FIXED REAL BEN VERIFIED; ANDROID REGRESSION PENDING** |
-| **A2 / P1.2 Persistence** | Best-effort restore prototype with versioned transcript and read-only player projection | [M2-F13 acceptance](P1_A2_PERSISTENCE_ACCEPTANCE.md); reliable encrypted/transactional storage, real crash tests, server idempotency still required | Coordinator replay + SharedPreferencesAsync local checkpoint | **A2.1–A2.4 VERIFIED AS SCOPED; A2.5 FLUTTER WEB VERIFIED (50/50), NATIVE/REAL BEN REGRESSIONS PENDING; A2.7 encrypted native transactional backend implemented; [Flutter 60/60 + Web/Chrome PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38744797200) against Fake SQL + real AES-GCM. Native device security tests and Web production confidentiality remain blockers** |
+| **A2 / P1.2 Persistence** | Best-effort restore prototype with versioned transcript and read-only player projection | [M2-F13 acceptance](P1_A2_PERSISTENCE_ACCEPTANCE.md); reliable encrypted/transactional storage, real crash tests, server idempotency still required | Coordinator replay + SharedPreferencesAsync local checkpoint | **A2 Core/Web checkpoint tests and A2.7 encrypted native storage implemented; A2.8 encrypted Web archive added; [latest Flutter/Chrome CI success](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38757222196). Physical device verification, browser deployment/XSS/multitab review and real BEN exactly-once still BLOCKED/NOT VERIFIED.** |
 | **A3 / P1.3 Table UX V2** | Legible four-seat table, compact bidding box, sortable legal cards, hand/trick feedback, correct dummy ownership, accessible controls | Real Android/iOS/Web manual + automated tasks; 320/375/768px; no overflow; TalkBack/VoiceOver feedback; no inaccessible controls | Functional single large Flutter table exists | PARTIAL |
 | **A4 / P1.4 Real BEN client delivery** | One-click real AI in installed/distributed app; no local Python prerequisite | Authenticated HTTPS and private hand data handling; BEN no silent Demo fallback; 4-seat/16-board matrix; measured p50/p95/errors with actual model settings; fail/retry | Real pinned Python BEN Chrome fixed-board CI; local HTTP GET dev integration | PARTIAL / PRODUCTION BLOCKED |
 | **A5 / P1.5 History + Same-deal retry** | Persistent finished-deal list, search/filter, replay and labeled training re-run | Survive app restart, import untrusted transcript safely, exact score replay, no original result double-count, no hidden-hand leak | In-memory finished replay exists | PARTIAL |
@@ -99,6 +106,12 @@ Implemented native Android/iOS encrypted SQLite checkpoint adapter, AES-GCM, key
 | B3 Bidding Practice | Pattern-based partnership bidding without forced card play | Versioned ConventionProfile, partner agreements, external expert review |
 | B4 Guided training | Original curated problems and answers; simple progress metrics | One scenario per competency, proven answer rules and no hidden information leakage |
 | B5 Training review | Replay same deal and explain critical decisions | Legality vs agreement vs strategic quality distinguished |
+
+### B6 / P1 — Daily fixed-board **practice preview** (no rankings)
+
+- Generate/version four **original** practice boards with the canonical dealer/vulnerability cycle; show the same local challenge identifier and a personal summary, subject to a clear retention/cutover policy.
+- May use a signed, published board manifest once needed, but without authenticated server-supplied comparison results it is **not** a Duplicate event. Replaying for study is allowed and explicitly labeled; results are not competition entries.
+- Acceptance: reproducible deal IDs and local scores, 4-board retry/restore, no private-hand leak, never show fabricated MP/IMP, opponent rank, or friend comparison; no live leaderboard.
 
 ## 5. Phase C — Analysis and Improvement (P2)
 
