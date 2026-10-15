@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/session_persistence.dart';
@@ -7,12 +9,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _Keys implements CheckpointKeyValueStore {
   final data = <String, String>{};
+  bool failNextMarkerWrite = false;
 
   @override
   Future<String?> getString(String key) async => data[key];
 
   @override
   Future<void> setString(String key, String value) async {
+    if (failNextMarkerWrite &&
+        key == PreferencesSessionArchiveStore.activeKey) {
+      failNextMarkerWrite = false;
+      throw StateError('Injected marker write failure');
+    }
     data[key] = value;
   }
 
@@ -49,7 +57,7 @@ String _snapshot({bool humanPassed = false}) {
 }
 
 void main() {
-  test('A2.4: restored prior generation is explicitly reported once',
+  test('A2.5: restored prior generation stays flagged until consent',
       () async {
     final keys = _Keys();
     final store = PreferencesSessionArchiveStore(keyValueStore: keys);
@@ -65,8 +73,17 @@ void main() {
     expect(await store.read(), first);
     expect(store.recoveredOlderCheckpoint, true);
     expect(SavedBoardCodec.decode((await store.read())!).state.version, 0);
-    expect(store.recoveredOlderCheckpoint, false,
-        reason: 'Warning provenance should be for the most recent read');
+    expect(store.recoveredOlderCheckpoint, true,
+        reason: 'Unacknowledged rollback must persist across reads');
+    // A fresh store instance represents an actual new app process.
+    final reopened = PreferencesSessionArchiveStore(keyValueStore: keys);
+    expect(await reopened.read(), first);
+    expect(reopened.recoveredOlderCheckpoint, true);
+    await reopened.acknowledgeRecoveredCheckpoint();
+    expect(reopened.recoveredOlderCheckpoint, false);
+    final third = PreferencesSessionArchiveStore(keyValueStore: keys);
+    expect(await third.read(), first);
+    expect(third.recoveredOlderCheckpoint, false);
   });
 
   testWidgets('A2.4: backup restore blocks actions until player confirms',
@@ -160,5 +177,97 @@ void main() {
     expect(session.actionsPaused, false);
     expect(session.view!.canAct, true);
   });
+
+  test('A2.5: killing session twice never bypasses consent', () async {
+    final keys = _Keys();
+    final writer = PreferencesSessionArchiveStore(keyValueStore: keys);
+    await writer.write(_snapshot());
+    await writer.write(_snapshot(humanPassed: true));
+    keys.corruptLatest();
+
+    final first = BridgeSession(
+      archiveStore: PreferencesSessionArchiveStore(keyValueStore: keys),
+    );
+    expect(await first.restoreSavedGame(), isTrue);
+    expect(first.recoveryNeedsConfirmation, isTrue);
+    expect(first.view!.version, 0);
+    first.dispose();
+
+    final second = BridgeSession(
+      archiveStore: PreferencesSessionArchiveStore(keyValueStore: keys),
+    );
+    addTearDown(second.dispose);
+    expect(await second.restoreSavedGame(), isTrue);
+    expect(second.recoveryNeedsConfirmation, isTrue);
+    await second.submitCall(const Pass());
+    expect(second.view!.version, 0);
+    await second.acknowledgeRecoveredCheckpoint();
+    expect(second.recoveryNeedsConfirmation, isFalse);
+    await second.submitCall(const Pass());
+    expect(second.finished, true);
+  });
+
+  test('A2.5: failed acknowledgment is not treated as consent', () async {
+    final keys = _Keys();
+    final store = PreferencesSessionArchiveStore(keyValueStore: keys);
+    await store.write(_snapshot());
+    await store.write(_snapshot(humanPassed: true));
+    keys.corruptLatest();
+    final session = BridgeSession(archiveStore: store);
+    addTearDown(session.dispose);
+    expect(await session.restoreSavedGame(), true);
+    final before = keys.data[PreferencesSessionArchiveStore.activeKey];
+    keys.failNextMarkerWrite = true;
+    await session.acknowledgeRecoveredCheckpoint();
+    expect(session.recoveryNeedsConfirmation, true);
+    expect(session.actionsPaused, true);
+    expect(session.errorCode, 'errorSave');
+    expect(keys.data[PreferencesSessionArchiveStore.activeKey], before);
+    await session.submitCall(const Pass());
+    expect(session.view!.version, 0);
+
+    final reopened = BridgeSession(
+      archiveStore: PreferencesSessionArchiveStore(keyValueStore: keys),
+    );
+    addTearDown(reopened.dispose);
+    expect(await reopened.restoreSavedGame(), true);
+    expect(reopened.recoveryNeedsConfirmation, true);
+    expect(reopened.view!.version, 0);
+    await reopened.acknowledgeRecoveredCheckpoint();
+    expect(reopened.recoveryNeedsConfirmation, false);
+  });
+
+  test('A2.5: invalid consent marker is never accepted', () async {
+    final keys = _Keys();
+    final store = PreferencesSessionArchiveStore(keyValueStore: keys);
+    await store.write(_snapshot());
+    final invalid = jsonDecode(
+        keys.data[PreferencesSessionArchiveStore.activeKey]!)
+        as Map<String, dynamic>;
+    invalid['recoveryPending'] = 'yes';
+    keys.data[PreferencesSessionArchiveStore.activeKey] = jsonEncode(invalid);
+    await expectLater(store.read(), throwsFormatException);
+  });
+
+  test('A2.5: explicit new game supersedes unacknowledged backup', () async {
+    final keys = _Keys();
+    final store = PreferencesSessionArchiveStore(keyValueStore: keys);
+    await store.write(_snapshot());
+    await store.write(_snapshot(humanPassed: true));
+    keys.corruptLatest();
+    final session = BridgeSession(archiveStore: store);
+    addTearDown(session.dispose);
+    expect(await session.restoreSavedGame(), true);
+    expect(session.recoveryNeedsConfirmation, true);
+    await session.newGame(boardNumber: 2, humanSeat: Seat.east);
+    expect(session.recoveryNeedsConfirmation, false);
+    expect(session.board.number, 2);
+    final newer = PreferencesSessionArchiveStore(keyValueStore: keys);
+    final raw = await newer.read();
+    expect(raw, isNotNull);
+    expect(SavedBoardCodec.decode(raw!).board.number, 2);
+    expect(newer.recoveredOlderCheckpoint, false);
+  });
+
 }
 

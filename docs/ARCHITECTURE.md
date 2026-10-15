@@ -15,6 +15,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
     +---- Persistence (SQLite local → PostgreSQL service when needed)
 ~~~
 
+## A2.5 persistence consent boundary (2026-10-15)
+- Checkpoint restoration can fall back to a previous legally verified version. The app must not silently resume if the newest committed generation was lost.
+- The local checkpoint commit marker includes an optional boolean recoveryPending that survives separate app launches. BridgeSession awaits clearing the durable-intent marker before unpausing human or AI input; failed acknowledgment stays blocked.
+- Marker confirmation and slot content are still SharedPreferencesAsync writes, **not** encrypted, authenticated or fsync/ACID durable. Future transactional storage remains a separate product release requirement.
+
 ## Invariants
 - One authority executes all state transitions. A BEN call is an **ActionProposal**, not truth.
 - Duplicate score returns a documented perspective: NS signed integer, with declarer partnership, vulnerability and X/XX preserved.

@@ -116,9 +116,25 @@ class BridgeSession extends ChangeNotifier {
   /// Explicit player confirmation required after losing a committed slot.
   Future<void> acknowledgeRecoveredCheckpoint() async {
     if (!_recoveryNeedsConfirmation || busy) return;
-    _recoveryNeedsConfirmation = false;
+    _saving = true;
     notifyListeners();
-    await _advanceBots();
+    var accepted = false;
+    try {
+      final store = _archiveStore;
+      if (store is RecoveryAwareSessionArchiveStore) {
+        await store.acknowledgeRecoveredCheckpoint();
+      }
+      _recoveryNeedsConfirmation = false;
+      _errorCode = null;
+      accepted = true;
+    } catch (_) {
+      // Keep the warning and do not wake the Bot if saving consent fails.
+      _errorCode = 'errorSave';
+    } finally {
+      _saving = false;
+      notifyListeners();
+    }
+    if (accepted) await _advanceBots();
   }
 
   Future<void> _persist() async {

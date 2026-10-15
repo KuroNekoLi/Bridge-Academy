@@ -16,6 +16,10 @@ abstract interface class SessionArchiveStore {
 /// No hidden cards or transcript data are exposed through this interface.
 abstract interface class RecoveryAwareSessionArchiveStore {
   bool get recoveredOlderCheckpoint;
+
+  /// Persist acknowledgment before allowing actions to resume. An unsuccessful
+  /// write must leave the player warning in force across app restarts.
+  Future<void> acknowledgeRecoveredCheckpoint();
 }
 
 /// A small key-value boundary, injectable to simulate interrupted writes.
@@ -77,18 +81,22 @@ final class PreferencesSessionArchiveStore
 
   static String _other(String slot) => slot == 'a' ? 'b' : 'a';
 
-  static ({String slot, int generation})? _parseMarker(String? raw) {
+  static ({String slot, int generation, bool recoveryPending})?
+      _parseMarker(String? raw) {
     if (raw == null) return null;
     final decoded = jsonDecode(raw);
     if (decoded is! Map<String, dynamic> ||
         (decoded['slot'] != 'a' && decoded['slot'] != 'b') ||
         decoded['generation'] is! int ||
-        (decoded['generation'] as int) < 1) {
+        (decoded['generation'] as int) < 1 ||
+        (decoded['recoveryPending'] != null &&
+            decoded['recoveryPending'] is! bool)) {
       throw const FormatException('Invalid checkpoint commit marker');
     }
     return (
       slot: decoded['slot'] as String,
       generation: decoded['generation'] as int,
+      recoveryPending: decoded['recoveryPending'] == true,
     );
   }
 
@@ -144,6 +152,9 @@ final class PreferencesSessionArchiveStore
     if (active != null) {
       final committed = await _readSlot(active.slot);
       if (committed != null && committed.generation == active.generation) {
+        // The warning is durable, not a one-time read event. A killed app
+        // must show it again until the player explicitly acknowledges it.
+        _recoveredOlderCheckpoint = active.recoveryPending;
         return committed.archive;
       }
       final previous = await _readSlot(_other(active.slot));
@@ -156,6 +167,7 @@ final class PreferencesSessionArchiveStore
       await _store.setString(activeKey, jsonEncode({
         'slot': _other(active.slot),
         'generation': previous.generation,
+        'recoveryPending': true,
       }));
       // A valid backup may have fewer player actions than the lost save.
       _recoveredOlderCheckpoint = true;
@@ -170,6 +182,26 @@ final class PreferencesSessionArchiveStore
     await write(legacy);
     await _store.remove(key);
     return legacy;
+  }
+
+  @override
+  Future<void> acknowledgeRecoveredCheckpoint() async {
+    final active = _parseMarker(await _store.getString(activeKey));
+    if (active == null || !active.recoveryPending) {
+      _recoveredOlderCheckpoint = false;
+      return;
+    }
+    // Do not clear an acknowledgement on an invalid or torn slot.
+    final valid = await _readSlot(active.slot);
+    if (valid == null || valid.generation != active.generation) {
+      throw const FormatException('No valid checkpoint to acknowledge');
+    }
+    await _store.setString(activeKey, jsonEncode({
+      'slot': active.slot,
+      'generation': active.generation,
+      'recoveryPending': false,
+    }));
+    _recoveredOlderCheckpoint = false;
   }
 
   @override

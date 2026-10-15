@@ -11,7 +11,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 - [Bridge Academy PRD v1](docs/product/BRIDGE_ACADEMY_PRD_V1.md) — product vision, functional requirements, player journeys, release acceptance.
 - [Product Delivery Roadmap](docs/product/PRODUCT_DELIVERY_ROADMAP.md) — Phase A single-player MVP → B training → C analysis → D async duplicate → E live multiplayer.
 
-**NEXT:** Phase A2.2, replace prototype SharedPreferences checkpoints with atomic, migration-tested and appropriately encrypted storage; prove actual Android/iOS process-kill recovery and AI idempotency. Phase A2.1 Core 55/55 and Flutter Web 28/28 plus Chrome backend round-trip are engineering verified, **not** release-grade crash safety. The existing [engineering roadmap](docs/ROADMAP.md) remains the chronological test ledger and must not be overwritten.
+**NEXT:** Phase A2.5 persistent rollback confirmation is implemented pending CI, following verified two-slot storage, real Android force-stop/relaunch, and A2.4 rollback warning. The remaining product blockers are encrypted/transactional storage, physical-device QA and remote BEN idempotency. [A2.5 acceptance](docs/product/P1_A2_5_DURABLE_RECOVERY_CONSENT_ACCEPTANCE.md). The existing [engineering roadmap](docs/ROADMAP.md) remains the chronological test ledger and must not be overwritten.
 
 ## Product progression
 1. **POC-001**: BEN API and one fixed deal — GO based on a Work execution report.
