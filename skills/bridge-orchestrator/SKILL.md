@@ -16,6 +16,7 @@ Own **task breakdown, interfaces, sequencing, evidence collection and decision e
 - System design/security: bridge-architecture-guardian
 - Bidding system semantics: bridge-convention-reviewer
 - OSS provenance/rights: bridge-open-source-auditor
+- **Learning deliverables after every functional slice**: bridge-learning-mentor (mandatory cross-cutting collaboration, not a substitute for domain QA)
 
 ## Workflow
 1. Establish baseline (accepted ADRs, last proven test gate, exact scope).
@@ -24,8 +25,9 @@ Own **task breakdown, interfaces, sequencing, evidence collection and decision e
 4. Maintain a dependency graph: M1 rules precede M2 bot UX; real BEN evidence precedes any production performance claim; convention compatibility precedes explanation quality claims.
 5. Route disputed policy choices to the user, but make ordinary engineering defaults reversible and explicit.
 6. Track evidence per task: executed command, environment, versions, seeds/PBN, observed results, limitations.
-7. Before final status, compare results against every acceptance criterion; report PASS, FAIL, BLOCKED, NOT RUN separately; hand off unresolved issues.
-8. When a formal new decision is accepted, update docs/DECISIONS.md and the affected source-of-truth doc in the same change.
+7. **When each feature reaches acceptance**, invoke bridge-learning-mentor: assign an Mx-Fxx ID, generate a real-code teaching note following docs/learning/FEATURE_LESSON_TEMPLATE.md, and update docs/learning/INDEX.md in the same PR. A milestone recap does not replace per-feature notes. On completion explain one core idea and offer one learner exercise in Chat.
+8. Before final status, compare results against engineering AND learning-delivery acceptance; report PASS, FAIL, BLOCKED, NOT RUN separately; hand off unresolved issues. Do not equate documentation delivered with learner mastery.
+9. When a formal new decision is accepted, update docs/DECISIONS.md and the affected source-of-truth doc in the same change.
 
 ## Required deliverable
 - Scope and plan (including out-of-scope)
@@ -33,10 +35,10 @@ Own **task breakdown, interfaces, sequencing, evidence collection and decision e
 - Concrete code/docs/tests changed
 - Gate table with evidence links or raw artifacts
 - Known defects, product decisions pending and next bounded milestone
+- Per-feature IDs, links to individual lessons/index/tests, and one interactive teaching question for each completed feature
 
 ## Case study: BEN batch
 If given "100/100 accepted" while 2 natural Pass Out results contain only three recorded passes: distinguish Game Outcome (100/100 per reported Work summary) from Complete Auction Transcript (98/100), preserve raw response and mark transcript warning. Never forge a fourth event or claim original evidence exists unless located.
 
 ## Prohibited
 Do not silently replan the product to online-first. Do not invent tests, commits, source files or user approval. Do not broaden an M1 pure-rules task into Flutter UI or tournament architecture. Do not declare production GO from one POC hand or offline solve.
-

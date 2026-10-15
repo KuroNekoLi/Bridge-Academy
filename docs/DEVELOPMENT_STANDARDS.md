@@ -21,14 +21,21 @@
 - Benchmark: latency p50/p95/max, timeout/error and RSS with sample count, machine, PIMC/sampling settings.
 - No "100% PASS" claim without specifying criterion. Outcome vs transcript completeness reported separately.
 
+## Learn While Building — mandatory feature delivery
+- Every independently demonstrable behavior feature with acceptance criteria (not every line/class) MUST include its own short Traditional-Chinese Feature Learning Note in docs/learning/features/Mx_Fxx_TOPIC.md, plus an index row in docs/learning/INDEX.md, committed together with source/test changes.
+- Use docs/learning/FEATURE_LESSON_TEMPLATE.md and bridge-learning-mentor/SKILL.md. Explain a real scenario, actual code paths/flow, WHY and a rejected alternative, an Android/Kotlin analogy when genuinely helpful, practical tests, one 5–15 minute exercise and its success criteria.
+- On reporting each completed feature, provide a brief conceptual lesson and one learner question in Chat; keep engineering progress independent from when the learner replies.
+- CI can enforce file/template presence for feature PRs, while reviewers check **one lesson for each independent feature** and technical accuracy. Add mapping Feature ID → code → test → lesson in PR description; no invented test evidence.
+- Track ENGINEERING_PASS separate from LESSON_DELIVERED; only user participation merits PRACTICED or MASTERED.
+- Trivial chores without new behavior need no fabricated lesson; substantive bug fixes should update a relevant lesson if they change a previously taught invariant.
+
 ## Language / experience
 - Product UI and explanations zh-TW/en, no hard-coded visible strings. Accessibility names, clear suit symbols plus labels, color-independent legal move cues.
 - Decimal timeouts/latency units explicit; game score perspective explicit.
 - User data and room chat eventually require retention/privacy policy before public launch.
 
 ## Evidence template
-Change / test command / environment+versions / fixture seed & PBN / expected result / actual result / PASS-FAIL-BLOCKED / known gaps. Tests not run must say NOT RUN.
+Feature ID / implementation paths / test command / environment+versions / fixture seed & PBN / expected result / actual result / PASS-FAIL-BLOCKED / lesson path / learner exercise / known gaps. Tests not run must say NOT RUN.
 
 ## GitHub automation entry
 When actual implementation begins, add CI checks for pure rules, formatting and static checks before merging; do not add a green CI badge or claim working workflows without running them.
-
