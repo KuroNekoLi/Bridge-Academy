@@ -11,8 +11,15 @@ Before choosing the next feature, read:
 4. docs/ROADMAP.md — **historical engineering milestone and CI ledger**, retained without rebranding earlier successes;
 5. docs/BRIDGE_RULES_BASELINE.md and docs/DECISIONS.md — authoritative game invariants and accepted ADRs.
 
-For generic "下一步" requests choose the earliest **unverified P0 player journey** in the product roadmap (A1 verified; A2 best-effort local checkpoint prototype has Core/Chrome engineering evidence, but its critical storage durability/security and device-process-restart gates remain unverified. A2.3 Android force-stop/two-process resume is verified (CI #38731973367); A2.4 rollback disclosure is already implemented; A2.5 persistent consent across repeated app launches is Flutter Web verified (50/50); Android current-head and secure-storage gates remain, followed by transactional/encrypted storage choices), not an arbitrary next M2-Fxx number. A technical test PASS is not consumer Product READY. Never silently rebuild an existing feature just to match a proposed milestone title. Repository source of truth is code + executed evidence.
+For generic "下一步" requests, compare the latest code and scoped CI evidence with the **current** product roadmap. A1 Board Management has verified Core/Flutter/real BEN fixed regression. A2 local checkpoints, secure native SQLite and browser encrypted archive have been implemented with scoped test evidence, but native device durability, deployment security and remote BEN idempotency remain **open P0 release gates**. The next player-visible feature-development slice is **A3 Bridge Table UI V2**, while safe A2 security work may continue independently. Do not mistake initial historical A1/A2 planning prose for the latest implementation status. Keep distinct:
+- technical-domain correctness (actual code and scoped CI)
+- Web/browser and real-BEN end-to-end acceptance in named environments
+- device-specific acceptance, **currently on owner hold**
+- deployed product's durability/privacy/license/release readiness.
 
+**QA hold (owner-approved 2026-10-15):** never re-enable, schedule or dispatch Android emulator or physical Android/iOS UI/E2E workflows without subsequent explicit owner approval. Relevant device workflows are guarded off. Dart/Flutter unit, analysis, Web builds and currently permitted browser/real-BEN checks remain available. Device QA remains a mandatory release gate, not canceled acceptance.
+
+**Daily feature split:** B6/P1 may deliver an **unranked original fixed-board daily practice**; a ranked daily Duplicate, MP/IMP, leaderboard or friend comparison remains D/P3 after server-owned comparable boards and fair scoring. Product doc priority changes need explicit ADR/version history; feature completion needs real code/tests and per-feature lesson.
 ## On every task
 1. Read README.md, docs/DECISIONS.md, docs/ARCHITECTURE.md, docs/BRIDGE_RULES_BASELINE.md and the relevant milestone in docs/ROADMAP.md.
 2. Select the smallest applicable skill in skills/README.md; do not activate unrelated skills for decoration.
