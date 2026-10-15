@@ -12,6 +12,12 @@ abstract interface class SessionArchiveStore {
   Future<void> clear();
 }
 
+/// Reports when the last read had to recover a prior committed version.
+/// No hidden cards or transcript data are exposed through this interface.
+abstract interface class RecoveryAwareSessionArchiveStore {
+  bool get recoveredOlderCheckpoint;
+}
+
 /// A small key-value boundary, injectable to simulate interrupted writes.
 /// Individual keys can be updated, but multiple keys are NOT an atomic disk
 /// transaction. This design tolerates common torn-write scenarios, not power
@@ -45,7 +51,8 @@ final class _PreferencesKeyValueStore implements CheckpointKeyValueStore {
 ///
 /// SHA-256 is for ACCIDENTAL corruption detection, NOT authentication or
 /// encryption. SharedPreferences remains plaintext and is NOT a database.
-final class PreferencesSessionArchiveStore implements SessionArchiveStore {
+final class PreferencesSessionArchiveStore
+    implements SessionArchiveStore, RecoveryAwareSessionArchiveStore {
   PreferencesSessionArchiveStore({
     SharedPreferencesAsync? preferences,
     CheckpointKeyValueStore? keyValueStore,
@@ -60,6 +67,10 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
   static const _storeVersion = 2;
 
   final CheckpointKeyValueStore _store;
+  bool _recoveredOlderCheckpoint = false;
+
+  @override
+  bool get recoveredOlderCheckpoint => _recoveredOlderCheckpoint;
 
   static String _slotKey(String slot) =>
       slot == 'a' ? slotAKey : slotBKey;
@@ -128,6 +139,7 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
 
   @override
   Future<String?> read() async {
+    _recoveredOlderCheckpoint = false;
     final active = _parseMarker(await _store.getString(activeKey));
     if (active != null) {
       final committed = await _readSlot(active.slot);
@@ -145,6 +157,8 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
         'slot': _other(active.slot),
         'generation': previous.generation,
       }));
+      // A valid backup may have fewer player actions than the lost save.
+      _recoveredOlderCheckpoint = true;
       return previous.archive;
     }
 

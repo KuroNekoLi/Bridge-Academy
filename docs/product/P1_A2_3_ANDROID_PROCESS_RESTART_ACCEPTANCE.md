@@ -1,6 +1,6 @@
 # Phase A2.3 — Android process-restart checkpoint acceptance
 
-**Initial status: IMPLEMENTED / ANDROID CI NOT RUN.** This is a real Android process-boundary QA step for already-existing A2.1/A2.2 checkpoint persistence. It does not add encryption, ACID/fsync durability, or real BEN request idempotency.
+**Actual status 2026-10-15: ANDROID API 35 CROSS-PROCESS ENGINEERING VERIFIED.** [CI #38731973367](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38731973367) SUCCESS (SHA 2aed846825acf3f94282b610622efbdbad06d082). No encrypted/ACID or kill-during-write guarantee. This is a real Android process-boundary QA step for already-existing A2.1/A2.2 checkpoint persistence. It does not add encryption, ACID/fsync durability, or real BEN request idempotency.
 
 ## Background
 
@@ -57,4 +57,4 @@ Next release blockers: secure transactional storage choices per Android/iOS/Web,
 
 - [Android CI #38730129519](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38730129519) **FAIL, harness only**: original Android table UI passed; first separate Android process A passed and printed `A2_3_ANDROID_PROCESS_A_PASS` after a real unfinished game checkpoint. The bash script then reported `Bridge Academy Android application missing`, *before executing force-stop or process B*. Root cause: default `flutter drive` cleanup stops/removes its debug app at test completion.
 - [Flutter drive keep-app-running option](https://codebrowser.dev/flutter/flutter/packages/flutter_tools/lib/src/commands/drive.dart.html) is documented by Flutter tooling to leave the app running after testing. [Fix commit 2aed846](https://github.com/KuroNekoLi/Bridge-Academy/commit/2aed846825acf3f94282b610622efbdbad06d082) adds `--keep-app-running` **only to process A** before the explicit `adb shell am force-stop`. It changes the test harness, not application gameplay/persistence code.
-- [New Android CI #38731973367](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38731973367) is the validation run; **PENDING** as of this note. A passing process A test by itself must never be recorded as a cross-process recovery PASS.
+- [New Android CI #38731973367](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38731973367) is the validation run; **SUCCESS**. The job ran separate Flutter drive process A and B with adb force-stop, verified the saved mid-trick transcript version/fingerprint, restored normal app UI and played the next legal card. The earlier failure was only a test harness issue, not proof of cross-process functionality.

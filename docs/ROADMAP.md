@@ -69,3 +69,6 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 
 ## Stop conditions
 Block rollout on information leakage, illegal move acceptance, wrong duplicate scoring, unreplayable state, unexplained mismatch between BEN and Bridge Core, unreviewed third-party license obligations or untestable production reliability.
+
+- **Phase A2.3 Android forced restart:** [CI #38731973367](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38731973367) PASS, two separate Android Flutter app launches with real force-stop between them and mid-trick restoration. Not crash during fsync or encrypted production durability.
+- **Phase A2.4 / M2-F16 rollback disclosure:** introduced a nonsecret older-backup recovery flag, explicit zh-TW/en acknowledgment, and pause of human/Bot action until acknowledged. [Acceptance](product/P1_A2_4_ROLLBACK_NOTICE_ACCEPTANCE.md); new CI pending, not production READY.

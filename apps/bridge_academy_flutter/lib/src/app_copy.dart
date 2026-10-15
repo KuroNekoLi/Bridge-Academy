@@ -98,6 +98,11 @@ class AppCopy {
     'restoringGame': ['正在恢復上次牌局…', 'Restoring saved game…'],
     'restoredGame': ['已恢復上次牌局', 'Saved board restored'],
     'retrySave': ['重試儲存', 'Retry saving'],
+    'recoveredOlderCheckpoint': [
+      '最新存檔已損壞，系統改用較早的合法備份。最近的叫牌或出牌可能遺失；請先確認牌局狀態再繼續。',
+      'The latest save was damaged. An older valid backup was restored. Recent bids or plays may be missing. Review the board before continuing.',
+    ],
+    'ackRecoveredCheckpoint': ['了解風險，繼續牌局', 'I understand, continue'],
     'errorSave': ['牌局尚未成功儲存，請重試後繼續。',
       'Board could not be saved. Retry before continuing.'],
     'errorStorage': ['無法讀取本機牌局。可選擇開始新牌局。',

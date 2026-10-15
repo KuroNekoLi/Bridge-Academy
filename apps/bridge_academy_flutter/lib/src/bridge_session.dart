@@ -39,12 +39,15 @@ class BridgeSession extends ChangeNotifier {
   bool _restoring = false;
   bool _saveFailed = false;
   bool _restoredFromStorage = false;
+  bool _recoveryNeedsConfirmation = false;
   String? _errorCode;
   OpponentMode _mode = OpponentMode.demo;
   BoardMode _boardMode = BoardMode.training;
   Seat _humanSeat = Seat.north;
 
   bool get busy => _busy || _saving || _restoring;
+  bool get recoveryNeedsConfirmation => _recoveryNeedsConfirmation;
+  bool get actionsPaused => busy || _recoveryNeedsConfirmation;
   bool get restoring => _restoring;
   bool get saveFailed => _saveFailed;
   bool get restoredFromStorage => _restoredFromStorage;
@@ -70,6 +73,9 @@ class BridgeSession extends ChangeNotifier {
       final raw = await _archiveStore.read();
       if (raw == null) return false;
       final snapshot = SavedBoardCodec.decode(raw);
+      final recoveredBackup = _archiveStore is RecoveryAwareSessionArchiveStore &&
+          (_archiveStore as RecoveryAwareSessionArchiveStore)
+              .recoveredOlderCheckpoint;
       final mode = OpponentMode.values.byName(snapshot.opponentMode);
       final boardMode = BoardMode.values.byName(snapshot.boardMode);
       final bot = _createBot(mode);
@@ -85,8 +91,10 @@ class BridgeSession extends ChangeNotifier {
       _boardMode = boardMode;
       _errorCode = null;
       _restoredFromStorage = true;
+      _recoveryNeedsConfirmation = recoveredBackup;
       restored = true;
-      advanceBot = !coordinator.finished && !coordinator.humanView.canAct;
+      advanceBot = !recoveredBackup && !coordinator.finished &&
+          !coordinator.humanView.canAct;
     } on FormatException {
       _errorCode = 'errorCorruptSave';
     } on RuleViolation {
@@ -103,6 +111,14 @@ class BridgeSession extends ChangeNotifier {
     }
     if (advanceBot) await _advanceBots();
     return restored;
+  }
+
+  /// Explicit player confirmation required after losing a committed slot.
+  Future<void> acknowledgeRecoveredCheckpoint() async {
+    if (!_recoveryNeedsConfirmation || busy) return;
+    _recoveryNeedsConfirmation = false;
+    notifyListeners();
+    await _advanceBots();
   }
 
   Future<void> _persist() async {
@@ -216,6 +232,7 @@ class BridgeSession extends ChangeNotifier {
     _errorCode = null;
     _saveFailed = false;
     _restoredFromStorage = false;
+    _recoveryNeedsConfirmation = false;
     _coordinator = SinglePlayerCoordinator(
       deal: deal,
       dealer: board.dealer,
@@ -240,7 +257,7 @@ class BridgeSession extends ChangeNotifier {
 
   Future<void> submitCall(Call call) async {
     final view = this.view;
-    if (busy || _saveFailed || view == null || view.phase != Phase.auction ||
+    if (actionsPaused || _saveFailed || view == null || view.phase != Phase.auction ||
         !view.canAct) {
       return;
     }
@@ -249,7 +266,7 @@ class BridgeSession extends ChangeNotifier {
 
   Future<void> submitCard(Card card) async {
     final view = this.view;
-    if (busy || _saveFailed || view == null || view.phase != Phase.play ||
+    if (actionsPaused || _saveFailed || view == null || view.phase != Phase.play ||
         !view.canAct || view.turn == null ||
         !view.legalCards.contains(card)) {
       return;
@@ -258,7 +275,7 @@ class BridgeSession extends ChangeNotifier {
   }
 
   Future<void> _submit(GameAction action, int expectedVersion) async {
-    if (busy || _saveFailed) return;
+    if (actionsPaused || _saveFailed) return;
     _saving = true;
     notifyListeners();
     var persisted = false;
@@ -281,7 +298,8 @@ class BridgeSession extends ChangeNotifier {
   Future<void> retryBots() => _advanceBots();
 
   Future<void> _advanceBots() async {
-    if (busy || _saveFailed || _coordinator == null || _coordinator!.finished ||
+    if (actionsPaused || _saveFailed || _coordinator == null ||
+        _coordinator!.finished ||
         _coordinator!.humanView.canAct) {
       return;
     }

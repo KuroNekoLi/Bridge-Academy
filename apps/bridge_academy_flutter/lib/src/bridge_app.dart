@@ -187,6 +187,25 @@ class _BridgeTableState extends State<BridgeTable> {
               if (session.restoredFromStorage)
                 Text(copy.t('restoredGame'),
                     key: const Key('restored_game')),
+              if (session.recoveryNeedsConfirmation)
+                Card(
+                  key: const Key('recovery_warning'),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(copy.t('recoveredOlderCheckpoint')),
+                        const SizedBox(height: 8),
+                        FilledButton(
+                          key: const Key('ack_recovered_checkpoint'),
+                          onPressed: session.acknowledgeRecoveredCheckpoint,
+                          child: Text(copy.t('ackRecoveredCheckpoint')),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               if (session.errorCode != null) ...[
                 const SizedBox(height: 8),
                 Card(
@@ -443,7 +462,7 @@ class _BridgeTableState extends State<BridgeTable> {
                     copy: copy,
                     legal: view.canAct && active &&
                         view.legalCards.contains(card),
-                    busy: session.busy,
+                    busy: session.actionsPaused,
                     onTap: () => session.submitCard(card),
                   ),
               ],
@@ -513,28 +532,28 @@ class _BridgeTableState extends State<BridgeTable> {
               ),
               FilledButton(
                 key: const Key('make_bid'),
-                onPressed: view.canAct && !session.busy
+                onPressed: view.canAct && !session.actionsPaused
                     ? () => session.submitCall(Bid(_bidLevel, _bidStrain))
                     : null,
                 child: Text(copy.t('call')),
               ),
               OutlinedButton(
                 key: const Key('pass'),
-                onPressed: view.canAct && !session.busy
+                onPressed: view.canAct && !session.actionsPaused
                     ? () => session.submitCall(const Pass())
                     : null,
                 child: Text(copy.t('pass')),
               ),
               OutlinedButton(
                 key: const Key('double'),
-                onPressed: view.canAct && !session.busy
+                onPressed: view.canAct && !session.actionsPaused
                     ? () => session.submitCall(const DoubleCall())
                     : null,
                 child: Text(copy.t('double')),
               ),
               OutlinedButton(
                 key: const Key('redouble'),
-                onPressed: view.canAct && !session.busy
+                onPressed: view.canAct && !session.actionsPaused
                     ? () => session.submitCall(const RedoubleCall())
                     : null,
                 child: Text(copy.t('redouble')),
@@ -565,7 +584,7 @@ class _BridgeTableState extends State<BridgeTable> {
                       copy: copy,
                       legal: view.canAct && view.turn == view.viewer &&
                           view.legalCards.contains(card),
-                      busy: session.busy,
+                      busy: session.actionsPaused,
                       onTap: () => session.submitCard(card),
                     ),
                 ],
