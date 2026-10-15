@@ -3,7 +3,7 @@
 - Feature ID：M2-F23
 - Milestone：A3.3
 - 類型：Flutter UI／狀態隔離
-- 工程狀態：IMPLEMENTED（CI NOT RUN；不得宣稱驗證完成）
+- 工程狀態：IMPLEMENTED（初次 Flutter analyze #38778352023 因未使用的測試 import 失敗，已修正；修正後 CI 待驗證）
 - 學習狀態：DELIVERED（非 PRACTICED／MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart`、`bridge_table_toolbar.dart`、`bridge_replay_panel.dart`、`bridge_app.dart`
 - 測試：`apps/bridge_academy_flutter/test/a3_table_toolbar_test.dart`
@@ -56,7 +56,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ```
 
-新增 `a3_table_toolbar_test.dart` 測試四座位、窄版面、明手、叫牌對話框、上一墩顯示前置條件與回放只讀；CI URL/結果需從實際執行填入。真正 BEN Chrome E2E 和 Android/iOS 裝置測試不可混為一談；後者仍由使用者暫停。
+新增 `a3_table_toolbar_test.dart` 測試四座位、窄版面、明手、叫牌對話框、上一墩顯示前置條件與回放只讀；初次 [Flutter CI #38778352023](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778352023) 的 analyze 發現 1 個 test unused import，已修正並等候重新執行。真正 BEN Chrome E2E 和 Android/iOS 裝置測試不可混為一談；後者仍由使用者暫停。
 
 ## 練習與自我檢驗
 

@@ -2,7 +2,6 @@ import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_replay_panel.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_table_toolbar.dart';
-import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
