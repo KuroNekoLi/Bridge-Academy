@@ -206,7 +206,7 @@ final class EncryptedTransactionalSessionArchiveStore
     final existing = await _records.readRecord();
     if (existing != null) _checked(existing);
     final key = await _secretKey();
-    final generation = (existing?['generation'] as int? ?? 0) + 1;
+    final generation = (existing == null ? 0 : existing['generation'] as int) + 1;
     final active = await _seal(archive, key);
     await _records.replaceRecord({
       'version': _version,
