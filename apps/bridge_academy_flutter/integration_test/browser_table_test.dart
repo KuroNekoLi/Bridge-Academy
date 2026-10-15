@@ -117,7 +117,9 @@ void main() {
     addTearDown(() async { await secure.clear(); });
 
     // Do not inject a fake session: exercise the real browser composition.
-    await tester.pumpWidget(const BridgeAcademyApp());
+    await tester.pumpWidget(const BridgeAcademyApp(
+      key: ValueKey('a28_web_fresh_application'),
+    ));
     await tester.pumpAndSettle();
     await tapControl(tester, 'new_game');
     await tapControl(tester, 'pass');
@@ -131,7 +133,9 @@ void main() {
 
     // A second BridgeAcademyApp recreates its session and storage provider.
     await tester.pumpWidget(const SizedBox());
-    await tester.pumpWidget(const BridgeAcademyApp());
+    await tester.pumpWidget(const BridgeAcademyApp(
+      key: ValueKey('a28_web_restored_application'),
+    ));
     await tester.runAsync(() =>
         Future<void>.delayed(const Duration(milliseconds: 500)));
     await tester.pumpAndSettle();
