@@ -31,7 +31,7 @@ void main() {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
-    expect(find.textContaining('不是 BEN'), findsOneWidget);
+    expect(find.textContaining('示範模式使用測試 Bot（不是 BEN）'), findsOneWidget);
     await tapVisible(tester, 'new_game');
     expect(find.byKey(const Key('bridge_board')), findsOneWidget);
     expect(find.byKey(const Key('dummy_revealed')), findsNothing);
