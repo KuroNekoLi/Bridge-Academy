@@ -1,15 +1,7 @@
 name: Flutter Android Emulator QA (M2-F08)
+# Device/emulator UI QA is paused by owner request (2026-10-15).
+# Explicit owner approval and a new change to this workflow are required to restore it.
 on:
-  push:
-    branches: [master]
-    paths:
-      - "apps/bridge_academy_flutter/lib/**"
-      - "apps/bridge_academy_flutter/integration_test/android_table_test.dart"
-      - "apps/bridge_academy_flutter/integration_test/android_persist_prepare_test.dart"
-      - "apps/bridge_academy_flutter/integration_test/android_persist_restore_test.dart"
-      - "apps/bridge_academy_flutter/scripts/android_process_restart_e2e.sh"
-      - "apps/bridge_academy_flutter/pubspec.yaml"
-      - ".github/workflows/flutter-android-emulator.yml"
   workflow_dispatch:
 
 permissions:
@@ -17,6 +9,8 @@ permissions:
 
 jobs:
   android-ui:
+    # Guard against manual dispatch too: never allocate an AVD runner before approval.
+    if: ${{ false }}
     name: Android API 35 x86_64 device UI
     runs-on: ubuntu-latest
     timeout-minutes: 50
