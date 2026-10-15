@@ -66,13 +66,29 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
 
   static String _other(String slot) => slot == 'a' ? 'b' : 'a';
 
-  static String _encodeEnvelope(String archive) => jsonEncode({
+  static ({String slot, int generation})? _parseMarker(String? raw) {
+    if (raw == null) return null;
+    final decoded = jsonDecode(raw);
+    if (decoded is! Map<String, dynamic> ||
+        (decoded['slot'] != 'a' && decoded['slot'] != 'b') ||
+        decoded['generation'] is! int ||
+        (decoded['generation'] as int) < 1) {
+      throw const FormatException('Invalid checkpoint commit marker');
+    }
+    return (
+      slot: decoded['slot'] as String,
+      generation: decoded['generation'] as int,
+    );
+  }
+
+  static String _encodeEnvelope(String archive, int generation) => jsonEncode({
         'storeVersion': _storeVersion,
+        'generation': generation,
         'sha256': sha256.convert(utf8.encode(archive)).toString(),
         'archive': archive,
       });
 
-  static String _decodeEnvelope(String? raw) {
+  static ({String archive, int generation}) _decodeEnvelope(String? raw) {
     if (raw == null || raw.length > 512 * 1024) {
       throw const FormatException('Missing or oversized checkpoint slot');
     }
@@ -80,6 +96,8 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
     if (decoded is! Map<String, dynamic> ||
         decoded['storeVersion'] != _storeVersion ||
         decoded['archive'] is! String ||
+        decoded['generation'] is! int ||
+        (decoded['generation'] as int) < 1 ||
         decoded['sha256'] is! String) {
       throw const FormatException('Unsupported or invalid checkpoint slot');
     }
@@ -91,10 +109,10 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
     // A checksum alone is insufficient: replay all real events through the
     // authoritative Bridge Core and reject invalid board/version/calls.
     SavedBoardCodec.decode(archive);
-    return archive;
+    return (archive: archive, generation: decoded['generation'] as int);
   }
 
-  Future<String?> _readSlot(String slot) async {
+  Future<({String archive, int generation})?> _readSlot(String slot) async {
     try {
       return _decodeEnvelope(await _store.getString(_slotKey(slot)));
     } on FormatException {
@@ -110,20 +128,24 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
 
   @override
   Future<String?> read() async {
-    final active = await _store.getString(activeKey);
+    final active = _parseMarker(await _store.getString(activeKey));
     if (active != null) {
-      if (active != 'a' && active != 'b') {
-        throw const FormatException('Unknown active checkpoint slot');
+      final committed = await _readSlot(active.slot);
+      if (committed != null && committed.generation == active.generation) {
+        return committed.archive;
       }
-      final committed = await _readSlot(active);
-      if (committed != null) return committed;
-      final previous = await _readSlot(_other(active));
-      if (previous == null) {
+      final previous = await _readSlot(_other(active.slot));
+      // A pending write in the other slot has a GREATER generation and is
+      // uncommitted, even when the current active slot is unreadable.
+      if (previous == null ||
+          previous.generation != active.generation - 1) {
         throw const FormatException('No recoverable committed checkpoint');
       }
-      // Repair the marker only after the previous slot has been validated.
-      await _store.setString(activeKey, _other(active));
-      return previous;
+      await _store.setString(activeKey, jsonEncode({
+        'slot': _other(active.slot),
+        'generation': previous.generation,
+      }));
+      return previous.archive;
     }
 
     // No active marker = no committed v2 record. Ignore orphan slots from an
@@ -139,17 +161,21 @@ final class PreferencesSessionArchiveStore implements SessionArchiveStore {
   @override
   Future<void> write(String archive) async {
     SavedBoardCodec.decode(archive);
-    final active = await _store.getString(activeKey);
-    if (active != null && active != 'a' && active != 'b') {
-      throw const FormatException('Unknown active checkpoint slot');
-    }
-    final target = active == 'a' ? 'b' : 'a';
-    await _store.setString(_slotKey(target), _encodeEnvelope(archive));
+    final active = _parseMarker(await _store.getString(activeKey));
+    final generation = (active?.generation ?? 0) + 1;
+    final target = active?.slot == 'a' ? 'b' : 'a';
+    await _store.setString(
+        _slotKey(target), _encodeEnvelope(archive, generation));
     final checked = await _readSlot(target);
-    if (checked != archive) {
+    if (checked == null ||
+        checked.archive != archive ||
+        checked.generation != generation) {
       throw StateError('Pending checkpoint validation failed');
     }
-    await _store.setString(activeKey, target);
+    await _store.setString(activeKey, jsonEncode({
+      'slot': target,
+      'generation': generation,
+    }));
   }
 
   @override
