@@ -1,6 +1,6 @@
 # M2-F08 — Android emulator QA
 
-Status initially: IMPLEMENTED / CI NOT RUN.
+**Status 2026-10-15: Android emulator QA RUNNING / NOT YET VERIFIED.** [GitHub Actions #38685813955](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38685813955) started on implementation SHA 12ea0b1486ee0c0917757f7ae5f0fe6cf366fbea. At the latest inspection, checkout, Flutter setup, native Android platform generation, dependency resolution and KVM setup had succeeded; the emulator-runner/UI execution step was still in progress. **No Android device test PASS is claimed** until the job finishes successfully.
 
 ## Gate
 - GitHub workflow: .github/workflows/flutter-android-emulator.yml
@@ -14,5 +14,5 @@ Status initially: IMPLEMENTED / CI NOT RUN.
     flutter pub get
     flutter drive --driver=test_driver/integration_test.dart --target=integration_test/android_table_test.dart -d emulator-5554
 
-Evidence: NOT RUN when authored. Do not mark GO until executed Android emulator CI passes. No real hardware, Android BEN network, iOS, TalkBack or production signing covered.
+Evidence source: [Android Actions #38685813955](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38685813955). The verified outcome must be updated from the terminal run conclusion. Do not mark GO until executed Android emulator CI passes. No real hardware, Android BEN network, iOS, TalkBack or production signing covered.
 
