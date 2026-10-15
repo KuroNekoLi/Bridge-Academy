@@ -34,7 +34,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 - **M2-F07 TRUE BEN + CHROME FIXED-BOARD GO:** [latest CI #38682472896](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38682472896) succeeded: real BEN native Python 3.12/TensorFlow, Chrome 154, actual Flutter UI complete game 52/13 and /bid /lead /play all real successful. Reduced samples/PIMC off, not full M2 production/native GO. [Acceptance report](m2/M2_F07_REAL_BEN_BROWSER_ACCEPTANCE.md).
 
 - M2-F08: native Android API 35 emulator installation and genuine Flutter UI actions, fixed Demo Bot; see docs/m2/M2_F08_ANDROID_EMULATOR_ACCEPTANCE.md. Run evidence required for GO.
-- M2-F09: true BEN robot bids as declarer and controls South Dummy through real Flutter Chrome UI, separate from earlier human-declarer test; see docs/m2/M2_F09_BEN_DECLARER_UI_ACCEPTANCE.md. Run evidence required for GO.
+- **M2-F09 TRUE BEN ROBOT DECLARER CHROME GO:** [CI #38685977544](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38685977544) PASS, genuine BEN bids North declarer and makes 13 legal South Dummy actions, 13 human East defender actions, 52 cards / 13 tricks; no mocks. See docs/m2/M2_F09_BEN_DECLARER_UI_ACCEPTANCE.md.
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.
