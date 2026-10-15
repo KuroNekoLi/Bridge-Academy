@@ -49,6 +49,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - Demo OpponentMode uses DeterministicTrainingBot, clearly not BEN. Live mode instantiates BenHttpTransport; errors display sanitized status and do not fall back.
 - AppCopy centralizes Traditional Chinese and English copy; Material 3 UI and web CI. Native device QA is a separate gate.
 
+## M2-F06 — actual browser automation and adaptive viewports
+- Flutter Web browser integration uses official integration_test + Flutter drive + ChromeDriver to test actual rendered Chrome UI (not just simulated Widget Test).
+- Responsive controls derive widths from LayoutBuilder parent constraints; phone/tablet Widget Tests run at 320, 375 and 768 logical pixels.
+- Current Chrome runner only uses the explicitly labelled deterministic Demo Bot. The separately verified real BEN Dart session must not be cited as proof of Chrome-to-BEN UI operation.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.

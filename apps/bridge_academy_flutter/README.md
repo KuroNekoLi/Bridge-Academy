@@ -46,6 +46,11 @@ M2-F04 true-BEN tests are separate evidence. Widget tests use demo/test Bots,
 so successful Flutter CI does NOT establish true BEN UI/browser/device
 acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
 
+## Browser and mobile QA
+- M2-F06 real ChromeDriver integration: `flutter drive --driver=test_driver/integration_test.dart --target=integration_test/browser_table_test.dart -d web-server --browser-name=chrome` (ChromeDriver must be running on port 4444).
+- Three responsive Widget Test widths: 320 / 375 / 768px.
+- Chrome test exercises Demo Bot, **not live BEN**; direct real BEN HTTP integration remains separately evidenced by M2-F04. See docs/m2/M2_F06_BROWSER_QA_REPORT.md.
+
 ## Trust boundary
 
 UI gesture -> BridgeSession -> SinglePlayerCoordinator -> BridgeGame.apply ->

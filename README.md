@@ -19,6 +19,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 - [M2 BEN Adapter contract](docs/m2/M2_BEN_ADAPTER_REPORT.md): stateless per-seat HTTP /bid, /lead, /play.
 - [M2-F04 True BEN end-to-end](docs/m2/M2_F04_REAL_BEN_ACCEPTANCE.md): real BEN full-deal and Dummy smoke passed.
 - [M2-F05 Flutter single-player table](apps/bridge_academy_flutter/README.md): first functional interactive UI slice, zh-TW/en, Demo/real BEN selection. [Acceptance](docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md).
+- [M2-F06 Chrome + responsive QA](docs/m2/M2_F06_BROWSER_QA_REPORT.md): real browser demo/UI interactions and 320/375/768px automated layouts.
 - [Product vision](docs/PRODUCT_VISION.md)
 - [Roadmap and acceptance gates](docs/ROADMAP.md)
 - [Technical architecture](docs/ARCHITECTURE.md)

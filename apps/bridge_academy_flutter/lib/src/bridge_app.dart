@@ -53,7 +53,7 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text(copy.t('title')),
+          title: Text(copy.t('title'), maxLines: 1, overflow: TextOverflow.ellipsis),
           actions: [
             IconButton(
               key: const Key('toggle_locale'),
@@ -101,13 +101,14 @@ class _BridgeTableState extends State<BridgeTable> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(12),
-                child: Wrap(
+                child: LayoutBuilder(
+                  builder: (context, constraints) => Wrap(
                   spacing: 16,
                   runSpacing: 8,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    _modeSelector(copy),
-                    _seatSelector(copy),
+                    _modeSelector(copy, constraints.maxWidth),
+                    _seatSelector(copy, constraints.maxWidth),
                     FilledButton.icon(
                       key: const Key('new_game'),
                       onPressed: session.busy
@@ -122,6 +123,7 @@ class _BridgeTableState extends State<BridgeTable> {
                           : copy.t('newGame')),
                     ),
                   ],
+                  ),
                 ),
               ),
             ),
@@ -182,8 +184,8 @@ class _BridgeTableState extends State<BridgeTable> {
     );
   }
 
-  Widget _modeSelector(AppCopy copy) => SizedBox(
-        width: 320,
+  Widget _modeSelector(AppCopy copy, double availableWidth) => SizedBox(
+        width: availableWidth < 320 ? availableWidth : 320,
         child: DropdownButtonFormField<OpponentMode>(
           key: const Key('mode_selector'),
           isExpanded: true,
@@ -205,8 +207,8 @@ class _BridgeTableState extends State<BridgeTable> {
         ),
       );
 
-  Widget _seatSelector(AppCopy copy) => SizedBox(
-        width: 185,
+  Widget _seatSelector(AppCopy copy, double availableWidth) => SizedBox(
+        width: availableWidth < 185 ? availableWidth : 185,
         child: DropdownButtonFormField<Seat>(
           key: const Key('seat_selector'),
           isExpanded: true,
@@ -506,4 +508,5 @@ class _BridgeTableState extends State<BridgeTable> {
     Strain.notrump => 'strainNT',
   };
 }
+
 

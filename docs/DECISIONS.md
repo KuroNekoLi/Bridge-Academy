@@ -41,5 +41,8 @@ Each item has status and rationale. Proposed choices are not approved simply bec
 ## ADR-013 — M2-F05 local Flutter UI shell
 **ACCEPTED FOR FIRST UI SLICE 2026-10-15:** A small ChangeNotifier BridgeSession sits on SinglePlayerCoordinator and PlayerView. Never replicate legality inside Widgets; explicitly separate Demo and real BEN modes without silent fallback. Fixed PBN enables deterministic GUI tests; zh-TW/en UI copy is centralized. Web CI and Widget Tests do not replace native/device testing.
 
+## ADR-014 — Browser QA is a distinct integration gate (2026-10-15)
+M2-F06 adds browser-level ChromeDriver and responsive Flutter testing, independently of existing Dart Widget Tests. Keep model mode explicit: Demo tests cannot be called BEN integration. Device/browser target acceptance and real BEN UI interaction must use evidence from the matching executable, not inferred CLI results.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

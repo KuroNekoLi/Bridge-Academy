@@ -18,6 +18,8 @@
 
 | M2-F05 | Flutter UI 單向資料流、Dummy 控制、zh-TW/en | [M2-F05 — Flutter 牌桌](features/M2_F05_FLUTTER_TABLE.md) | [Flutter App](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart) · [Widget tests](../../apps/bridge_academy_flutter/test/bridge_app_test.dart) · [驗收](../m2/M2_F05_FLUTTER_TABLE_REPORT.md) | DELIVERED |
 
+| M2-F06 | 真 ChromeDriver 整合測試／小螢幕 Responsive | [M2-F06 Chrome 測試](features/M2_F06_CHROME_RESPONSIVE.md) | [browser test](../../apps/bridge_academy_flutter/integration_test/browser_table_test.dart) · [responsive tests](../../apps/bridge_academy_flutter/test/responsive_layout_test.dart) · [驗收](../m2/M2_F06_BROWSER_QA_REPORT.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。
