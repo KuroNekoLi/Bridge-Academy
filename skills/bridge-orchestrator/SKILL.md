@@ -20,7 +20,7 @@ Own **task breakdown, interfaces, sequencing, evidence collection and decision e
 
 ## Product-sequencing rule (2026-10-15)
 
-For a product-planning or generic "continue development" request, review docs/product/BRIDGE_ACADEMY_PRD_V1.md, docs/product/PRODUCT_DELIVERY_ROADMAP.md and docs/product/COMPETITOR_BENCHMARK.md **before** choosing a slice. Preserve docs/ROADMAP.md as the historical engineering ledger; use PRD player journeys as the ultimate product acceptance gate. Next recommended A1 Board Management, not another replay feature. Separate:
+For a product-planning or generic "continue development" request, review docs/product/BRIDGE_ACADEMY_PRD_V1.md, docs/product/PRODUCT_DELIVERY_ROADMAP.md and docs/product/COMPETITOR_BENCHMARK.md **before** choosing a slice. Preserve docs/ROADMAP.md as the historical engineering ledger; use PRD player journeys as the ultimate product acceptance gate. A1 Board Management implementation and Core/Flutter/BEN fixed-board CI are verified; the next planned P0 slice is A2 durable game persistence, pending final A1 native-device regression. Separate:
 - technical-domain correctness (actual code and CI)
 - client/real-BEN E2E on specific devices
 - deployed product's durability/privacy/license/release readiness.

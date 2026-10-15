@@ -11,7 +11,7 @@ Before choosing the next feature, read:
 4. docs/ROADMAP.md — **historical engineering milestone and CI ledger**, retained without rebranding earlier successes;
 5. docs/BRIDGE_RULES_BASELINE.md and docs/DECISIONS.md — authoritative game invariants and accepted ADRs.
 
-For generic "下一步" requests choose the earliest **unverified P0 player journey** in the product roadmap (currently A1 Board Management), not an arbitrary next M2-Fxx number. A technical test PASS is not consumer Product READY. Never silently rebuild an existing feature just to match a proposed milestone title. Repository source of truth is code + executed evidence.
+For generic "下一步" requests choose the earliest **unverified P0 player journey** in the product roadmap (A1 Core/Flutter/fixed-BEN engineering VERIFIED; A2 durable persistence is the next P0 implementation once remaining native regression is recorded), not an arbitrary next M2-Fxx number. A technical test PASS is not consumer Product READY. Never silently rebuild an existing feature just to match a proposed milestone title. Repository source of truth is code + executed evidence.
 
 ## On every task
 1. Read README.md, docs/DECISIONS.md, docs/ARCHITECTURE.md, docs/BRIDGE_RULES_BASELINE.md and the relevant milestone in docs/ROADMAP.md.
