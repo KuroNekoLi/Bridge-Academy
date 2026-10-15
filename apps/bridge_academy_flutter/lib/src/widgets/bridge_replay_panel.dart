@@ -89,23 +89,27 @@ class BridgeCompletedReplayPanel extends StatelessWidget {
             const SizedBox(height: 8),
             Wrap(spacing: 8, runSpacing: 8, children: [
               OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('replay_first'),
                 onPressed: index == 0 ? null : () => onSelectIndex(0),
                 child: Text(copy.t('replayFirst')),
               ),
               OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('replay_previous'),
                 onPressed: index == 0
                     ? null : () => onSelectIndex(index - 1),
                 child: Text(copy.t('replayPrevious')),
               ),
               OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('replay_next'),
                 onPressed: index == replay.lastIndex
                     ? null : () => onSelectIndex(index + 1),
                 child: Text(copy.t('replayNext')),
               ),
               OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('replay_last'),
                 onPressed: index == replay.lastIndex
                     ? null : () => onSelectIndex(replay.lastIndex),

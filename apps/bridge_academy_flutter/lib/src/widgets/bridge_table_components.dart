@@ -73,7 +73,7 @@ class BridgeTableSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
         key: const Key('bridge_board'),
-        color: const Color(0xFFE6F1E8),
+        color: Theme.of(context).colorScheme.secondaryContainer,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: LayoutBuilder(
@@ -175,7 +175,13 @@ class BridgeSeatPanel extends StatelessWidget {
     final isDummy = view.contract?.dummy == seat && view.dummyExposed;
     final hasDummyCards = isDummy && view.dummyCards != null;
     final active = view.turn == seat;
-    return Container(
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      label: copy.seatSummary(seat.letter,
+          active: active, viewer: seat == view.viewer,
+          dummy: hasDummyCards, remaining: view.remainingCards[seat] ?? 0),
+      child: Container(
       key: Key('seat_${seat.letter}'),
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.symmetric(vertical: 4),
@@ -192,6 +198,11 @@ class BridgeSeatPanel extends StatelessWidget {
               maxLines: 2, textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontWeight: FontWeight.w600)),
+          if (active)
+            Text(copy.t('activeSeat'),
+                key: Key('active_seat_${seat.letter}'),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           if (seat == view.viewer)
             Text(copy.t('yourSeat'))
           else if (!hasDummyCards)
@@ -219,6 +230,7 @@ class BridgeSeatPanel extends StatelessWidget {
           if (seat != view.viewer && !hasDummyCards)
             const Icon(Icons.style_outlined),
         ],
+      ),
       ),
     );
   }
@@ -289,14 +301,19 @@ class BridgePlayingCardButton extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Tooltip(
+  Widget build(BuildContext context) => Semantics(
+        label: copy.accessibleCard(card.code, playable: legal && !busy),
+        button: true,
+        enabled: legal && !busy,
+        child: Tooltip(
         message: copy.formatCard(card.code, legal: legal && !busy),
+        excludeFromSemantics: true,
         child: OutlinedButton(
           key: Key(prefix + card.code),
           onPressed: legal && !busy ? onTap : null,
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            minimumSize: const Size(42, 40),
+            minimumSize: const Size(48, 48),
           ),
           // Preserve text geometry when legality changes mid-bot turn.
           child: Row(
@@ -308,13 +325,14 @@ class BridgePlayingCardButton extends StatelessWidget {
                 child: Icon(
                   Icons.check,
                   size: 13,
-                  color: legal
+                  color: legal && !busy
                       ? Theme.of(context).colorScheme.primary
                       : Colors.transparent,
                 ),
               ),
             ],
           ),
+        ),
         ),
       );
 }

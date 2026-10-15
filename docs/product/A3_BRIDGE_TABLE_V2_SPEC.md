@@ -52,9 +52,13 @@ Level/strain and Pass/X/XX buttons are now extracted into a controlled stateless
 
 **Not included:** human-seat auto-rotation, high-fidelity visual themes, keyboard/screen-reader release validation or domain legalCalls; these remain separate explicit decisions/slices.
 
-### A3.4 — Accessible polish
+### A3.4 — Accessible polish (implementation committed; CI pending)
 
-Verify 320/375/768px, zh-TW/en, text scaling, touch targets, focus, screen-reader content, non-color-only legality, and visual regression screenshots when an approved environment exists. Never say hardware/TalkBack/VoiceOver passed based on widget tests alone.
+- Give playing-card controls minimum 48×48 logical pixels, localized spoken suit/rank and actual enabled state, avoiding duplicate Tooltip semantics.
+- Keep the visual active-seat indicator as text, not just a colored border; include role and publicly available card counts in seat semantics. Use theme colors for the table.
+- Use reading-order traversal grouping for bidding controls, and 48px minimum targets for bidding, public history, and replay actions.
+- Test 320/375/768px with increased text scale, zh-TW/en descriptions, touch targets and disabled actions. The Flutter official [accessibility checklist](https://docs.flutter.dev/ui/accessibility) and [testing guide](https://docs.flutter.dev/ui/accessibility/accessibility-testing) are the baseline.
+- Release limitations: do not infer TalkBack/VoiceOver, full-screen contrast compliance or physical touch acceptance from Widget tests. Android/iOS hardware and emulator UI/E2E remain on owner hold.
 
 ### A3.5 — Integration and release gate
 

@@ -33,7 +33,9 @@ class BridgeBiddingBox extends StatelessWidget {
         key: const Key('auction_controls'),
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Wrap(
+          child: FocusTraversalGroup(
+            policy: ReadingOrderTraversalPolicy(),
+            child: Wrap(
             spacing: 12,
             runSpacing: 8,
             crossAxisAlignment: WrapCrossAlignment.center,
@@ -74,6 +76,7 @@ class BridgeBiddingBox extends StatelessWidget {
                 ),
               ),
               FilledButton(
+                style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('make_bid'),
                 onPressed: canSubmit
                     ? () => onSubmitCall(Bid(selectedLevel, selectedStrain))
@@ -81,11 +84,13 @@ class BridgeBiddingBox extends StatelessWidget {
                 child: Text(copy.t('call')),
               ),
               OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('pass'),
                 onPressed: canSubmit ? () => onSubmitCall(const Pass()) : null,
                 child: Text(copy.t('pass')),
               ),
               OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('double'),
                 onPressed: canSubmit
                     ? () => onSubmitCall(const DoubleCall())
@@ -93,6 +98,7 @@ class BridgeBiddingBox extends StatelessWidget {
                 child: Text(copy.t('double')),
               ),
               OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('redouble'),
                 onPressed: canSubmit
                     ? () => onSubmitCall(const RedoubleCall())
@@ -100,6 +106,7 @@ class BridgeBiddingBox extends StatelessWidget {
                 child: Text(copy.t('redouble')),
               ),
             ],
+            ),
           ),
         ),
       );

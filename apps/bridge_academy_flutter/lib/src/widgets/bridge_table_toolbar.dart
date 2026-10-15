@@ -93,12 +93,14 @@ class BridgeTableToolbar extends StatelessWidget {
             runSpacing: 4,
             children: [
               OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('auction_history_action'),
                 onPressed: () => _showAuction(context),
                 icon: const Icon(Icons.format_list_numbered),
                 label: Text(copy.t('auction')),
               ),
               OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
                 key: const Key('last_trick_action'),
                 onPressed: view.completedTricks.isNotEmpty
                     ? () => _showLastTrick(context)

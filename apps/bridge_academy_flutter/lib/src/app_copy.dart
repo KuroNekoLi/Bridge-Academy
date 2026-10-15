@@ -30,6 +30,40 @@ class AppCopy {
   String formatCard(String code, {required bool legal}) =>
       '${legal ? t('legalCard') : t('card')} $code';
 
+  /// Localized speech for already-visible card codes; never reads a private Deal.
+  String cardName(String code) {
+    final suit = switch (code[0]) {
+      'S' => t('suitS'),
+      'H' => t('suitH'),
+      'D' => t('suitD'),
+      'C' => t('suitC'),
+      _ => code[0],
+    };
+    final rank = switch (code.substring(1)) {
+      'A' => t('rankA'),
+      'K' => t('rankK'),
+      'Q' => t('rankQ'),
+      'J' => t('rankJ'),
+      'T' => t('rankT'),
+      final other => other,
+    };
+    return '$suit $rank';
+  }
+
+  String accessibleCard(String code, {required bool playable}) =>
+      '${t(playable ? 'playableCard' : 'notPlayableCard')}: ${cardName(code)}';
+
+  String seatSummary(String code,
+      {required bool active, required bool viewer,
+      required bool dummy, required int remaining}) =>
+      [
+        seat(code),
+        if (viewer) t('yourSeat'),
+        if (dummy) t('dummy'),
+        if (active) t('activeSeat'),
+        this.remaining(remaining),
+      ].join(', ');
+
   static const Map<String, List<String>> _strings = {
     'title': ['Bridge Academy｜橋牌學院', 'Bridge Academy'],
     'language': ['切換英文', 'Switch to Chinese'],
@@ -60,6 +94,18 @@ class AppCopy {
     'seatS': ['南（S）', 'South (S)'],
     'seatW': ['西（W）', 'West (W)'],
     'yourSeat': ['你', 'You'],
+    'activeSeat': ['目前輪到此座位', 'Seat to act'],
+    'playableCard': ['可出牌', 'Playable card'],
+    'notPlayableCard': ['目前不能出牌', 'Card not currently playable'],
+    'suitS': ['黑桃', 'Spades'],
+    'suitH': ['紅心', 'Hearts'],
+    'suitD': ['方塊', 'Diamonds'],
+    'suitC': ['梅花', 'Clubs'],
+    'rankA': ['A', 'Ace'],
+    'rankK': ['K', 'King'],
+    'rankQ': ['Q', 'Queen'],
+    'rankJ': ['J', 'Jack'],
+    'rankT': ['10', 'Ten'],
     'turn': ['輪到', 'Turn'],
     'noTurn': ['牌局結束', 'Deal finished'],
     'waitingBot': ['電腦思考中…', 'Computer is thinking…'],
