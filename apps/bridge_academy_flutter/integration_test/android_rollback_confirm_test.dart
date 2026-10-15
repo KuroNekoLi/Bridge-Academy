@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/session_persistence.dart';
-import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
