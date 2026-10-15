@@ -1,5 +1,6 @@
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
+import 'package:bridge_academy_flutter/src/session_persistence.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -77,6 +78,35 @@ void main() {
     }
     expect(session.view!.version, greaterThan(version));
     expect(session.errorCode, isNull);
+  });
+
+
+  testWidgets('REAL BROWSER P1-A2: platform checkpoint survives new Session',
+      (tester) async {
+    final store = PreferencesSessionArchiveStore();
+    await tester.runAsync(store.clear);
+    addTearDown(() async { await store.clear(); });
+    final original = BridgeSession(archiveStore: store);
+    await tester.runAsync(() async {
+      await original.newGame(boardNumber: 2, humanSeat: Seat.east);
+      await original.submitCall(const Pass());
+    });
+    expect(original.finished, isTrue);
+    final version = original.view!.version;
+    original.dispose();
+
+    final resumed = BridgeSession(archiveStore: store);
+    addTearDown(resumed.dispose);
+    final loaded = await tester.runAsync(resumed.restoreSavedGame);
+    expect(loaded, isTrue);
+    expect(resumed.board.number, 2);
+    expect(resumed.view!.version, version);
+    expect(resumed.completedReplay, isNotNull);
+    await tester.pumpWidget(BridgeAcademyApp(session: resumed));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('restored_game')), findsOneWidget);
+    expect(find.byKey(const Key('final_result')), findsOneWidget);
+    expect(resumed.view!.dummyCards, isNull);
   });
 
 }

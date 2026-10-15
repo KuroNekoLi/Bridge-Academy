@@ -1,5 +1,6 @@
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
+import 'package:bridge_academy_flutter/src/session_persistence.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,5 +60,34 @@ void main() {
     expect(session.errorCode, isNull);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('P1-A2 Android: actual local storage round-trip', (tester) async {
+    final store = PreferencesSessionArchiveStore();
+    await tester.runAsync(store.clear);
+    addTearDown(() async { await store.clear(); });
+    final original = BridgeSession(archiveStore: store);
+    await tester.runAsync(() async {
+      await original.newGame(boardNumber: 2, humanSeat: Seat.east);
+      await original.submitCall(const Pass());
+    });
+    final version = original.view!.version;
+    expect(original.finished, isTrue);
+    original.dispose();
+
+    final resumed = BridgeSession(archiveStore: store);
+    addTearDown(resumed.dispose);
+    final restored = await tester.runAsync(resumed.restoreSavedGame);
+    expect(restored, isTrue);
+    expect(resumed.board.number, 2);
+    expect(resumed.view!.version, version);
+    expect(resumed.view!.dealer, Seat.east);
+    expect(resumed.view!.dummyCards, isNull);
+    await tester.pumpWidget(BridgeAcademyApp(session: resumed));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('restored_game')), findsOneWidget);
+    expect(find.byKey(const Key('final_result')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
 }
 
