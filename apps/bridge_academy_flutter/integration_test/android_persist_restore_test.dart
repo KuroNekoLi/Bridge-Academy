@@ -51,7 +51,12 @@ void main() {
     expect(resumed.view!.toJson().containsKey('dealPbn'), false);
     expect(resumed.view!.toJson().containsKey('hands'), false);
 
-    await tester.pumpWidget(BridgeAcademyApp(session: resumed));
+    // Exercise the actual default App startup path, not just a pre-restored
+    // dependency-injected BridgeSession.
+    await tester.pumpWidget(const BridgeAcademyApp());
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 600)),
+    );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('restored_game')), findsOneWidget);
     expect(find.byKey(const Key('dummy_revealed')), findsOneWidget);
