@@ -2,7 +2,7 @@ name: Bridge Core CI
 on:
   push:
     branches: [master, "feat/m1-bridge-core"]
-    paths: ["packages/bridge_core/**", ".github/workflows/bridge-core.yml"]
+    paths: ["packages/bridge_core/**", "docs/m1/**", ".github/workflows/bridge-core.yml"]
   pull_request:
     paths: ["packages/bridge_core/**", ".github/workflows/bridge-core.yml"]
 jobs:

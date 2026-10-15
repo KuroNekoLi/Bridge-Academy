@@ -29,5 +29,5 @@ No BEN adapter, UI, localization strings, claims, concessions, irregularities, s
 
 ## Test status
 
-GitHub Actions is the intended CI runner. Chat's local container lacks Dart SDK; do not claim static analysis or unit tests have passed until CI reports success on the exact commit.
+GitHub Actions executed on commit 5833d681442c7dfec4b99c94919875e78ffaaf2d (Dart 3.13.5, dart analyze PASS, dart test 30/30 PASS). One test contains 100 deterministic complete non-AI deals. Evidence: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38671869760 . The Chat container still lacks Dart SDK; this is an actual CI result, not an in-chat run.
 

@@ -8,7 +8,10 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 ## POC-002 — 100 fixed deals (outcome-level GO; transcript caveat)
 97 contract deals completed 52/13; one four-Pass Pass Out; two Pass Out outcomes with only 3 returned PASS entries; outcome reported 100/100 but verifiable full transcript only 98/100. BEN performance measured with PIMC off and reduced sampling (not production default). Raw evidence not imported. See docs/poc/POC_002_BATCH_100.md.
 
-## M1 — Bridge Core (NEXT)
+## M1 — Bridge Core (RULES CI GO; PR #2 UNDER REVIEW)
+- Executed GitHub Actions: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38671869760
+- Dart 3.13.5 / dart analyze PASS / 30 of 30 tests PASS (one test covers 100 fixed-seed non-AI complete deals).
+- Core-only acceptance: M2 must create privacy-filtered PlayerView and a separate BEN adapter; this result does not establish production AI reliability.
 - Typed Card/Suit/Rank/Seat/Partnership/Vulnerability/Call/Contract/Trick/GameAction/GameState.
 - Pure deterministic transition function: validate action, apply auction, compute contract/declarer, expose dummy, enforce suit following, score duplicate.
 - Complete Pass Out = four chronological passes starting with dealer; after any non-pass, auction ends only on three consecutive passes. Double/Redouble rights checked.
