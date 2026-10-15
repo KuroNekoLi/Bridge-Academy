@@ -25,7 +25,7 @@ Android Emulator 可固定 API 與裝置外形並納入 CI，缺點是啟動、G
     flutter create --platforms=android --project-name=bridge_academy_flutter .
     flutter drive --driver=test_driver/integration_test.dart --target=integration_test/android_table_test.dart -d emulator-5554
 
-初稿 CI NOT RUN，執行證據記錄於驗收報告。不含 iOS、實機、TalkBack 或 Android BEN 網路驗收。
+實際 CI：初版 #38685813955、第二輪 #38687000645 均因 Runner 磁碟不足而無法開機；第三輪 [#38689252806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689252806) 清理不用的工具後剩餘 23 GiB，模擬器成功開機，但 flutter drive 因 reactivecircus 每行獨立執行 shell 而找不到 pubspec.yaml。現已將 cd、flutter devices、flutter drive 合併成單一命令，修正後的 [#38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) 正在驗收。這些都是環境／測試腳本故障，不是 Bridge Core 域規則失敗；Android APK／UI PASS 尚未取得。不含 iOS、實機、TalkBack 或 Android BEN 網路驗收。
 
 ## 練習與自我檢驗
 **問題：** Chrome 整合測試 PASS，但 Android 模擬器在 APK 安裝時失敗，為何這不是 Bridge Core 違反跟牌規則的證據？
@@ -33,4 +33,3 @@ Android Emulator 可固定 API 與裝置外形並納入 CI，缺點是啟動、G
 **小練習：** 在測試中加入一次預期明手首攻前尚未公開的斷言，解釋 PlayerView 為何隱藏它。
 
 **完成標準：** 能區分 Domain／Widget／真 Chrome／原生 Android Emulator 各層驗收的意義。
-

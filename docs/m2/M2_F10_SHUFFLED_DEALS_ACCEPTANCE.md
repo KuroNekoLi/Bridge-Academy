@@ -41,3 +41,5 @@ INITIAL: NOT RUN. Attach exact GitHub CI SHA and results after actual execution;
 - [Feature Learning Gate #38690212485](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690212485): PASS.
 - Earlier Flutter CI #38690024287 caught an overly broad text matcher: two UI labels contained '不是 BEN' after localization update. Regression assertion was narrowed to the actual demo notice and the full suite passed.
 - These successes do **not** demonstrate production anti-cheat, Android native APK, randomized BEN play quality or platform-independent PRNG-seed stability.
+
+- Additional regression: [real BEN Chrome CI #38690024436](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690024436) **SUCCESS** on the M2-F10 implementation commit. It replays the **fixed training fixture**, not a fresh shuffled board, and must not be cited as BEN-on-random-deal coverage.

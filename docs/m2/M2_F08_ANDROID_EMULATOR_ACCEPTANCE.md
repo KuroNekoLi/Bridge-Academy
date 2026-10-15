@@ -34,3 +34,10 @@ The config.ini did contain `disk.dataPartition.size=2048M`, but the emulator's e
 CI commit `3f5495aa5aefe47df18e8610086654f020d454d2`: prior to Android SDK/AVD creation, remove only unrelated preinstalled .NET, Haskell, PowerShell and CodeQL toolchains; preserve Flutter, Android and Java; require >=12 GiB available on /, print before/after disk snapshots. Also explicitly set Android Emulator `-partition-size 2048` in MB as documented by Android's official command-line interface. This addresses the **observed root cause** rather than assuming AVD config alone reduces disk usage.
 
 Third attempt status: **NOT YET VERIFIED**. The earlier failures remain linked; do not infer emulator GO from CI bootstrap or Web tests.
+
+## Third observed run — Emulator boot fixed, CI shell directory failure
+
+- [CI #38689252806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689252806) **FAIL**, but reclaimed disk successfully (observed 23 GiB free before AVD creation), and the Android Emulator successfully booted and was visible to flutter devices.
+- New failure was entirely in test runner script context: reactivecircus executes each script line in a separate shell; the standalone cd command did not persist to the following flutter drive command. Flutter returned 'No pubspec.yaml file found' from repository root. No card play or app assertion was tested.
+- Commit b50ca4591c49f1c3c77eee06169061a14425668c combines directory switch and flutter devices / flutter drive in a single shell command joined by &&.
+- [Follow-up CI #38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) and [new M2-F10 head CI #38690024378](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690024378) are **RUNNING** at the latest inspection. Neither has yet returned device-ui success. Do not infer PASS from emulator boot alone.
