@@ -2,6 +2,16 @@
 
 Each item has status and rationale. Proposed choices are not approved simply because they appear here.
 
+## ADR-025 — Product delivery split and device acceptance freeze (2026-10-15)
+
+**ACCEPTED PRODUCT DIRECTION; NOT RELEASE APPROVAL.** Continue Bridge Academy as one-person + three BEN AI first, with reusable five-entry product information architecture and replay/learning loop. Preserve M1/M2 history. A1 canonical BoardDefinition is already scoped engineering-verified; A2 checkpoint/security work has partial Core/Web evidence and later encrypted backends but remains missing full deployment, native hardware and remote request idempotency acceptance. The next UI feature slice is **A3 Bridge Table UI V2**, componentized around player/seat-filtered presentation rather than augmenting one monolithic `bridge_app.dart`.
+
+**Daily challenge decision:** Early B6/P1 may be a local, reproducible, **unranked original practice** set (with no public comparison, MP/IMP percentages, prize or leaderboard). Authentic ranked daily Duplicate and async friend comparisons remain D/P3, dependent on server-generated immutable board sets, trust boundaries, comparative scoring and fair-play controls. DDS remains post-game analysis, not omniscient in-play AI.
+
+**QA owner hold:** Do **not** auto-trigger, manually dispatch, schedule or re-enable Android emulator/physical Android/iOS UI/E2E tests until the owner explicitly approves a separate test plan. Both existing Android AVD workflows were disabled on master; treat platform acceptance as deferred but mandatory before release. Preserve quick static/unit/Widget/Web build checks and currently permitted Chrome/real BEN regression; do not claim device GO based on them. This is a workflow decision, not cancellation of final mobile validation.
+
+Authoritative product references: [PRD v1](product/BRIDGE_ACADEMY_PRD_V1.md), [delivery roadmap](product/PRODUCT_DELIVERY_ROADMAP.md), [official-source benchmark](product/COMPETITOR_BENCHMARK.md). No application source was modified by this ADR.
+
 ## ADR-024 — A2.8 encrypted Web local checkpoints, not a transaction guarantee (2026-10-15)
 
 **ACCEPTED FOR IMPLEMENTATION; CI PENDING.** Web must not continue persisting four private hands in plaintext SharedPreferences. Reuse SavedBoardCodec and AES-256-GCM, browser WebCrypto-backed key via flutter_secure_storage and a **single origin-local record** in SharedPreferencesAsync, with validated-then-committed legacy plaintext migration. On HTTPS/localhost failures **fail closed** and never silently write plaintext. Surface localized browser-security notice. Web key handling is experimental; same-origin XSS/hostile extensions, cross-tab CAS and crash durability remain open. Not SQLite ACID or release approval. [Acceptance](product/P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md).
