@@ -17,7 +17,7 @@
 - **CI evidence:** [Bridge Core CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504) executed on commit cb2d42687649ddea2d677739659a09a01ccb3972; Dart analyze step passed and **dart test 40/40 PASS** (10 new M2 test cases plus original 30). Original 100 seeded non-AI deal loop remains covered by M1 suite. [Feature Learning Gate #38673888302](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888302) PASS. Test run does not include real BEN or Flutter.
 
 ## Reliability of evidence
-The CI log contains three nonfatal info-level string interpolation lint suggestions in the newly added tests; a follow-up formatting commit removes these and requires a fresh CI run. No unexecuted code is labeled VERIFIED. All test results above refer to the recorded original CI commit.
+A follow-up code-style cleanup removed inherited M1 string-interpolation lint infos and tightened CI to `dart analyze --fatal-infos`. [Strict CI #38674228138](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38674228138) on commit 72733a63ded60b1fc3f4e7e3daa25a704d97bdf8 reports **No issues found!**, followed by **40/40 tests PASS**. This is a verified Dart rules/Coordinator result, not BEN AI or Flutter validation.
 
 ## Security limitations and next gates
 
