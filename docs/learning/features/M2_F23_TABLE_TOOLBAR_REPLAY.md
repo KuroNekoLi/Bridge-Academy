@@ -3,7 +3,7 @@
 - Feature ID：M2-F23
 - Milestone：A3.3
 - 類型：Flutter UI／狀態隔離
-- 工程狀態：IMPLEMENTED（初次 Flutter analyze #38778352023 因未使用的測試 import 失敗，已修正；修正後 CI 待驗證）
+- 工程狀態：ENGINEERING_VERIFIED（限 Flutter/Web 與真 BEN Chrome；裝置／實機 QA 仍暫停）
 - 學習狀態：DELIVERED（非 PRACTICED／MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart`、`bridge_table_toolbar.dart`、`bridge_replay_panel.dart`、`bridge_app.dart`
 - 測試：`apps/bridge_academy_flutter/test/a3_table_toolbar_test.dart`
@@ -56,7 +56,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ```
 
-新增 `a3_table_toolbar_test.dart` 測試四座位、窄版面、明手、叫牌對話框、上一墩顯示前置條件與回放只讀；初次 [Flutter CI #38778352023](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778352023) 的 analyze 發現 1 個 test unused import，已修正並等候重新執行。真正 BEN Chrome E2E 和 Android/iOS 裝置測試不可混為一談；後者仍由使用者暫停。
+新增 `a3_table_toolbar_test.dart` 測試四座位、窄版面、明手、叫牌對話框、上一墩顯示前置條件與回放只讀；初次 [Flutter CI #38778352023](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778352023) 的 analyze 有測試檔 unused import，後續已修正。最新 [Flutter CI #38778610734](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778610734)：analyze 無問題、**74/74 Flutter Widget/Session PASS**、Web Release Build PASS、Chrome Demo E2E PASS；[真 BEN Chrome CI #38778352006](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778352006) 成功驗證真實 BEN 對局與明手互動，測試程式版本與運行時原始碼一致（後續僅更新 test/docs）。[Learning Gate #38778610653](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778610653) PASS。沒有執行 Android 模擬器／實機或 iOS UX 測試，後者仍由使用者暫停。
 
 ## 練習與自我檢驗
 

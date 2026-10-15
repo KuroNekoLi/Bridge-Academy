@@ -39,7 +39,7 @@
 
 | M2-F22 | A3.2 叫牌盒 State Hoisting（Flutter 69/69、Chrome Demo／真 BEN 驗證）、Session Callback、合法性權威 | [M2-F22 教學](features/M2_F22_BIDDING_BOX.md) | [BiddingBox](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_bidding_box.dart) · [Widget tests](../../apps/bridge_academy_flutter/test/a3_bidding_box_test.dart) · [A3 規格](../product/A3_BRIDGE_TABLE_V2_SPEC.md) | DELIVERED |
 
-| M2-F23 | A3.3 響應式四方牌桌、公開歷史工具列、immutable Replay（初次 analyze 警告已修正，待驗證） | [M2-F23 教學](features/M2_F23_TABLE_TOOLBAR_REPLAY.md) | [UI](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_toolbar.dart) · [測試](../../apps/bridge_academy_flutter/test/a3_table_toolbar_test.dart) · [規格](../product/A3_BRIDGE_TABLE_V2_SPEC.md) | DELIVERED |
+| M2-F23 | A3.3 響應式四方牌桌、公開歷史工具列、immutable Replay（Flutter 74/74 + Demo／真 BEN Chrome PASS） | [M2-F23 教學](features/M2_F23_TABLE_TOOLBAR_REPLAY.md) | [UI](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_toolbar.dart) · [測試](../../apps/bridge_academy_flutter/test/a3_table_toolbar_test.dart) · [規格](../product/A3_BRIDGE_TABLE_V2_SPEC.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
