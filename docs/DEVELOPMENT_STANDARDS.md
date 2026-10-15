@@ -1,7 +1,7 @@
 # Development Standards v0.1
 
 ## Repository and versioning
-- Work on feature branches; PRs with scope, tests, limitations. Preserve a clean, reviewable history.
+- User-approved workflow (2026-10-15): push directly to master without PRs. Preserve atomic commits, CI evidence and revertability; never force-push.
 - A behavior-changing rules change must update docs/BRIDGE_RULES_BASELINE.md and docs/DECISIONS.md, plus regression fixtures.
 - Vendor changes to BEN require exact upstream version, patch file, regression tests and rollback note.
 - Use conventional commit subjects where convenient; avoid committing generated test evidence with private user/deal information unless sanitized.
@@ -25,7 +25,7 @@
 - Every independently demonstrable behavior feature with acceptance criteria (not every line/class) MUST include its own short Traditional-Chinese Feature Learning Note in docs/learning/features/Mx_Fxx_TOPIC.md, plus an index row in docs/learning/INDEX.md, committed together with source/test changes.
 - Use docs/learning/FEATURE_LESSON_TEMPLATE.md and bridge-learning-mentor/SKILL.md. Explain a real scenario, actual code paths/flow, WHY and a rejected alternative, an Android/Kotlin analogy when genuinely helpful, practical tests, one 5–15 minute exercise and its success criteria.
 - On reporting each completed feature, provide a brief conceptual lesson and one learner question in Chat; keep engineering progress independent from when the learner replies.
-- CI can enforce file/template presence for feature PRs, while reviewers check **one lesson for each independent feature** and technical accuracy. Add mapping Feature ID → code → test → lesson in PR description; no invented test evidence.
+- CI enforces a basic lesson/template presence gate on direct pushes; review one lesson for each independent feature and technical accuracy. Add Feature ID → code → test → lesson mapping in commit/engineering report; never invent evidence.
 - Track ENGINEERING_PASS separate from LESSON_DELIVERED; only user participation merits PRACTICED or MASTERED.
 - Trivial chores without new behavior need no fabricated lesson; substantive bug fixes should update a relevant lesson if they change a previously taught invariant.
 
@@ -38,4 +38,4 @@
 Feature ID / implementation paths / test command / environment+versions / fixture seed & PBN / expected result / actual result / PASS-FAIL-BLOCKED / lesson path / learner exercise / known gaps. Tests not run must say NOT RUN.
 
 ## GitHub automation entry
-When actual implementation begins, add CI checks for pure rules, formatting and static checks before merging; do not add a green CI badge or claim working workflows without running them.
+When actual implementation begins, add CI checks for pure rules, formatting and static checks before publishing a release; do not add a green CI badge or claim working workflows without running them.
