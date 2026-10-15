@@ -1,0 +1,25 @@
+name: Bridge Core CI
+on:
+  push:
+    branches: [master, "feat/m1-bridge-core"]
+    paths: ["packages/bridge_core/**", ".github/workflows/bridge-core.yml"]
+  pull_request:
+    paths: ["packages/bridge_core/**", ".github/workflows/bridge-core.yml"]
+jobs:
+  dart:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/bridge_core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Dependencies
+        run: dart pub get
+      - name: Static analysis
+        run: dart analyze
+      - name: Tests
+        run: dart test --reporter expanded
+
