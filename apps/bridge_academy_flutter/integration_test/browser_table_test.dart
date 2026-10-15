@@ -16,7 +16,7 @@ Future<void> tapControl(WidgetTester tester, String key) async {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('REAL BROWSER: switch language, start, pass out, restart',
+  testWidgets('REAL BROWSER: language, pass out, restart, dummy play',
       (tester) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
@@ -40,25 +40,17 @@ void main() {
     expect(session.finished, isFalse);
     expect(session.view!.auction, isEmpty);
     expect(find.byKey(const Key('final_result')), findsNothing);
-  });
 
-  testWidgets('REAL BROWSER: bid, reveal dummy, play dummy card',
-      (tester) async {
-    final session = BridgeSession();
-    addTearDown(session.dispose);
-    await tester.pumpWidget(BridgeAcademyApp(session: session));
-    await tapControl(tester, 'new_game');
+    // Continue in the SAME Chrome test/browser lifecycle after restart.
     await tapControl(tester, 'make_bid');
-
     expect(session.view!.phase, Phase.play);
     expect(session.view!.dummyExposed, isTrue);
     expect(find.byKey(const Key('dummy_revealed')), findsOneWidget);
-
     final legal = session.view!.legalCards.first.code;
     final version = session.view!.version;
     await tapControl(tester, 'dummy_card_$legal');
     expect(session.view!.version, greaterThan(version));
     expect(session.errorCode, isNull);
   });
-}
 
+}
