@@ -40,8 +40,14 @@ void main() {
     expect(session.view!.dummyCards, isNull);
     expect(session.completedReplay, isNull);
     await session.submitCall(const Pass());
-    expect(session.finished, true);
-    expect(session.view!.nsScore, 0);
+    // South opens the auction on Board 3. Demo Bot bids 1NT;
+    // East's last Pass ends the auction, not the full board.
+    expect(session.finished, false);
+    expect(session.view!.phase, Phase.play);
+    expect(session.view!.contract!.declarer, Seat.south);
+    expect(session.view!.contract!.label, '1NT');
+    expect(session.view!.dummyExposed, true);
+    expect(session.view!.nsScore, isNull);
   });
 
   test('P1-A1: no next-board without finishing and reject invalid number',
