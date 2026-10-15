@@ -29,7 +29,7 @@
 
 | M2-F11 | Event Sourcing、規則回放與 PlayerView 隱私（[Core/Flutter/真 Chrome 回放 PASS](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md)；[Android 回放已通過](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616421)，[Domain 47/47 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38714671479)） | [M2-F11 終局歷史教學](features/M2_F11_FINISHED_REPLAY.md) | [Core Replay Test](../../packages/bridge_core/test/completed_replay_test.dart) · [Domain hardening](../../packages/bridge_core/test/replay_domain_hardening_test.dart) · [Flutter UI Test](../../apps/bridge_academy_flutter/test/completed_replay_test.dart) · [驗收](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F17 | A2.5：跨重啟保存回退警告與確認，Fail Closed | [M2-F17 教學](features/M2_F17_DURABLE_RECOVERY_CONSENT.md) | [session_persistence.dart](../../apps/bridge_academy_flutter/lib/src/session_persistence.dart) · [Recovery 測試](../../apps/bridge_academy_flutter/test/checkpoint_recovery_notice_test.dart) · [驗收](../product/P1_A2_5_DURABLE_RECOVERY_CONSENT_ACCEPTANCE.md) | DELIVERED |
+| M2-F17 | A2.5：跨重啟保存回退警告與確認，Fail Closed（[Flutter 50/50 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604483)） | [M2-F17 教學](features/M2_F17_DURABLE_RECOVERY_CONSENT.md) | [session_persistence.dart](../../apps/bridge_academy_flutter/lib/src/session_persistence.dart) · [Recovery 測試](../../apps/bridge_academy_flutter/test/checkpoint_recovery_notice_test.dart) · [驗收](../product/P1_A2_5_DURABLE_RECOVERY_CONSENT_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

@@ -1,6 +1,6 @@
 # Phase A2.5 — Durable rollback-acknowledgment marker
 
-**Initial status:** IMPLEMENTED / Flutter CI NOT RUN (2026-10-15). No production durability/encryption claim.
+**Verified 2026-10-15: FLUTTER WEB ENGINEERING PASS.** [CI #38738604483](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604483) SUCCESS, 50/50 Widget/Session tests, Flutter analyze, Web release and Chrome Demo. Android and real BEN separate; no production durability/encryption claim.
 
 ## Problem
 
@@ -8,10 +8,10 @@ A2.2 may recover the immediately previous legally validated checkpoint if the ac
 
 ## Change boundary
 
-- Keep the existing two-slot checkpoint design. Extend its **active commit marker** with an optional, boolean \`recoveryPending\`; legacy marker without the field remains compatible.
-- When falling back to previous generation, record \`recoveryPending: true\` **in the same awaited pointer-repair write**. Subsequent reads of the now-valid older slot return \`recoveredOlderCheckpoint = true\` until explicit acknowledgment.
-- \`RecoveryAwareSessionArchiveStore.acknowledgeRecoveredCheckpoint()\` rechecks the referenced legal slot and rewrites only the marker to \`recoveryPending: false\`. If that write fails, the persisted flag remains true and no actions may resume.
-- \`BridgeSession.acknowledgeRecoveredCheckpoint()\` awaits store acknowledgment while the session is busy. Only after the durable-intent marker write succeeds will it clear \`recoveryNeedsConfirmation\` and resume robots. It catches errors without logging privileged transcript data or calling BEN.
+- Keep the existing two-slot checkpoint design. Extend its **active commit marker** with an optional, boolean `recoveryPending`; legacy marker without the field remains compatible.
+- When falling back to previous generation, record `recoveryPending: true` **in the same awaited pointer-repair write**. Subsequent reads of the now-valid older slot return `recoveredOlderCheckpoint = true` until explicit acknowledgment.
+- `RecoveryAwareSessionArchiveStore.acknowledgeRecoveredCheckpoint()` rechecks the referenced legal slot and rewrites only the marker to `recoveryPending: false`. If that write fails, the persisted flag remains true and no actions may resume.
+- `BridgeSession.acknowledgeRecoveredCheckpoint()` awaits store acknowledgment while the session is busy. Only after the durable-intent marker write succeeds will it clear `recoveryNeedsConfirmation` and resume robots. It catches errors without logging privileged transcript data or calling BEN.
 - User explicitly choosing **New Game** is an opt-in abandonment of the recovered board; the new checkpoint commit resets the marker. This is distinct from implicit auto-recovery.
 - No new serialization of hidden hands into Flutter, no changes to BridgeGame or AI strategy, no new third-party dependency. A2.5 does not itself provide disk fsync guarantees.
 
@@ -47,4 +47,4 @@ A2 PRODUCT READY remains **NO**. Next work should choose a properly transactiona
 
 ## Actual CI evidence
 
-**NOT RUN at publication.** Append exact SHA, workflow run, tests and result after GitHub Actions completes. Do not reuse previous A2.4 Flutter #38736272456 as evidence for these changed semantics.
+[Flutter CI #38738604483](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604483) **SUCCESS** on SHA 8de76f78521db8c06dbd574a55798a11b5c8cc8a (original implementation 3456ed5): Flutter Analyze No issues found, **50/50 tests PASS**, Web Release Build PASS, actual Chrome Demo integration PASS. Initial CI #38738342220 failed an analyzer nullable-receiver complaint; fixed using Dart 3 pattern binding. The code-only fix triggered a mandatory lesson/index gate, addressed in this documentation commit. [Android #38738604625](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604625) and [real BEN #38738604472](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604472) were still running at this documentation update.
