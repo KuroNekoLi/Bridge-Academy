@@ -3,7 +3,7 @@
 - Feature ID：M2-F12
 - Milestone：Phase A1 / P1.1
 - 類型：Bridge Core Domain + Flutter UI + BEN 協議
-- 工程狀態：IMPLEMENTED（正式 CI 尚待執行）
+- 工程狀態：ENGINEERING_VERIFIED（Core 51/51、BEN Adapter 15/15、Flutter 23/23、Web Build／Chrome Demo PASS；真 BEN／Android 本版回歸另驗）
 - 學習狀態：DELIVERED
 - 原始碼：packages/bridge_core/lib/src/board_definition.dart；apps/bridge_academy_flutter/lib/src/bridge_session.dart；apps/bridge_academy_flutter/lib/src/bridge_app.dart
 - 驗收與測試：packages/bridge_core/test/board_definition_test.dart；apps/bridge_academy_flutter/test/board_management_test.dart；packages/bridge_ben_adapter/test/board_metadata_wire_test.dart；docs/product/P1_A1_BOARD_MANAGEMENT_ACCEPTANCE.md
@@ -53,7 +53,7 @@ cd ../../apps/bridge_academy_flutter && flutter pub get && flutter analyze && fl
 
 實際斷言：Board 1–32 的發牌者與局況、Board 17 週期、非法 0/負牌號、3NT NS 計分敏感度、BEN 傳輸的 `dealer/vul`、不同玩家座位與隱藏手牌、完成 Pass Out 後下一副、完全相同 PBN 的重打與中英翻譯。
 
-**初稿撰寫時 CI NOT RUN。** 最新實際 CI URL／SHA／結果必須寫回驗收文件，不能把舊版 47/47 Core 或固定 BEN Chrome 成功當成本次新增測試證據。真 BEN 變動牌號與實體裝置矩陣仍另行驗收。
+**已實際驗證：** [Bridge Core CI #38719140398](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140398) 51/51 PASS；[BEN Adapter #38719140404](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140404) 15/15 PASS（新增兩筆是 Recording Fake，非真 BEN）；[Flutter #38719447394](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719447394) 23/23 PASS、Analyze、Web Build 及 Chrome Demo PASS。第一次 Flutter 測試發現 Board 3 由 South Demo Bot 開叫 1NT，修正了把後續 Pass 誤當 Pass Out 的測試假設，沒有更改遊戲規則。真正 BEN／Android 本版回歸與正式產品發布另行驗收。
 
 ## 練習與自我檢驗
 

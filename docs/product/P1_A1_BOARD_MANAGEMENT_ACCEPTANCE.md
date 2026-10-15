@@ -1,6 +1,6 @@
 # Phase A1 / M2-F12 — Board Management Acceptance
 
-**Initial status: IMPLEMENTED / CI NOT RUN.** Only actual passing CI runs may advance to ENGINEERING VERIFIED. This is a scoped single-player feature, not consumer-release GO.
+**2026-10-15 status: CORE + BEN ADAPTER CONTRACT + FLUTTER WEB ENGINEERING VERIFIED.** These are scoped tests, not a consumer-production release. Android emulator and real BEN fixed-board Chrome regression are independent jobs (see actual results below).
 
 ## Authority
 WBF 2017 Laws of Duplicate Bridge, **Law 2**: https://www.worldbridge.org/wp-content/uploads/2017/03/2017LawsofDuplicateBridge-paginated.pdf . Boards 1,5,9,13 North dealer; 2,6,10,14 East; 3,7,11,15 South; 4,8,12,16 West. None: 1,8,11,14; NS: 2,5,12,15; EW: 3,6,9,16; Both: 4,7,10,13; repeat every 16.
@@ -32,6 +32,16 @@ WBF 2017 Laws of Duplicate Bridge, **Law 2**: https://www.worldbridge.org/wp-con
 - `cd packages/bridge_core && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded`
 - `cd packages/bridge_ben_adapter && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded`
 - `cd apps/bridge_academy_flutter && flutter create --platforms=web --project-name=bridge_academy_flutter . && flutter pub get && flutter analyze && flutter test && flutter build web --release`
+
+## Executed evidence
+
+- [Bridge Core CI #38719140398](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140398): **SUCCESS, 51/51 tests**, `dart analyze --fatal-infos` no issues; Law 2 BoardDefinition, Board 1–32, boundary/score tests.
+- [BEN Adapter Contract CI #38719140404](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140404): **SUCCESS, 15/15 tests**, strict analysis no issues. Added board 2 E/NS and board 3 S/EW wire mapping; **uses a recording fake**, not a real model for those new two cases.
+- [Flutter CI #38719447394](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719447394): **SUCCESS, 23/23 Widget/Session tests**, Flutter analyze no issues, compiled Web Release, actual Chrome Demo integration PASS. This run included test repair for Board 3: South acting first bids 1NT via Demo policy, so East's Pass starts play rather than finishing Pass Out.
+- [Feature Learning Gate #38719140435](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140435): SUCCESS on original A1 implementation code with the lesson.
+- [Actual BEN Chrome regression #38719140442](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140442): first fixed-board genuine BEN Chrome complete-game test passed; second robot declarer/Dummy stage was RUNNING at report update, so no blanket two-test PASS claim.
+- [Android emulator regression #38719140370](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38719140370): RUNNING at report update; no claim of this commit's Android PASS.
+- Implementation SHA `7de5dbbce84ae3f1e34d74651ce8d630d32271fa`; Flutter test-only correction SHA `02abde0bf497d691e21aa65de888e019845a10f1`. No change to original M1 BridgeGame rules.
 
 ## Risks / next release gate
 
