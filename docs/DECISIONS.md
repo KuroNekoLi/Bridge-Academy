@@ -79,5 +79,9 @@ Initial Flutter adapter uses SharedPreferencesAsync only to validate cross-platf
 
 **ACCEPTED FOR ENGINEERING HARDENING; release encryption gate remains OPEN.** Replace the single SharedPreferencesAsync checkpoint key with two independently validated slots plus a last-written active marker. Preserve the last committed checkpoint across a failed pending-slot write or marker write; after corruption, permit rollback to the previous fully validated legal transcript, never fabricate events. Support validation-led v1 migration; do not remove the old key before v2 commits. Use SHA-256 as a non-secret corruption checksum, **never call it encryption/HMAC**. SharedPreferences is not ACID or crash-durable; true encrypted local transactional storage, concurrency protection, truthful recovery warnings, physical-device kill/relaunch and BEN server idempotency remain release blockers. See docs/product/P1_A2_2_CHECKPOINT_HARDENING_ACCEPTANCE.md.
 
+## ADR-021 — Distinguish real Android app process restart from durability under power loss (2026-10-15)
+
+**ACCEPTED FOR ENGINEERING QA; CI PENDING.** Before treating A2 SharedPreferences checkpoints as a viable player-resume feature, test two distinct Android app launches with OS force-stop in between, validate exact event version/fingerprint after restoring an unfinished legal game and submit a new action without duplicate committed events. Keep the A2.2 checkpoint/Bridge Core rules unchanged. This is not proof of fsync, transactional or encrypted disk, process kill during pending writes, concurrent writers, real BEN exactly-once, or app release readiness. These remain separate P0 gates.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

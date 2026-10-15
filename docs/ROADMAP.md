@@ -49,6 +49,8 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 
 - **Phase A2 / M2-F13 local persistence prototype:** versioned checkpoint, trusted transcript restore, per-action saves and UI retry on storage failure; [acceptance](product/P1_A2_PERSISTENCE_ACCEPTANCE.md). [Core 55/55 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38723931963), [Flutter 28/28 + real Chrome storage restore + Web Build PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38724474420); [Android emulator persisted backend 3/3 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38724474457). Critical-data encrypted DB and process-kill acceptance remain separate release gates.
 
+- **A2.3 / M2-F15 ANDROID PROCESS-RESTART QA IMPLEMENTED, CI PENDING:** two distinct Flutter Android drive processes separated by OS force-stop, exact unfinished-game checkpoint and resumed legal play; see [acceptance](product/P1_A2_3_ANDROID_PROCESS_RESTART_ACCEPTANCE.md). No claim of encryption, kill-during-write or BEN idempotency.
+
 ## M3 — teaching and analysis
 - Versioned ConventionCard contract, SAYC/2-over-1 as separately testable profiles where supported.
 - Rule-grounded hints and full replay; DDS results tagged "double dummy" and gated to post-deal.
