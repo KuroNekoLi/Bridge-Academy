@@ -3,7 +3,7 @@
 - Feature ID：M2-F14
 - Milestone：Phase A2.2 — Game Persistence hardening
 - 類型：Flutter 資料持久層／可靠性
-- 工程狀態：IMPLEMENTED（新 CI 尚未執行；正式加密及斷電保證仍未完成）
+- 工程狀態：ENGINEERING_VERIFIED（Flutter 42/42、Web Build／真 Chrome Demo、Learning Gate PASS；Android／真 BEN 本版回歸待驗，加密與斷電保證尚未完成）
 - 學習狀態：DELIVERED
 - 原始碼：apps/bridge_academy_flutter/lib/src/session_persistence.dart
 - 測試：apps/bridge_academy_flutter/test/checkpoint_store_test.dart
@@ -59,7 +59,7 @@ flutter build web --release
 
 共新增 14 個隔離測試：雙槽輪替、四種寫入／損壞故障、未提交的新一代不得成為恢復來源、外層 checksum 已重算但內層非法事件、雙槽全毀、尚未提交的孤兒槽、v1 讀取遷移及失敗保留、刪除、跨 BridgeSession 重新開啟與隱藏手牌邊界。
 
-**撰寫時 CI NOT RUN。** 真正 Chrome／Android／iOS 實際強制關閉進程、設備斷電、多分頁並發、OS 保護的加密儲存，以及 BEN 網路 exactly-once 仍要另行驗證。
+**實際驗收：** [Flutter CI #38727920768](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38727920768)，SHA 456aa326，**42/42 PASS、Analyze 無問題、Web Release Build PASS、真 Chrome Demo PASS**。新增加 14 個故障注入案例。[Learning Gate #38727920737](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38727920737) PASS。 真正 Chrome／Android／iOS 實際強制關閉進程、設備斷電、多分頁並發、OS 保護的加密儲存，以及 BEN 網路 exactly-once 仍要另行驗證。
 
 ## 練習與自我檢驗
 

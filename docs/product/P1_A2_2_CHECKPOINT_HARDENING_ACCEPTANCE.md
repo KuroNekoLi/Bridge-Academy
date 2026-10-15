@@ -1,6 +1,6 @@
 # Phase A2.2 — Two-slot checkpoint integrity and migration
 
-**Initial status: IMPLEMENTED / CI NOT RUN (no release-ready durability or encryption claim).**
+**STATUS 2026-10-15: ENGINEERING VERIFIED (Flutter tests / real Chrome Demo / Web Build).** Formal encrypted storage, process-kill durability, BEN remote exactly-once and physical-device QA remain NOT VERIFIED.
 
 ## Purpose
 
@@ -49,4 +49,4 @@ An initial patch used only a slot letter as the active marker. That was insuffic
 
 ## Evidence
 
-Initially NOT RUN. Record new GitHub CI job URL/commit/test totals upon execution. Prior A2.1 Core 55/55, Flutter 28/28, Chrome and Android passes are historical evidence, NOT evidence of this new storage implementation.
+Actual executed evidence: [Flutter CI #38727920768](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38727920768) **SUCCESS** on committed A2.2 code and tests SHA `456aa326b52432dd0176104638ebb092c0527648`: `flutter analyze` reported **No issues found**; **42/42 tests passed**, including the 14 dedicated failure-injection cases; Flutter Web Release Build compiled successfully and true ChromeDriver Demo integration job completed SUCCESS. [Feature Learning Gate #38727920737](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38727920737) SUCCESS on same code SHA; [latest docs-only gate #38728215259](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38728215259) SUCCESS. Separate [Android emulator #38727877285](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38727877285) and [real BEN Chrome #38727877099](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38727877099) were still RUNNING at final evidence inspection; do not claim results for these tests. Earlier failed intermediate gates (#38727877131 and #38727877181) were corrected on SHA 456aa32: regression test adapted to the generation-aware marker, and source+lesson+index gate restored.
