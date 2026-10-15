@@ -27,7 +27,7 @@
 
 | M2-F10 | 固定教學牌與新隨機練習牌；測試 Seed 與 PBN | [M2-F10 隨機發牌教學](features/M2_F10_SHUFFLED_DEALS.md) | [Bridge Core](../../packages/bridge_core/lib/src/model.dart) · [Flutter Session](../../apps/bridge_academy_flutter/lib/src/bridge_session.dart) · [驗收](../m2/M2_F10_SHUFFLED_DEALS_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F11 | Event Sourcing、規則回放與 PlayerView 隱私（[Core/Flutter/真 Chrome 回放 PASS](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md)；Android 回放觸控待驗） | [M2-F11 終局歷史教學](features/M2_F11_FINISHED_REPLAY.md) | [Core Replay Test](../../packages/bridge_core/test/completed_replay_test.dart) · [Flutter UI Test](../../apps/bridge_academy_flutter/test/completed_replay_test.dart) · [驗收](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md) | DELIVERED |
+| M2-F11 | Event Sourcing、規則回放與 PlayerView 隱私（[Core/Flutter/真 Chrome 回放 PASS](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md)；[Android 回放已通過](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616421)，Domain 負面測試補強待驗） | [M2-F11 終局歷史教學](features/M2_F11_FINISHED_REPLAY.md) | [Core Replay Test](../../packages/bridge_core/test/completed_replay_test.dart) · [Domain hardening](../../packages/bridge_core/test/replay_domain_hardening_test.dart) · [Flutter UI Test](../../apps/bridge_academy_flutter/test/completed_replay_test.dart) · [驗收](../m2/M2_F11_FINISHED_REPLAY_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

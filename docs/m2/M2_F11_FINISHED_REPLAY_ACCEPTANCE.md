@@ -1,6 +1,6 @@
 # M2-F11 — Terminal Deal History and Rule-Checked Playback
 
-**Engineering status 2026-10-15: M2-F11 CORE + FLUTTER WEB + REAL CHROME REPLAY GO.** Actual native Android emulator replay-touch QA remains separately PENDING.
+**Engineering status 2026-10-15: M2-F11 CORE + FLUTTER WEB + REAL CHROME REPLAY GO.** Actual Android Emulator replay navigation **PASS** ([CI #38693616421](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616421)); physical-device and long-term persistence remain unverified.
 
 ## Scope
 A player can review the **current finished deal** from event zero through all auction calls and public card actions, and inspect per-step trick progress, contract, last trick winner and final NS score. Buttons: First, Previous, Next and Last; zh-TW/en copy.
@@ -41,8 +41,19 @@ Actual executed evidence:
 - Initial Flutter CI #38692682306 FAILED analyzer/compiler because Flutter onPressed expects a void callback, not a returned Future<void>; source fix ed856602 removed the invalid return and Flutter CI went green. Initial separate Learning Gate #38692937032 flagged a source-only fix commit lacking matching lesson/index update; this evidence update is committed with the new browser/Android replay checks and the lesson/index in the same change set.
 - **New replay browser click acceptance PASS:** [Flutter CI #38693616403](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616403), source SHA b380ba231b599b8ef0d6d2cf732499a2c8fb2d9b. 19/19 Flutter tests, analyze clean, Web Release Build PASS; genuine Chrome/ChromeDriver integration test explicitly clicked replay First → Next → Last after Pass Out, verified event steps and removal after restart.
 - **Real BEN regression PASS:** [CI #38692937041](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38692937041), source SHA ed856602ad6ea5a72121bbd1b2c853ed4afc3967. Both real-BEN Chrome full-deal variants passed; not proof of replay clicks or AI strategy quality.
-- **Android replay touch pending:** [Emulator CI #38693616421](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616421) still in progress when this report was written. Initial native run #38692682504 failed on the now-fixed Flutter callback compile error; no native replay pass can be claimed from that run.
+- **Android replay navigation PASS:** [Emulator CI #38693616421](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38693616421) completed SUCCESS, tested SHA b380ba231b599b8ef0d6d2cf732499a2c8fb2d9b. The existing Android integration test clicked replay First → Next → Last after terminal Pass Out, checked event positions and reset after new game. Initial native run #38692682504 had failed on a Flutter callback compile error, fixed before the successful run. This is an Android emulator, not a physical device.
 
 
 ## Limitations
 Only the currently completed deal is kept in memory. The local single-player authority still holds all hands internally; this filtering is a client interface guarantee, not competitive server-side anti-cheat. Playing replay does not call BEN again or run new AI decisions.
+
+## M2-F11.1 follow-up: replay domain hardening
+
+Rather than introducing a duplicate Replay Engine (already present in `SinglePlayerCoordinator.completedReplay`), add `packages/bridge_core/test/replay_domain_hardening_test.dart` regression coverage:
+
+1. Four starting dealer seats and all four vulnerability states: 4 genuine chronological Pass events, versions 0–4, authorized seat, no public Dummy before opening lead, signed NS score 0.
+2. Valid 1S–X–XX–Pass–Pass–Pass, **six auction calls** and all 52 real plays: 59 total immutable frames (initial + 58 actions), 13 completed tricks, redoubled contract, 13 South Dummy actions with North actor.
+3. `GameTranscript.encode/decode` round-trip remains domain-only (privileged PBN), with same fingerprint/score. Tampering event version, actor or opening-lead handOwner must fail at the parser/rule boundary. Three actual Pass events remain an incomplete, nonterminal auction.
+4. Read-only `CompletedReplay.frames`, `PlayerView.ownCards`, `auction` and `remainingCards` throw on mutation; each historical `PlayerView.toJson()` omits `dealPbn`, `hands` and raw `events`.
+
+**Gate when authored: NOT RUN.** Execute `dart test test/replay_domain_hardening_test.dart` and full `dart analyze --fatal-infos && dart test --reporter expanded` in Bridge Core GitHub CI. Distinguish these new domain tests from the previously passed Chrome/Android UI tests. The full-information archive is deliberately not exposed as a replay API, and the noncryptographic fingerprint is not an authentication signature.
