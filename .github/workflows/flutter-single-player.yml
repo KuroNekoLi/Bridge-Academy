@@ -56,12 +56,12 @@ jobs:
       - name: Install official ChromeDriver with Puppeteer browser manager
         run: |
           npx --yes @puppeteer/browsers install chromedriver@stable
-          DRIVER="$(find "$HOME/.cache/puppeteer/chromedriver" -type f -name chromedriver -perm -u+x | head -n 1)"
+          DRIVER="$(find "$PWD/chromedriver" "$HOME/.cache/puppeteer/chromedriver" -type f -name chromedriver -perm -u+x 2>/dev/null | head -n 1)"
           if [ -z "$DRIVER" ]; then
             echo "ChromeDriver executable missing" >&2
             exit 1
           fi
-          echo "$DRIVER" --version
+          "$DRIVER" --version
           echo "CHROMEDRIVER=$DRIVER" >> "$GITHUB_ENV"
       - name: Run headless Chrome browser integration test
         run: |
