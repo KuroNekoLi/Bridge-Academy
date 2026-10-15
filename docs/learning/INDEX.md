@@ -38,3 +38,4 @@
 
 ## M1 其他功能的教學回補候選
 合約／莊家判定、Double／Redouble、Actor 與 Hand Owner、Follow Suit、Duplicate Scoring、事件回放與完整手牌隱私。此處只是**尚未交付的回補清單**，不代表已有教材或已驗收學習。
+| M2-F12 | Phase A1：標準牌號、發牌者／局況、同副重打與下一副 | [M2-F12 教學](features/M2_F12_BOARD_MANAGEMENT.md) | [BoardDefinition](../../packages/bridge_core/lib/src/board_definition.dart) · [Session/UI 測試](../../apps/bridge_academy_flutter/test/board_management_test.dart) · [驗收](../product/P1_A1_BOARD_MANAGEMENT_ACCEPTANCE.md) | DELIVERED |

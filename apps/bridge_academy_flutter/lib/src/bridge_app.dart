@@ -183,6 +183,8 @@ class _BridgeTableState extends State<BridgeTable> {
               else ...[
                 _finishCard(view, copy),
                 const SizedBox(height: 8),
+                _completedBoardActions(session, copy),
+                const SizedBox(height: 8),
                 _replayPanel(session, copy),
               ],
             ],
@@ -263,6 +265,32 @@ class _BridgeTableState extends State<BridgeTable> {
         ),
       );
 
+  Widget _completedBoardActions(BridgeSession session, AppCopy copy) =>
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          OutlinedButton.icon(
+            key: const Key('replay_same_board'),
+            onPressed: session.busy ? null : () {
+              setState(() => _replayIndex = null);
+              session.replaySameBoard();
+            },
+            icon: const Icon(Icons.replay),
+            label: Text(copy.t('replaySameBoard')),
+          ),
+          FilledButton.icon(
+            key: const Key('next_board'),
+            onPressed: session.busy ? null : () {
+              setState(() => _replayIndex = null);
+              session.nextBoard();
+            },
+            icon: const Icon(Icons.skip_next),
+            label: Text(copy.t('nextBoard')),
+          ),
+        ],
+      );
+
   Widget _status(PlayerView view, BridgeSession session, AppCopy copy) {
     return Card(
       key: const Key('game_status'),
@@ -272,6 +300,12 @@ class _BridgeTableState extends State<BridgeTable> {
           spacing: 24,
           runSpacing: 6,
           children: [
+            Text(copy.boardNumber(session.board.number),
+                key: const Key('board_number')),
+            Text(copy.dealer(view.dealer.letter),
+                key: const Key('board_dealer')),
+            Text(copy.vulnerability(view.vulnerability.name),
+                key: const Key('board_vulnerability')),
             Text(copy.formatTurn(view.turn?.letter)),
             Text(copy.contract(view.contract?.label ?? copy.t('notYet'))),
             Text(copy.trickCount(view.completedTricks.length)),

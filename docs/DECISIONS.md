@@ -66,5 +66,8 @@ M2-F07 must use pinned upstream BEN on localhost with matching actual ChromeDriv
 
 No Bridge Core gameplay implementation was changed in this documentation-only decision commit.
 
+## ADR-019 — Phase A1 board metadata is Domain-owned (2026-10-15)
+**ACCEPTED FOR IMPLEMENTATION (TEST EVIDENCE PENDING).** WBF Duplicate Law 2 defines 1-based Board Numbers, dealer order N/E/S/W and the 16-board vulnerability cycle. A pure-Dart BoardDefinition supplies metadata; BridgeSession passes it to the coordinator, so UI, Bridge Core score and BEN protocol all share the same source of truth. Current game re-deal keeps board number, replaySameBoard preserves physical cards, nextBoard is permitted only for terminal boards and advances sequence. The fixed teaching PBN may repeat with new board metadata only when explicitly chosen as a fixture, never marketed as a fair multi-board tournament. Persistence and server-authoritative competition are future separate gates. No existing legality/scoring reducer rule changed.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

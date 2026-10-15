@@ -25,6 +25,8 @@ class BridgeSession extends ChangeNotifier {
   final BotPolicy Function(OpponentMode mode)? _botFactory;
   final Deal Function()? _freshDealFactory;
   SinglePlayerCoordinator? _coordinator;
+  Deal? _activeDeal;
+  BoardDefinition _board = BoardDefinition.forNumber(1);
   BenHttpTransport? _transport;
 
   bool _busy = false;
@@ -42,6 +44,7 @@ class BridgeSession extends ChangeNotifier {
   OpponentMode get mode => _mode;
   BoardMode get boardMode => _boardMode;
   Seat get humanSeat => _humanSeat;
+  BoardDefinition get board => _board;
 
   BotPolicy _createBot(OpponentMode mode) {
     if (_botFactory != null) return _botFactory(mode);
@@ -61,24 +64,67 @@ class BridgeSession extends ChangeNotifier {
     return BenBotPolicy(transport);
   }
 
+  /// Create/redeal the specified board. Defaults to the current board number
+  /// (Board 1 before the first game). A fresh deal gets newly shuffled cards.
   Future<void> newGame({
     Seat humanSeat = Seat.north,
     OpponentMode mode = OpponentMode.demo,
     BoardMode boardMode = BoardMode.training,
+    int? boardNumber,
   }) async {
     if (_busy) return;
+    final board = BoardDefinition.forNumber(boardNumber ?? _board.number);
+    final deal = boardMode == BoardMode.training
+        ? _fixedDeal
+        : (_freshDealFactory?.call() ?? Deal.shuffled());
+    await _beginBoard(
+      board: board, deal: deal, humanSeat: humanSeat,
+      mode: mode, boardMode: boardMode,
+    );
+  }
+
+  /// Practice the identical 52 cards and board conditions, without creating
+  /// a new result. The current finished replay is replaced on restart.
+  Future<void> replaySameBoard() async {
+    final deal = _activeDeal;
+    if (_busy || deal == null || !finished) return;
+    await _beginBoard(
+      board: _board, deal: deal, humanSeat: _humanSeat,
+      mode: _mode, boardMode: _boardMode,
+    );
+  }
+
+  /// Only a finished board advances the sequential Duplicate board number.
+  /// The player can still restart an unfinished board with newGame().
+  Future<void> nextBoard() async {
+    if (_busy || !finished) return;
+    await newGame(
+      humanSeat: _humanSeat,
+      mode: _mode,
+      boardMode: _boardMode,
+      boardNumber: _board.number + 1,
+    );
+  }
+
+  Future<void> _beginBoard({
+    required BoardDefinition board,
+    required Deal deal,
+    required Seat humanSeat,
+    required OpponentMode mode,
+    required BoardMode boardMode,
+  }) async {
     _transport?.close();
     _transport = null;
     _humanSeat = humanSeat;
     _mode = mode;
     _boardMode = boardMode;
+    _board = board;
+    _activeDeal = deal;
     _errorCode = null;
     _coordinator = SinglePlayerCoordinator(
-      deal: boardMode == BoardMode.training
-          ? _fixedDeal
-          : (_freshDealFactory?.call() ?? Deal.shuffled()),
-      dealer: Seat.north,
-      vulnerability: Vulnerability.none,
+      deal: deal,
+      dealer: board.dealer,
+      vulnerability: board.vulnerability,
       humanSeat: humanSeat,
       bot: _createBot(mode),
     );

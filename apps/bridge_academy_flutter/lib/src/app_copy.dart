@@ -12,6 +12,10 @@ class AppCopy {
   }
 
   String seat(String code) => t('seat$code');
+  String boardNumber(int number) => '${t('boardNumber')}: $number';
+  String dealer(String code) => '${t('dealer')}: ${seat(code)}';
+  String vulnerability(String name) =>
+      '${t('vulnerability')}: ${t('vul_$name')}';
   String formatTurn(String? code) => code == null
       ? t('noTurn')
       : '${t('turn')}: ${seat(code)}';
@@ -34,6 +38,15 @@ class AppCopy {
     'live': ['真正 BEN API', 'Live BEN API'],
     'humanSeat': ['玩家座位', 'Your seat'],
     'newGame': ['開始新牌局', 'Start new deal'],
+    'boardNumber': ['牌號', 'Board'],
+    'dealer': ['發牌者', 'Dealer'],
+    'vulnerability': ['局況', 'Vulnerability'],
+    'vul_none': ['雙方無局', 'Neither vulnerable'],
+    'vul_ns': ['南北有局', 'N/S vulnerable'],
+    'vul_ew': ['東西有局', 'E/W vulnerable'],
+    'vul_both': ['雙方有局', 'Both vulnerable'],
+    'nextBoard': ['下一副牌', 'Next board'],
+    'replaySameBoard': ['重打同一副牌', 'Replay same board'],
     'boardMode': ['發牌方式', 'Deal source'],
     'trainingBoard': ['固定教學牌例', 'Fixed training deal'],
     'freshBoard': ['新隨機牌局', 'Fresh shuffled deal'],
