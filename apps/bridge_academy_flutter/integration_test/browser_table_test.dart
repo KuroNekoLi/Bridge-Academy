@@ -2,6 +2,7 @@ import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -22,6 +23,13 @@ void main() {
 
   testWidgets('REAL BROWSER: language, pass out, restart, dummy play',
       (tester) async {
+    final frameworkErrors = <String>[];
+    final initialErrorHandler = FlutterError.onError;
+    FlutterError.onError = (details) {
+      frameworkErrors.add(details.exceptionAsString());
+      initialErrorHandler?.call(details);
+    };
+    addTearDown(() => FlutterError.onError = initialErrorHandler);
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -52,7 +60,12 @@ void main() {
     expect(find.byKey(const Key('dummy_revealed')), findsOneWidget);
     final legal = session.view!.legalCards.first.code;
     final version = session.view!.version;
-    await tapControl(tester, 'dummy_card_$legal');
+    try {
+      await tapControl(tester, 'dummy_card_$legal');
+    } catch (error) {
+      fail('Dummy Chrome action: $error; underlying framework errors: '
+          '${frameworkErrors.join(' / ')}');
+    }
     expect(session.view!.version, greaterThan(version));
     expect(session.errorCode, isNull);
   });
