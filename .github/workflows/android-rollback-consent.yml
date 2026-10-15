@@ -1,14 +1,7 @@
 name: Android Rollback Consent Process QA (A2.6)
+# Device/emulator UI QA is paused by owner request (2026-10-15).
+# Explicit owner approval and a new change to this workflow are required to restore it.
 on:
-  push:
-    branches: [master]
-    paths:
-      - "apps/bridge_academy_flutter/integration_test/android_rollback_*.dart"
-      - "apps/bridge_academy_flutter/scripts/android_rollback_consent_e2e.sh"
-      - "apps/bridge_academy_flutter/lib/src/session_persistence.dart"
-      - "apps/bridge_academy_flutter/lib/src/bridge_session.dart"
-      - "apps/bridge_academy_flutter/lib/src/bridge_app.dart"
-      - ".github/workflows/android-rollback-consent.yml"
   workflow_dispatch:
 
 permissions:
@@ -16,6 +9,8 @@ permissions:
 
 jobs:
   three-process-rollback:
+    # Guard against manual dispatch too: never allocate an AVD runner before approval.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
