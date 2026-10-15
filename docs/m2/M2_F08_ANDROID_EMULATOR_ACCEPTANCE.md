@@ -1,6 +1,6 @@
 # M2-F08 — Android emulator QA
 
-**Status 2026-10-15: Android emulator QA NOT YET VERIFIED; second CI run started after disk fix.** [GitHub Actions #38685813955](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38685813955) started on implementation SHA 12ea0b1486ee0c0917757f7ae5f0fe6cf366fbea. At the latest inspection, checkout, Flutter setup, native Android platform generation, dependency resolution and KVM setup had succeeded; the emulator-runner/UI execution step was still in progress. **No Android device test PASS is claimed** until the job finishes successfully.
+**Status 2026-10-15: M2-F08 ANDROID EMULATOR ENGINEERING GO.** [CI #38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) SUCCESS, implementation SHA b50ca4591c49f1c3c77eee06169061a14425668c. Flutter native Android 15 / API 35 x86_64, Pixel 5 profile, KVM, genuine Flutter APK installation and screen interaction. Physical devices and Android BEN networking remain NOT VERIFIED. [GitHub Actions #38685813955](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38685813955) started on implementation SHA 12ea0b1486ee0c0917757f7ae5f0fe6cf366fbea. At the latest inspection, checkout, Flutter setup, native Android platform generation, dependency resolution and KVM setup had succeeded; the emulator-runner/UI execution step was still in progress. **No Android device test PASS is claimed** until the job finishes successfully.
 
 ## Gate
 - GitHub workflow: .github/workflows/flutter-android-emulator.yml
@@ -41,3 +41,11 @@ Third attempt status: **NOT YET VERIFIED**. The earlier failures remain linked; 
 - New failure was entirely in test runner script context: reactivecircus executes each script line in a separate shell; the standalone cd command did not persist to the following flutter drive command. Flutter returned 'No pubspec.yaml file found' from repository root. No card play or app assertion was tested.
 - Commit b50ca4591c49f1c3c77eee06169061a14425668c combines directory switch and flutter devices / flutter drive in a single shell command joined by &&.
 - [Follow-up CI #38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) and [new M2-F10 head CI #38690024378](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38690024378) are **RUNNING** at the latest inspection. Neither has yet returned device-ui success. Do not infer PASS from emulator boot alone.
+
+## Final executed native-Android evidence (after shell fix)
+
+- [CI #38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) SUCCESS. Actual Flutter device listing: emulator-5554, Android 15 (API 35), android-x64.
+- Flutter/Gradle built real build/app/outputs/flutter-apk/app-debug.apk and installed it on emulator.
+- Android integration_test Android device: localization, Pass Out, Dummy play: PASS. GitHub log: All tests passed. App successfully drove both session and UI assertions (locale toggle, new game, 13 own cards, Dummy hidden, Pass Out / zero, restart, bid, expose Dummy, tap legal Dummy card, no framework exception).
+- Runner KVM and disk reclamation succeeded; command directory bug eliminated with a single cd && flutter devices && flutter drive invocation.
+- This verifies exactly one Android Emulator UI smoke test. It does **not** verify multiple physical devices, iOS, TalkBack, full random game playback or true BEN over Android network.

@@ -1,7 +1,7 @@
 # M2-F08｜Flutter Android 模擬器操作驗收
 
 - Feature ID：M2-F08
-- 工程狀態：IMPLEMENTED（正式 Android CI 尚未驗收）
+- 工程狀態：ENGINEERING_VERIFIED（Android 15 / API 35 模擬器原生 APK、UI 真實操作 [CI #38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) PASS）
 - 學習狀態：DELIVERED
 - 程式：apps/bridge_academy_flutter/integration_test/android_table_test.dart
 - CI：.github/workflows/flutter-android-emulator.yml
@@ -25,7 +25,7 @@ Android Emulator 可固定 API 與裝置外形並納入 CI，缺點是啟動、G
     flutter create --platforms=android --project-name=bridge_academy_flutter .
     flutter drive --driver=test_driver/integration_test.dart --target=integration_test/android_table_test.dart -d emulator-5554
 
-實際 CI：初版 #38685813955、第二輪 #38687000645 均因 Runner 磁碟不足而無法開機；第三輪 [#38689252806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689252806) 清理不用的工具後剩餘 23 GiB，模擬器成功開機，但 flutter drive 因 reactivecircus 每行獨立執行 shell 而找不到 pubspec.yaml。現已將 cd、flutter devices、flutter drive 合併成單一命令，修正後的 [#38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) 正在驗收。這些都是環境／測試腳本故障，不是 Bridge Core 域規則失敗；Android APK／UI PASS 尚未取得。不含 iOS、實機、TalkBack 或 Android BEN 網路驗收。
+實際 CI：初版 #38685813955、第二輪 #38687000645 均因 Runner 磁碟不足而無法開機；第三輪 [#38689252806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689252806) 清理不用的工具後剩餘 23 GiB，模擬器成功開機，但 flutter drive 因 reactivecircus 每行獨立執行 shell 而找不到 pubspec.yaml。現已將 cd、flutter devices、flutter drive 合併成單一命令，修正後的 [#38689747773](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38689747773) **已成功**：Android 15 API 35 x86_64 Emulator 啟動、Flutter APK 建置安裝、integrated UI 測試全部 PASS。這些都是環境／測試腳本故障，不是 Bridge Core 域規則失敗；Android APK／UI PASS 尚未取得。不含 iOS、實機、TalkBack 或 Android BEN 網路驗收。
 
 ## 練習與自我檢驗
 **問題：** Chrome 整合測試 PASS，但 Android 模擬器在 APK 安裝時失敗，為何這不是 Bridge Core 違反跟牌規則的證據？
