@@ -1,6 +1,6 @@
 # M2-F03 — BEN Robot Adapter Verification Report
 
-**Status as of 2026-10-15:** BEN adapter **CONTRACT VERIFIED**, true BEN **LIVE INTEGRATION NOT RUN** for this specific adapter. Earlier POC-001/002 live BEN results belong to different code and cannot substitute for this test. Previously reported POC-001/002 runs are NOT proof this adapter works against the live server.
+**Status 2026-10-15:** BEN adapter **CONTRACT VERIFIED (13 Mock tests)** and **LIVE INTEGRATION VERIFIED** by M2-F04: two true BEN + Dart games (52 cards/13 tricks), including 13 Robot-controlled Dummy turns. Evidence: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38676615739 and docs/m2/M2_F04_REAL_BEN_ACCEPTANCE.md. Previous POC-001/002 Work reports remain separate historical evidence.
 
 ## Sources and version
 BEN upstream source: https://github.com/lorserker/ben/commit/72653ec1b5c17116faea229e9b975ea5622aa1f7 (2026-10-11 commit, checked 2026-10-15).
@@ -27,7 +27,7 @@ dart test --reporter expanded
 Contract tests cover /bid /lead /play, Dummy actor/handOwner, auction P-X-XX, vuln NS/EW/Both, public played history, private hand reconstruction, illegal proposals, malformed bid/card, injected HTTP 503, malformed JSON and timeout.
 
 **GitHub Actions contract result:** [BEN Adapter Contract CI #38675258016](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38675258016), commit 35f5d2ddb2ff9781547f415bd1047f940e41c73a, Dart SDK 3.13.5: dart pub get PASS, dart analyze --fatal-infos **No issues found**, dart test **13/13 PASS**. All tests explicitly use fake response transport/MockClient; this is not a BEN ML verification. [Feature Learning Gate #38675286627](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38675286627): PASS.
-**True BEN service:** NOT RUN for this adapter; POC-002 Work runs are separate evidence.
+**True BEN service:** VERIFIED for this adapter in the later M2-F04 runner, under reduced sampling/PIMC off. 2026-10-15 CI #38676615739. This does not certify BEN default performance, conventions or general production deployment.
 
 ## Important integration caveats
 1. WEBSITE-INTEGRATION.md section 4.3 note and section 5 demo disagree over exact dummy turn hand/seat fields. This initial contract follows the declarer-as-actor approach and records it for a mandatory real BEN smoke replay.
