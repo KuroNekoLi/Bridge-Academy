@@ -4,6 +4,7 @@ set -euo pipefail
 flutter drive \
   --driver=test_driver/integration_test.dart \
   --target=integration_test/android_persist_prepare_test.dart \
+  --keep-app-running \
   -d emulator-5554
 
 package=$(adb shell pm list packages | tr -d '\r' | sed -n \
