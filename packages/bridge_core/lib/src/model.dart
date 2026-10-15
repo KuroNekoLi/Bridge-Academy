@@ -1,3 +1,5 @@
+import 'dart:math';
+
 enum Seat {
   north, east, south, west;
   Seat get next => Seat.values[(index + 1) % 4];
@@ -217,6 +219,21 @@ class Deal {
       parts.add(groups.join('.'));
     }
     return 'N:${parts.join(' ')}';
+  }
+
+  /// Fresh local training deal. A supplied seed is intended for tests;
+  /// retain toPbn() for exact replay across SDK/runtime revisions.
+  /// An unseeded deal uses platform secure randomness; the local client's
+  /// privileged deal must never be confused with a server fair-play model.
+  factory Deal.shuffled({int? seed}) {
+    final cards = [
+      for (final suit in Suit.values)
+        for (final rank in Rank.values) Card(suit, rank),
+    ]..shuffle(seed == null ? Random.secure() : Random(seed));
+    return Deal({
+      for (var i = 0; i < Seat.values.length; i++)
+        Seat.values[i]: cards.sublist(i * 13, (i + 1) * 13),
+    });
   }
 
   /// Deterministic fixture, not an RNG-generated competitive deal.

@@ -61,6 +61,9 @@ acceptance. See docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md.
 - True BEN robot declarer Chrome job: .github/workflows/ben-flutter-browser.yml. Test: integration_test/browser_ben_declarer_test.dart, executed after M2-F07 live model test. Never substitute Demo or simulated AI.
 - M2-F08 and F09 each have separate Traditional Chinese lessons and acceptance reports under docs/learning/features and docs/m2.
 
+## Fixed vs fresh board choice (M2-F10)
+The deal source selector defaults to the existing synthetic training deal for repeatable QA. Select Fresh shuffled deal for a new local practice board; it changes cards but not the explicit Demo vs BEN opponent choice. Each fresh local board has 52 unique cards and 13 cards per seat. This is not a production anti-cheat dealer or a persistence/replay implementation. [Acceptance](../../docs/m2/M2_F10_SHUFFLED_DEALS_ACCEPTANCE.md), [Lesson](../../docs/learning/features/M2_F10_SHUFFLED_DEALS.md).
+
 ## Trust boundary
 
 UI gesture -> BridgeSession -> SinglePlayerCoordinator -> BridgeGame.apply ->

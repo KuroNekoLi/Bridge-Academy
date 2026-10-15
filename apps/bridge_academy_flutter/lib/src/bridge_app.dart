@@ -81,6 +81,7 @@ class BridgeTable extends StatefulWidget {
 class _BridgeTableState extends State<BridgeTable> {
   Seat _selectedSeat = Seat.north;
   OpponentMode _selectedMode = OpponentMode.demo;
+  BoardMode _selectedBoard = BoardMode.training;
   int _bidLevel = 1;
   Strain _bidStrain = Strain.notrump;
 
@@ -109,6 +110,7 @@ class _BridgeTableState extends State<BridgeTable> {
                   children: [
                     _modeSelector(copy, constraints.maxWidth),
                     _seatSelector(copy, constraints.maxWidth),
+                    _boardSelector(copy, constraints.maxWidth),
                     FilledButton.icon(
                       key: const Key('new_game'),
                       onPressed: session.busy
@@ -116,6 +118,7 @@ class _BridgeTableState extends State<BridgeTable> {
                           : () => session.newGame(
                               humanSeat: _selectedSeat,
                               mode: _selectedMode,
+                              boardMode: _selectedBoard,
                             ),
                       icon: const Icon(Icons.refresh),
                       label: Text(session.started
@@ -224,6 +227,31 @@ class _BridgeTableState extends State<BridgeTable> {
           ],
           onChanged: (value) {
             if (value != null) setState(() => _selectedSeat = value);
+          },
+        ),
+      );
+
+  Widget _boardSelector(AppCopy copy, double availableWidth) => SizedBox(
+        width: availableWidth < 225 ? availableWidth : 225,
+        child: DropdownButtonFormField<BoardMode>(
+          key: const Key('board_mode_selector'),
+          isExpanded: true,
+          initialValue: _selectedBoard,
+          decoration: InputDecoration(labelText: copy.t('boardMode')),
+          items: [
+            for (final board in BoardMode.values)
+              DropdownMenuItem(
+                value: board,
+                child: Text(
+                  copy.t(board == BoardMode.training
+                      ? 'trainingBoard' : 'freshBoard'),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+          ],
+          onChanged: (value) {
+            if (value != null) setState(() => _selectedBoard = value);
           },
         ),
       );

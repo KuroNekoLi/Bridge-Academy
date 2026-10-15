@@ -64,6 +64,11 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - M2-F09 wraps genuine BenBotPolicy in an audit observer and verifies actual robot declarer acts for public Dummy with 13 CardAction actor/handOwner checks, using real BEN Python + Flutter Chrome.
 - Genuine /lead route is not required for the robot in M2-F09: East, a human defender, leads the first trick.
 
+## M2-F10 — training fixtures vs fresh practice deals
+- Bridge Core now creates a fresh shuffled Deal from a complete standard 52-card deck; existing Deal constructor guarantees uniqueness / 13 each; optional seed is only for deterministic in-process tests.
+- BridgeSession defaults to the historic fixed deal; the explicit BoardMode.fresh opt-in supplies a new shuffled local deal or test-injected deterministic factory; BEN mode remains orthogonal.
+- Only PlayerView flows to the UI. Exact cross-runtime replay uses an explicit PBN rather than a seed alone; neither seed nor raw four-hand PBN appears on an active player's screen.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.

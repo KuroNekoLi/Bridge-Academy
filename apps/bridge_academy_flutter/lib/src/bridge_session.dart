@@ -3,6 +3,7 @@ import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/foundation.dart';
 
 enum OpponentMode { demo, ben }
+enum BoardMode { training, fresh }
 
 /// Private in-process game controller for M2: clients only observe PlayerView.
 ///
@@ -12,20 +13,24 @@ class BridgeSession extends ChangeNotifier {
   BridgeSession({
     Deal? fixedDeal,
     BotPolicy Function(OpponentMode mode)? botFactory,
+    Deal Function()? freshDealFactory,
   })  : _fixedDeal = fixedDeal ?? Deal.fromPbn(
           'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
           'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8',
         ),
-        _botFactory = botFactory;
+        _botFactory = botFactory,
+        _freshDealFactory = freshDealFactory;
 
   final Deal _fixedDeal;
   final BotPolicy Function(OpponentMode mode)? _botFactory;
+  final Deal Function()? _freshDealFactory;
   SinglePlayerCoordinator? _coordinator;
   BenHttpTransport? _transport;
 
   bool _busy = false;
   String? _errorCode;
   OpponentMode _mode = OpponentMode.demo;
+  BoardMode _boardMode = BoardMode.training;
   Seat _humanSeat = Seat.north;
 
   bool get busy => _busy;
@@ -34,6 +39,7 @@ class BridgeSession extends ChangeNotifier {
   bool get finished => _coordinator?.finished ?? false;
   PlayerView? get view => _coordinator?.humanView;
   OpponentMode get mode => _mode;
+  BoardMode get boardMode => _boardMode;
   Seat get humanSeat => _humanSeat;
 
   BotPolicy _createBot(OpponentMode mode) {
@@ -57,15 +63,19 @@ class BridgeSession extends ChangeNotifier {
   Future<void> newGame({
     Seat humanSeat = Seat.north,
     OpponentMode mode = OpponentMode.demo,
+    BoardMode boardMode = BoardMode.training,
   }) async {
     if (_busy) return;
     _transport?.close();
     _transport = null;
     _humanSeat = humanSeat;
     _mode = mode;
+    _boardMode = boardMode;
     _errorCode = null;
     _coordinator = SinglePlayerCoordinator(
-      deal: _fixedDeal,
+      deal: boardMode == BoardMode.training
+          ? _fixedDeal
+          : (_freshDealFactory?.call() ?? Deal.shuffled()),
       dealer: Seat.north,
       vulnerability: Vulnerability.none,
       humanSeat: humanSeat,

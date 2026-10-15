@@ -25,6 +25,8 @@
 | M2-F08 | Android Emulator 原生 UI 與跨平台驗收 | [M2-F08 教學](features/M2_F08_ANDROID_EMULATOR.md) | [Android UI Test](../../apps/bridge_academy_flutter/integration_test/android_table_test.dart) · [Android CI](../../.github/workflows/flutter-android-emulator.yml) · [驗收](../m2/M2_F08_ANDROID_EMULATOR_ACCEPTANCE.md) | DELIVERED |
 | M2-F09 | 真 BEN 莊家與 Dummy Actor/HandOwner | [M2-F09 教學](features/M2_F09_BEN_DECLARER_UI.md) | [BEN Declarer Test](../../apps/bridge_academy_flutter/integration_test/browser_ben_declarer_test.dart) · [BEN CI](../../.github/workflows/ben-flutter-browser.yml) · [驗收](../m2/M2_F09_BEN_DECLARER_UI_ACCEPTANCE.md) | DELIVERED |
 
+| M2-F10 | 固定教學牌與新隨機練習牌；測試 Seed 與 PBN | [M2-F10 隨機發牌教學](features/M2_F10_SHUFFLED_DEALS.md) | [Bridge Core](../../packages/bridge_core/lib/src/model.dart) · [Flutter Session](../../apps/bridge_academy_flutter/lib/src/bridge_session.dart) · [驗收](../m2/M2_F10_SHUFFLED_DEALS_ACCEPTANCE.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。
