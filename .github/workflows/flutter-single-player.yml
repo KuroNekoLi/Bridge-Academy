@@ -55,7 +55,13 @@ jobs:
           flutter pub get
       - name: Install official ChromeDriver with Puppeteer browser manager
         run: |
-          npx --yes @puppeteer/browsers install chromedriver@stable
+          CHROME_VERSION="$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)"
+          if [ -z "$CHROME_VERSION" ]; then
+            echo "Could not determine installed Chrome version" >&2
+            exit 1
+          fi
+          echo "Matching ChromeDriver to Google Chrome $CHROME_VERSION"
+          npx --yes @puppeteer/browsers install "chromedriver@$CHROME_VERSION"
           DRIVER="$(find "$PWD/chromedriver" -type f -name chromedriver -perm -u+x | head -n 1)"
           if [ -z "$DRIVER" ]; then
             echo "ChromeDriver executable missing" >&2
