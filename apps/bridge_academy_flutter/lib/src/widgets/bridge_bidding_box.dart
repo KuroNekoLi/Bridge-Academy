@@ -5,7 +5,8 @@ import '../app_copy.dart';
 
 /// Controlled auction UI. The caller owns the selection; Bridge Core owns
 /// legality and session state. An enabled call is not necessarily a legal call
-/// until the reducer accepts it. A future Core legalCalls projection can
+/// until the reducer accepts it. Selectors are direct Wrap children to avoid
+/// horizontal Row overflow at 320px. A future Core legalCalls projection can
 /// disable individual calls without duplicating auction rules in Flutter.
 class BridgeBiddingBox extends StatelessWidget {
   const BridgeBiddingBox({
@@ -37,48 +38,40 @@ class BridgeBiddingBox extends StatelessWidget {
             runSpacing: 8,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(copy.t('level')),
-                  const SizedBox(width: 8),
-                  DropdownButton<int>(
-                    key: const Key('bid_level'),
-                    value: selectedLevel,
-                    items: [
-                      for (var n = 1; n <= 7; n++)
-                        DropdownMenuItem(value: n, child: Text('$n')),
-                    ],
-                    onChanged: canSubmit
-                        ? (n) {
-                            if (n != null) onLevelChanged(n);
-                          }
-                        : null,
-                  ),
-                ],
+              Tooltip(
+                message: copy.t('level'),
+                child: DropdownButton<int>(
+                  key: const Key('bid_level'),
+                  value: selectedLevel,
+                  items: [
+                    for (var n = 1; n <= 7; n++)
+                      DropdownMenuItem(value: n, child: Text('$n')),
+                  ],
+                  onChanged: canSubmit
+                      ? (n) {
+                          if (n != null) onLevelChanged(n);
+                        }
+                      : null,
+                ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(copy.t('strain')),
-                  const SizedBox(width: 8),
-                  DropdownButton<Strain>(
-                    key: const Key('bid_strain'),
-                    value: selectedStrain,
-                    items: [
-                      for (final strain in Strain.values)
-                        DropdownMenuItem(
-                          value: strain,
-                          child: Text(copy.t(bridgeStrainKey(strain))),
-                        ),
-                    ],
-                    onChanged: canSubmit
-                        ? (strain) {
-                            if (strain != null) onStrainChanged(strain);
-                          }
-                        : null,
-                  ),
-                ],
+              Tooltip(
+                message: copy.t('strain'),
+                child: DropdownButton<Strain>(
+                  key: const Key('bid_strain'),
+                  value: selectedStrain,
+                  items: [
+                    for (final strain in Strain.values)
+                      DropdownMenuItem(
+                        value: strain,
+                        child: Text(copy.t(bridgeStrainKey(strain))),
+                      ),
+                  ],
+                  onChanged: canSubmit
+                      ? (strain) {
+                          if (strain != null) onStrainChanged(strain);
+                        }
+                      : null,
+                ),
               ),
               FilledButton(
                 key: const Key('make_bid'),
