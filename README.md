@@ -2,7 +2,7 @@
 
 A contract bridge platform: start with a single human playing alongside three AI players, then expand to teaching, online tables and duplicate tournaments.
 
-**State (2026-10-15): Phase 0 merged; M1 pure Dart rules core implemented on PR #2, with 30/30 CI tests passing (one test covers 100 deterministic full deals). No production Flutter client or multiplayer server exists.** This repository is private. The phrase "open-source" in the initial description is a product aspiration, not a statement that this repository or its third-party dependencies have been released under a chosen license.
+**State (2026-10-15): M1 rules CI verified; M2-F01/F02 coordinator and privacy projection verified; M2-F03 BEN Adapter verified by contract tests; M2-F04 two true BEN fixed-board integrations passed. M2-F05 Flutter interactive client is under development. Production mobile and multiplayer services are not yet released.** This repository is private. The phrase "open-source" in the initial description is a product aspiration, not a statement that this repository or its third-party dependencies have been released under a chosen license.
 
 ## Product progression
 1. **POC-001**: BEN API and one fixed deal — GO based on a Work execution report.
@@ -17,7 +17,8 @@ A contract bridge platform: start with a single human playing alongside three AI
 - [Bridge Core implementation](packages/bridge_core/README.md) and [M1 CI report](docs/m1/M1_IMPLEMENTATION_REPORT.md)
 - [M2 single-player foundation](docs/m2/M2_FOUNDATION_REPORT.md): filtered PlayerView and local Coordinator.
 - [M2 BEN Adapter contract](docs/m2/M2_BEN_ADAPTER_REPORT.md): stateless per-seat HTTP /bid, /lead, /play.
-- [M2-F04 True BEN end-to-end](docs/m2/M2_F04_REAL_BEN_ACCEPTANCE.md): native real-engine 52-card smoke and CI evidence.
+- [M2-F04 True BEN end-to-end](docs/m2/M2_F04_REAL_BEN_ACCEPTANCE.md): real BEN full-deal and Dummy smoke passed.
+- [M2-F05 Flutter single-player table](apps/bridge_academy_flutter/README.md): first functional interactive UI slice, zh-TW/en, Demo/real BEN selection. [Acceptance](docs/m2/M2_F05_FLUTTER_TABLE_REPORT.md).
 - [Product vision](docs/PRODUCT_VISION.md)
 - [Roadmap and acceptance gates](docs/ROADMAP.md)
 - [Technical architecture](docs/ARCHITECTURE.md)
@@ -31,7 +32,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 - **Learn While Building**: [Developer learning workflow](docs/learning/README.md), [feature lessons](docs/learning/INDEX.md), and [learning mentor skill](skills/bridge-learning-mentor/SKILL.md)
 
 ## Current engineering entry point
-Do **not** fabricate new BEN test results or substitute DDS's omniscient play for real imperfect-information AI. M1 is implemented on [PR #2](https://github.com/KuroNekoLi/Bridge-Academy/pull/2), awaiting review and merge. Before M2, design a private PlayerView and prove it cannot leak other hands. See the roadmap for test gates. The original Work artifacts and raw batch JSON are not currently committed here; documented POC figures are attributed to the user's reported Work acceptance summary.
+Do **not** fabricate new BEN test results or substitute DDS's omniscient play for real imperfect-information AI. M1 is merged; M2 uses PlayerView, local Coordinator and verified BEN Adapter. M2-F05 adds the first Flutter interactive table; verify Flutter CI and device QA before overall M2 sign-off. User-approved Git policy is direct master pushes without PRs. See the roadmap for test gates. The original Work artifacts and raw batch JSON are not currently committed here; documented POC figures are attributed to the user's reported Work acceptance summary.
 
 ## Third-party sources
 BEN: https://github.com/lorserker/ben (GPL-3.0, verify precise commit and dependencies before distribution).

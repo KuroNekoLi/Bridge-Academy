@@ -43,6 +43,12 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - Uses injected package:http client; automated contract tests are mock-only. The true BEN deployment, dummy actor semantics and end-to-end integration remain separate verification gates.
 - PINNED BEN reference revision 72653ec1b5c17116faea229e9b975ea5622aa1f7; details docs/m2/M2_BEN_ADAPTER_REPORT.md.
 
+## M2-F05 — Flutter table (first functional UI slice)
+- Flutter app depends on bridge_core and bridge_ben_adapter. BridgeSession (ChangeNotifier) owns SinglePlayerCoordinator; no Widget accesses privileged GameState.
+- Widgets render only PlayerView: hidden opponents are counts; exposed dummy and human hand are legal-click controls; all actions use coordinator version checks.
+- Demo OpponentMode uses DeterministicTrainingBot, clearly not BEN. Live mode instantiates BenHttpTransport; errors display sanitized status and do not fall back.
+- AppCopy centralizes Traditional Chinese and English copy; Material 3 UI and web CI. Native device QA is a separate gate.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.

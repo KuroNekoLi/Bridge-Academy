@@ -38,5 +38,8 @@ Each item has status and rationale. Proposed choices are not approved simply bec
 ## ADR-012 — Direct pushes and native BEN validation
 **ACCEPTED 2026-10-15:** User requested no more PRs; push to master directly, preserving CI, learning notes and revertability. M2-F04 uses pinned BEN Python 3.12 native runner and a full-game Dart test; PASS requires a real successful CI run, not Mock or pre-existing POC reports.
 
+## ADR-013 — M2-F05 local Flutter UI shell
+**ACCEPTED FOR FIRST UI SLICE 2026-10-15:** A small ChangeNotifier BridgeSession sits on SinglePlayerCoordinator and PlayerView. Never replicate legality inside Widgets; explicitly separate Demo and real BEN modes without silent fallback. Fixed PBN enables deterministic GUI tests; zh-TW/en UI copy is centralized. Web CI and Widget Tests do not replace native/device testing.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.
