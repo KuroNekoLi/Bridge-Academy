@@ -22,6 +22,7 @@ Acceptance reported from Work: native Python 3.12 BEN server; true JSON for /, /
 ## M2 — Flutter single-player MVP
 **IN PROGRESS:** M2-F01 PlayerView and M2-F02 SinglePlayerCoordinator are implemented with 40/40 combined Dart tests passing at [CI #38673888504](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38673888504); feature PR review remains open. This is **not** BEN-powered MVP or Flutter UI; see docs/m2/M2_FOUNDATION_REPORT.md. Learn While Building: each completed feature has a separate note in docs/learning/features/.
 - Human seat selectable; three AI seats; consistent public/hidden information.
+- M2-F03: first BEN Adapter HTTP + data boundary contract implementation (see docs/m2/M2_BEN_ADAPTER_REPORT.md). A real BEN server integration is still required; do not call mock contract tests a real model acceptance.
 - AI adapter never executes illegal state transitions; explicit retry/error/fallback policy.
 - Auction, turn, hand, dummy, 13 tricks, Pass Out and score UI; zh-TW/en localized; responsive tablet/mobile.
 - End-to-end seeded golden deals; UX, accessibility and crash/error validation on real target.

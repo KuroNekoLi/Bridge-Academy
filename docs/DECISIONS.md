@@ -32,5 +32,8 @@ Each item has status and rationale. Proposed choices are not approved simply bec
 ## ADR-010 — M2 filtered views and local game authority
 **ACCEPTED FOR M2 ENGINEERING IMPLEMENTATION 2026-10-15**: Bridge Core maintains full privileged GameState. External player/Bot access must pass through a seat-filtered PlayerView; dummy cards are publicly visible only after opening lead. SinglePlayerCoordinator is private-state local authority, rejects stale human versions and validates BotPolicy proposals. DeterministicTrainingBot is a rules smoke-test substitute, never BEN. True BEN Adapter and Flutter UI are separate future features. See docs/m2/M2_FOUNDATION_REPORT.md.
 
+## ADR-011 — BEN per-seat HTTP adapter, independent live gate
+**ACCEPTED FOR M2 IMPLEMENTATION 2026-10-15:** adapter depends on PlayerView only and uses real HTTP transport with mockable client; BEN /bid /lead /play are individual proposals, Bridge Core is authority. Only own/known dummy and public history may be sent. Official dummy seat documentation differs; real BEN smoke replay is mandatory for production acceptance. Prior POC real 100-deal runs do not automatically prove this new adapter works.
+
 ## Future ADR required
 Persistence event format, AI fallback policy, identity/multiplayer authority hosting, offline model strategy, baseline conventions, PBN serialization, terminal claim/concession rules.

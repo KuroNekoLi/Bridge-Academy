@@ -36,6 +36,13 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - packages/bridge_core/lib/src/single_player_coordinator.dart owns private GameState for one local human + three bots, offers humanView (no unrestricted per-seat getter), applies version-checked human actions and validates BotPolicy proposals through BridgeGame.apply.
 - DeterministicTrainingBot is intentionally **NOT BEN** and has no strategy-strength claim. BEN production adapter must separately prove API mapping and privacy. This local in-process coordinator is not multiplayer server authority.
 
+## M2-F03 — Seat-limited BEN adapter (contract-level only)
+- packages/bridge_ben_adapter accepts only authorized PlayerView and implements BotPolicy; no GameState/Deal access and no use of full-deal /autoplay for seat proposals.
+- Maps to BEN /bid, /lead and /play with absolute vulnerability, dash-separated auction, chronological played cards and public dummy after opening lead.
+- Reconstructs original 13-card hand from known remaining cards plus each seat's publicly played cards; logs/errors redact query values.
+- Uses injected package:http client; automated contract tests are mock-only. The true BEN deployment, dummy actor semantics and end-to-end integration remain separate verification gates.
+- PINNED BEN reference revision 72653ec1b5c17116faea229e9b975ea5622aa1f7; details docs/m2/M2_BEN_ADAPTER_REPORT.md.
+
 ## Data and failure handling
 - Standard PBN and LIN round-trips are candidates, not assumed compatible without fixtures.
 - Fixed seed and full PBN may coexist; record both, as RNG versions differ.
