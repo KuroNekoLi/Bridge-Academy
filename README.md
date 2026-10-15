@@ -25,6 +25,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 - [Decision log](docs/DECISIONS.md)
 - [POC-001 status](docs/poc/POC_001.md) and [POC-002 batch evidence summary](docs/poc/POC_002_BATCH_100.md)
 - [AI instructions](AGENTS.md) and [specialized skills](skills/README.md)
+- **Learn While Building**: [Developer learning workflow](docs/learning/README.md), [feature lessons](docs/learning/INDEX.md), and [learning mentor skill](skills/bridge-learning-mentor/SKILL.md)
 
 ## Current engineering entry point
 Do **not** fabricate new BEN test results or substitute DDS's omniscient play for real imperfect-information AI. M1 is implemented on [PR #2](https://github.com/KuroNekoLi/Bridge-Academy/pull/2), awaiting review and merge. Before M2, design a private PlayerView and prove it cannot leak other hands. See the roadmap for test gates. The original Work artifacts and raw batch JSON are not currently committed here; documented POC figures are attributed to the user's reported Work acceptance summary.
@@ -34,4 +35,3 @@ BEN: https://github.com/lorserker/ben (GPL-3.0, verify precise commit and depend
 DDS: https://github.com/dds-bridge/dds (verify exact checked-out release and license).
 endplay: https://github.com/dominicprice/endplay (version/license review pending).
 Agent Skills specification: https://agentskills.io/specification .
-

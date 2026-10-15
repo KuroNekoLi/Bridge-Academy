@@ -8,7 +8,8 @@ This file is the entry point for Codex, Work and other coding agents. The reposi
 3. State which invariant you will preserve, the scope, measurable acceptance criteria and files affected.
 4. Implement the smallest safe change and add deterministic tests at the boundary.
 5. Run relevant checks if the environment permits. Clearly distinguish EXECUTED / BLOCKED / NOT RUN; retain exact commands, environment, versions and result excerpts.
-6. Summarize changes, residual risks, test evidence, and next decision; update the applicable docs/DECISIONS.md or POC record if a decision changes.
+6. **Learn While Building:** after each independently testable functional feature is accepted, assign an Mx-Fxx ID, author a dedicated Traditional-Chinese teaching note at docs/learning/features/Mx_Fxx_TOPIC.md using the template, update docs/learning/INDEX.md, link actual implementation + tests, and include one small interactive question in the completion message. Multiple functional features need separate notes. Do not treat code comments or a milestone summary as sufficient.
+7. Summarize changes, residual risks, test evidence, lesson links, one concept taught, one exercise and next decision; update docs/DECISIONS.md or the POC record if a decision changes. Engineering PASS does not imply learner mastery.
 
 ## Absolute invariants
 - Bridge Core, not BEN, is authoritative for card ownership, auction legality, contracts, trick wins, scores and turn transitions.
@@ -29,10 +30,17 @@ This file is the entry point for Codex, Work and other coding agents. The reposi
 - Client/server boundaries and multi-platform architecture → bridge-architecture-guardian
 - Convention cards, bidding meaning, explanations → bridge-convention-reviewer
 - Third-party dependencies/licensing → bridge-open-source-auditor
+- **Any completed feature / learner walkthrough** → bridge-learning-mentor (works alongside domain specialist; not a separate approval of rules, AI or licensing)
+
+## Mandatory feature-learning gate
+- A feature is user-observable or independently testable behavior with acceptance criteria, **not** each class or commit; routine chores without behavior do not need fabricated lessons.
+- For **each** completed feature: implementation + tests + docs/learning/features/Mx_Fxx_TOPIC.md + one row in docs/learning/INDEX.md **in the same PR**, with a matching mapping in its description. Use bridge-learning-mentor and docs/learning/FEATURE_LESSON_TEMPLATE.md.
+- Lessons teach the *actual code*, why the design was chosen, an Android/Kotlin analogy when useful, one alternative, pitfalls, accurate executed test evidence and a small learner exercise. Communicate a brief teaching checkpoint after the engineering update, without blocking development on the learner's answer.
+- Distinguish status: ENGINEERING_PASS, LESSON_DELIVERED, PRACTICED, MASTERED; last two require genuine learner participation. If lesson is absent, say FEATURE_DONE_LESSON_PENDING rather than DONE.
+- PR CI may verify file presence and template headings; domain correctness and one-note-per-feature mapping still require human review.
 
 ## Git policy
 Use topic branches and reviewable PRs; do not force-push master or rewrite history. Keep third-party modifications as explicit upstream patches with their own tests. Commit source and documentation, not generated secrets or unverifiable "passed" screenshots. If commands or repository operations are unavailable, report the blocker without claiming the commit exists.
 
 ## Task output format
-Goal / Changed files / Design decision / Executed tests + command / Evidence / Known limitations / Next step. A partial test does not imply complete acceptance.
-
+Goal / Feature IDs / Changed files / Design decision / Executed tests + command / Evidence / Lesson links and key idea / One learner question / Known limitations / Next step. A partial test does not imply complete acceptance.

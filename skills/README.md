@@ -11,11 +11,13 @@ These are repository-local Agent Skills in the open SKILL.md layout. Open **AGEN
 | Enforce architecture & isolation boundaries | [bridge-architecture-guardian](bridge-architecture-guardian/SKILL.md) |
 | Describe/test bidding conventions and explanations | [bridge-convention-reviewer](bridge-convention-reviewer/SKILL.md) |
 | License/version/third-party audits | [bridge-open-source-auditor](bridge-open-source-auditor/SKILL.md) |
+| **Teach engineering after each completed feature** | [bridge-learning-mentor](bridge-learning-mentor/SKILL.md) |
 
 Reference formats and examples:
 - https://agentskills.io/specification (canonical format)
 - https://github.com/anthropics/skills/tree/main/template
 - https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/skill-creator/SKILL.md
 
-Original instructions written for this project. Do not confuse the public examples' licensing with our own repository or BEN's GPL-3.0. No placeholder scripts are included; add executable scripts only when required and tested.
+**Required for feature tasks:** coordinate the domain skill with bridge-learning-mentor, add one lesson per feature under docs/learning/features/, update docs/learning/INDEX.md, then include one brief interactive teaching checkpoint in the completion message. See docs/learning/README.md. This does not mean each trivial commit needs a lesson.
 
+Original instructions written for this project. Do not confuse the public examples' licensing with our own repository or BEN's GPL-3.0. No placeholder scripts are included; add executable scripts only when required and tested.
