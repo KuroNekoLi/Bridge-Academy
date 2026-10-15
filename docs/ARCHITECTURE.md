@@ -23,6 +23,12 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - Scoped evidence: [Flutter CI #38769943196](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943196) passed 69 Widget/session tests, analyze, Web build and Chrome Demo on `d4ddfee`; [genuine BEN Chrome regression #38769943206](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943206) also succeeded on the same code SHA. Device acceptance is on owner hold; no release GO.
 - Current Web persistence after A2.8 uses WebCrypto AES-GCM via an origin-local record, **not** the earlier A2.7 plaintext path. It remains vulnerable to same-origin malicious scripts and lacks SQLite ACID/multi-tab CAS, so deployment threat-model review is pending.
 
+### A3.4 Flutter accessibility UI boundary
+
+- Presentation-only playing-card buttons use minimum 48×48 logical-pixel targets and localized suit/rank semantics; the real disabled state still comes from PlayerView legality and Session busy/rollback gates, not from labels.
+- Seat announcements and active-turn text consume only PlayerView metadata. Material Flutter handles default button keyboard behavior; full assistive navigation needs actual keyboard and screen-reader verification before release.
+- Scoped evidence on implementation SHA `ea7ca9c`: [Flutter CI 80/80, analyze, Web build, Chrome Demo](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474371) and [true BEN Chrome full-game/Dummy E2E](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474505). **Android/iOS hardware UI test remains paused until explicit owner approval.**
+
 ### A3.3 public history and responsive table
 
 - BridgeTableSurface uses its own LayoutBuilder constraints (breakpoint 560 logical px) to preserve four compass seats while stacking the public current trick below East/West on narrow widths.

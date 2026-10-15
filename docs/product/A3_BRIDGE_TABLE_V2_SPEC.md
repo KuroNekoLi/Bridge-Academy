@@ -52,17 +52,24 @@ Level/strain and Pass/X/XX buttons are now extracted into a controlled stateless
 
 **Not included:** human-seat auto-rotation, high-fidelity visual themes, keyboard/screen-reader release validation or domain legalCalls; these remain separate explicit decisions/slices.
 
-### A3.4 — Accessible polish (implementation committed; CI pending)
+### A3.4 — Accessible polish (scoped Flutter/Chrome verified)
 
 - Give playing-card controls minimum 48×48 logical pixels, localized spoken suit/rank and actual enabled state, avoiding duplicate Tooltip semantics.
 - Keep the visual active-seat indicator as text, not just a colored border; include role and publicly available card counts in seat semantics. Use theme colors for the table.
 - Use reading-order traversal grouping for bidding controls, and 48px minimum targets for bidding, public history, and replay actions.
-- Test 320/375/768px with increased text scale, zh-TW/en descriptions, touch targets and disabled actions. The Flutter official [accessibility checklist](https://docs.flutter.dev/ui/accessibility) and [testing guide](https://docs.flutter.dev/ui/accessibility/accessibility-testing) are the baseline.
+- Tested 320/375/768px with increased text scale, zh-TW/en descriptions, touch targets and disabled actions. The Flutter official [accessibility checklist](https://docs.flutter.dev/ui/accessibility) and [testing guide](https://docs.flutter.dev/ui/accessibility/accessibility-testing) are the baseline.
 - Release limitations: do not infer TalkBack/VoiceOver, full-screen contrast compliance or physical touch acceptance from Widget tests. Android/iOS hardware and emulator UI/E2E remain on owner hold.
 
 ### A3.5 — Integration and release gate
 
 `flutter analyze`, full `flutter test`, release Web build, existing real Chrome Demo + BEN browser flows if triggered; privacy/failure negative cases. Target real Android/iOS UX and physical device remain **BLOCKED BY OWNER HOLD**, so even green CI cannot mark A3 PRODUCT READY.
+
+## A3.4 actual CI evidence (2026-10-16)
+
+- [Flutter CI #38819474371](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474371) at implementation commit `ea7ca9c199214d60ff615ea6c5e113fb3be60dd7`: **flutter analyze: No issues found; 80/80 Widget and Session tests PASS; Flutter Web release build PASS; Chrome Demo E2E PASS**.
+- [Real BEN Chrome CI #38819474505](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474505) on the exact same commit: **SUCCESS**, including the full BEN game and declarer/Dummy flow. No Demo substitution.
+- [Feature Learning Gate #38819474409](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474409): **SUCCESS**; the M2-F24 Traditional Chinese lesson is delivered, not learner-mastered.
+- **A3.4 scoped engineering acceptance: PASS. A3.5 and device accessibility/release acceptance: NOT VERIFIED.** These tests do not certify TalkBack, VoiceOver, real device ergonomics, contrast ratio across all themes, or screen reader navigation. Owner device QA hold remains active.
 
 ## Compatibility / non-goals
 
@@ -79,4 +86,4 @@ Level/strain and Pass/X/XX buttons are now extracted into a controlled stateless
 - First extraction [A3.1 initial CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38768161432) had 3 interpolation lints; resolved. A3.2 initial [CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769224189) had Flutter/Bridge Core `Card` import conflict; resolved. [CI #38769481251](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769481251) caught a 320px Row overflow; resolved using independent Wrap selector children, then 69/69 passing.
 - Genuine BEN Chrome regression on the **same latest code commit**: [run #38769943206](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38769943206) **SUCCESS** at latest A3.2 code SHA `d4ddfee5c0c43b571f4e99cfcbac7c4229f74b52`, including genuine BEN complete-game and declarer/Dummy Chrome flows. Earlier A3.1 [real BEN run](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38768532549) passed; this is not proof of a later commit.
 - [A3.3 Flutter CI #38778610734](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778610734) at `d0c62b92db2f2a7a79a1a73340450aad0f4ef96e`: **No analyzer issues, 74/74 Widget/Session tests PASS, release Web build PASS and Chrome Demo E2E PASS**. [Genuine BEN Chrome CI #38778352006](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778352006) **SUCCESS** at production code SHA `1b1e2e6d708a74c72071f0df116d496e049cfa21`; later commit `d0c62b9` changes only test/documentation (not app implementation). [Feature Learning Gate #38778610653](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38778610653) **SUCCESS**.
-- **Outstanding:** Core-origin `legalCalls` projection for enabling only legal bids; A3.4 high-fidelity polish, accessibility and screen reader verification; A3.5 final cross-platform device acceptance. Fixed compass positions are retained; optional player-relative table orientation is a future explicit UX choice. Android emulator and physical Android/iOS UX checks remain ON HOLD until owner approval. Android emulator and physical Android/iOS UX checks remain ON HOLD until owner approval.
+- **Outstanding:** Core-origin `legalCalls` projection for enabling only legal bids; A3.4 device screen-reader/contrast and high-fidelity user study evidence; A3.5 final cross-platform device acceptance. Fixed compass positions are retained; optional player-relative table orientation is a future explicit UX choice. Android emulator and physical Android/iOS UX checks remain ON HOLD until owner approval.

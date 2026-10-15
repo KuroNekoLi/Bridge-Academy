@@ -3,10 +3,10 @@
 - Feature ID：M2-F24
 - Milestone：A3.4 Bridge Table UI V2
 - 類型：Flutter UI／Accessibility
-- 工程狀態：IMPLEMENTED（首次 CI 待驗，非產品驗收）
+- 工程狀態：ENGINEERING_VERIFIED（限 Flutter/Web/真 BEN Chrome；裝置驗收暫停）
 - 學習狀態：DELIVERED（非 PRACTICED／MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart`、`lib/src/app_copy.dart`、`bridge_bidding_box.dart`、`bridge_table_toolbar.dart`、`bridge_replay_panel.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/a3_accessibility_test.dart`（CI 尚待執行）
+- 驗收與測試：`apps/bridge_academy_flutter/test/a3_accessibility_test.dart`（[Flutter CI #38819474371](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474371)：80/80 PASS）
 
 ## 功能目的與實際情境
 
@@ -52,7 +52,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ```
 
-新增單元／Widget 測試驗證：雙語完整牌張語意、禁用卡牌不能按、48×48 最小操作區域、320／375／768px 在 1.6×／2.0× 字級下的公開牌桌、Dummy 與語系切換。此文件建立時實際 CI 結果為 **NOT RUN**，不可聲稱通過。
+新增單元／Widget 測試驗證：雙語完整牌張語意、禁用卡牌不能按、48×48 最小操作區域、320／375／768px 在 1.6×／2.0× 字級下的公開牌桌、Dummy 與語系切換。實際驗證（程式提交 `ea7ca9c`）：[Flutter CI #38819474371](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474371) **analyze 無問題、80/80 Flutter 測試 PASS、Web Release Build PASS、Chrome Demo PASS**；[真 BEN Chrome #38819474505](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474505) **PASS**，包含完整牌局與莊家明手控制；[Learning Gate #38819474409](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474409) **PASS**。這些證據不表示 Android/iOS 實機無障礙已驗收。
 
 官方參考：[Flutter Accessibility](https://docs.flutter.dev/ui/accessibility)、[Accessibility testing](https://docs.flutter.dev/ui/accessibility/accessibility-testing)。
 
