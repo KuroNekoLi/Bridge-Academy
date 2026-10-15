@@ -212,9 +212,12 @@ final class EncryptedTransactionalSessionArchiveStore
       'version': _version,
       'generation': generation,
       'active': active,
-      'previousGeneration':
-          useCurrentAsBackup ? existing?['generation'] : null,
-      'previous': useCurrentAsBackup ? existing?['active'] : null,
+      'previousGeneration': useCurrentAsBackup && existing != null
+          ? existing['generation']
+          : null,
+      'previous': useCurrentAsBackup && existing != null
+          ? existing['active']
+          : null,
       'recoveryPending': recoveryPending,
     });
   }
@@ -234,8 +237,9 @@ final class EncryptedTransactionalSessionArchiveStore
       final prior = await legacy.read();
       if (prior == null) return null;
       SavedBoardCodec.decode(prior);
-      final lostEvents = legacy is RecoveryAwareSessionArchiveStore &&
-          legacy.recoveredOlderCheckpoint;
+      final lostEvents = legacy is RecoveryAwareSessionArchiveStore
+          ? (legacy as RecoveryAwareSessionArchiveStore).recoveredOlderCheckpoint
+          : false;
       // Preserve recovery consent in the SAME atomic encrypted commit.
       await _save(prior, recoveryPending: lostEvents);
       await legacy.clear();
