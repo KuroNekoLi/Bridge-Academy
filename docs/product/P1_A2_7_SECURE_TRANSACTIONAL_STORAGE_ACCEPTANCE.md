@@ -1,6 +1,6 @@
 # Phase A2.7 — Encrypted and transactional archive
 
-**Initial status: IMPLEMENTED / CI NOT RUN.** Hardware testing is deferred until the larger product features are complete, as requested.
+**2026-10-15 status: FLUTTER UNIT + WEB ENGINEERING VERIFIED, NOT NATIVE-DEVICE VERIFIED.** [Flutter CI #38744797200](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38744797200) SUCCESS on SHA d0c503271bec48cb76f99b53e3f1b8a03781e4bc: flutter analyze clean, 60/60 tests (including 10 A2.7 encrypted-archive tests), Web release build and real Chrome Demo E2E PASS. Native Android/iOS storage QA deferred at user request.
 
 ## Scope and architecture
 
@@ -43,4 +43,4 @@ Files: apps/bridge_academy_flutter/lib/src/secure_session_persistence.dart, brid
 
 ## Evidence
 
-NOT RUN at authoring. Attach exact GitHub Actions job URL, commit SHA, tests and outcomes before marking engineering verification. Do not reuse A2.6 Android CI as proof of the new encrypted storage.
+**Executed:** [Flutter CI #38744797200](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38744797200) 60/60 PASS, clean analyzer, Web release, real Chrome Demo PASS. All 10 new crypto/transaction tests use injectable fake SQL/key with real AES-GCM; they do NOT test hardware key store or native SQLite. Earlier #38744043532 failed compilation (nullable Map index and recovery-store type access), then d0c5032 fixed final unused import. [Feature Learning Gate #38744043558](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38744043558) passed for original lesson; follow-up source-only commits required updating INDEX. This documentation follow-up updates lesson and INDEX. Do not cite A2.6 Android jobs as proof of this encrypted backend.

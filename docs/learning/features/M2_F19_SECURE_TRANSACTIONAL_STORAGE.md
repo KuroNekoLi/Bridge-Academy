@@ -3,7 +3,7 @@
 - Feature ID：M2-F19
 - Milestone：Phase A2.7
 - 類型：Flutter 儲存／安全／依賴注入
-- 工程狀態：IMPLEMENTED（CI 尚未驗證）
+- 工程狀態：ENGINEERING_VERIFIED（Flutter 60/60、真 AES-GCM + Fake SQL 10 測試、Web Build／Chrome PASS；原生安全資料庫／硬體金鑰裝置驗收延後）
 - 學習狀態：DELIVERED
 - 原始碼：apps/bridge_academy_flutter/lib/src/secure_session_persistence.dart、lib/src/bridge_app.dart
 - 驗收與測試：apps/bridge_academy_flutter/test/secure_checkpoint_test.dart、docs/product/P1_A2_7_SECURE_TRANSACTIONAL_STORAGE_ACCEPTANCE.md
@@ -51,7 +51,7 @@ await _records.replaceRecord({
 
 第一輪 CI 發現 Dart nullable map indexing 型別與多餘 import 的 analyzer 問題，已修正並重跑；正式成功證據以後續 CI 為準，不能把前一輪失敗冒稱通過。
 
-初稿建立時 CI **NOT RUN**。新的測試使用 Fake SQL Atomic Store 和 Fake Key Provider，檢查密文沒有 PBN、寫入中斷保留舊版、錯誤金鑰拒絕、回退警告跨重啟、舊存檔遷移及事件驗證。不能把 Mock 資料庫測試當成 Android/iOS 安全儲存實測。
+[Flutter CI #38744797200](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38744797200) 實際 SUCCESS：flutter analyze 無問題、60/60 測試通過（含 10 個 A2.7 AES-GCM + Fake SQL 測試）、Web Release Build 與 Chrome Demo PASS。原生 SQLite、KeyStore／Keychain 尚未在裝置驗證，不能冒稱已通過。新的測試使用 Fake SQL Atomic Store 和 Fake Key Provider，檢查密文沒有 PBN、寫入中斷保留舊版、錯誤金鑰拒絕、回退警告跨重啟、舊存檔遷移及事件驗證。不能把 Mock 資料庫測試當成 Android/iOS 安全儲存實測。
 
 依使用者要求，實際 Android／iOS 裝置驗收將在完整大功能完成後集中執行。Web 仍是既有 SharedPreferences，尚不能宣稱具備正式版的隱藏牌保密性。
 
