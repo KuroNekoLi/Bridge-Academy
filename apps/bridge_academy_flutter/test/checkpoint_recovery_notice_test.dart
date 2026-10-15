@@ -112,6 +112,8 @@ void main() {
     expect(tester.widget<OutlinedButton>(find.byKey(const Key('pass')))
         .onPressed, isNotNull);
 
+    await tester.ensureVisible(find.byKey(const Key('pass')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('pass')));
     await tester.pumpAndSettle();
     expect(session.finished, true);
