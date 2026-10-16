@@ -1,0 +1,327 @@
+import 'package:flutter/material.dart';
+
+import 'academy_catalog.dart';
+import 'academy_models.dart';
+
+/// B4 reads authored questions only, not live BridgeSession/Deal/BEN state.
+class AcademyPage extends StatefulWidget {
+  const AcademyPage({super.key, required this.isEnglish});
+  final bool isEnglish;
+
+  @override
+  State<AcademyPage> createState() => _AcademyPageState();
+}
+
+class _AcademyPageState extends State<AcademyPage> {
+  final AcademyPractice _practice = AcademyPractice();
+  late bool _english;
+  AcademyLesson? _lesson;
+  int _index = 0;
+  String? _selected;
+  AcademyFeedback? _feedback;
+
+  @override
+  void initState() {
+    super.initState();
+    _english = widget.isEnglish;
+  }
+
+  String _t(String id) => _ui[id]!.localized(_english);
+
+  void _open(AcademyLesson lesson) => setState(() {
+        _lesson = lesson;
+        _index = 0;
+        _selected = null;
+        _feedback = null;
+      });
+
+  void _backToCatalog() => setState(() {
+        _lesson = null;
+        _selected = null;
+        _feedback = null;
+      });
+
+  void _submit(AcademyQuestion question) {
+    if (_feedback != null || _selected == null || _lesson == null) return;
+    final lesson = _lesson!;
+    final result = _practice.submit(
+      lesson: lesson,
+      question: question,
+      answer: AcademyAnswer(
+        lessonId: lesson.lessonId,
+        questionId: question.questionId,
+        skillTag: question.skillTag,
+        schemaVersion: lesson.schemaVersion,
+        selectedOptionId: _selected!,
+      ),
+    );
+    setState(() => _feedback = result);
+  }
+
+  void _advance() {
+    if (_feedback?.correct != true) return;
+    setState(() {
+      _index++;
+      _feedback = null;
+      _selected = null;
+    });
+  }
+
+  void _retry() {
+    if (_feedback?.correct != false) return;
+    setState(() {
+      _feedback = null;
+      _selected = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title = _lesson?.title.localized(_english) ?? _t('title');
+    return Scaffold(
+      key: const Key('academy_page'),
+      appBar: AppBar(
+        title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        leading: IconButton(
+          key: const Key('academy_back'),
+          tooltip: _lesson == null ? _t('exit') : _t('allLessons'),
+          onPressed: _lesson == null
+              ? () => Navigator.of(context).pop()
+              : _backToCatalog,
+          icon: const Icon(Icons.arrow_back),
+        ),
+        actions: [
+          IconButton(
+            key: const Key('academy_toggle_locale'),
+            tooltip: _t('language'),
+            onPressed: () => setState(() => _english = !_english),
+            icon: const Icon(Icons.language),
+          ),
+        ],
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760),
+          child: _lesson == null ? _catalog() : _lessonFlow(_lesson!),
+        ),
+      ),
+    );
+  }
+
+  Widget _catalog() {
+    return ListView(
+      key: const Key('academy_lesson_list'),
+      padding: const EdgeInsets.all(12),
+      children: [
+        Text(_t('welcome'), style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8),
+        Text(_t('scope')),
+        const SizedBox(height: 12),
+        for (final lesson in AcademyCatalog.validated())
+          Card(
+            key: Key('academy_lesson_' + lesson.lessonId),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(lesson.title.localized(_english),
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  Text(lesson.summary.localized(_english)),
+                  const SizedBox(height: 8),
+                  Text(
+                    _practice.completedCount(lesson).toString() +
+                        ' / ' + lesson.questions.length.toString() +
+                        ' ' + _t('completedQuestions'),
+                    key: Key('academy_progress_' + lesson.lessonId),
+                  ),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: FilledButton.tonal(
+                      key: Key('academy_open_' + lesson.lessonId),
+                      onPressed: () => _open(lesson),
+                      child: Text(_t('startLesson')),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _lessonFlow(AcademyLesson lesson) {
+    if (_index >= lesson.questions.length) return _completion(lesson);
+    final question = lesson.questions[_index];
+    return ListView(
+      key: const Key('academy_question_list'),
+      padding: const EdgeInsets.all(12),
+      children: [
+        Text(lesson.introduction.localized(_english),
+            key: const Key('academy_introduction')),
+        const SizedBox(height: 12),
+        Text(
+          _t('question') + ' ' + (_index + 1).toString() + ' / ' +
+              lesson.questions.length.toString(),
+          key: const Key('academy_question_progress'),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(question.prompt.localized(_english),
+                    key: Key('academy_question_' + question.questionId),
+                    style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 16),
+                for (final option in question.options) ...[
+                  OutlinedButton(
+                    key: Key('academy_option_' + option.optionId),
+                    onPressed: _feedback == null
+                        ? () => setState(() => _selected = option.optionId)
+                        : null,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                      backgroundColor: _selected == option.optionId
+                          ? Theme.of(context).colorScheme.secondaryContainer
+                          : null,
+                      alignment: AlignmentDirectional.centerStart,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _selected == option.optionId
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(option.label.localized(_english))),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                if (_feedback == null)
+                  FilledButton(
+                    key: const Key('academy_submit'),
+                    onPressed: _selected == null ? null : () => _submit(question),
+                    child: Text(_t('submit')),
+                  ),
+                if (_feedback case final result?) ...[
+                  Text(
+                    _t(result.correct ? 'correct' : 'incorrect'),
+                    key: Key(result.correct
+                        ? 'academy_correct' : 'academy_incorrect'),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(result.correct
+                      ? question.explanation.correct.localized(_english)
+                      : question.explanation.incorrect.localized(_english),
+                      key: const Key('academy_explanation')),
+                  const SizedBox(height: 8),
+                  SelectableText(
+                    _t('ruleReference') + ': ' +
+                        question.explanation.ruleReference,
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    key: Key(result.correct
+                        ? 'academy_next' : 'academy_retry'),
+                    onPressed: result.correct ? _advance : _retry,
+                    child: Text(_t(result.correct
+                        ? 'nextQuestion' : 'tryAgain')),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          key: const Key('academy_all_lessons'),
+          onPressed: _backToCatalog,
+          icon: const Icon(Icons.menu_book),
+          label: Text(_t('allLessons')),
+        ),
+      ],
+    );
+  }
+
+  Widget _completion(AcademyLesson lesson) {
+    return ListView(
+      key: const Key('academy_completion'),
+      padding: const EdgeInsets.all(12),
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(_t('finished'),
+                    style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(
+                  _practice.completedCount(lesson).toString() +
+                      ' / ' + lesson.questions.length.toString() +
+                      ' ' + _t('completedQuestions'),
+                  key: const Key('academy_completed_count'),
+                ),
+                const SizedBox(height: 12),
+                Text(_t('sessionOnly')),
+                const SizedBox(height: 12),
+                FilledButton(
+                  key: const Key('academy_to_catalog'),
+                  onPressed: _backToCatalog,
+                  child: Text(_t('allLessons')),
+                ),
+                OutlinedButton(
+                  key: const Key('academy_repeat_lesson'),
+                  onPressed: () => _open(lesson),
+                  child: Text(_t('repeatLesson')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static const Map<String, AcademyText> _ui = {
+    'title': AcademyText('橋牌學院｜入門課程', 'Bridge Academy | Beginner lessons'),
+    'welcome': AcademyText('選擇你的第一堂課', 'Choose your first lesson'),
+    'scope': AcademyText(
+      '原創規則練習，答對才計入本次完成數。目前只保存於此畫面，關閉後不保留進度。',
+      'Original rules quizzes. Only correct answers count. '
+      'Progress resets when this page closes.',
+    ),
+    'startLesson': AcademyText('開始學習', 'Start lesson'),
+    'question': AcademyText('第', 'Question'),
+    'completedQuestions': AcademyText('題完成', 'questions completed'),
+    'submit': AcademyText('提交答案', 'Submit answer'),
+    'correct': AcademyText('答對了！', 'Correct!'),
+    'incorrect': AcademyText('尚未答對', 'Not quite'),
+    'ruleReference': AcademyText('規則依據', 'Rule reference'),
+    'nextQuestion': AcademyText('下一題', 'Next question'),
+    'tryAgain': AcademyText('再試一次', 'Try again'),
+    'finished': AcademyText('本堂課完成', 'Lesson complete'),
+    'repeatLesson': AcademyText('重做本堂課', 'Repeat lesson'),
+    'allLessons': AcademyText('回課程列表', 'Back to lessons'),
+    'exit': AcademyText('返回牌桌', 'Back to bridge table'),
+    'language': AcademyText('切換為英文', 'Switch to Chinese'),
+    'sessionOnly': AcademyText(
+      '本次進度只存在此畫面；後續 C3 才會負責長期學習紀錄。',
+      'Session-only progress; C3 will handle durable learning records.',
+    ),
+  };
+}

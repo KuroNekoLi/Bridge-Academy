@@ -71,6 +71,7 @@ class AppCopy {
   static const Map<String, List<String>> _strings = {
     'title': ['Bridge Academy｜橋牌學院', 'Bridge Academy'],
     'language': ['切換英文', 'Switch to Chinese'],
+    'academyOpen': ['開啟橋牌學院', 'Open bridge lessons'],
     'mode': ['電腦對手', 'Computer opponents'],
     'demo': ['規則示範 Bot（不是 BEN）', 'Rules demo bot (NOT BEN)'],
     'live': ['真正 BEN API', 'Live BEN API'],

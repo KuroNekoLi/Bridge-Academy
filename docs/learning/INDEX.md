@@ -79,6 +79,8 @@
 
 | M2-F42 | B3.1 叫牌練習、自然 NT 示範約定、Just Declare 回歸修正、PlayerView 隱私（[Flutter 118/118 + Web + Chrome PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38905811936)） | [M2-F42 教學](features/M2_F42_BIDDING_PRACTICE.md) | [實作](../../apps/bridge_academy_flutter/lib/src/bidding_practice.dart) · [測試](../../apps/bridge_academy_flutter/test/b3_bidding_practice_test.dart) · [B3.1 驗收](../product/B3_BIDDING_PRACTICE_ACCEPTANCE.md) | DELIVERED |
 
+| M2-F43 | B4 橋牌學院三堂九題、雙語規則練習、答錯重試、去重與 C3 ID 契約（CI 待驗證） | [M2-F43 教學](features/M2_F43_BEGINNER_ACADEMY.md) | [課程](../../apps/bridge_academy_flutter/lib/src/academy/academy_catalog.dart) · [Domain 測試](../../apps/bridge_academy_flutter/test/b4_academy_domain_test.dart) · [Widget 測試](../../apps/bridge_academy_flutter/test/b4_academy_widget_test.dart) · [驗收](../product/B4_GUIDED_TRAINING_ACCEPTANCE.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。
