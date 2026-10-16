@@ -1,0 +1,110 @@
+name: A6 Pinned Genuine BEN Four-Board Gateway Matrix
+
+on:
+  push:
+    branches: ['test/a6-real-ben-multiboard']
+    paths:
+      - 'services/bridge_gateway/**'
+      - '.github/workflows/ben-a6-multiboard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gateway-ben:
+    name: A6 Real BEN / Four Complete Server-Owned Boards
+    runs-on: ubuntu-24.04
+    timeout-minutes: 115
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: 72653ec1b5c17116faea229e9b975ea5622aa1f7
+          path: third_party_ben
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben/requirements.txt
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Install pinned native BEN dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libboost-thread-dev libicu74
+          python -m pip install -r third_party_ben/requirements.txt
+      - name: Prepare pinned BEN CI config
+        run: |
+          cp third_party_ben/src/config/default_api.conf third_party_ben/src/config/ci_api.conf
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("third_party_ben/src/config/ci_api.conf")
+          config = p.read_text()
+          changes = {
+              "consult_bba = True": "consult_bba = False",
+              "use_bba_rollout = True": "use_bba_rollout = False",
+              "use_bba_to_count_aces = True": "use_bba_to_count_aces = False",
+              "pimc_use_declaring = True": "pimc_use_declaring = False",
+              "pimc_use_defending = True": "pimc_use_defending = False",
+              "pimc_use_discarding = True": "pimc_use_discarding = False",
+              "sample_hands_play = 200": "sample_hands_play = 40",
+              "sample_hands_auction = 200": "sample_hands_auction = 40",
+              "sample_hands_opening_lead = 200": "sample_hands_opening_lead = 40",
+              "sample_boards_for_play = 5000": "sample_boards_for_play = 1000",
+              "sample_boards_for_auction = 30000": "sample_boards_for_auction = 3000",
+          }
+          for old, new in changes.items():
+              if old not in config:
+                  raise SystemExit("Pinned BEN config drift: missing key")
+              config = config.replace(old, new)
+          p.write_text(config)
+          PY
+      - name: Start genuine local BEN service (NO MOCK)
+        run: |
+          cd third_party_ben/src
+          nohup python gameapi.py \
+            --config config/ci_api.conf \
+            --host 127.0.0.1 \
+            --allowed-hosts 127.0.0.1,localhost \
+            --record false --verbose false \
+            > "$RUNNER_TEMP/ben-gateway-private.log" 2>&1 &
+          echo "BEN_PID=$!" >> "$GITHUB_ENV"
+      - name: Readiness probe (no private inputs)
+        run: |
+          python - <<'PY'
+          import json, time, urllib.request
+          for _ in range(180):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8085/", timeout=3) as res:
+                      result = json.load(res)
+                  if result.get("name"):
+                      print("PINNED_BEN_READY")
+                      break
+              except Exception:
+                  time.sleep(2)
+          else:
+              raise SystemExit("Pinned BEN readiness timed out")
+          PY
+      - name: Verify A6 fixture metadata and existing Gateway negatives
+        working-directory: services/bridge_gateway
+        timeout-minutes: 8
+        run: |
+          dart pub get
+          dart analyze lib bin/live_gateway_ben_multiboard.dart test/a6_board_fixtures_test.dart
+          # Complete Gateway negative suite includes 503/timeout, tamper,
+          # wrong bearer, version conflict and SIGKILL/new-process restore.
+          dart test
+      - name: A6 / four genuine model + authorized Gateway full games
+        working-directory: services/bridge_gateway
+        timeout-minutes: 92
+        run: |
+          dart run bin/live_gateway_ben_multiboard.dart
+      - name: Redacted diagnostics only
+        if: failure()
+        run: |
+          ps -p "$BEN_PID" -o pid,stat,etime || true
+          echo "A6 raw BEN log and request bodies deliberately NOT exposed."

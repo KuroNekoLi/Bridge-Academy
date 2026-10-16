@@ -9,10 +9,11 @@ class AuthoritativeGame {
   AuthoritativeGame({
     required Deal deal,
     required GatewayDecisionBackend backend,
+    BoardDefinition? trainingBoard,
   }) : _coordinator = SinglePlayerCoordinator(
           deal: deal,
-          dealer: Seat.north,
-          vulnerability: Vulnerability.none,
+          dealer: trainingBoard?.dealer ?? Seat.north,
+          vulnerability: trainingBoard?.vulnerability ?? Vulnerability.none,
           humanSeat: Seat.north,
           bot: BenBotPolicy(_PrivateBackendTransport(backend)),
         );
