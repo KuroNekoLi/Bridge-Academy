@@ -753,7 +753,9 @@ class BridgeSession extends ChangeNotifier {
   Future<void> replaySameBoard() async {
     final deal = _activeDeal;
     if (busy || deal == null || !finished ||
-        _fourBoardPractice != null || _dailyPractice != null) return;
+        _fourBoardPractice != null || _dailyPractice != null) {
+      return;
+    }
     await _beginBoard(
       board: _board, deal: deal, humanSeat: _humanSeat,
       mode: _mode, boardMode: _boardMode,
@@ -765,7 +767,9 @@ class BridgeSession extends ChangeNotifier {
   /// The player can still restart an unfinished board with newGame().
   Future<void> nextBoard() async {
     if (busy || !finished || _fourBoardPractice != null ||
-        _dailyPractice != null) return;
+        _dailyPractice != null) {
+      return;
+    }
     await newGame(
       humanSeat: _humanSeat,
       mode: _mode,

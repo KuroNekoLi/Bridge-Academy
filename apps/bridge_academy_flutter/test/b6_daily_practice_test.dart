@@ -1,6 +1,7 @@
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/daily_practice.dart';
+import 'package:bridge_academy_flutter/src/four_board_practice.dart';
 import 'package:bridge_academy_flutter/src/daily_practice_store.dart';
 import 'package:bridge_academy_flutter/src/completed_history_store.dart';
 import 'package:bridge_academy_flutter/src/session_persistence.dart';
