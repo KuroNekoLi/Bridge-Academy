@@ -19,7 +19,7 @@ A4.1 is a reversible interface seam, **not wired into the default Flutter app**.
 - Issues 256-bit `Random.secure()` anonymous bearer capabilities; stores SHA-256 hashes in process memory, TTL default 15 minutes, no account requirement. Per-peer issuance rate limit and per-token rate/concurrency caps are in-memory and not cluster-aware.
 - Filtered A4.1 v1 request schema is enforced at the boundary; unknown fields, whole `deal`, early Dummy fields and private error echo rejected. Proposals go through an injectable `GatewayDecisionBackend`; the default returns **503 unavailable**, never fabricated BEN strategy. Flutter remains unchanged and is NOT connected to this service.
 - A **bearer capability is not a player, seat, or deal authorization proof**. There is no server-owned GameState here; a caller can submit a plausible hand of their choice. For formal fair-play/competitive settings, the server must bind tokens to actual game/seat and derive PlayerView server-side. A4.3 also needs durable action IDs/event-version dedup and real BEN private-network worker.
-- Localhost HTTP tests inject a fake backend, not a model. Evidence/status: [A4.2 acceptance](product/A4_GATEWAY_A4_2_ACCEPTANCE.md). A3.5 and device UI acceptance remain owner-deferred.
+- Localhost HTTP tests inject a fake backend, not a model. Scoped engineering evidence: [Gateway CI 14/14](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219472); [A4.2 acceptance](product/A4_GATEWAY_A4_2_ACCEPTANCE.md). A3.5 and device UI acceptance remain owner-deferred.
 
 ## Components
 ~~~text

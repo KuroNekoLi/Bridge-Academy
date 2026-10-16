@@ -35,6 +35,8 @@ The second response issues `access_token` (Bearer), `expires_in:900` seconds and
 
 ## Tests and rollout
 
+[Gateway CI #38836219472](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219472) **SUCCESS**: Dart analyze clean, 14/14 true localhost HTTP integration tests on code SHA `20630994482b684452a2fdf355c62efef1d20f35`. This is not remote HTTPS or real BEN acceptance.
+
 The test suite binds a REAL `HttpServer` on ephemeral 127.0.0.1 ports and issues REAL localhost `HttpClient` HTTP requests. It injects a **stub backend** to check auth, expired tokens, CORS, rate limits, request allowlists, response shaping, concurrency and non-leaking failures. These are **not BEN model or Internet HTTPS tests**.
 
 Workflow: [Bridge Gateway A4.2 CI](../../.github/workflows/bridge-gateway.yml). No Android emulator or physical Android/iOS UI/E2E. [A4.2 acceptance](../../docs/product/A4_GATEWAY_A4_2_ACCEPTANCE.md) and [M2-F26 teaching lesson](../../docs/learning/features/M2_F26_ANONYMOUS_GATEWAY.md).

@@ -33,7 +33,7 @@
 
 ## 下一個實作任務：Phase A4 Production BEN Integration
 
-從 A4.1 HTTPS POST Client 已範圍內驗證；A4.2 現在新增[本機 Loopback Gateway](../../services/bridge_gateway/README.md)，提供匿名短效 Token、範圍配額與 HTTP 契約測試，但**不含真 BEN Worker，也不等於服務已部署**。A4.3–A4.5 才處理私有 BEN、伺服器版本去重、HTTPS 上線與實際客戶端；[A4.2 驗收](A4_GATEWAY_A4_2_ACCEPTANCE.md)。A3.5 及 Android／iOS 裝置 QA 暫停並保留為發布阻擋條件。
+從 A4.1 HTTPS POST Client 已範圍內驗證；A4.2 現在新增[本機 Loopback Gateway](../../services/bridge_gateway/README.md)，提供匿名短效 Token、範圍配額與 [14/14 localhost HTTP CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219472)，但**不含真 BEN Worker，也不等於服務已部署**。A4.3–A4.5 才處理私有 BEN、伺服器版本去重、HTTPS 上線與實際客戶端；[A4.2 驗收](A4_GATEWAY_A4_2_ACCEPTANCE.md)。A3.5 及 Android／iOS 裝置 QA 暫停並保留為發布阻擋條件。
 
 **每日挑戰優先級：** P1 可做「固定牌例、無排名」的每日練習體驗；真正跨使用者同牌比較、MP/IMP、排行榜及好友 PK 必須保留到具備伺服器公平性機制的 Phase D/P3。不可把單桌得分冒充 MP 或 IMP。
 

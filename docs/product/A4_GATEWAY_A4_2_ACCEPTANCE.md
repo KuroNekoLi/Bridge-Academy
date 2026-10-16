@@ -1,6 +1,6 @@
 # A4.2 — Anonymous Session Gateway: Scoped Acceptance
 
-**Date:** 2026-10-16 · **Status:** IMPLEMENTED / CI PENDING · **No deployed service, real BEN connection or production authentication**
+**Date:** 2026-10-16 · **Status:** SCOPED ENGINEERING VERIFIED (14/14 HTTP tests) · **No deployed service, real BEN connection or production authentication**
 
 ## Goal
 
@@ -36,7 +36,8 @@ Anonymous token presence is not authenticated user or seat/board authorization. 
 - Code: `services/bridge_gateway/lib/src/gateway_service.dart`
 - Tests: `services/bridge_gateway/test/gateway_service_test.dart`
 - Run: `cd services/bridge_gateway && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded`
-- CI: PENDING, update after execution with exact commit SHA, test count and failures.
+- [Gateway CI #38836219472](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219472): **SUCCESS** at implementation SHA `20630994482b684452a2fdf355c62efef1d20f35` (Dart SDK 3.13.5 / GitHub Linux runner). `dart analyze --fatal-infos` **No issues found**, `dart test --reporter expanded` **14/14 localhost HTTP tests passed**.
+- [Feature Learning Gate #38836219467](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219467): SUCCESS at same SHA; M2-F26 teaching delivered. Original [CI #38835869874](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38835869874) had two unused fake-constructor parameter warnings; [CI #38836007368](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836007368) exposed HttpClient request-header ordering bug in tests. Both fixed without removing regression assertions. **Only the scoped local service is verified.**
 - Old A4.1 [23/23 adapter MockClient PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162) remains separate.
 
 ## Rollback
