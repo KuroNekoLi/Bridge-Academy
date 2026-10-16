@@ -43,7 +43,7 @@
 
 | M2-F24 | A3.4 卡牌語意、48×48 點擊區域、焦點順序、文字放大／雙語（80/80 Flutter、Chrome Demo／真 BEN PASS） | [M2-F24 教學](features/M2_F24_ACCESSIBILITY.md) | [元件](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart) · [測試](../../apps/bridge_academy_flutter/test/a3_accessibility_test.dart) · [規格](../product/A3_BRIDGE_TABLE_V2_SPEC.md) | DELIVERED |
 
-| M2-F25 | A4.1 HTTPS POST Gateway Client、短效 Token 注入、安全 API 契約（首次 lint 修正待驗） | [M2-F25 教學](features/M2_F25_BEN_GATEWAY.md) | [Gateway](../../packages/bridge_ben_adapter/lib/src/ben_gateway_transport.dart) · [Tests](../../packages/bridge_ben_adapter/test/ben_gateway_transport_test.dart) · [Contract](../product/A4_GATEWAY_CONTRACT_V1.md) | DELIVERED |
+| M2-F25 | A4.1 HTTPS POST Gateway Client、短效 Token 注入、安全 API 契約（Dart 23/23 Mock Adapter CI PASS） | [M2-F25 教學](features/M2_F25_BEN_GATEWAY.md) | [Gateway](../../packages/bridge_ben_adapter/lib/src/ben_gateway_transport.dart) · [Tests](../../packages/bridge_ben_adapter/test/ben_gateway_transport_test.dart) · [Contract](../product/A4_GATEWAY_CONTRACT_V1.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

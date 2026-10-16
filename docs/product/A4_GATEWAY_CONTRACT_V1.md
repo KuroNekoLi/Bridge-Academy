@@ -1,6 +1,6 @@
 # A4.1 — Secure BEN Gateway Client Contract v1
 
-**2026-10-16 | IMPLEMENTED CLIENT, CI PENDING | NO DEPLOYED GATEWAY**
+**2026-10-16 | A4.1 MOCK CONTRACT VERIFIED | NO DEPLOYED GATEWAY**
 
 ## Trust boundary
 
@@ -47,7 +47,7 @@ dart analyze --fatal-infos
 dart test --reporter expanded
 ```
 
-MockClient tests cover no hand/token in URL, private payload in POST body, no redirects, invalid route/field preflight, auth/token failure, 429/503 sanitization, oversize/bad JSON response and timeout. **These are not real BEN tests.** Keep existing pinned true BEN CI as a separate regression; no Flutter app transport switch in A4.1.
+[Adapter CI #38833132162](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162) on commit `11146d6` completed `dart analyze --fatal-infos` with **No issues found** and **23/23 package tests passed**, including the new gateway MockClient tests. These verify no hand/token in URL, private payload in POST body, no redirects, invalid route/field preflight, auth/token failure, 429/503 sanitization, oversize/bad JSON response and timeout. **These are not real BEN tests.** Keep existing pinned true BEN CI as a separate regression; no Flutter app transport switch in A4.1.
 
 ## Next delivery slices
 

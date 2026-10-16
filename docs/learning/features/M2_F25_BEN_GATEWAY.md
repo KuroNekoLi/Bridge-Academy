@@ -3,7 +3,7 @@
 - Feature ID：M2-F25
 - Milestone：A4.1 Production BEN Client Contract
 - 類型：Dart／HTTP 安全、依賴注入
-- 工程狀態：IMPLEMENTED（首輪 CI #38832931786 analyzer FAIL：Mock 測試的 nullable headers，已修正，重跑待驗）
+- 工程狀態：ENGINEERING_VERIFIED（僅 Adapter MockClient，非真 Gateway／正式產品）
 - 學習狀態：DELIVERED（非 PRACTICED／MASTERED）
 - 原始碼：`packages/bridge_ben_adapter/lib/src/ben_gateway_transport.dart`
 - 測試：`packages/bridge_ben_adapter/test/ben_gateway_transport_test.dart`
@@ -37,7 +37,7 @@ dart analyze --fatal-infos
 dart test --reporter expanded
 ```
 
-MockClient 測試範圍：POST 而非 GET、URL 無敏感資訊、失效授權、route/field allowlist、無明手先傳入測試、401/403/429/503、Redirect、Timeout、過大／無效 JSON。初次 [Adapter CI #38832931786](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38832931786) 在 analyze 時發現 Mock 測試 headers 需傳非 null Map，已修正，**修正後 CI 待驗**，不可將 MockClient 說成真正 BEN 或公開 Gateway。裝置測試依決策持續暫停。
+MockClient 測試範圍：POST 而非 GET、URL 無敏感資訊、失效授權、route/field allowlist、無明手先傳入測試、401/403/429/503、Redirect、Timeout、過大／無效 JSON。初次 [Adapter CI #38832931786](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38832931786) 在 analyze 時發現 Mock 測試 headers 需傳非 null Map，已修正。修正後 [Adapter CI #38833132162](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162) **Dart Analyze 無問題、23/23 套件測試 PASS**（包含新 Gateway MockClient 測試）。正式 Gateway、Token 發行與遠端 BEN 仍 NOT IMPLEMENTED。，不可將 MockClient 說成真正 BEN 或公開 Gateway。裝置測試依決策持續暫停。
 
 ## 練習與自我檢驗
 

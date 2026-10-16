@@ -1,5 +1,18 @@
 # Architecture v0.1 — boundaries first
 
+## A4.1 optional secure Gateway Client boundary (2026-10-16)
+
+```text
+SinglePlayerCoordinator -> filtered PlayerView -> BenBotPolicy
+                                  -> Dev BenHttpTransport (BEN GET; dev only)
+                                  -> BenGatewayTransport (HTTPS JSON POST v1)
+                                     -> [NOT DEPLOYED] Auth/rate-limited Gateway
+                                     -> [NOT DEPLOYED] Private BEN Python service
+Bridge Core validates all proposed moves before commit.
+```
+
+A4.1 is a reversible interface seam, **not wired into the default Flutter app**. The new transport requires HTTPS, no embedded credentials/URL query, injected ephemeral bearer provider, route and field allowlist, sanitized errors, no redirects/automatic retry and capped response. It cannot protect against a compromised server or issue its own credentials. Future A4.2 must issue short-lived anonymous credentials, validate authorization and rate limits server-side; A4.3 isolates BEN's old private-hand GET within the private network and implements stable dedup/version semantics. See [wire contract](product/A4_GATEWAY_CONTRACT_V1.md) and [MockAdapter CI 23/23](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162). **No production hosting or BEN service is now available. A3.5 remains owner-deferred and device QA remains disabled.**
+
 ## Components
 ~~~text
 Flutter Android / iOS / Web (render, input, localization)

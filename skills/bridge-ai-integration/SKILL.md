@@ -11,6 +11,12 @@ Read docs/ARCHITECTURE.md, docs/poc/POC_001.md, docs/poc/POC_002_BATCH_100.md, d
 ## Boundaries
 BEN generates **proposals**. Bridge Core validates legality, applies moves and records outcome. Server/coordinator owns completeDeal. A bot receives only the information permitted by its seat/time in the deal. DDS offline analysis is segregated from live decision-making.
 
+## A4 production network contract (2026-10-16)
+
+- `BenGatewayTransport`: HTTPS POST v1 to a proposed first-party Gateway, Mock-only [Adapter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162). Inject a short-lived authorized session token, never compile service tokens into Flutter `--dart-define` or use URL Query for private hands.
+- Gateway and anonymous credential bootstrap, server authorization and rate limiting, private BEN upstream worker, durable idempotency and real deployment remain A4.2+; DO NOT label A4.1 Mock as a deployed endpoint.
+- A3.5 and Android/iOS device UI test are owner-deferred. Preserve local real BEN regression, never quietly fall back to Demo.
+
 ## Workflow
 1. Capture real API request/response schema for /, /bid, /lead, /play, /autoplay using official source at pinned SHA.
 2. Document required per-call state/history; validate seat, dealer, vulnerability, encoded suits/ranks and PBN mappings.
