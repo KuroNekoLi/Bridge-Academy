@@ -1,6 +1,6 @@
 # A5.2 — 搜尋、篩選、分頁與刪除已完成牌局
 
-**2026-10-16 / Status: IMPLEMENTED, CI PENDING.** 范圍僅限本機 `BridgeSession` 的已完成牌局，加密歷史使用 A5.1 的既有儲存格式。**A5.3 遠端 Gateway 牌局歷史、PBN 匯出及更大型歷史庫未完成。**
+**2026-10-16 / Status: A5.2 SCOPED ENGINEERING VERIFIED — Flutter 94/94, Web release and Chrome Demo/secure checkpoint PASS.** 范圍僅限本機 `BridgeSession` 的已完成牌局，加密歷史使用 A5.1 的既有儲存格式。**A5.3 遠端 Gateway 牌局歷史、PBN 匯出及更大型歷史庫未完成。**
 
 ## 玩家實際可操作的功能
 
@@ -30,6 +30,14 @@
 | 相容性 | A5.1、A4 Flutter、Web Build 與既有 Chrome 測試繼續通過 |
 
 **原始檔：** `apps/bridge_academy_flutter/lib/src/completed_history_store.dart`、`lib/src/bridge_session.dart`、`lib/src/widgets/bridge_history_panel.dart`、`lib/src/app_copy.dart`。**新增測試：** `apps/bridge_academy_flutter/test/a5_history_management_test.dart`。
+
+## 已執行的 CI 與具體證據
+
+- Feature commit [4f8b9c2](https://github.com/KuroNekoLi/Bridge-Academy/commit/4f8b9c27f61839432769b2e00853dc19293baff0)，lint 修正 [2d51e6f](https://github.com/KuroNekoLi/Bridge-Academy/commit/2d51e6fba45de3fa2bc2148e43f0f30171dd51fe)。
+- [Flutter M2 CI #38857429965](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38857429965) **SUCCESS**：`flutter analyze --no-pub` No issues found；`flutter test --no-pub --reporter expanded` **94/94 PASS**（A5.1 91＋A5.2 新增 3 項）；`flutter build web --no-pub --release` **PASS**；既有真 ChromeDriver Demo/secure checkpoint E2E 皆 **PASS**。
+- [Feature Learning Gate #38857430064](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38857430064) **FAIL（lint-only 修正提交未同步教學與索引）**，因此在本份驗收與 [M2-F34](../learning/features/M2_F34_HISTORY_MANAGEMENT.md)、[教學索引](../learning/INDEX.md) 補足修正經過；**最新文件提交的 Learning Gate 仍待執行，不提前宣稱 PASS**。
+- 第一輪 [Flutter CI #38857189109](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38857189109) 被嚴格 lint 擋下：七項字串插值及一項多餘的 null assertion。保留 lint 並修正後重新執行成功。
+- 新增加密儲存重啟測試使用注入的 AES key/record store；**不是**真 Android／iOS 裝置 QA，也不代表已在公開網域或多分頁同步環境驗收。
 
 ## 不在此次範圍
 

@@ -61,7 +61,7 @@
 
 | M2-F33 | A5.1 玩家可用歷史牌局、加密終局封存與跨局複盤（Flutter 91/91 + Web + Chrome Demo PASS） | [M2-F33 教學](features/M2_F33_COMPLETED_HISTORY.md) | [歷史畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [加密 Store](../../apps/bridge_academy_flutter/lib/src/completed_history_store.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/a5_history_test.dart) · [A5.1 驗收](../product/A5_1_HISTORY_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F34 | A5.2 歷史搜尋／篩選／5 筆分頁／刪除確認及加密 tombstone | [M2-F34 教學](features/M2_F34_HISTORY_MANAGEMENT.md) | [History UI](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [Encrypted Store](../../apps/bridge_academy_flutter/lib/src/completed_history_store.dart) · [Tests](../../apps/bridge_academy_flutter/test/a5_history_management_test.dart) · [驗收](../product/A5_2_HISTORY_MANAGEMENT_ACCEPTANCE.md) | DELIVERED |
+| M2-F34 | A5.2 歷史搜尋／篩選／5 筆分頁／刪除確認及加密 tombstone（Flutter 94/94 PASS、lint 修復教學已同步） | [M2-F34 教學](features/M2_F34_HISTORY_MANAGEMENT.md) | [History UI](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [Encrypted Store](../../apps/bridge_academy_flutter/lib/src/completed_history_store.dart) · [Tests](../../apps/bridge_academy_flutter/test/a5_history_management_test.dart) · [驗收](../product/A5_2_HISTORY_MANAGEMENT_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

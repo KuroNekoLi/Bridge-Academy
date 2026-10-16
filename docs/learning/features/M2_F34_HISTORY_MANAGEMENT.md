@@ -3,7 +3,7 @@
 - Feature ID：M2-F34
 - Milestone：A5.2
 - 類型：Flutter UI／本機加密儲存／使用者資料控制
-- 工程狀態：IMPLEMENTED（CI 待驗，不能先宣稱通過）
+- 工程狀態：ENGINEERING_VERIFIED（Flutter 94/94 + Web Release + Chrome Demo CI PASS；僅本機加密歷史）
 - 學習狀態：DELIVERED（不代表 PRACTICED 或 MASTERED）
 - 程式：[歷史清單 UI](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [加密 Repository](../../apps/bridge_academy_flutter/lib/src/completed_history_store.dart) · [Session](../../apps/bridge_academy_flutter/lib/src/bridge_session.dart)
 - 驗收：[A5.2](../product/A5_2_HISTORY_MANAGEMENT_ACCEPTANCE.md) · [Flutter tests](../../apps/bridge_academy_flutter/test/a5_history_management_test.dart)
@@ -44,7 +44,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 ```
 
-新增測試檢查搜尋、合約篩選、5＋2 分頁、刪除取消、永久刪除與加密歷史在 checkpoint restore 後**不重新出現**。本切片尚待 CI 回報，與 A5.1 的 [91/91 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38852504246) 分開記錄；沒有操作真 Android／iOS 裝置。使用 Fake Records/Keys 的 AES 測試不代表已通過實機安全稽核。
+新增測試檢查搜尋、合約篩選、5＋2 分頁、刪除取消、永久刪除與加密歷史在 checkpoint restore 後**不重新出現**。實際 [Flutter CI #38857429965](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38857429965) **SUCCESS**：`flutter analyze --no-pub` 無問題、**94/94**（先前 91＋本次 3）、`flutter build web --no-pub --release` PASS、Chrome Demo/secure checkpoint 回歸 PASS。初版 CI 發現 8 個 lint，修正 `String interpolation` 與多餘的 `!` 後未停用分析檢查。單獨 lint 修復 commit 的 [Learning Gate #38857430064](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38857430064) 因缺同步更新教材與索引而 **FAIL**，已在後續文件 commit 補述，本次 gate 尚待結果。測試使用注入的加密 record/key 和 Flutter Widget，仍未進行 Android/iOS 實機、公開 HTTPS 或 Gateway 雲端歷史驗收。使用 Fake Records/Keys 的 AES 測試不代表已通過實機安全稽核。
 
 ## 練習與自我檢驗
 
