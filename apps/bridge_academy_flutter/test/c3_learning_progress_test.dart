@@ -129,4 +129,46 @@ void main() {
     await tester.pumpAndSettle();
     expect(await store.read(), isNull);
   });
+
+  testWidgets('C3 restarts with persisted state and switches language safely',
+      (tester) async {
+    final store = MemoryLearnerStore();
+    await store.write(LearnerProgress([attempt('persisted', true)]));
+    await tester.pumpWidget(MaterialApp(
+      home: AcademyPage(isEnglish: false, learnerStore: store)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('c3_enable')), findsNothing);
+    final progress = find.byKey(const Key('c3_show_progress'));
+    await tester.ensureVisible(progress);
+    await tester.tap(progress);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('1 / 9'), findsOneWidget);
+    expect(find.textContaining('100%'), findsWidgets);
+    await tester.tap(find.byKey(const Key('academy_toggle_locale')));
+    await tester.pumpAndSettle();
+    expect(find.text('Learning progress'), findsOneWidget);
+    expect((await store.read())!.completedCount, 1);
+  });
+
+  testWidgets('C3 opt-out questions do not write history',
+      (tester) async {
+    final store = MemoryLearnerStore();
+    await tester.pumpWidget(MaterialApp(
+      home: AcademyPage(isEnglish: true, learnerStore: store)));
+    await tester.pumpAndSettle();
+    final open = find.byKey(Key('academy_open_${sample.lessonId}'));
+    await tester.ensureVisible(open);
+    await tester.tap(open);
+    await tester.pumpAndSettle();
+    final choice = find.byKey(Key('academy_option_${question.correctOptionId}'));
+    await tester.ensureVisible(choice);
+    await tester.tap(choice);
+    await tester.pumpAndSettle();
+    final send = find.byKey(const Key('academy_submit'));
+    await tester.ensureVisible(send);
+    await tester.tap(send);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('academy_correct')), findsOneWidget);
+    expect(await store.read(), isNull);
+  });
 }
