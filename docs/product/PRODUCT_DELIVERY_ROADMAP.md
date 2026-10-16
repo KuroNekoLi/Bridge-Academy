@@ -147,6 +147,8 @@ Implemented native Android/iOS encrypted SQLite checkpoint adapter, AES-GCM, key
 
 ### B6 / P1 — Daily fixed-board **practice preview** (no rankings)
 
+- **B6 SCOPED VERIFIED**: [Flutter 124/124 + Web + Chrome Demo](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38910655183). Original deterministic UTC v1 deals, separately encrypted personal progress and four playable real-Core boards. [B6 acceptance](B6_DAILY_PRACTICE_ACCEPTANCE.md). Feature branch only: not merged to master.
+
 - Generate/version four **original** practice boards with the canonical dealer/vulnerability cycle; show the same local challenge identifier and a personal summary, subject to a clear retention/cutover policy.
 - May use a signed, published board manifest once needed, but without authenticated server-supplied comparison results it is **not** a Duplicate event. Replaying for study is allowed and explicitly labeled; results are not competition entries.
 - Acceptance: reproducible deal IDs and local scores, 4-board retry/restore, no private-hand leak, never show fabricated MP/IMP, opponent rank, or friend comparison; no live leaderboard.

@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'four_board_practice.dart';
+import 'daily_practice.dart';
 
 /// Trusted game snapshots contain ALL FOUR PRIVATE HANDS. Never expose them
 /// to widgets, player API objects, analytics, logs, or an AI transport.
@@ -249,6 +250,7 @@ final class SavedBoard {
     required this.transcript,
     this.historyId,
     this.fourBoardPractice,
+    this.dailyPractice,
   });
 
   final BoardDefinition board;
@@ -259,6 +261,7 @@ final class SavedBoard {
   final Map<String, dynamic> transcript;
   final String? historyId;
   final FourBoardPractice? fourBoardPractice;
+  final DailyPracticeProgress? dailyPractice;
 }
 
 abstract final class SavedBoardCodec {
@@ -272,11 +275,14 @@ abstract final class SavedBoardCodec {
     required SinglePlayerCoordinator coordinator,
     String? historyId,
     FourBoardPractice? fourBoardPractice,
+    DailyPracticeProgress? dailyPractice,
   }) => jsonEncode({
         'schemaVersion': schemaVersion,
         'historyId': ?historyId,
         if (fourBoardPractice != null)
           'fourBoardPractice': fourBoardPractice.toJson(),
+        if (dailyPractice != null)
+          'dailyPractice': dailyPractice.toJson(),
         'boardNumber': board.number,
         'humanSeat': humanSeat.letter,
         'opponentMode': opponentMode,
@@ -314,10 +320,11 @@ abstract final class SavedBoardCodec {
       throw const FormatException('Unknown opponent mode');
     }
     if (boardMode != 'training' && boardMode != 'fresh' &&
-        boardMode != 'bidding') {
+        boardMode != 'bidding' && boardMode != 'daily') {
       throw const FormatException('Unknown board source');
     }
-    if (boardMode == 'bidding' && opponentMode != 'demo') {
+    if ((boardMode == 'bidding' || boardMode == 'daily') &&
+        opponentMode != 'demo') {
       throw const FormatException('Bidding practice must use demo bot');
     }
     final transcript = Map<String, dynamic>.from(decoded['transcript'] as Map);
@@ -342,6 +349,33 @@ abstract final class SavedBoardCodec {
         }
       }
     }
+    final daily = decoded['dailyPractice'] == null
+        ? null : DailyPracticeProgress.fromJson(decoded['dailyPractice']);
+    if ((daily != null) != (boardMode == 'daily')) {
+      throw const FormatException('Daily practice mode mismatch');
+    }
+    if (daily != null) {
+      final onCurrent = !daily.isComplete &&
+          board.number == daily.nextBoardNumber;
+      final onTerminal = state.isFinished && daily.results.isNotEmpty &&
+          board.number == daily.nextBoardNumber - 1;
+      if (practice != null || daily.humanSeat != seat ||
+          !(onCurrent || onTerminal)) {
+        throw const FormatException('Daily progress inconsistent with board');
+      }
+      final index = board.number - daily.manifest.startBoard;
+      if (index < 0 || index >= 4 ||
+          state.deal.toPbn() != daily.manifest.dealAt(index).toPbn()) {
+        throw const FormatException('Daily board payload mismatch');
+      }
+      if (onTerminal) {
+        final last = daily.results.last;
+        if (last.id != id || last.nsScore != state.nsScore ||
+            last.contract != (state.contract?.label ?? 'PASS OUT')) {
+          throw const FormatException('Daily terminal score mismatch');
+        }
+      }
+    }
     if (state.dealer != board.dealer ||
         state.vulnerability != board.vulnerability ||
         decoded['eventVersion'] != state.version ||
@@ -353,6 +387,7 @@ abstract final class SavedBoardCodec {
       boardMode: boardMode as String, state: state, transcript: transcript,
       historyId: id as String?,
       fourBoardPractice: practice,
+      dailyPractice: daily,
     );
   }
 }
