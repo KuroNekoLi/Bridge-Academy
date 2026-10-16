@@ -3,10 +3,10 @@
 - Feature ID：M2-F43
 - Milestone：M2／B6.1–B6.3
 - 類型：Domain／Flutter UI／本機持久化
-- 工程狀態：IMPLEMENTED（CI 待驗證）
+- 工程狀態：SCOPED VERIFIED（124/124 tests、Web、Chrome Demo PASS）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/daily_practice.dart`、`daily_practice_store.dart`、`bridge_session.dart`、`widgets/daily_practice_panel.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/b6_daily_practice_test.dart`；目前 NOT RUN
+- 驗收與測試：`apps/bridge_academy_flutter/test/b6_daily_practice_test.dart`；[Flutter CI 124/124 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38910655183)
 
 ## 功能目的與實際情境
 玩家今天想練習四副固定牌。即使重開瀏覽器，也要能找回已完成的副數與分數；同一天不能因為 Random 引擎換版本而發出另一副牌。玩家逐副完成真實 Core 規則下的橋牌，不是把範例數字直接塞到 UI。
@@ -43,7 +43,7 @@ flutter test test/b6_daily_practice_test.dart
 flutter test
 flutter build web --release
 ```
-目前 **NOT RUN**：須等待這個 B6 分支的 GitHub Actions 回報，不能拿 master 或先前 B1 的 PASS 代替。相關測試涵蓋 Golden 牌組、52 張驗證、UTC 邊界、四副 Pass Out 結算、重開恢復、儲存失敗與雙語。尚未測試真正 BEN 或 Android/iOS 裝置。
+**CI PASS**: source SHA `24754685`; [Flutter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38910655183) confirms flutter analyze No issues found, 124/124 Widget/Session tests, successful Web Release build and ChromeDriver Demo E2E. New tests cover golden board identities, legal 52 cards, score direction, reload, corrupt daily journal fail-closed and bilingual UI. Real BEN and Android/iOS on-device are NOT tested.
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 如果今天改用 `Deal.shuffled(seed: utcDay.hashCode)` 產生每日牌局，看似更短，為何對跨 Dart SDK／跨平台的長期一致性不夠安全？

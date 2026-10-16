@@ -2,7 +2,7 @@
 
 **Branch**: `feature/b6-daily-practice`  
 **Base**: `2a382ac2230afc8059b93f3d4271ccb9bab14c74` (master at assignment)  
-**Status**: HANDOFF_READY / IMPLEMENTATION_NOT_STARTED  
+**Status**: SCOPED_VERIFIED / READY_FOR_INTEGRATION  
 **Standalone source**: 此分支的 `AGENT_TASK.md`。請執行程式、測試與文件，不只交分析報告。
 
 **目標**：玩家可以在 Flutter 單人模式開啟今日固定四副原創練習牌局，當天重進或重新啟動能找到同一組牌，完成後看到個人進度與原始 Duplicate 得分總和。不得假冒賽事、公開排行或跨玩家公平比較。
@@ -43,3 +43,9 @@
 - B4 與未來 C3 學習進度共用的最小契約固定為 **`lessonId`、`questionId`、`schemaVersion`、`skillTag`**；保持穩定字串 ID，後續狀態管理可使用該 ID；不提前打造帳號同步。
 - 如果同時有別的 Agent 改同一個 UI/Session 檔，維持 branch 中最小修改，不主動把另一個分支整包合併進來。
 - 最後只回報：branch、最新 SHA、操作步驟、變更檔案、CI 證據、教學連結、已知限制、整合注意事項及一個學習問題。
+
+## 完成交接（2026-10-16）
+- Source commit `24754685`; [Flutter 124/124 + Web + Chrome Demo](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38910655183) PASS.
+- 已完成功能與限制請參見 [B6 驗收](../product/B6_DAILY_PRACTICE_ACCEPTANCE.md) 與 [工程教學](../learning/features/M2_F43_DAILY_PRACTICE.md)。
+- 共用整合衝突面：bridge_session.dart、bridge_app.dart、session_persistence.dart、app_copy.dart、docs/learning/INDEX.md。Integration Agent 須逐一複查其他 Feature Branch 修改。
+- 本分支最終移除根目錄 AGENT_TASK.md；不可自行 push master、merge 或開 PR。

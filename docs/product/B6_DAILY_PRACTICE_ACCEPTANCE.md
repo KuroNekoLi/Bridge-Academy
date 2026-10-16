@@ -1,7 +1,7 @@
 # B6 — 每日固定四副牌（非排名）
 
 - Branch: `feature/b6-daily-practice`
-- Status: IMPLEMENTED / CI NOT YET VERIFIED
+- Status: SCOPED VERIFIED / Flutter 124 tests + Web + Chrome PASS
 - Date: 2026-10-16
 - Feature: B6.1（日期與可重現牌局）、B6.2（進度與加密本機紀錄）、B6.3（可操作 Flutter 玩家入口）
 
@@ -37,7 +37,9 @@ flutter build web --release
 - Pass Out 真實四副牌收束、重啟 checkpoint 恢復、結果重複處理、儲存失敗重試、雙語 Widget。
 - Android emulator、Android/iOS 實機測試依先前決議暫停。
 
-**CI：NOT YET VERIFIED**；尚待同一功能 SHA 的 Flutter CI 真實日誌，未執行不得稱 PASS。
+**CI VERIFIED**: [Flutter M2 Single Player](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38910655183) for source SHA `24754685`: Flutter analyze No issues found; 124/124 Flutter tests passed; Web Release build and ChromeDriver Demo E2E passed. Not real BEN nor Android/iOS device acceptance.
 
 ## 整合與回退
 僅在 `feature/b6-daily-practice` 交付，沒有 PR、沒有合併 master。共用接點：`bridge_session.dart`、`bridge_app.dart`、`app_copy.dart`、`session_persistence.dart`、學習 Index 和 B6 專屬 CI branch filter。整合時逐檔評估 B3/B4 同時修改區域，建議採 rebase-free sequential cherry-pick/merge，重新跑 Flutter CI。可 revert 本分支所有 B6 commit；已保存的獨立 daily store 不會被正常一般遊戲讀取。
+
+Known limitations: native macOS/Windows/Linux non-Web Demo composition still uses volatile Memory storage; native Android/iOS and Web use separate AES-GCM daily ledger. Public client-side deterministic dealing is predictable by technically capable players; B6 is a solo practice tool, never a fair-play competition or anti-cheat service.
