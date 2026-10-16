@@ -233,7 +233,9 @@ abstract final class ConventionExplanationEngine {
     ConventionAgreement? match;
     for (final rule in rules) {
       if (rule.calls.length != nonPass.length ||
-          rule.relativeSeats.length != nonPass.length) continue;
+          rule.relativeSeats.length != nonPass.length) {
+        continue;
+      }
       var valid = true;
       for (var i = 0; i < nonPass.length; i++) {
         final expectedSeat = Seat.values[

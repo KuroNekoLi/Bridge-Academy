@@ -36,8 +36,7 @@ class _BiddingConventionPanelState extends State<BiddingConventionPanel> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          copy.t('b3ProfileLabel') + ': ' +
-              profile.id + ' r' + profile.revision.toString(),
+          "${copy.t('b3ProfileLabel')}: ${profile.id} r${profile.revision}",
           key: const Key('b3_profile_revision'),
         ),
         Padding(
@@ -74,11 +73,11 @@ class _BiddingConventionPanelState extends State<BiddingConventionPanel> {
             key: const Key('bidding_explanation'),
           ),
           if (explanation.matched) ...[
-            Text(copy.t('b3RuleId') + ': ' + explanation.ruleId!,
+            Text("${copy.t('b3RuleId')}: ${explanation.ruleId!}",
                 key: const Key('b3_rule_id')),
             Text(copy.t(explanation.assumptionKey),
                 key: const Key('b3_assumptions')),
-            Text(copy.t('b3Source') + ': ' + explanation.reference!,
+            Text("${copy.t('b3Source')}: ${explanation.reference!}",
                 key: const Key('b3_source')),
             if (explanation.preview)
               Text(copy.t('b3PreviewOnly'),
