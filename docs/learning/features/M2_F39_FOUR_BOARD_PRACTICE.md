@@ -3,7 +3,7 @@
 - Feature ID：M2-F39
 - Milestone：B1 四副牌練習賽（第一個可操作切片）
 - 類型：Flutter 玩家功能、Bridge Core 場次協調、加密存檔
-- 工程狀態：IMPLEMENTED／CI PENDING（不得視為已驗證）
+- 工程狀態：SCOPED ENGINEERING VERIFIED（Flutter 109/109、Web Build、Chrome Demo PASS）
 - 學習狀態：DELIVERED（非 PRACTICED／MASTERED）
 - 程式：`apps/bridge_academy_flutter/lib/src/four_board_practice.dart`、`bridge_session.dart`、`bridge_app.dart`
 - 驗收與測試：`apps/bridge_academy_flutter/test/b1_four_board_practice_test.dart`，CI 執行後再補證據；[B1 驗收](../../product/B1_FOUR_BOARD_PRACTICE_ACCEPTANCE.md)
@@ -45,7 +45,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --release
 ```
 
-新增的 `b1_four_board_practice_test.dart` 對四家 Pass Out 模擬 Bot 進行四副連續的合法 Bridge Core 事件，檢查板次 1～4、重送不會重複計入、加密存檔模型復原、禁止中途跳板與 zh-TW/en 畫面。**此處撰寫時 CI 尚未完成；不能把測試程式存在視為 PASS。** 真 BEN 四副連打、裝置 QA、多人或公開部署也還沒有驗證。
+新增的 `b1_four_board_practice_test.dart` 對四家 Pass Out 模擬 Bot 進行四副連續的合法 Bridge Core 事件，檢查板次 1～4、重送不會重複計入、加密存檔模型復原、禁止中途跳板與 zh-TW/en 畫面。**[Flutter CI #38880212042](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38880212042) SUCCESS**：`flutter analyze --no-pub` 無問題、`flutter test --no-pub --reporter expanded` **109/109 PASS**（原 105 項＋B1 四項）、`flutter build web --release` 成功，Chrome Demo 回歸成功。首輪 [#38879969927](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38879969927) 遇到 `curly_braces_in_flow_control_structures` lint，隨後在 [56162ba](https://github.com/KuroNekoLi/Bridge-Academy/commit/56162ba7d5d727ceca2aadc6b8eb84e73a1e2e92) 修復；lint-only commit 當次 Learning Gate 失敗，改由本次驗收文件＋教學索引一同提交重新通過。真 BEN 四副連打、裝置 QA、多人或公開部署還沒有驗證。 真 BEN 四副連打、裝置 QA、多人或公開部署也還沒有驗證。
 
 ## 練習與自我檢驗
 

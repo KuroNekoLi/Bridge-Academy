@@ -1,6 +1,6 @@
 # B1 — 四副牌練習賽（本機可操作產品功能）
 
-**2026-10-16 · Status: IMPLEMENTED / Flutter CI PENDING · Scope: Flutter 本機單人 Demo 或已明確設定的開發 BEN 模式**
+**2026-10-16 · Status: SCOPED FLUTTER ENGINEERING VERIFIED — 109/109 tests + Web + Chrome Demo · Scope: Flutter 本機單人 Demo 或已明確設定的開發 BEN 模式**
 
 ## 玩家可操作的成果
 
@@ -32,7 +32,9 @@ flutter test --no-pub --reporter expanded
 flutter build web --release
 ```
 
-**CI evidence: PENDING.** Test scenarios include initial start, all four legitimate Pass Out boards, retained result IDs and board order, cross-restart continuation, disabling illegal restart/next actions, local A5 history and visible dual-language UI. This is scoped Flutter/Web engineering, not Android/iOS hardware, deployment, full four-board genuine BEN or product READY.
+**Executed evidence:** [B1 source commit 1a52cf1](https://github.com/KuroNekoLi/Bridge-Academy/commit/1a52cf1f2d7c1f93a6a05fb6eb3fad40135ca75f), Flutter lint fix [56162ba](https://github.com/KuroNekoLi/Bridge-Academy/commit/56162ba7d5d727ceca2aadc6b8eb84e73a1e2e92); [Flutter CI #38880212042](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38880212042) **SUCCESS** with `flutter analyze --no-pub` **No issues**, `flutter test --no-pub --reporter expanded` **109/109 passed** (105 prior + four B1), and `flutter build web --release` PASS; headless Chrome Demo secure-checkpoint regression also SUCCESS. The Feature Learning Gate on the **lint-only** commit initially failed because that commit did not change lesson + index; this documentation acceptance commit restores same-commit lesson/index evidence. Real BEN Chrome E2E is a separate regression and **not** evidence of four-board BEN practice.
+
+ Test scenarios include initial start, all four legitimate Pass Out boards, retained result IDs and board order, cross-restart continuation, disabling illegal restart/next actions, local A5 history and visible dual-language UI. This is scoped Flutter/Web engineering, not Android/iOS hardware, deployment, full four-board genuine BEN or product READY.
 
 ## Open gaps
 
