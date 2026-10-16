@@ -2,7 +2,7 @@ name: C1 DDS trusted postgame analysis
 on:
   workflow_dispatch:
   push:
-    branches: ['feature/c1-dds-analysis', 'integration/c3-b5-c1-a6-reviewed-20261016']
+    branches: ['feature/c1-dds-analysis']
     paths:
       - 'packages/bridge_dds_adapter/**'
       - '.github/workflows/c1-dds-analysis.yml'
