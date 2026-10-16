@@ -10,6 +10,7 @@ dependencies:
   bridge_ben_adapter:
     path: ../../packages/bridge_ben_adapter
   crypto: ^3.0.6
+  cryptography: ^2.7.0
 dev_dependencies:
   test: ^1.25.0
   lints: ^6.1.0

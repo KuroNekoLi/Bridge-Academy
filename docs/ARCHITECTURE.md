@@ -33,6 +33,12 @@ The anonymous capability now binds to **one server-random Bridge Core Deal**, wi
 
 **Security limitations:** The old caller-supplied `/v1/ai/decision` still exists for loopback/development and must be disabled for a public deploy. Memory-only sessions/idempotency, long-running partial Bot commits, anonymous user ownership, durable transaction log and seat authority for multiplayer remain unaddressed. No production promotion until these are resolved. [Scoped Gateway CI 27/27](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175287), [Acceptance](product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md); owner-deferred A3.5 and all Android/iOS UI device QA remain open.
 
+## A4.3.2b: opt-in encrypted local authoritative checkpoint
+
+`EncryptedSessionStore` uses AES-256-GCM with an externally supplied 32-byte key and one atomic session file per SHA-256 bearer digest. Encrypted content holds the privileged `GameTranscript` + bounded request ledger and pending request identity. `SinglePlayerCoordinator.restore` replays Bridge Core actions on startup (not a blind deserialize). `AuthoritativeGame` persists pending intent **before** mutating the Core; during `runBots(afterCommittedAction: _persist)` it saves each successfully committed event and finally persists the completed request reply atomically with the latest transcript. Incomplete `advance` can resume on matching ID after restart. Wrong key/tampered checkpoint fails closed, no plaintext hand/token logging.
+
+The opt-in durable mode disables the legacy `/v1/ai/decision` raw caller-hand route; ephemeral dev/test mode retains existing A4.3.1 true BEN smoke. Public release still blocked on multi-worker stores, crash/OS SIGKILL and disk durability evidence, key operations, full real BEN game, budget/rights review and deferred A3.5/device QA. [Acceptance](product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md).
+
 ## Components
 ~~~text
 Flutter Android / iOS / Web (render, input, localization)

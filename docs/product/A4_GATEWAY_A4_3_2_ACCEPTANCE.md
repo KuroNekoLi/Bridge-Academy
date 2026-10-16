@@ -38,6 +38,10 @@ HTTP tests assert no four-hand leak, other-seat injection fails, another token s
 - [Feature Learning Gate #38839175164](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175164): **SUCCESS**; lesson delivered, not learner-mastered. Initial CI #38838997977 had one incorrect test assertion matching public seat-count text `N: 13` as if it were a four-hand PBN. Assertion now verifies that `deal` and privileged `hands` keys are absent, without weakening private-card checks.
 - The previous independent [genuine pinned BEN Gateway #38837641285](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285) verified bid/lead/play through A4.3.1. This latest A4.3.2 test suite uses a stub backend for its server-owned game-flow assertions. A combined complete 13-trick Gateway+real BEN game is **not yet verified**.
 
+## A4.3.2b encrypted local recovery slice
+
+Implementation is now in [A4.3.2b acceptance](A4_GATEWAY_A4_3_2B_ACCEPTANCE.md). The optional AES-256-GCM checkpoint (external 32-byte secret, atomic flush+rename) restores token digests/expiry, authority-owned full game transcript and request reply ledger. `afterCommittedAction` persists each Bot action; incomplete matching request ID resumes the remaining Bot batch, while a successful repeated ID uses the previously saved response. The legacy hand-submitting route returns HTTP 404 **only when encrypted persistent mode is enabled**, and is still accessible in old ephemeral loopback development smoke. Single-process local tests are pending; distributed exactly-once and cross-device acceptance remain blocked.
+
 ## Remaining requirements
 
 A4.3.2b: durable session store and event/request replay, timeout recovery across restarts, explicit board identity and seat binding for future tables, production removal of the raw caller-supplied hand endpoint. A4.3.3: full 52-card Gateway play with pinned real BEN, backend memory/latency/cost and logging review. No public deployment before both, TLS authorization review and licensing of BEN/models.

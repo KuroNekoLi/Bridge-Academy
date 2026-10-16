@@ -17,9 +17,66 @@ class AuthoritativeGame {
           bot: BenBotPolicy(_PrivateBackendTransport(backend)),
         );
 
+  AuthoritativeGame._restored(this._coordinator);
+
+  factory AuthoritativeGame.restore({
+    required Map<String, dynamic> archive,
+    required GatewayDecisionBackend backend,
+  }) {
+    final game = AuthoritativeGame._restored(
+      SinglePlayerCoordinator.restore(
+        trustedStorageArchive: archive['transcript'] as Map<String, dynamic>,
+        humanSeat: Seat.north,
+        bot: BenBotPolicy(_PrivateBackendTransport(backend)),
+      ),
+    );
+    final entries = archive['replies'] as Map<String, dynamic>? ?? {};
+    for (final entry in entries.entries) {
+      final value = entry.value as Map<String, dynamic>;
+      game._replies[entry.key] = (
+        value['fingerprint'] as String,
+        Map<String, Object?>.unmodifiable(
+            Map<String, Object?>.from(value['response'] as Map)),
+      );
+    }
+    final pending = archive['pending'];
+    if (pending != null) {
+      game._pending = Map<String, dynamic>.from(pending as Map);
+    }
+    return game;
+  }
+
   final SinglePlayerCoordinator _coordinator;
   final Map<String, (String, Map<String, Object?>)> _replies = {};
+  Map<String, dynamic>? _pending;
+  Future<void> Function()? _checkpoint;
+  bool _brokenStore = false;
   bool _busy = false;
+
+  void setCheckpoint(Future<void> Function() checkpoint) {
+    _checkpoint = checkpoint;
+  }
+
+  Map<String, Object?> trustedCheckpoint() => {
+        'transcript': _coordinator.snapshotForTrustedStorage(),
+        'replies': {
+          for (final entry in _replies.entries)
+            entry.key: {
+              'fingerprint': entry.value.$1,
+              'response': entry.value.$2,
+            },
+        },
+        'pending': _pending,
+      };
+
+  Future<void> _persist() async {
+    try {
+      await _checkpoint?.call();
+    } catch (_) {
+      _brokenStore = true;
+      throw const GatewayFailure(503, 'storage_unavailable');
+    }
+  }
 
   Map<String, Object?> view() => {
         'version': 1,
@@ -90,6 +147,9 @@ class AuthoritativeGame {
         : 'action:' + expectedVersion.toString() + ':' +
             rawAction!['kind'].toString() + ':' +
             (rawAction['call'] ?? rawAction['card']).toString();
+    if (_brokenStore) {
+      throw const GatewayFailure(503, 'storage_unavailable');
+    }
     final previous = _replies[requestId];
     if (previous != null) {
       if (previous.$1 != fingerprint) {
@@ -98,16 +158,33 @@ class AuthoritativeGame {
       return previous.$2;
     }
     if (_busy) throw const GatewayFailure(409, 'game_busy');
-    if (expectedVersion != _coordinator.version) {
+    final pending = _pending;
+    if (pending != null &&
+        (pending['request_id'] != requestId ||
+         pending['fingerprint'] != fingerprint)) {
+      throw const GatewayFailure(409, 'pending_request');
+    }
+    if (pending == null && expectedVersion != _coordinator.version) {
       throw const GatewayFailure(409, 'stale_version');
     }
 
     _busy = true;
     try {
+      if (pending == null) {
+        _pending = {
+          'request_id': requestId,
+          'fingerprint': fingerprint,
+        };
+        // Write pending intent BEFORE any Bridge Core action.
+        await _persist();
+      }
       if (advanceBots) {
-        // BenBotPolicy sees a privacy-filtered PlayerView constructed here,
-        // NOT any client-supplied hand or seat.
-        await _coordinator.runBots(maxActions: 60);
+        // Checkpoint each committed bot action; restarting after a partial
+        // batch continues from that version instead of replaying the move.
+        await _coordinator.runBots(
+          maxActions: 60,
+          afterCommittedAction: _persist,
+        );
       } else {
         _coordinator.submitHuman(action!, expectedVersion: expectedVersion);
       }
@@ -115,15 +192,23 @@ class AuthoritativeGame {
         ...view(),
         'request_id': requestId,
       });
-      // Volatile/bounded dedup; NOT durable exactly-once across restarts.
       if (_replies.length >= 128) _replies.remove(_replies.keys.first);
       _replies[requestId] = (fingerprint, reply);
+      _pending = null;
+      // Save event + resulting reply in ONE encrypted atomic checkpoint.
+      await _persist();
       return reply;
     } on GatewayFailure {
       rethrow;
     } on BenApiException {
       throw const GatewayFailure(503, 'upstream_unavailable');
     } on RuleViolation {
+      // Invalid human action must not permanently wedge the session.
+      if (!advanceBots && _coordinator.version == expectedVersion &&
+          !_brokenStore) {
+        _pending = null;
+        await _persist();
+      }
       throw const GatewayFailure(409, 'illegal_or_stale_action');
     } catch (_) {
       throw const GatewayFailure(503, 'upstream_unavailable');

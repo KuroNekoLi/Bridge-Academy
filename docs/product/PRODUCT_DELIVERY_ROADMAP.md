@@ -21,11 +21,17 @@ The owner **postponed A3.5 final UI/physical device/assistive tech acceptance** 
 | --- | --- | --- |
 | A4.1 | Versioned authenticated HTTPS POST Gateway client, injected short-lived token supplier; no hand/token in URL; failure/safe-response tests | **SCOPED VERIFIED: [23/23 Adapter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162); no remote Gateway** |
 | A4.2 | **Loopback-only** Gateway with anonymous 15m bearer capability, per-peer/per-token quotas, strict API field/schema validation and injected backend | **SCOPED VERIFIED**: [14/14 real localhost HTTP CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219472); **not remote BEN, not verified seat/board authorization, not public HTTPS deployment** |
-| A4.3 | **A4.3.1** literal-loopback BEN GET worker behind authenticated local Gateway POST; **A4.3.2** server-controlled game/seat authority and request dedup; **A4.3.3** pinned real BEN acceptance | **A4.3.1 [HTTP 20/20 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641317) + [TRUE BEN bid/lead/play PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285)**; **3.2 [server-owned game/version/replay in-memory HTTP 27/27 VERIFIED](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175287)**; persistent request dedup & seat-bound competitive authority OPEN; 3.3 complete game OPEN, no production authorization |
+| A4.3 | **A4.3.1** literal-loopback BEN GET worker behind authenticated local Gateway POST; **A4.3.2** server-controlled game/seat authority and request dedup; **A4.3.3** pinned real BEN acceptance | **A4.3.1 [HTTP 20/20 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641317) + [TRUE BEN bid/lead/play PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285)**; **3.2 [server-owned game/version/replay in-memory HTTP 27/27 VERIFIED](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175287)**; 3.2b encrypted restart/reply checkpoint IMPLEMENTED / CI PENDING (single-process local only); distributed durable identity/seat competitive authority OPEN; 3.3 complete game OPEN, no production authorization |
 | A4.4 | Flutter real Gateway integration, accessible localized errors/retry and secure host configuration | NOT IMPLEMENTED |
 | A4.5 | Staging HTTPS deployment, weights/license, cost/latency/concurrency/privacy review, multi-board acceptance | NOT IMPLEMENTED |
 
 [A4.1 wire contract](A4_GATEWAY_CONTRACT_V1.md). Deployment, credential issuing, server authorization and production latency are not implemented or verified.
+
+## 2026-10-16 — A4.3.2b encrypted local restart slice
+
+**IMPLEMENTED / CI PENDING:** optional AES-256-GCM encrypted checkpoint store for the anonymous Gateway, SHA-256 bearer digests only, restored Bridge Core event replay, completed request ID results, and partial bot-batch checkpoints after every committed Bridge Core action. Startup requires a 32-byte external key and aborts on wrong key/corrupt archive. In durable mode legacy `/v1/ai/decision` with caller-provided hands is **disabled (404)**. Default ephemeral mode retains the existing local pinned-BEN smoke behavior. [Acceptance](A4_GATEWAY_A4_3_2B_ACCEPTANCE.md).
+
+**Not full A4.3.2b production verification:** the first slice is single-process, local-only; no full OS-process SIGKILL test, replicated event store, distributed exactly-once, production vault/rotation, crash-hardened fsync-directory guarantee, or service hosting. A4.3.3 real full-game BEN and deferred A3.5/device QA remain open.
 
 ## 1. Status taxonomy and gates
 

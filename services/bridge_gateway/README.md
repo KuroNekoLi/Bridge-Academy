@@ -72,3 +72,19 @@ Anonymous credentials now own one server-random Bridge Core `SinglePlayerCoordin
 [A4.3.2 Gateway CI #38839175287](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175287) passed 27/27 localhost HTTP tests and strict analyzer; [Feature Learning Gate #38839175164](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175164) passed. Still no durable replay, public hosting or full real BEN Gateway game.
 
 **No production claim:** in-memory token/game lifecycle (15 min), 128-entry response ledger, no crash-durable exactly-once, no server-side resume, no multiuser seat ownership and no public deployment. The legacy raw `/v1/ai/decision` remains **development-only** and must be disabled for any Internet deployment. [Acceptance](../../docs/product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md), [M2-F28 lesson](../../docs/learning/features/M2_F28_SERVER_GAME_AUTHORITY.md).
+
+## A4.3.2b encrypted durable restart (explicit local opt-in)
+
+Enable checkpoints **only on a trusted local machine**, with an external 32-byte random key that is never printed or committed:
+
+```bash
+export GATEWAY_CHECKPOINT_DIR="/path/outside/repository/private-gateway-sessions"
+export GATEWAY_CHECKPOINT_KEY_B64="$(openssl rand -base64 32)"
+dart run bin/serve.dart
+```
+
+**Keep the same key across restarts**. Store the key separately from ciphertext using a proper secret manager in any future deployment; resetting the key intentionally makes previously saved sessions unreadable and the Gateway refuses startup rather than silently creating new games. Local HTTP is loopback only, with no production TLS. This is not an instruction to expose the process to the Internet.
+
+The state is AES-256-GCM encrypted per token-digest checkpoint, flushed to a temporary file before a same-directory rename. Token hashes, expiry, Bridge Core event archive and bounded successful request ledger are restored on startup; the client must still possess the unexpired bearer token. Each Bot action is saved before the next, allowing an interrupted advance request to be resumed with **the same original request ID and payload** rather than repeating already committed events. In durable mode the legacy raw `POST /v1/ai/decision` is disabled (404), unlike the existing ephemeral-mode development API.
+
+Known limits: single-process local lock, no cross-machine replicated store, no power-loss directory fsync certification, no crash-durable peer-IP bootstrap quota, no key rotation or backups, and no 13-trick real BEN Gateway acceptance yet. [A4.3.2b acceptance](../../docs/product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md), [M2-F29 learning note](../../docs/learning/features/M2_F29_ENCRYPTED_GATEWAY_RESTART.md).

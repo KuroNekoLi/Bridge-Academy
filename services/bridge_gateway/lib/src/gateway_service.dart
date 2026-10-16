@@ -7,6 +7,7 @@ import 'package:crypto/crypto.dart';
 import 'package:bridge_core/bridge_core.dart';
 
 import 'authoritative_game.dart';
+import 'encrypted_session_store.dart';
 
 /// An A4.3 BEN worker will implement this interface. Never return an action
 /// before the real upstream validates the model response.
@@ -82,7 +83,9 @@ class BridgeGatewayService {
     GatewayConfig config = const GatewayConfig(),
     DateTime Function()? clock,
     Deal Function()? dealFactory,
-  })  : _backend = backend ?? const UnavailableDecisionBackend(),
+    EncryptedSessionStore? checkpointStore,
+  })  : _checkpointStore = checkpointStore,
+        _backend = backend ?? const UnavailableDecisionBackend(),
         _dealFactory = dealFactory ?? Deal.shuffled,
         _config = config,
         _clock = clock ?? DateTime.now {
@@ -100,6 +103,7 @@ class BridgeGatewayService {
   final GatewayConfig _config;
   final DateTime Function() _clock;
   final Deal Function() _dealFactory;
+  final EncryptedSessionStore? _checkpointStore;
   final Random _random = Random.secure();
   final Map<String, _Session> _sessions = {};
   final Map<String, _Window> _bootstrapByIp = {};
@@ -118,7 +122,40 @@ class BridgeGatewayService {
     if (!bindAddress.isLoopback) {
       throw ArgumentError('A4.2 development gateway may bind loopback only');
     }
-    _server = await HttpServer.bind(bindAddress, port);
+    if (_checkpointStore != null) {
+      final loaded = await _checkpointStore.open();
+      final now = _clock().toUtc();
+      for (final entry in loaded.entries) {
+        final archive = entry.value;
+        final expiry = DateTime.fromMillisecondsSinceEpoch(
+          archive['expiresAtMs'] as int,
+          isUtc: true,
+        );
+        if (!expiry.isAfter(now)) {
+          await _checkpointStore.remove(entry.key);
+          continue;
+        }
+        final game = AuthoritativeGame.restore(
+          archive: Map<String, dynamic>.from(archive['game'] as Map),
+          backend: _backend,
+        );
+        final session = _Session(expiry, game);
+        session.used = archive['used'] as int? ?? 0;
+        final started = archive['windowStartedMs'];
+        if (started is int) {
+          session.windowStarted = DateTime.fromMillisecondsSinceEpoch(
+            started, isUtc: true);
+        }
+        game.setCheckpoint(() => _persistSession(entry.key, session));
+        _sessions[entry.key] = session;
+      }
+    }
+    try {
+      _server = await HttpServer.bind(bindAddress, port);
+    } catch (_) {
+      await _checkpointStore?.close();
+      rethrow;
+    }
     _requests = _server!.listen((request) {
       unawaited(_handle(request));
     });
@@ -129,6 +166,7 @@ class BridgeGatewayService {
     await _requests?.cancel();
     await _server?.close(force: true);
     _server = null;
+    await _checkpointStore?.close();
     _sessions.clear();
     _bootstrapByIp.clear();
   }
@@ -156,8 +194,14 @@ class BridgeGatewayService {
         '/v1/games/action',
         '/v1/games/advance',
       }.contains(request.uri.path);
+      // Raw client-provided hands are permitted only in the old ephemeral
+      // localhost dev mode. Durable mode denies this insecure API completely.
+      final rawDecision = request.uri.path == '/v1/ai/decision';
+      if (rawDecision && _checkpointStore != null) {
+        throw const GatewayFailure(404, 'not_found');
+      }
       final isApi = request.uri.path == '/v1/sessions/anonymous' ||
-          request.uri.path == '/v1/ai/decision' || isGame;
+          rawDecision || isGame;
       if (request.method == 'OPTIONS' && isApi && origin != null) {
         response.statusCode = HttpStatus.noContent;
         response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -179,7 +223,7 @@ class BridgeGatewayService {
       }
       final body = await _readJson(request);
       if (request.uri.path == '/v1/sessions/anonymous') {
-        _issueSession(request, body);
+        await _issueSession(request, body);
       } else if (isGame) {
         await _requestGame(request, body);
       } else {
@@ -225,12 +269,12 @@ class BridgeGatewayService {
     return data;
   }
 
-  void _issueSession(HttpRequest request, Map<String, dynamic> body) {
+  Future<void> _issueSession(HttpRequest request, Map<String, dynamic> body) async {
     if (body.length != 1 || body['version'] != 1) {
       throw const GatewayFailure(400, 'invalid_request');
     }
     final now = _clock().toUtc();
-    _expireOld(now);
+    await _expireOld(now);
     final ip = request.connectionInfo?.remoteAddress.address ?? 'unknown';
     // Never honor X-Forwarded-For without a trusted reverse-proxy contract.
     final window = _bootstrapByIp.putIfAbsent(ip, () => _Window(now));
@@ -245,8 +289,19 @@ class BridgeGatewayService {
 
     final token = _randomToken();
     // Keep only the SHA-256 token hash in process memory.
-    _sessions[_digest(token)] = _Session(now.add(_config.sessionTtl),
-        AuthoritativeGame(deal: _dealFactory(), backend: _backend));
+    final digest = _digest(token);
+    final game = AuthoritativeGame(deal: _dealFactory(), backend: _backend);
+    final session = _Session(now.add(_config.sessionTtl), game);
+    game.setCheckpoint(() => _persistSession(digest, session));
+    _sessions[digest] = session;
+    try {
+      // Token is not returned to the caller until its encrypted checkpoint
+      // has been durably written.
+      await _persistSession(digest, session);
+    } catch (_) {
+      _sessions.remove(digest);
+      throw const GatewayFailure(503, 'storage_unavailable');
+    }
     _reply(request.response, 201, {
       'version': 1,
       'access_token': token,
@@ -410,10 +465,31 @@ class BridgeGatewayService {
           .hasMatch(value)
       : RegExp(r'^[CDHS][2-9TJQKA]$').hasMatch(value);
 
-  void _expireOld(DateTime now) {
-    _sessions.removeWhere((_, session) => !session.expiresAt.isAfter(now));
+  Future<void> _expireOld(DateTime now) async {
+    final expired = _sessions.entries
+        .where((entry) => !entry.value.expiresAt.isAfter(now))
+        .map((entry) => entry.key).toList();
+    for (final digest in expired) {
+      _sessions.remove(digest);
+      try {
+        await _checkpointStore?.remove(digest);
+      } catch (_) {
+        throw const GatewayFailure(503, 'storage_unavailable');
+      }
+    }
     _bootstrapByIp.removeWhere(
         (_, window) => now.difference(window.start) >= _config.window);
+  }
+
+  Future<void> _persistSession(String digest, _Session session) async {
+    final store = _checkpointStore;
+    if (store == null) return;
+    await store.save(digest, {
+      'expiresAtMs': session.expiresAt.millisecondsSinceEpoch,
+      'windowStartedMs': session.windowStarted?.millisecondsSinceEpoch,
+      'used': session.used,
+      'game': session.game.trustedCheckpoint(),
+    });
   }
 
   String _randomToken() {

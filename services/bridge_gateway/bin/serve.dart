@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:bridge_gateway/bridge_gateway.dart';
 
@@ -25,7 +26,29 @@ Future<void> main() async {
   }
   // Pinned BEN may take longer than local HTTP mocks; the outbound backend
   // still has a stricter 120s timeout, and the gateway returns no fake action.
+  final checkpointDir = Platform.environment['GATEWAY_CHECKPOINT_DIR'];
+  final keyText = Platform.environment['GATEWAY_CHECKPOINT_KEY_B64'];
+  EncryptedSessionStore? store;
+  if (checkpointDir != null || keyText != null) {
+    if (checkpointDir == null || checkpointDir.isEmpty ||
+        keyText == null || keyText.isEmpty) {
+      stderr.writeln('Encrypted store requires both checkpoint directory and key');
+      exitCode = 64;
+      return;
+    }
+    try {
+      store = EncryptedSessionStore(
+        directory: Directory(checkpointDir),
+        key: base64.decode(keyText),
+      );
+    } catch (_) {
+      stderr.writeln('Invalid encrypted store configuration');
+      exitCode = 64;
+      return;
+    }
+  }
   final gateway = BridgeGatewayService(
+    checkpointStore: store,
     backend: benBackend,
     config: GatewayConfig(
       decisionTimeout: benBackend == null
@@ -33,7 +56,13 @@ Future<void> main() async {
           : const Duration(seconds: 130),
     ),
   );
-  await gateway.start(port: port);
+  try {
+    await gateway.start(port: port);
+  } catch (_) {
+    stderr.writeln('Gateway failed to open checkpoint store or bind localhost');
+    exitCode = 78;
+    return;
+  }
   stdout.writeln(
       'Bridge Academy DEV gateway on 127.0.0.1:$port '
       '(BEN upstream: ${benBackend == null ? 'disabled' : 'loopback only'})');
