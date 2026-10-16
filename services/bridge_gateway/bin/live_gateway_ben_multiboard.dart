@@ -1,17 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:bridge_core/bridge_core.dart';
 import 'package:crypto/crypto.dart';
-import 'package:bridge_gateway/src/a6_board_fixtures.dart';
 import 'package:bridge_gateway/bridge_gateway.dart';
-
-// Same pinned, non-secret fixed board as bridge_ben_adapter/live_ben_smoke.dart.
-// This fixture is injected on the SERVER ONLY; never sent through client APIs.
-// A true model runs at 127.0.0.1:8085; this script contains no fake backend.
-const _fixture = 'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
-    'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8';
+import 'package:bridge_gateway/src/a6_board_fixtures.dart';
 
 class _MeasuredRealBen implements GatewayDecisionBackend {
   _MeasuredRealBen(this.actual);
