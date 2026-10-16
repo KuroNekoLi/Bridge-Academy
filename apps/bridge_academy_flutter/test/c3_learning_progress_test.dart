@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final sample = AcademyCatalog.validated().first;
+final totalQuestions = AcademyCatalog.validated()
+    .fold<int>(0, (count, lesson) => count + lesson.questions.length);
 final question = sample.questions.first;
 
 AcademyAnswer answer(String option) => AcademyAnswer(
@@ -126,7 +128,7 @@ void main() {
     await tester.tap(show);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('c3_dashboard')), findsOneWidget);
-    expect(find.textContaining('1 / 9'), findsOneWidget);
+    expect(find.textContaining('1 / $totalQuestions'), findsOneWidget);
     final toggle = find.byKey(const Key('c3_toggle_saving'));
     await tester.ensureVisible(toggle);
     await tester.tap(toggle);
@@ -156,7 +158,7 @@ void main() {
     await tester.ensureVisible(progress);
     await tester.tap(progress);
     await tester.pumpAndSettle();
-    expect(find.textContaining('1 / 9'), findsOneWidget);
+    expect(find.textContaining('1 / $totalQuestions'), findsOneWidget);
     expect(find.textContaining('100%'), findsWidgets);
     await tester.tap(find.byKey(const Key('academy_toggle_locale')));
     await tester.pumpAndSettle();
