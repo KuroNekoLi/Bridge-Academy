@@ -1,6 +1,6 @@
 # C3.2 — 本機個人化學習推薦
 
-**State:** IMPLEMENTED / CI PENDING
+**State:** SCOPED VERIFIED (Flutter/Web Demo)
 
 ## 可操作玩家功能
 - C3 明確同意後，B4 課程列表顯示可點擊的推薦卡片，可直接跳進既有課程的建議題目。
@@ -15,5 +15,5 @@
 ## 驗收命令與未完成限制
 `cd apps/bridge_academy_flutter && flutter analyze && flutter test && flutter build web --release`
 
-**Initial status: NOT RUN**（本機無 Flutter/Dart SDK，應以同 SHA 的 GitHub Actions 證據更新狀態）。
+**實際執行證據：** [Flutter CI #38980805539](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38980805539)，程式碼 SHA `988b1028`，靜態分析無問題、**165/165 測試通過**、Web Release 編譯與 ChromeDriver Demo E2E 均成功。[Learning Gate #38980805532](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38980805532) PASS。最終提交僅更新驗收文件並移除分支暫時性的 CI trigger，未改動已通過測試的程式碼。
 使用現有三堂九題，純規則推薦不是專家或 BEN AI 評估；不涉及正式上線、帳號同步、Android/iOS 裝置測試。需要時可以單一 Git commit revert 回退，不需搬遷 C3 存檔。

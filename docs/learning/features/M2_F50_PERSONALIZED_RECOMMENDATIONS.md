@@ -3,10 +3,10 @@
 - Feature ID：M2-F50
 - Milestone：M2／C3.2
 - 類型：Flutter UI／規則式推薦
-- 工程狀態：IMPLEMENTED（CI 待確認）
+- 工程狀態：SCOPED VERIFIED（Flutter 165/165、Web／Chrome Demo）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/learning_progress/learning_recommendations.dart`、`apps/bridge_academy_flutter/lib/src/academy/academy_page.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/c3_2_personalized_recommendations_test.dart`（初次提交 NOT RUN）
+- 驗收與測試：`apps/bridge_academy_flutter/test/c3_2_personalized_recommendations_test.dart`；[實際 CI 165/165 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38980805539)
 
 ## 功能目的與實際情境
 玩家同意 C3 加密保存並回答 B4 原創課程的題目後，重新開啟學院會看到「推薦下一堂練習」。點推薦卡片直接進入現有課程的相關題目。未 opt-in 時不讀紀錄；暫停紀錄者只使用已保留資料；刪除紀錄後推薦立即消失。無新帳號、雲端推薦 API 或額外資料蒐集。
@@ -38,7 +38,7 @@ flutter test
 flutter build web --release
 ```
 
-初次提交時尚未執行（NOT RUN；此執行環境沒有 Dart/Flutter SDK）。測試設計涵蓋樣本門檻、改正錯題、逾期錯題、未知題庫資料、排序一致性、雙語 UI、點擊導航、opt-in 與刪除。不得將測試程式已存在宣稱為通過。
+實際在 [Flutter M2 Single Player CI #38980805539](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38980805539) 的程式碼 SHA `988b1028` 執行：Flutter Analyze `No issues found`；Widget／Session／Domain **165/165 PASS**；`flutter build web` 成功；ChromeDriver Demo E2E PASS。[Feature Learning Gate #38980805532](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38980805532) PASS。測試涵蓋樣本門檻、改正錯題、逾期錯題、未知題庫資料、排序一致性、雙語 UI、點擊導航、opt-in 與刪除。未涵蓋 Android／iOS 裝置驗收、正式 BEN 的額外個人化分析或專家評定。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 為什麼玩家只答錯一題時，不應直接標為「弱項」，而且推薦卡片必須顯示作答樣本數？
