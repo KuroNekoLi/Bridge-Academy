@@ -6,9 +6,9 @@ import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-CompletedReplay _terminalReplay(List<Call> auction) {
+CompletedReplay _terminalReplay(List<Call> auction, {Deal? deal}) {
   var game = GameState.start(
-      Deal.suitPerSeat(), Seat.north, Vulnerability.none);
+      deal ?? Deal.suitPerSeat(), Seat.north, Vulnerability.none);
   final frames = <ReplayFrame>[
     ReplayFrame(PlayerView.forSeat(game, Seat.north), null),
   ];
@@ -95,12 +95,19 @@ void main() {
       expect(timeline.steps
           .any((step) => step.insights
               .any((note) => note.key == 'reviewDummyControl')), isTrue);
-      expect(timeline.steps
-          .any((step) => step.insights
-              .any((note) => note.key == 'reviewFollowSuit')), isTrue);
       expect(timeline.steps.last.frame.view.completedTricks.length, 13);
       expect(timeline.steps.last.frame.view.nsScore, isNotNull);
     }
+    // Suit-per-seat is deliberately void-heavy and has no follow-suit event.
+    // A mixed-suit fixed deal proves the positive follow-suit explanation.
+    final mixed = ReviewTimeline.fromReplay(_terminalReplay(const [
+      Bid(1, Strain.notrump), Pass(), Pass(), Pass(),
+    ], deal: Deal.fromPbn(
+      'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
+      'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8',
+    )));
+    expect(mixed.steps.any((step) => step.insights
+        .any((note) => note.key == 'reviewFollowSuit')), isTrue);
   });
 
   test('B5 timeline rejects unfinished or misordered replay', () {
