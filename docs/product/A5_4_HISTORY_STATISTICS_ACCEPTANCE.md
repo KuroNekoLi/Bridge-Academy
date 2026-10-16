@@ -1,7 +1,7 @@
 # A5.4 — 近期歷史成績統計：玩家可見功能
 
 **Date:** 2026-10-16  
-**Status:** IMPLEMENTED / CI PENDING. **Scope:** 本機最近最多 12 副已完成牌局；不代表賽事排名、真 BEN 成績比較或正式裝置驗收。
+**Status:** SCOPED FLUTTER ENGINEERING VERIFIED — 105/105 tests + Chrome Demo + Web build. **Scope:** 本機最近最多 12 副已完成牌局；不代表賽事排名、真 BEN 成績比較或正式裝置驗收。
 
 ## 玩家可以做什麼
 
@@ -37,7 +37,7 @@ flutter build web --release
 
 必須包含：E/W 相對 NS 分數反轉、成約率、Pass Out 不計定約、沒有完成牌局時顯示「尚無資料」、從真實 Bridge Core 13 墩完成牌局取得 `contractMade`、搜尋與篩選更新、zh-TW/en 介面，以及先前 A5.1–A5.3.3 的歷史列表、刪除、PBN 輸出入回歸。
 
-**Executed CI:** PENDING — 不能以先前 A5.3.3 的 101/101 代替本項目驗證。A3.5 和 Android/iOS 裝置 UI 測試仍待使用者授權。
+**Executed evidence:** [A5.4 implementation commit f05ccf0](https://github.com/KuroNekoLi/Bridge-Academy/commit/f05ccf099d7a365b0044e00acdad9b247a955f7e), [Flutter CI #38877191518](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38877191518) **SUCCESS**: `flutter analyze --no-pub` **No issues found**; `flutter test --no-pub --reporter expanded` **105/105 passed** (101 previous + 4 A5.4 tests), `flutter build web --release` **built web**, real Chrome Demo/secure-checkpoint regression passed. [Feature Learning Gate #38877191369](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38877191369) PASS. Separate true BEN/Chrome CI [#38877191497](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38877191497) still running at documentation time; it is not necessary to prove these local-only statistics, and must not be reported as PASS until finished. This CI evidence is not a mobile/device or production release acceptance.A3.5 和 Android/iOS 裝置 UI 測試仍待使用者授權。
 
 ## 非目標
 

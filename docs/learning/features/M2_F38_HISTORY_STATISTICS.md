@@ -3,7 +3,7 @@
 - Feature ID：M2-F38
 - Milestone：A5.4
 - 類型：Flutter 使用者功能／橋牌 Domain 聚合
-- 工程狀態：IMPLEMENTED（CI 待驗）
+- 工程狀態：ENGINEERING_VERIFIED（Flutter 105/105、Web build、Chrome Demo 回歸）
 - 學習狀態：DELIVERED（非 PRACTICED／MASTERED）
 - 來源：`apps/bridge_academy_flutter/lib/src/history_statistics.dart`、`bridge_session.dart`、`widgets/bridge_history_panel.dart`
 - 驗收：`docs/product/A5_4_HISTORY_STATISTICS_ACCEPTANCE.md`、`apps/bridge_academy_flutter/test/a5_history_statistics_test.dart`
@@ -49,7 +49,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --release
 ```
 
-新測試涵蓋：E/W 座位得分反轉、真 Core 完整出牌後成約判斷、零筆和未知結果、中文畫面上的搜尋／Pass Out 篩選，以及英文標籤。**本次 CI 尚未執行，驗證狀態是 NOT RUN**，不得引用舊 A5.3.3 測試數充當通過。
+新測試涵蓋：E/W 座位得分反轉、真 Core 完整出牌後成約判斷、零筆和未知結果、中文畫面上的搜尋／Pass Out 篩選，以及英文標籤。[Flutter CI #38877191518](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38877191518) **SUCCESS**：Dart／Flutter analyze 無問題、**105/105 Flutter test PASS**（包含新的 4 項統計、畫面與真 Bridge Core 牌局測試）、Web Release Build 與 Chrome Demo／加密存檔 E2E 通過。原始提交：[f05ccf0](https://github.com/KuroNekoLi/Bridge-Academy/commit/f05ccf099d7a365b0044e00acdad9b247a955f7e)；[Feature Learning Gate #38877191369](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38877191369) PASS。這是本機 Flutter/Web 範圍驗收，不是雲端成績、真 BEN 模型品質、手機裝置或公開產品驗收。
 
 ## 練習與自我檢驗
 
