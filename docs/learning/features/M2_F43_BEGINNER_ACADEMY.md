@@ -3,10 +3,10 @@
 - Feature ID：M2-F43
 - Milestone：M2／B4.1 (P2)
 - 類型：Flutter UI、資料模型、原創教學
-- 工程狀態：IMPLEMENTED（CI 待驗證）
+- 工程狀態：SCOPED VERIFIED（Flutter Analyze + 128/128 + Web Build）
 - 學習狀態：DELIVERED
 - 原始碼：apps/bridge_academy_flutter/lib/src/academy/academy_models.dart、academy_catalog.dart、academy_page.dart、bridge_app.dart
-- 驗收與測試：apps/bridge_academy_flutter/test/b4_academy_domain_test.dart、b4_academy_widget_test.dart；NOT RUN（本地缺 Flutter／Dart）
+- 驗收與測試：apps/bridge_academy_flutter/test/b4_academy_domain_test.dart、b4_academy_widget_test.dart；[CI 128/128 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38909904915)
 
 ## 功能目的與實際情境
 剛開始學橋牌的玩家可以從牌桌進入學院，先了解基本規則，再做九道原創題。答錯會看到原因且能重試；只在正確回答時累積「本次已完成」。玩家離開學院時原牌局不被影響。這與 B3.2 的叫牌約定不是同一個功能，不依賴 BEN。
@@ -42,7 +42,7 @@ Dart 的 Set.add() 在元素已存在時回傳 false，和 Kotlin MutableSet.add
     flutter test
     flutter build web
 
-**NOT RUN**：目前呼叫環境沒有 Flutter/Dart SDK；以 commit SHA 對應 GitHub CI 真實結果更新，不可用產生測試檔視為已驗收。無 Android/iOS 真機、BEN 實際模型與真人學習效果的宣稱。
+**GitHub Actions EXECUTED / PASS**：[B4 Branch CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38909904915)，程式碼 SHA `eea21bf293ba6e6c3eb7f3b89b92d2b718456044`，`flutter analyze` 0 問題、`flutter test` **128/128 通過**，`flutter build web --release` 成功。包含 320/375px、2× 字體排版的可重現 Widget 測試。**NOT RUN**：Android/iOS 實機、獨立 Chrome E2E、BEN 與真人教學效果；不得以此 CI 超額宣稱。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 為什麼 C3 的長期學習進度應該保存 stable questionId，而不能保存「第 3 堂的第 2 題」？

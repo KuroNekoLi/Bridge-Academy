@@ -2,7 +2,7 @@
 
 日期：2026-10-16  
 分支：feature/b4-bridge-academy  
-狀態：IMPLEMENTED / CI NOT YET VERIFIED（發布時必須引用同一 SHA 的 Actions）。
+狀態：SCOPED VERIFIED（Flutter analyse、128/128 tests、Web release）／LESSON_DELIVERED。
 
 ## 玩家實際可用的功能
 - 主應用右上角學院按鈕可以開啟獨立課程頁，與既有正在進行的牌局平行存在；返回後不變更叫牌或出牌狀態。
@@ -37,7 +37,12 @@
     flutter test
     flutter build web
 
-執行環境不含 Dart/Flutter SDK，提交前皆為 **NOT RUN**；推送後檢查對應 Commit 的 GitHub Actions，附上實際成功或失敗證據後才可稱 SCOPED VERIFIED。
+**GitHub Actions 實測已通過：** [B4 Branch Flutter CI #38909904915](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38909904915)，程式碼 SHA `eea21bf293ba6e6c3eb7f3b89b92d2b718456044`。
+- `flutter analyze --no-pub`：**No issues found**。
+- `flutter test --no-pub --reporter expanded`：**128/128 tests passed**，含全套既有 Flutter 及新 B4 Domain／Widget／320／375px 2× 字體測試。
+- `flutter build web --no-pub --release`：**Built build/web**。
+- 實際 runner：GitHub Actions ubuntu-latest、subosito/flutter-action@v2 stable。非本地／非手機實機。
+- 本輪沒有新增真 Chrome／真 BEN E2E；本測試結果不代表部署合規與真人學習效果。
 
 ## 已知限制／未完成
 - 不儲存長期進度，不包含錯題歷史／弱點分析／難度自動調整；C3 處理。

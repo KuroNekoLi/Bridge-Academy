@@ -2,7 +2,7 @@
 
 **Branch**: `feature/b4-bridge-academy`  
 **Base**: `2a382ac2230afc8059b93f3d4271ccb9bab14c74` (master at assignment)  
-**Status**: IMPLEMENTED / CI PENDING (see docs/product/B4_GUIDED_TRAINING_ACCEPTANCE.md)  
+**Status**: SCOPED VERIFIED / IMPLEMENTATION COMPLETE (see docs/product/B4_GUIDED_TRAINING_ACCEPTANCE.md)  
 **Standalone source**: 此分支的 `AGENT_TASK.md`。請執行程式、測試與文件，不只交分析報告。
 
 **目標**：新增獨立可操作的「橋牌學院」首版。玩家可挑課程、閱讀原創概念、回答練習題並看到可以追溯到 Bridge Core 或明確教學假設的解釋。完成整個使用流程不依賴帳號、雲端、BEN 或 B3.2 約定引擎。
