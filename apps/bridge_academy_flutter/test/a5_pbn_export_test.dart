@@ -70,9 +70,9 @@ void main() {
     expect(session.view!.completedTricks, hasLength(13));
     // PBN 2.1: each row uses the opening leader's fixed compass columns,
     // even when a different player wins and leads the next trick.
-    final play = pbn.split('[Play "E"]\\n');
+    final play = pbn.split('[Play "E"]\n');
     expect(play, hasLength(2));
-    final rows = play.last.trim().split('\\n');
+    final rows = play.last.trim().split('\n');
     expect(rows, hasLength(13));
     final tricks = session.view!.completedTricks;
     for (var i = 0; i < 13; i++) {
