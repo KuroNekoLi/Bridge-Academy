@@ -98,13 +98,19 @@ class _AcademyPageState extends State<AcademyPage> {
   }
   Future<void> _record(AcademyAnswer answer, AcademyFeedback result) async {
     if (!_enabled || _persisting || _storageError) return;
-    final updated = LearnerProgress(_history.attempts);
-    updated.record(LearnerAttempt(
-      id: '${DateTime.now().toUtc().microsecondsSinceEpoch}-${_sequence++}',
-      timestampUtc: DateTime.now().toUtc(),
-      answer: answer,
-      correct: result.correct,
-    ));
+    late final LearnerProgress updated;
+    try {
+      updated = LearnerProgress(_history.attempts);
+      updated.record(LearnerAttempt(
+        id: '${DateTime.now().toUtc().microsecondsSinceEpoch}-${_sequence++}',
+        timestampUtc: DateTime.now().toUtc(),
+        answer: answer,
+        correct: result.correct,
+      ));
+    } catch (_) {
+      if (mounted) setState(() => _storageError = true);
+      return;
+    }
     setState(() => _persisting = true);
     try {
       await _store.write(updated);
@@ -363,6 +369,8 @@ class _AcademyPageState extends State<AcademyPage> {
                     onPressed: _selected == null ? null : () => _submit(question),
                     child: Text(_t('submit')),
                   ),
+                if (_storageError)
+                  Text(_t('storageError'), key: const Key('c3_answer_storage_error')),
                 if (_feedback case final result?) ...[
                   Text(
                     _t(result.correct ? 'correct' : 'incorrect'),

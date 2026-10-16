@@ -24,11 +24,14 @@ abstract interface class ArchiveEncryptionKeyProvider {
 
 final class NativeArchiveEncryptionKeyProvider
     implements ArchiveEncryptionKeyProvider {
-  NativeArchiveEncryptionKeyProvider({FlutterSecureStorage? secureStorage})
-      : _secureStorage = secureStorage ?? const FlutterSecureStorage();
+  NativeArchiveEncryptionKeyProvider({
+    FlutterSecureStorage? secureStorage,
+    String keyName = 'bridge_academy.archive.aes256.v1',
+  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
+       _keyName = keyName;
 
   final FlutterSecureStorage _secureStorage;
-  static const _keyName = 'bridge_academy.archive.aes256.v1';
+  final String _keyName;
 
   @override
   Future<List<int>> loadOrCreateKey() async {
