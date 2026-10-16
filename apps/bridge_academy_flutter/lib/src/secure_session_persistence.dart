@@ -51,19 +51,22 @@ final class NativeArchiveEncryptionKeyProvider
 /// SQLite transaction, so readers never see a half-updated active marker.
 final class SqfliteAtomicArchiveRecordStore
     implements AtomicArchiveRecordStore {
-  SqfliteAtomicArchiveRecordStore({Future<Database> Function()? openDatabase})
-      : _openOverride = openDatabase;
+  SqfliteAtomicArchiveRecordStore({
+    Future<Database> Function()? openDatabase,
+    String databaseFile = 'bridge_academy_secure_archive.sqlite',
+  }) : _openOverride = openDatabase, _databaseFile = databaseFile;
 
   final Future<Database> Function()? _openOverride;
+  final String _databaseFile;
   Future<Database>? _database;
 
   Future<Database> _open() => _database ??= _openOverride?.call() ??
-      _openDefault();
+      _openDefault(_databaseFile);
 
-  static Future<Database> _openDefault() async {
+  static Future<Database> _openDefault(String file) async {
     final base = await getDatabasesPath();
     return openDatabase(
-      '$base/bridge_academy_secure_archive.sqlite',
+      '$base/$file',
       version: 1,
       onCreate: (db, _) async {
         await db.execute('CREATE TABLE local_checkpoint ('
@@ -110,15 +113,19 @@ final class SqfliteAtomicArchiveRecordStore
 /// This adapter must never be used as a substitute for native SQLite.
 final class BrowserSingleRecordArchiveStore
     implements AtomicArchiveRecordStore {
-  BrowserSingleRecordArchiveStore({SharedPreferencesAsync? preferences})
-      : _preferences = preferences ?? SharedPreferencesAsync();
+  BrowserSingleRecordArchiveStore({
+    SharedPreferencesAsync? preferences,
+    String storageKey = key,
+  }) : _preferences = preferences ?? SharedPreferencesAsync(),
+       _storageKey = storageKey;
 
   static const key = 'bridge_academy.encrypted_web_checkpoint.v1';
   final SharedPreferencesAsync _preferences;
+  final String _storageKey;
 
   @override
   Future<Map<String, dynamic>?> readRecord() async {
-    final raw = await _preferences.getString(key);
+    final raw = await _preferences.getString(_storageKey);
     if (raw == null) return null;
     if (raw.length > 512 * 1024) {
       throw const FormatException('Oversized browser archive');
@@ -132,10 +139,10 @@ final class BrowserSingleRecordArchiveStore
 
   @override
   Future<void> replaceRecord(Map<String, dynamic> record) =>
-      _preferences.setString(key, jsonEncode(record));
+      _preferences.setString(_storageKey, jsonEncode(record));
 
   @override
-  Future<void> clearRecord() => _preferences.remove(key);
+  Future<void> clearRecord() => _preferences.remove(_storageKey);
 }
 
 /// Android/iOS encrypted checkpoint store. All four hands are encrypted with

@@ -245,6 +245,7 @@ final class SavedBoard {
     required this.boardMode,
     required this.state,
     required this.transcript,
+    this.historyId,
   });
 
   final BoardDefinition board;
@@ -253,6 +254,7 @@ final class SavedBoard {
   final String boardMode;
   final GameState state;
   final Map<String, dynamic> transcript;
+  final String? historyId;
 }
 
 abstract final class SavedBoardCodec {
@@ -264,8 +266,10 @@ abstract final class SavedBoardCodec {
     required String opponentMode,
     required String boardMode,
     required SinglePlayerCoordinator coordinator,
+    String? historyId,
   }) => jsonEncode({
         'schemaVersion': schemaVersion,
+        if (historyId != null) 'historyId': historyId,
         'boardNumber': board.number,
         'humanSeat': humanSeat.letter,
         'opponentMode': opponentMode,
@@ -287,6 +291,39 @@ abstract final class SavedBoardCodec {
     }
     if (decoded['schemaVersion'] != schemaVersion) {
       throw const FormatException('Unsupported session checkpoint version');
+    }
+    final id = decoded['historyId'];
+    if (id != null && (id is! String ||
+        !RegExp(r'^[a-zA-Z0-9_-]{8,64}
+    if (number is! int) throw const FormatException('Invalid board number');
+    final board = BoardDefinition.forNumber(number);
+    final seat = Seat.fromLetter(decoded['humanSeat'] as String);
+    final opponentMode = decoded['opponentMode'];
+    final boardMode = decoded['boardMode'];
+    if (opponentMode != 'demo' && opponentMode != 'ben') {
+      throw const FormatException('Unknown opponent mode');
+    }
+    if (boardMode != 'training' && boardMode != 'fresh') {
+      throw const FormatException('Unknown board source');
+    }
+    final transcript = Map<String, dynamic>.from(decoded['transcript'] as Map);
+    // Replay all actions under the same Bridge Core authority as live play.
+    final state = GameTranscript.decode(transcript);
+    if (state.dealer != board.dealer ||
+        state.vulnerability != board.vulnerability ||
+        decoded['eventVersion'] != state.version ||
+        decoded['historyFingerprint'] != state.historyFingerprint) {
+      throw const FormatException('Checkpoint does not match legal board');
+    }
+    return SavedBoard(
+      board: board, humanSeat: seat, opponentMode: opponentMode as String,
+      boardMode: boardMode as String, state: state, transcript: transcript,
+      historyId: id as String?,
+    );
+  }
+}
+).hasMatch(id))) {
+      throw const FormatException('Invalid game history ID');
     }
     final number = decoded['boardNumber'];
     if (number is! int) throw const FormatException('Invalid board number');

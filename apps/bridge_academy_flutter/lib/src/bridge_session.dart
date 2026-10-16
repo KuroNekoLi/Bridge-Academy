@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/foundation.dart';
 
 import 'session_persistence.dart';
+import 'completed_history_store.dart';
 
 enum OpponentMode { demo, ben }
 enum BoardMode { training, fresh }
@@ -17,18 +20,28 @@ class BridgeSession extends ChangeNotifier {
     BotPolicy Function(OpponentMode mode)? botFactory,
     Deal Function()? freshDealFactory,
     SessionArchiveStore? archiveStore,
+    CompletedHistoryStore? historyStore,
   })  : _fixedDeal = fixedDeal ?? Deal.fromPbn(
           'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
           'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8',
         ),
         _botFactory = botFactory,
         _freshDealFactory = freshDealFactory,
-        _archiveStore = archiveStore;
+        _archiveStore = archiveStore,
+        _historyStore = historyStore;
 
   final Deal _fixedDeal;
   final BotPolicy Function(OpponentMode mode)? _botFactory;
   final Deal Function()? _freshDealFactory;
   final SessionArchiveStore? _archiveStore;
+  final CompletedHistoryStore? _historyStore;
+  String? _historyId;
+  List<StoredHistoryBoard> _historyBoards = [];
+  List<HistorySummary> _historySummaries = [];
+  Future<void>? _historyLoadFuture;
+  bool _historyLoaded = false;
+  bool _historySaveFailed = false;
+  String? _historyError;
   SinglePlayerCoordinator? _coordinator;
   Deal? _activeDeal;
   BoardDefinition _board = BoardDefinition.forNumber(1);
@@ -60,11 +73,108 @@ class BridgeSession extends ChangeNotifier {
   BoardMode get boardMode => _boardMode;
   Seat get humanSeat => _humanSeat;
   BoardDefinition get board => _board;
+  List<HistorySummary> get completedHistory => List.unmodifiable(_historySummaries);
+  String? get historyError => _historyError;
+  bool get historySaveFailed => _historySaveFailed;
+
+  static String _newHistoryId() {
+    final random = Random.secure().nextInt(0x7fffffff).toRadixString(16);
+    return 'h_${DateTime.now().microsecondsSinceEpoch}_$random';
+  }
+
+  HistorySummary _summarize(StoredHistoryBoard record) {
+    final saved = SavedBoardCodec.decode(record.archive);
+    final game = saved.state;
+    if (!game.isFinished) throw const FormatException('Unfinished history');
+    return HistorySummary(
+      id: record.id, savedAt: record.savedAt,
+      boardNumber: saved.board.number, humanSeat: saved.humanSeat,
+      contract: game.contract?.label ?? 'PASS OUT',
+      score: game.nsScore!, tricks: game.tricks.length,
+      isPractice: saved.boardMode == BoardMode.training.name,
+    );
+  }
+
+  Future<void> loadHistory() {
+    if (_historyLoaded || _historyStore == null) return Future.value();
+    return _historyLoadFuture ??=
+        _readHistory().whenComplete(() => _historyLoadFuture = null);
+  }
+
+  Future<void> _readHistory() async {
+    try {
+      final records = await _historyStore!.read();
+      final summaries = records.map(_summarize).toList();
+      _historyBoards = List.of(records);
+      _historySummaries = summaries;
+      _historyLoaded = true;
+      _historyError = null;
+    } catch (_) {
+      // The private archive, corrupted ciphertext and original hands are
+      // never echoed to a player. Existing in-memory history is preserved.
+      _historyError = 'errorHistoryLoad';
+    }
+    notifyListeners();
+  }
+
+  CompletedReplay? historyReplay(String id) {
+    final matches = _historyBoards.where((entry) => entry.id == id);
+    if (matches.isEmpty) return null;
+    final saved = SavedBoardCodec.decode(matches.first.archive);
+    if (!saved.state.isFinished) return null;
+    // Only filtered ReplayFrames leave the trusted storage boundary.
+    return SinglePlayerCoordinator.restore(
+      trustedStorageArchive: saved.transcript,
+      humanSeat: saved.humanSeat,
+      bot: const DeterministicTrainingBot(),
+    ).completedReplay;
+  }
+
+  Future<void> _archiveCompleted() async {
+    if (_historyStore == null || _coordinator == null ||
+        !_coordinator!.finished) return;
+    await loadHistory();
+    if (!_historyLoaded) {
+      _historyError = 'errorHistoryLoad';
+      notifyListeners();
+      return;
+    }
+    final id = _historyId ??= _newHistoryId();
+    if (_historyBoards.any((item) => item.id == id)) return;
+    final item = StoredHistoryBoard(
+      id: id,
+      savedAt: DateTime.now().toUtc(),
+      archive: SavedBoardCodec.encode(
+        board: _board, humanSeat: _humanSeat,
+        opponentMode: _mode.name, boardMode: _boardMode.name,
+        coordinator: _coordinator!, historyId: id,
+      ),
+    );
+    final proposed = [item, ..._historyBoards].take(
+      EncryptedCompletedHistoryStore.maxItems,
+    ).toList();
+    try {
+      await _historyStore!.write(proposed);
+      _historyBoards = proposed;
+      _historySummaries = proposed.map(_summarize).toList();
+      _historyError = null;
+      _historySaveFailed = false;
+    } catch (_) {
+      // Active-session checkpoint remains safe and playable even when the
+      // secondary history archive fails; offer a separate explicit retry.
+      _historySaveFailed = true;
+      _historyError = 'errorHistorySave';
+    }
+    notifyListeners();
+  }
+
+  Future<void> retryHistorySave() => _archiveCompleted();
 
   /// Rebuilds only a committed event sequence, never an in-flight AI proposal.
   /// A restored bot turn is retried from its last committed version.
   Future<bool> restoreSavedGame() async {
     if (_archiveStore == null || busy || started) return false;
+    await loadHistory();
     _restoring = true;
     notifyListeners();
     var restored = false;
@@ -85,6 +195,8 @@ class BridgeSession extends ChangeNotifier {
       );
       _coordinator = coordinator;
       _activeDeal = snapshot.state.deal;
+      _historyId = snapshot.historyId ??
+          'legacy_${snapshot.state.historyFingerprint}';
       _board = snapshot.board;
       _humanSeat = snapshot.humanSeat;
       _mode = mode;
@@ -110,6 +222,7 @@ class BridgeSession extends ChangeNotifier {
       notifyListeners();
     }
     if (advanceBot) await _advanceBots();
+    if (restored && finished) await _archiveCompleted();
     return restored;
   }
 
@@ -142,7 +255,7 @@ class BridgeSession extends ChangeNotifier {
       await _archiveStore.write(SavedBoardCodec.encode(
         board: _board, humanSeat: _humanSeat,
         opponentMode: _mode.name, boardMode: _boardMode.name,
-        coordinator: _coordinator!,
+        coordinator: _coordinator!, historyId: _historyId,
       ));
       _saveFailed = false;
     } catch (_) {
@@ -244,6 +357,8 @@ class BridgeSession extends ChangeNotifier {
     _boardMode = boardMode;
     _board = board;
     _activeDeal = deal;
+    _historyId = _newHistoryId();
+    _historySaveFailed = false;
     _errorCode = null;
     _saveFailed = false;
     _restoredFromStorage = false;
@@ -307,6 +422,7 @@ class BridgeSession extends ChangeNotifier {
       _saving = false;
       notifyListeners();
     }
+    if (persisted && finished) await _archiveCompleted();
     if (persisted) await _advanceBots();
   }
 
@@ -326,6 +442,7 @@ class BridgeSession extends ChangeNotifier {
         maxActions: 100,
         afterCommittedAction: _archiveStore == null ? null : _persist,
       );
+      if (finished) await _archiveCompleted();
     } catch (_) {
       // HTTP errors can contain credentials/private hands in upstream logs;
       // never show or log raw exception text on the player-facing UI.

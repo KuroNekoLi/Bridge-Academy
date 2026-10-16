@@ -47,6 +47,12 @@ A new pinned real BEN executable test at `services/bridge_gateway/bin/live_gatew
 
 The Flutter App launches an independent `GatewayGameSession` and `GatewayTable` only when a `GatewayApi` is injected for tests or `BRIDGE_GATEWAY_ORIGIN` is explicitly defined. Its `GatewayHttpApi` permits only versioned POST `/v1/sessions/anonymous` and `/v1/games/view/action/advance`, with HTTPS or literal loopback HTTP for local development; redirects refused and bearer sent in authorization header, never URL. Server-filtered `PlayerView.fromJson` is typechecked and rendered with existing UI components. Lost-response recovery uses the same action ID and version, never silently switches to Demo. Tokens remain in RAM; no browser persistence/resume claim. CORS opt-in on local Gateway requires `GATEWAY_BROWSER_ORIGINS`. [A4.4 acceptance](product/A4_GATEWAY_A4_4_ACCEPTANCE.md). [Flutter 86/86, Web Build + Chrome Demo regression](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915) PASS; actual browser→Gateway→BEN remains a separate gate.
 
+## A5.1 local-only completed history (2026-10-16)
+
+`BridgeSession` now persists terminal-only `SavedBoardCodec` snapshots in a **separate encrypted completed-history store** with bounded 12-item retention. A stable historyId is stored in the active session's optional checkpoint field; archive replay rebuilds `CompletedReplay` using a private `SinglePlayerCoordinator.restore`, and Flutter receives only `HistorySummary` or authorized `ReplayFrame`, never the raw Deal/PBN. Browser history uses the existing WebCrypto secure key provider and separate one-record key; native uses a separate SQLite file and AES-GCM with history-specific AAD. Failure in history storage never overwrites the active-session checkpoint.
+
+This is a **player-visible local practice feature**, not an online Gateway multi-user history API, export, searchable catalog, ACID cross-tab store, or production-ready mobile implementation. [A5.1 acceptance](product/A5_1_HISTORY_ACCEPTANCE.md). A3.5 and device QA remain on owner hold.
+
 ## Components
 ~~~text
 Flutter Android / iOS / Web (render, input, localization)

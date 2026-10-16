@@ -9,7 +9,9 @@ import 'widgets/bridge_table_components.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bridge_table_toolbar.dart';
 import 'widgets/bridge_replay_panel.dart';
+import 'widgets/bridge_history_panel.dart';
 import 'session_persistence.dart';
+import 'completed_history_store.dart';
 import 'secure_session_persistence.dart';
 import 'gateway_game_session.dart';
 import 'gateway_http_api.dart';
@@ -62,13 +64,18 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
     _session = BridgeSession(
+      historyStore: mobile
+          ? EncryptedCompletedHistoryStore.native()
+          : kIsWeb
+              ? EncryptedCompletedHistoryStore.browser()
+              : MemoryCompletedHistoryStore(),
       archiveStore: mobile
           ? EncryptedTransactionalSessionArchiveStore.native()
           : kIsWeb
               ? EncryptedTransactionalSessionArchiveStore.browser()
               : PreferencesSessionArchiveStore(),
     );
-    _session!.restoreSavedGame();
+    _session!.restoreSavedGame(); // Also loads the separate history archive.
   }
 
   @override
@@ -136,6 +143,9 @@ class _BridgeTableState extends State<BridgeTable> {
   int _bidLevel = 1;
   Strain _bidStrain = Strain.notrump;
   int? _replayIndex;
+  bool _historyOpen = false;
+  String? _selectedHistoryId;
+  int _historyStep = 0;
   bool _syncedRestore = false;
 
   @override
@@ -204,11 +214,41 @@ class _BridgeTableState extends State<BridgeTable> {
                           ? copy.t('restart')
                           : copy.t('newGame')),
                     ),
+                    OutlinedButton.icon(
+                      key: const Key('history_toggle'),
+                      onPressed: () => setState(() {
+                        _historyOpen = !_historyOpen;
+                        if (!_historyOpen) _selectedHistoryId = null;
+                      }),
+                      icon: const Icon(Icons.history),
+                      label: Text(copy.t(_historyOpen
+                          ? 'historyClose' : 'historyOpen')),
+                    ),
                   ],
                   ),
                 ),
               ),
             ),
+            if (_historyOpen) ...[
+              const SizedBox(height: 8),
+              BridgeHistoryPanel(
+                history: session.completedHistory,
+                copy: copy,
+                selectedId: _selectedHistoryId,
+                selectedReplay: _selectedHistoryId == null
+                    ? null : session.historyReplay(_selectedHistoryId!),
+                replayIndex: _historyStep,
+                onSelect: (id) => setState(() {
+                  _selectedHistoryId = id;
+                  _historyStep = 0;
+                }),
+                onReplayStep: (step) =>
+                    setState(() => _historyStep = step),
+                errorCode: session.historyError,
+                onRetrySave: session.historySaveFailed
+                    ? session.retryHistorySave : null,
+              ),
+            ],
             const SizedBox(height: 8),
             Text(
               copy.t(session.mode == OpponentMode.demo
@@ -311,7 +351,7 @@ class _BridgeTableState extends State<BridgeTable> {
                 const SizedBox(height: 8),
                 _completedBoardActions(session, copy),
                 const SizedBox(height: 8),
-                _replayPanel(session, copy),
+                if (!_historyOpen) _replayPanel(session, copy),
               ],
             ],
               ],
