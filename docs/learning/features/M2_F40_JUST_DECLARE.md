@@ -21,7 +21,7 @@ GameTranscript.encode 在一般對局寫 schemaVersion: 1；在教學模式寫 s
 
 ## 驗證與實際證據
 可重現：cd packages/bridge_core && dart pub get && dart analyze --fatal-infos && dart test；cd apps/bridge_academy_flutter && flutter pub get && flutter analyze && flutter test && flutter build web --release。
-新測試涵蓋起點無 Auction、首攻後公開 Dummy、52 張／13 墩、跨重啟加密 checkpoint、複盤、歷史標記、Flutter zh-TW/en 按鈕和 v2 變造拒絕。撰寫當下 CI 尚未執行，不可宣稱測試成功。這是本機 Demo 規則練習，非真正 BEN 教學 AI 的品質測試。
+新測試涵蓋起點無 Auction、首攻後公開 Dummy、52 張／13 墩、跨重啟加密 checkpoint、複盤、歷史標記、Flutter zh-TW/en 按鈕和 v2 變造拒絕。已推送 [commit 2cacca3](https://github.com/KuroNekoLi/Bridge-Academy/commit/2cacca39322cc0500bbba4f91c943c1671f0d831)。[Core CI #38882515569](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515569)、[Flutter CI #38882515620](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515620) 與 [Learning Gate #38882515614](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515614) 因 GitHub Job 沒有配給 Runner（runner_id=0、沒有 Step）於啟動前失敗。重試 Core 和 Learning Gate 結果相同，故目前**沒有測試運行證據**。待 GitHub Actions Runner 恢復後必須重跑，才可能宣告 PASS。這是本機 Demo 規則練習，非真正 BEN 教學 AI 的品質測試。
 
 ## 練習與自我檢驗
 思考題：為什麼不能只在 Flutter 畫面保存 isJustDeclare=true，卻不在 Canonical Transcript 保存 trainingContract？

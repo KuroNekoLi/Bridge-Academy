@@ -73,7 +73,7 @@
 
 | M2-F39 | B1 四副牌練習賽：四副新牌、進度、分數結算、跨重啟接續（Flutter 109/109 PASS） | [M2-F39 教學](features/M2_F39_FOUR_BOARD_PRACTICE.md) | [單人場次模型](../../apps/bridge_academy_flutter/lib/src/four_board_practice.dart) · [牌桌](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/b1_four_board_practice_test.dart) · [B1 驗收](../product/B1_FOUR_BOARD_PRACTICE_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F40 | B2.1 Just Declare：指定定約直接練習莊家、明手、合法 13 墩；不捏造叫牌（CI 待驗） | [M2-F40 教學](features/M2_F40_JUST_DECLARE.md) | [Bridge Core](../../packages/bridge_core/lib/src/game.dart) · [Flutter](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart) · [Core tests](../../packages/bridge_core/test/just_declare_test.dart) · [UI tests](../../apps/bridge_academy_flutter/test/b2_just_declare_test.dart) · [驗收](../product/B2_JUST_DECLARE_ACCEPTANCE.md) | DELIVERED |
+| M2-F40 | B2.1 Just Declare：指定定約練莊家、明手、13 墩；不捏造叫牌（CI Runner 啟動阻擋） | [M2-F40 教學](features/M2_F40_JUST_DECLARE.md) | [Bridge Core](../../packages/bridge_core/lib/src/game.dart) · [Flutter](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart) · [Core tests](../../packages/bridge_core/test/just_declare_test.dart) · [UI tests](../../apps/bridge_academy_flutter/test/b2_just_declare_test.dart) · [驗收](../product/B2_JUST_DECLARE_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

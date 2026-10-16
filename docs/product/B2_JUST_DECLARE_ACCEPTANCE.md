@@ -19,6 +19,11 @@
 - v1 普通對局相容，v2 不合法線位、花色、加倍與竄改版號拒絕。
 - Flutter 中英文字串、操作按鈕及既有 Web／Chrome 相關回歸。
 
+## GitHub Actions 阻擋（明確不是測試 PASS）
+
+- 第一輪 commit [2cacca3](https://github.com/KuroNekoLi/Bridge-Academy/commit/2cacca39322cc0500bbba4f91c943c1671f0d831) 的 [Bridge Core CI #38882515569](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515569)、[Flutter CI #38882515620](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515620)、[Feature Learning Gate #38882515614](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515614)、[Gateway CI #38882515685](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515685) 及 [Pinned BEN Chrome #38882515555](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38882515555) 都是 FAILURE，但 GitHub Jobs 實際顯示 **runner_id=0、steps=[]**，沒有任何測試開始。Core/Learning Gate 已各重試一次，仍沒有取得 Runner。
+- 應先查 GitHub Actions 額度、計費、Runner 配置與平台錯誤，再重跑上述工作。**目前 B2.1 的工程狀態是 IMPLEMENTED / CI BLOCKED，絕非 VERIFIED。** 不得用歷史 B1 109/109 證據代替本切片。
+
 ## 實際 CI
 本文件提交時尚未執行。執行 packages/bridge_core 的 dart analyze --fatal-infos + dart test，以及 apps/bridge_academy_flutter 的 flutter analyze/test/build web，完成後補正確 GitHub run URL。
 
