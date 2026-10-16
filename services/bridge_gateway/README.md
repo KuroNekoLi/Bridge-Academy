@@ -60,3 +60,7 @@ The new \`BenLoopbackBackend\` performs GET \`/bid\`, \`/lead\`, \`/play\` **onl
 The working model is **local development only**, NOT an Internet-enabled BEN service. The caller currently supplies a hand without a game/seat binding; anonymous credentials are not full player authorization. Server-owned Bridge Core game state, expected event version, request deduplication, public HTTPS deployment and BEN license/cost reviews remain required.
 
 See [A4.3.1 acceptance](../../docs/product/A4_GATEWAY_A4_3_1_ACCEPTANCE.md) and [M2-F27 lesson](../../docs/learning/features/M2_F27_BEN_LOOPBACK_WORKER.md).
+
+### Genuine pinned BEN Gateway smoke (separate from stub tests)
+
+[Workflow](../../.github/workflows/ben-gateway-real.yml) checks out `lorserker/ben@72653ec1` with Python 3.12, starts its genuine gameapi.py on loopback, then runs [live_gateway_ben_smoke.dart](bin/live_gateway_ben_smoke.dart) against the **actual BEN model**. The smoke obtains an anonymous Gateway token and executes one bid, one opening lead and one exposed-dummy play; it logs only success flags, never request URLs, hands or raw BEN output. This is not a complete 13-trick test, seat authorization or hosted HTTPS validation. The existing separate live BEN full-game tests remain the longer regression gate. Initial genuine model CI status: **PENDING**.

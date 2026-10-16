@@ -42,7 +42,7 @@ dart analyze --fatal-infos
 dart test --reporter expanded
 \`\`\`
 
-本切片測試會啟動**真的 Dart HttpServer** 充當 BEN API，並透過真的 Gateway HTTP 請求驗證 POST→BEN GET 的流程、只回傳 action、拒絕 \`deal\`、禁止外部 hostname、錯誤與 Redirect Fail Closed。這是「真 HTTP + Stub BEN」，**不是「真 BEN 神經網路模型」**。CI 未執行前狀態必須是 NOT RUN；真 BEN pinned model 需要獨立執行並附 SHA 記錄。
+本切片測試會啟動**真的 Dart HttpServer** 充當 BEN API，並透過真的 Gateway HTTP 請求驗證 POST→BEN GET 的流程、只回傳 action、拒絕 \`deal\`、禁止外部 hostname、錯誤與 Redirect Fail Closed。這是「真 HTTP + Stub BEN」，**不是「真 BEN 神經網路模型」**。首輪 Gateway CI 已通過 [#38837295805](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837295805)：Dart analyze 無問題、**20/20 本機 HTTP 測試 PASS**。另外新增 [真 BEN Gateway Smoke](../../services/bridge_gateway/bin/live_gateway_ben_smoke.dart) 與獨立 pinned BEN CI（`lorserker/ben@72653ec`、Python 3.12），此處尚未取得真模型 CI 結果，仍為 **PENDING**。
 
 ## 練習與自我檢驗
 

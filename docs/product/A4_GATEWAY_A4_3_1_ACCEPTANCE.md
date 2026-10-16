@@ -16,7 +16,7 @@
 | Protocol | Gateway POST \`bid/lead/play\` projects exactly one \`bid\` or \`card\`, with early Dummy blocked | HTTP integration |
 | Failure | Missing BEN, 302, malformed/oversize/error response, timeout sanitized and fail closed | Negative tests |
 | Compatibility | A4.2 14/14 tests continue passing; Flutter and Core unchanged | Gateway CI |
-| True model | BEN pinned source / actual model makes at least bid+lead+play proposals | **NOT VERIFIED by fake BEN tests; separate pinned CI required** |
+| True model | BEN pinned source / actual model makes at least bid+lead+play proposals | **Pinned real BEN smoke added, awaiting CI execution**; separate from stub tests |
 | Idempotency | Stable game/event request identity and repeat-safe committed action | **OPEN A4.3.2** |
 | Ownership | Server-owned Deal and seat-authorized PlayerView, no trust in caller-supplied hand | **OPEN A4.3.2** |
 
@@ -38,6 +38,6 @@ dart test --reporter expanded
 BEN_INTERNAL_ORIGIN=http://127.0.0.1:8085 dart run bin/serve.dart
 \`\`\`
 
-Tests don't need Python and use actual localhost sockets with a stub BEN. Full real BEN smoke must record the exact upstream SHA, Python, model config, and successful route counts separately. The gateway never runs fake BEN in the default binary; tests use an explicit fake server.
+Tests don't need Python and use actual localhost sockets with a stub BEN. Full real BEN smoke now lives in [bin/live_gateway_ben_smoke.dart](../../services/bridge_gateway/bin/live_gateway_ben_smoke.dart) with a [dedicated CI workflow](../../.github/workflows/ben-gateway-real.yml), pinned `lorserker/ben@72653ec1b5c17116faea229e9b975ea5622aa1f7` and Python 3.12. At the time of this commit **real BEN result is PENDING / NOT VERIFIED**. The script makes independent bid, lead and play proposals through the actual anonymous-credential Gateway. It does not complete 13 tricks; the existing native true BEN regression remains distinct. The gateway never runs fake BEN in the default binary; tests use an explicit fake server.
 
 **Rollback:** Remove \`BenLoopbackBackend\` export and \`BEN_INTERNAL_ORIGIN\` opt-in, keep A4.2 default 503. No change to Core/Flutter or device workflows.
