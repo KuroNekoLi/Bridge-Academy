@@ -8,6 +8,8 @@ import 'app_copy.dart';
 import 'bridge_session.dart';
 import 'widgets/bridge_table_components.dart';
 import 'widgets/bridge_bidding_box.dart';
+import 'widgets/bidding_convention_panel.dart';
+import 'conventions/convention_profile.dart';
 import 'widgets/bridge_table_toolbar.dart';
 import 'widgets/bridge_replay_panel.dart';
 import 'widgets/bridge_history_panel.dart';
@@ -614,10 +616,10 @@ class _BridgeTableState extends State<BridgeTable> {
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(copy.t('biddingScope')),
-            Text(copy.t('biddingProfile')),
-            if (view.auction.isNotEmpty)
-              Text(copy.t(session.biddingExplanationKey),
-                  key: const Key('bidding_explanation')),
+            BiddingConventionPanel(
+              contextData: BidContext.fromView(view),
+              copy: copy,
+            ),
             if (!complete && session.biddingSuggestion != null)
               Text("${copy.t('biddingHint')}: ${session.biddingSuggestion!.code}",
                   key: const Key('bidding_suggestion')),

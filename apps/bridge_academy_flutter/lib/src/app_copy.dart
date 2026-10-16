@@ -107,6 +107,46 @@ class AppCopy {
       '教學約定：1NT 開叫者接受搭檔 2NT 邀請，以 3NT 進局。',
       'Teaching agreement: 1NT opener accepts partner’s 2NT invitation with 3NT.',
     ],
+    'b3ProfileLabel': ['叫牌約定版本', 'Convention profile'],
+    'b3PreviewToggle': ['預覽新約定', 'Preview proposed agreements'],
+    'b3Unreviewed': [
+      '教學草稿・未經專家審核',
+      'Educational draft · not expert-reviewed',
+    ],
+    'b3PreviewDisclaimer': [
+      '預覽僅提供約定語義，不影響示範 Bot 或 BEN 的叫牌，亦不保證牌力。',
+      'Preview only: no changes to the demo bot or BEN, and no guarantee of hand strength.',
+    ],
+    'b3AssumptionNatural': [
+      '僅適用於本教學約定下，雙方沒有競叫的開叫與回應；不代表實際持牌。',
+      'Only for this teaching agreement, an uncontested opening and response; does not prove the actual hand.',
+    ],
+    'b3AssumptionPreview': [
+      '預設雙方已約定採用此慣例、1NT 為開叫而非插叫，且敵方沒有叫牌干擾。',
+      'Assumes partnership agreement, an opening (not overcall) 1NT and no competitive interference.',
+    ],
+    'b3Stayman': [
+      'Stayman 2♣：詢問 1NT 開叫者有無四張高花。僅為預覽約定。',
+      'Stayman 2C: asks whether the 1NT opener holds a four-card major; preview only.',
+    ],
+    'b3JacobyHearts': [
+      'Jacoby Transfer 2♦：請 1NT 開叫者以 2♥ 回應。僅為預覽約定。',
+      'Jacoby Transfer 2D: asks 1NT opener to rebid 2H; preview only.',
+    ],
+    'b3JacobySpades': [
+      'Jacoby Transfer 2♥：請 1NT 開叫者以 2♠ 回應。僅為預覽約定。',
+      'Jacoby Transfer 2H: asks 1NT opener to rebid 2S; preview only.',
+    ],
+    'b3RuleId': ['規則 ID', 'Rule ID'],
+    'b3Source': ['教學依據', 'Teaching reference'],
+    'b3PreviewOnly': [
+      '本約定尚未由專家驗證，也沒有接入 AI 建議或評分。',
+      'This agreement is not expert-verified and is not used for AI suggestions or grading.',
+    ],
+    'b3NoRule': [
+      '無匹配規則（UNKNOWN）；可能存在插叫、加倍或未支援的搭檔約定。',
+      'No matching rule (UNKNOWN); interference, doubles or unsupported agreements may apply.',
+    ],
     'biddingUnknown': [
       '此叫品無法在本版約定下確定解釋，不應推測其他人的真實牌力。',
       'No supported explanation for this call; do not infer hidden hands.',

@@ -2,7 +2,7 @@
 
 **Branch**: `feature/b3-convention-profile`  
 **Base**: `2a382ac2230afc8059b93f3d4271ccb9bab14c74` (master at assignment)  
-**Status**: HANDOFF_READY / IMPLEMENTATION_NOT_STARTED  
+**Status**: IMPLEMENTED / CI PENDING  
 **Standalone source**: 此分支的 `AGENT_TASK.md`。請執行程式、測試與文件，不只交分析報告。
 
 **目標**：在 B3.1 的有限自然 NT 示範上新增可版本化 `ConventionProfile` 與嚴格依公開叫牌上下文運作的解釋引擎，先讓玩家看見可信的、標記審核狀態的約定資訊。**不得**把選擇 Profile 說成 BEN 會自動遵守該體系。
@@ -42,3 +42,11 @@
 - B4 與未來 C3 學習進度共用的最小契約固定為 **`lessonId`、`questionId`、`schemaVersion`、`skillTag`**；保持穩定字串 ID，後續狀態管理可使用該 ID；不提前打造帳號同步。
 - 如果同時有別的 Agent 改同一個 UI/Session 檔，維持 branch 中最小修改，不主動把另一個分支整包合併進來。
 - 最後只回報：branch、最新 SHA、操作步驟、變更檔案、CI 證據、教學連結、已知限制、整合注意事項及一個學習問題。
+
+## Implementation checkpoint (2026-10-16)
+
+Feature module: `apps/bridge_academy_flutter/lib/src/conventions/convention_profile.dart`.
+UI module: `apps/bridge_academy_flutter/lib/src/widgets/bidding_convention_panel.dart`; B3.1 `bridge_app.dart` thin mount.
+Tests: `test/b3_2_convention_profile_test.dart`, `test/b3_2_convention_widget_test.dart`.
+Acceptance and learner note: `docs/product/B3_2_CONVENTION_PROFILE_ACCEPTANCE.md`, `docs/learning/features/M2_F43_CONVENTION_PROFILE.md`.
+Do not merge this branch automatically; review feature-only diff first.

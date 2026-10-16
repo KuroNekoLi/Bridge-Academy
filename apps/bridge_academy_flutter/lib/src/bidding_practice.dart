@@ -1,5 +1,7 @@
 import 'package:bridge_core/bridge_core.dart';
 
+import 'conventions/convention_profile.dart';
+
 /// Small, unreviewed natural-NT teaching profile; not BEN or full SAYC.
 abstract final class BiddingPracticeProfile {
   static const id = 'BA-NATURAL-NT';
@@ -45,31 +47,14 @@ abstract final class BiddingPracticeProfile {
   /// Only interpret agreements with exact uncontested public auction context.
   static String explain(List<AuctionEntry> auction) {
     if (auction.isEmpty) return 'biddingUnknown';
-    var index = auction.length - 1;
-    while (index >= 0 && auction[index].call is Pass) {
-      index--;
-    }
-    if (index < 0) return 'biddingUnknown';
-    final last = auction[index];
-    final before = auction.take(index).toList();
-    if (last.call.code == '1NT' &&
-        before.every((entry) => entry.call is Pass)) {
-      return 'biddingOpening1NT';
-    }
-    final bids = before.where((entry) => entry.call is! Pass).toList();
-    if (bids.length == 1 && bids.first.call.code == '1NT' &&
-        bids.first.seat.partner == last.seat) {
-      if (last.call.code == '2NT') return 'biddingInvite2NT';
-      if (last.call.code == '3NT') return 'biddingGame3NT';
-    }
-    if (bids.length == 2 && bids.first.call.code == '1NT' &&
-        bids.last.call.code == '2NT' &&
-        bids.first.seat == last.seat &&
-        bids.first.seat.partner == bids.last.seat &&
-        last.call.code == '3NT') {
-      return 'biddingAccept3NT';
-    }
-    return 'biddingUnknown';
+    // No dealer metadata in the legacy helper: the first recorded call
+    // always belongs to the dealer in a complete local auction.
+    return ConventionExplanationEngine.resolve(BidContext(
+      dealer: auction.first.seat,
+      viewer: auction.first.seat,
+      vulnerability: Vulnerability.none,
+      auction: auction,
+    )).meaningKey;
   }
 }
 
