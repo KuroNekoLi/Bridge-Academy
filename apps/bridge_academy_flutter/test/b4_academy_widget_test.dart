@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> tapKey(WidgetTester tester, String key) async {
   final target = find.byKey(Key(key));
   await tester.ensureVisible(target);
+  // ensureVisible can start a scroll animation at 2x text; settle before tap.
+  await tester.pumpAndSettle();
   await tester.tap(target);
   await tester.pumpAndSettle();
 }
