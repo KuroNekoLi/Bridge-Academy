@@ -27,7 +27,11 @@ jobs:
       - run: dart test --reporter expanded
         # Skipped real-DD tests are NOT counted as genuine DDS success.
       - run: python -m py_compile tool/dds3_worker.py
+      - name: Dart web stub compile (no native imports)
+        run: dart compile js tool/web_compile_smoke.dart -o /tmp/c1-web-smoke.js
   upstream-native-golden:
+    # Heavy Bazel build is opt-in after the first integration run.
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[dds-golden]')
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     defaults:
