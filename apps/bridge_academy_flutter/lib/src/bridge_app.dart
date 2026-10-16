@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, Tar
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_copy.dart';
+import 'academy/academy_page.dart';
 import 'bridge_session.dart';
 import 'daily_practice_store.dart';
 import 'widgets/daily_practice_panel.dart';
@@ -116,6 +117,18 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
         appBar: AppBar(
           title: Text(copy.t('title'), maxLines: 1, overflow: TextOverflow.ellipsis),
           actions: [
+            Builder(
+              builder: (navigatorContext) => IconButton(
+                key: const Key('academy_open'),
+                tooltip: copy.t('academyOpen'),
+                onPressed: () => Navigator.of(navigatorContext).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => AcademyPage(isEnglish: _isEnglish),
+                  ),
+                ),
+                icon: const Icon(Icons.school_outlined),
+              ),
+            ),
             IconButton(
               key: const Key('toggle_locale'),
               tooltip: copy.t('language'),
