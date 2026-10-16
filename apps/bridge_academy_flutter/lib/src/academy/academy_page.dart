@@ -17,7 +17,7 @@ class AcademyPage extends StatefulWidget {
 }
 
 class _AcademyPageState extends State<AcademyPage> {
-  final AcademyPractice _practice = AcademyPractice();
+  AcademyPractice _practice = AcademyPractice();
   late bool _english;
   AcademyLesson? _lesson;
   int _index = 0;
@@ -87,6 +87,7 @@ class _AcademyPageState extends State<AcademyPage> {
         setState(() {
         _enabled = false;
         _history = LearnerProgress();
+        _practice = AcademyPractice();
         _storageError = false;
         });
       }
@@ -454,9 +455,8 @@ class _AcademyPageState extends State<AcademyPage> {
     'title': AcademyText('橋牌學院｜入門課程', 'Bridge Academy | Beginner lessons'),
     'welcome': AcademyText('選擇你的第一堂課', 'Choose your first lesson'),
     'scope': AcademyText(
-      '原創規則練習，答對才計入本次完成數。目前只保存於此畫面，關閉後不保留進度。',
-      'Original rules quizzes. Only correct answers count. '
-      'Progress resets when this page closes.',
+      '原創規則練習；預設不儲存。只有主動同意後才會加密保留學習紀錄。',
+      'Original rules quizzes. Saving is off by default; opt in to keep encrypted progress.',
     ),
     'startLesson': AcademyText('開始學習', 'Start lesson'),
     'question': AcademyText('第', 'Question'),
@@ -483,8 +483,8 @@ class _AcademyPageState extends State<AcademyPage> {
     'cancel': AcademyText('取消', 'Cancel'),
     'storageError': AcademyText('讀寫加密資料失敗，舊資料未被清除。', 'Encrypted history unavailable; old data was not cleared.'),
     'sessionOnly': AcademyText(
-      '本次進度只存在此畫面；後續 C3 才會負責長期學習紀錄。',
-      'Session-only progress; C3 will handle durable learning records.',
+      '未啟用保存時，關閉畫面後不會保留進度。',
+      'Without opting in, progress resets when this page closes.',
     ),
   };
 }
