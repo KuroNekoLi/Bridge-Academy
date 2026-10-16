@@ -128,7 +128,8 @@ class BridgeSession extends ChangeNotifier {
       contract: game.contract?.label ?? 'PASS OUT',
       score: game.nsScore!, tricks: game.tricks.length,
       isPractice: saved.state.isJustDeclare ||
-          saved.boardMode == BoardMode.training.name,
+          saved.boardMode == BoardMode.training.name ||
+          saved.boardMode == BoardMode.daily.name,
       contractMade: game.contract == null
           ? null
           : game.tricks.where((trick) =>
@@ -163,6 +164,9 @@ class BridgeSession extends ChangeNotifier {
     if (_dailyRecords.any((entry) =>
         entry.challengeId == progress.challengeId &&
         entry.completed > progress.completed)) {
+      _dailySaveFailed = true;
+      _dailyError = 'dailySaveError';
+      notifyListeners();
       throw const FormatException('Stale daily checkpoint');
     }
     final proposed = [
@@ -187,7 +191,7 @@ class BridgeSession extends ChangeNotifier {
   Future<void> retryDailySave() async {
     if (!_dailySaveFailed || busy) return;
     try {
-      await _persist();
+      if (isDailyPractice) await _persist();
       await _writeDailyPractice();
     } catch (_) {
       _dailyError = 'dailySaveError';
@@ -348,6 +352,7 @@ class BridgeSession extends ChangeNotifier {
         board: _board, humanSeat: _humanSeat,
         opponentMode: _mode.name, boardMode: _boardMode.name,
         coordinator: _coordinator!, historyId: id,
+        dailyPractice: _dailyPractice,
       ),
     );
     final proposed = [item, ..._historyBoards].take(

@@ -87,9 +87,9 @@ void main() {
         _day.add(const Duration(days: 1))).challengeId,
         isNot(manifest.challengeId));
     expect(DailyPracticeManifest.forDate(_day).dealAt(0).toPbn(),
-        'N:QT62.T87642..KT2 AJ853.AK.KQ92.74 K94.Q3.JT8.QJ963 7.J95.A76543.A85');
+        'N:Q98532.Q.2.KJ865 4.J93.9765.QT974 AT7.K8654.QJ83.A KJ6.AT72.AKT4.32');
     expect(manifest.dealAt(1).toPbn(),
-        'N:2.J854.J92.AT973 KQJT9.KQ62.QT6.J 853.AT973.AK8.54 A764..7543.KQ862');
+        'N:876.A75.J.KT9654 A3.QJ32.QT432.83 QJ52.9.K876.AQJ7 KT94.KT864.A95.2');
     for (var i = 0; i < 4; i++) {
       final deal = manifest.dealAt(i);
       expect(deal.hands.values.expand((hand) => hand).toSet().length, 52);
