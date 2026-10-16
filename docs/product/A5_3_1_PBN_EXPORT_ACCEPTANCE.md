@@ -1,6 +1,6 @@
 # A5.3.1 — Player-confirmed completed-history PBN export
 
-**Date:** 2026-10-16 · **Status:** IMPLEMENTED / LINT CORRECTIONS PENDING NEW CI · **Local history only**
+**Date:** 2026-10-16 · **Status:** SCOPED FLUTTER ENGINEERING VERIFIED — 97/97 + Web Build + Chrome Demo · **Local history only**
 
 ## What a player can now do
 
@@ -24,11 +24,11 @@ The PBN includes the original 52-card \`[Deal]\`, duplicate board number, actual
 | Completed-only | Missing/deleted/uncommitted game cannot export PBN | Session unit test |
 | PBN data | \`Deal\` roundtrip, board/dealer/vulnerability, Pass Out with four Pass, contract/declarer/Result and NS score | Unit tests |
 | Privacy | Consent required before private 52-card Deal copied to external OS clipboard | Widget assertion |
-| Regression | Existing Flutter tests, Web release build and Chrome Demo checkpoint E2E | **PENDING CI** |
+| Regression | Existing Flutter tests, Web release build and Chrome Demo checkpoint E2E | [Flutter CI #38863038248](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38863038248) **SUCCESS** |
 
 ## First CI / diagnosis
 
-[Flutter CI #38862357907](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357907) failed strict analyzer before tests: 13 style issues (prefer string interpolation, test helper unused). The production and tests were corrected without lowering analyzer policy or disabling privacy checks; latest rerun is pending. [Feature Learning Gate #38862357980](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357980) passed for the initial feature commit.
+[Flutter CI #38862357907](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357907) failed strict analyzer before tests: 13 style issues (prefer string interpolation, test helper unused). The production and tests were corrected without lowering analyzer policy or disabling privacy checks; final [Flutter CI #38863038248](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38863038248) **SUCCESS**, on implementation/lint-correction head [`4ac69e4`](https://github.com/KuroNekoLi/Bridge-Academy/commit/4ac69e491f5a619d55b12a8b8673a9a31139ed97): `flutter analyze --no-pub` **No issues found**, `flutter test --no-pub --reporter expanded` **97/97 PASS**, `flutter build web --release` **PASS**, Chrome Demo/secure checkpoint regressions **PASS**. [Feature Learning Gate #38863038107](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38863038107) PASS. Earlier two CI failures are preserved as lint evidence, not gameplay failures. [Feature Learning Gate #38862357980](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357980) passed for the initial feature commit.
 
 ## Known limitations and next slices
 
