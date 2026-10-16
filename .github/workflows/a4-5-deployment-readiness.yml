@@ -1,0 +1,35 @@
+name: A4.5 Deployment Readiness (static)
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, feature/a4-5-deployment-readiness]
+    paths:
+      - 'scripts/a4_5_preflight.py'
+      - 'scripts/test_a4_5_preflight.py'
+      - 'deploy/a4_5/**'
+      - '.github/workflows/a4-5-deployment-readiness.yml'
+  pull_request:
+    paths:
+      - 'scripts/a4_5_preflight.py'
+      - 'scripts/test_a4_5_preflight.py'
+      - 'deploy/a4_5/**'
+permissions:
+  contents: read
+jobs:
+  static-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static safety unit tests
+        run: python3 -m unittest discover -s scripts -p 'test_a4_5_preflight.py' -v
+      - name: Staging example configuration check
+        run: python3 scripts/a4_5_preflight.py --profile staging --config deploy/a4_5/staging.metadata.example.json
+      - name: Production example MUST be blocked
+        shell: bash
+        run: |
+          if python3 scripts/a4_5_preflight.py --profile production --config deploy/a4_5/staging.metadata.example.json; then
+            echo 'Unsafe: unapproved production configuration passed'
+            exit 1
+          fi
+          echo 'Production has not been approved'
