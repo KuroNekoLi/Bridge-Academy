@@ -2,7 +2,7 @@
 
 **Target branch**: `feature/c3-learning-progress`  
 **Based on**: `master 08a7fb5efcebd8538cfb70624c8975bd9b3eff88`  
-**Status**: HANDOFF_READY / IMPLEMENTATION_NOT_STARTED  
+**Status**: SCOPED VERIFIED / IMPLEMENTED ON FEATURE BRANCH  
 **Provisional lesson ID**: `M2-F46`（在整合時必須再次檢查是否衝突）
 
 ## 目標
@@ -41,3 +41,6 @@
 
 ## 完工交接格式
 請回報 branch 與 HEAD SHA、分段完成情況、實作檔、測試與 CI URL、教學檔、對使用者可見的操作、剩餘風險、與其他分支的衝突風險，最後留一題繁體中文學習題。**測試通過不等於正式產品 Release Gate 通過。**
+
+## 2026-10-16 完成交接與限制
+C3 Domain、v1→v2 相容、預設不保存、分離加密金鑰與儲存、暫停/恢復、儀表板、永久刪除、繁中／英文已於此分支實作。 [Flutter CI 151/151 + Web + Chrome PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919859220)；[Feature Learning Gate PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38920478719)。原本的 CI 觸發條件已還原，master 未變更。限制：無雲端同步、超過 500 筆拒寫、不保證跨多裝置/分頁交易原子性，無 Android/iOS 裝置測試。
