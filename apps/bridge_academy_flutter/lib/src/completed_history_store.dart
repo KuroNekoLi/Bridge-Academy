@@ -31,6 +31,7 @@ final class HistorySummary {
     required this.score,
     required this.tricks,
     required this.isPractice,
+    this.contractMade,
   });
   final String id;
   final DateTime savedAt;
@@ -40,6 +41,8 @@ final class HistorySummary {
   final int score;
   final int tricks;
   final bool isPractice;
+  /// Terminal declarer outcome from Bridge Core; null for Pass Out or old test fixtures.
+  final bool? contractMade;
 }
 
 abstract interface class CompletedHistoryStore {

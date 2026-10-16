@@ -178,3 +178,7 @@ Game Coordinator / API (single-player local coordinator; future server authority
 - DDS is a double-dummy omniscient oracle, not a fair-play bot.
 - In M4, migrate authority to server; do not trust client state/hash/score.
 - POC RSS ~2.98 GiB and latency numbers are workload/config-specific (PIMC off/reduced sample).
+
+## A5.4 bounded history aggregate (2026-10-16)
+
+History Statistics computes from a bounded in-memory list of authorized `HistorySummary` DTOs, **not** from `GameState` or four-hand PBN in the Widget. Declarer outcome is derived once by privileged `BridgeSession._summarize` from canonical terminal 13-trick winners. `Pass Out` is an unknown/not-applicable made outcome, never a failed contract. E/W user perspective flips the signed NS duplicate score. Search/filter only affects what summaries are aggregated. The existing AES-GCM history storage and up-to-12-record bound are unchanged. No MP/IMP, global comparison, ranked competition or server-side account statistics. [Acceptance](product/A5_4_HISTORY_STATISTICS_ACCEPTANCE.md).

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
 import '../completed_history_store.dart';
+import '../history_statistics.dart';
 import 'bridge_replay_panel.dart';
 
 enum HistoryFilter { all, contracts, passOut, practice }
@@ -201,6 +202,10 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
   Widget build(BuildContext context) {
     final copy = widget.copy;
     final matching = _matching;
+    final stats = HistoryStatistics.from(matching);
+    final madeText = stats.madePercent == null
+        ? copy.t('historyStatsUnknown')
+        : '${stats.made}/${stats.knownContractOutcomes} (${stats.madePercent}%)';
     final pages = math.max(1, (matching.length + _pageSize - 1) ~/ _pageSize);
     final page = _page.clamp(0, pages - 1);
     final visible = matching.skip(page * _pageSize).take(_pageSize);
@@ -275,6 +280,53 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
                   });
                 }
               },
+            ),
+            const SizedBox(height: 12),
+            Semantics(
+              container: true,
+              label: copy.t('historyStatsTitle'),
+              child: Column(
+                key: const Key('history_statistics'),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(copy.t('historyStatsTitle'),
+                      style: Theme.of(context).textTheme.titleSmall),
+                  Text(copy.t('historyStatsScope'),
+                      style: Theme.of(context).textTheme.bodySmall),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: [
+                      Chip(
+                        key: const Key('history_stat_boards'),
+                        label: Text('${copy.t('historyStatsBoards')}: ${stats.boards}'),
+                      ),
+                      Chip(
+                        key: const Key('history_stat_contracts'),
+                        label: Text('${copy.t('historyStatsContracts')}: ${stats.contracts}'),
+                      ),
+                      Chip(
+                        key: const Key('history_stat_made'),
+                        label: Text('${copy.t('historyStatsMade')}: $madeText'),
+                      ),
+                      Chip(
+                        key: const Key('history_stat_passout'),
+                        label: Text('${copy.t('historyStatsPassOut')}: ${stats.passOut}'),
+                      ),
+                      Chip(
+                        key: const Key('history_stat_practice'),
+                        label: Text('${copy.t('historyStatsPractice')}: ${stats.practice}'),
+                      ),
+                      Chip(
+                        key: const Key('history_stat_net_score'),
+                        label: Text('${copy.t('historyStatsHumanScore')}: '
+                          '${stats.netHumanScore > 0 ? '+' : ''}${stats.netHumanScore}'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             if (widget.history.isEmpty)
               Padding(

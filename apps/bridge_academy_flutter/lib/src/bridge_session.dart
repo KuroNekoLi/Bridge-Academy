@@ -95,6 +95,11 @@ class BridgeSession extends ChangeNotifier {
       contract: game.contract?.label ?? 'PASS OUT',
       score: game.nsScore!, tricks: game.tricks.length,
       isPractice: saved.boardMode == BoardMode.training.name,
+      contractMade: game.contract == null
+          ? null
+          : game.tricks.where((trick) =>
+                trick.winner.isNS == game.contract!.declarer.isNS).length >=
+              game.contract!.targetTricks,
     );
   }
 
