@@ -49,6 +49,11 @@ void main() {
     await session.startBiddingPractice();
     expect(session.mode, OpponentMode.demo);
     await session.submitCall(const Bid(1, Strain.notrump));
+    // Partner may respond 3NT instead of PASS, so the human must close it.
+    for (var i = 0; i < 4 && !session.biddingPracticeComplete; i++) {
+      expect(session.view!.canAct, true);
+      await session.submitCall(const Pass());
+    }
     expect(session.biddingPracticeComplete, true);
     expect(session.view!.phase, Phase.play);
     expect(session.view!.completedTricks, isEmpty);
@@ -79,6 +84,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bidding_practice_panel')), findsOneWidget);
     await session.submitCall(const Bid(1, Strain.notrump));
+    for (var i = 0; i < 4 && !session.biddingPracticeComplete; i++) {
+      await session.submitCall(const Pass());
+    }
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bidding_finished')), findsOneWidget);
     await tester.tap(find.byKey(const Key('toggle_locale')));
