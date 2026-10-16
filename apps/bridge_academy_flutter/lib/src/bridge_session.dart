@@ -132,7 +132,9 @@ class BridgeSession extends ChangeNotifier {
 
   Future<void> _archiveCompleted() async {
     if (_historyStore == null || _coordinator == null ||
-        !_coordinator!.finished) return;
+        !_coordinator.finished) {
+      return;
+    }
     await loadHistory();
     if (!_historyLoaded) {
       _historyError = 'errorHistoryLoad';
@@ -154,7 +156,7 @@ class BridgeSession extends ChangeNotifier {
       EncryptedCompletedHistoryStore.maxItems,
     ).toList();
     try {
-      await _historyStore!.write(proposed);
+      await _historyStore.write(proposed);
       _historyBoards = proposed;
       _historySummaries = proposed.map(_summarize).toList();
       _historyError = null;

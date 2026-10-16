@@ -1,4 +1,4 @@
-import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
@@ -66,7 +66,7 @@ class BridgeHistoryPanel extends StatelessWidget {
                     '${copy.score(record.score)} · '
                     '${copy.seat(record.humanSeat.letter)} · '
                     '${record.savedAt.toLocal().toString().substring(0, 16)}'
-                    '${record.isPractice ? ' · ' + copy.t('historyPractice') : ''}',
+                    '${record.isPractice ? ' · ${copy.t('historyPractice')}' : ''}',
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => onSelect(record.id),

@@ -59,7 +59,7 @@
 
 | M2-F32 | 真 Chrome→Gateway→BEN 13 墩 E2E PASS；429 配額與開發上限 | [M2-F32 教學](features/M2_F32_REAL_BROWSER_GATEWAY.md) | [Live browser test](../../apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart) · [BEN Chrome CI](../../.github/workflows/ben-flutter-browser.yml) · [驗收](../product/A4_GATEWAY_A4_4_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F33 | A5.1 玩家可用歷史牌局、加密終局封存與跨局複盤 | [M2-F33 教學](features/M2_F33_COMPLETED_HISTORY.md) | [歷史畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [加密 Store](../../apps/bridge_academy_flutter/lib/src/completed_history_store.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/a5_history_test.dart) · [A5.1 驗收](../product/A5_1_HISTORY_ACCEPTANCE.md) | DELIVERED |
+| M2-F33 | A5.1 玩家可用歷史牌局、加密終局封存與跨局複盤（首輪 lint 修正待驗） | [M2-F33 教學](features/M2_F33_COMPLETED_HISTORY.md) | [歷史畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [加密 Store](../../apps/bridge_academy_flutter/lib/src/completed_history_store.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/a5_history_test.dart) · [A5.1 驗收](../product/A5_1_HISTORY_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
