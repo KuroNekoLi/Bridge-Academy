@@ -1,7 +1,9 @@
 import 'package:bridge_core/bridge_core.dart' hide Card;
+import 'package:bridge_dds_adapter/bridge_dds_adapter.dart';
 import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
+import 'dds_review_section.dart';
 import '../review/review_timeline.dart';
 import 'bridge_table_components.dart';
 
@@ -14,6 +16,7 @@ class BridgeCompletedReplayPanel extends StatelessWidget {
     required this.copy,
     required this.onSelectIndex,
     this.reviewId,
+    this.onAnalyzeDds,
   });
 
   final CompletedReplay replay;
@@ -22,6 +25,7 @@ class BridgeCompletedReplayPanel extends StatelessWidget {
   final ValueChanged<int> onSelectIndex;
   /// Only for ephemeral in-page bookmarks; this is not a persistent store ID.
   final String? reviewId;
+  final Future<DoubleDummyTable> Function()? onAnalyzeDds;
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +117,12 @@ class BridgeCompletedReplayPanel extends StatelessWidget {
                   key: Key('review_insight_${note.key}'),
                 ),
               ),
+            const SizedBox(height: 8),
+            DdsReviewSection(
+              key: ValueKey('dds_${reviewId ?? replay.historyFingerprint}'),
+              copy: copy,
+              onAnalyze: onAnalyzeDds,
+            ),
             const SizedBox(height: 8),
             _ReviewJumpAndMarks(
               timeline: timeline,

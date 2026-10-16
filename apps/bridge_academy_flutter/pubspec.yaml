@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   bridge_core:
     path: ../../packages/bridge_core
+  bridge_dds_adapter:
+    path: ../../packages/bridge_dds_adapter
   bridge_ben_adapter:
     path: ../../packages/bridge_ben_adapter
   shared_preferences: ^2.5.4

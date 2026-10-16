@@ -1,4 +1,5 @@
 import 'package:bridge_core/bridge_core.dart' hide Card;
+import 'package:bridge_dds_adapter/bridge_dds_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
@@ -25,10 +26,11 @@ import 'gateway_table.dart';
 
 /// App composition: Flutter sees only PlayerView through BridgeSession.
 class BridgeAcademyApp extends StatefulWidget {
-  const BridgeAcademyApp({super.key, this.session, this.gatewayApi});
+  const BridgeAcademyApp({super.key, this.session, this.gatewayApi, this.ddsAnalyzer});
   final BridgeSession? session;
   /// Test-injected Gateway API; a configured origin is an explicit opt-in.
   final GatewayApi? gatewayApi;
+  final DoubleDummyAnalyzer? ddsAnalyzer;
 
   @override
   State<BridgeAcademyApp> createState() => _BridgeAcademyAppState();
@@ -70,6 +72,7 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
     _session = BridgeSession(
+      ddsAnalyzer: widget.ddsAnalyzer ?? _configuredDds(),
       dailyStore: mobile
           ? EncryptedDailyPracticeStore.native()
           : kIsWeb
@@ -87,6 +90,14 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
               : PreferencesSessionArchiveStore(),
     );
     _session!.restoreSavedGame(); // Also loads daily and history archives.
+  }
+
+  /// Native worker opt-in; browser and unconfigured builds never guess.
+  DoubleDummyAnalyzer _configuredDds() {
+    const worker = String.fromEnvironment('BRIDGE_DDS_WORKER_SCRIPT');
+    return worker.isEmpty || kIsWeb
+        ? const UnsupportedDoubleDummyAnalyzer()
+        : DdsPythonProcessAnalyzer(workerScript: worker);
   }
 
   @override
@@ -357,6 +368,7 @@ class _BridgeTableState extends State<BridgeTable> {
                   return true;
                 },
                 onImportPbn: session.importHistoryPbn,
+                onAnalyzeDds: session.analyzeHistoryDds,
                 onDelete: (id) async {
                   final removed = await session.deleteHistory(id);
                   if (removed && mounted && _selectedHistoryId == id) {
@@ -866,6 +878,7 @@ class _BridgeTableState extends State<BridgeTable> {
       index: index,
       copy: copy,
       onSelectIndex: (value) => setState(() => _replayIndex = value),
+      onAnalyzeDds: session.analyzeCompletedDds,
     );
   }
 
