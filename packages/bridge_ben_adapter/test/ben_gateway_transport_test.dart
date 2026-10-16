@@ -142,7 +142,7 @@ void main() {
               status,
               headers: status == 302
                   ? {'location': 'https://attacker.example/'}
-                  : null,
+                  : const <String, String>{},
             );
           }),
         );

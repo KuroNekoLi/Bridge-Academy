@@ -28,12 +28,12 @@
 
 - **A1 Board Management 已在 Core、BEN Adapter、Flutter Web 及固定 BEN 回歸中達到範圍內驗證**，不能再描述為缺少牌號／局況輪替。
 - **A2 本機中斷恢復／Web 與原生加密持久化已有實作與部分 CI 證據**，但尚未完成實機／瀏覽器部署安全／遠端 BEN exactly-once 的產品驗收。
-- **A3 牌桌 V2 尚未完成**；應以可重用 UI 元件重構，不在 `bridge_app.dart` 繼續堆疊功能。
+- **A3.1–A3.4 已有 Flutter/Web/真 BEN 範圍內工程驗證，A3.5 依使用者指示延期**；完整 UI／實機產品驗收仍未通過。
 - **A4 正式 BEN HTTPS 部署、A5 多牌局歷史、A6 完整玩家旅程以及 A7 發布驗收**仍需要完成。
 
-## 下一個實作任務：Phase A3 Bridge Table UI V2
+## 下一個實作任務：Phase A4 Production BEN Integration
 
-在保留既有 Core、BoardDefinition、PlayerView 與 A2 checkpoint 的前提下，先定義並拆分 BoardHeader、四方座位、PlayerHand、BiddingBox、TrickHistory、TableToolbar 的 UI 資料契約；優先改善手牌、局況、輪到誰與叫牌盒的基本操作。先設計和純 Flutter Widget/Chrome 驗證，不啟動 Android 模擬器或實機測試；等您另外核准再恢復裝置驗收。
+從 A4.1 安全 Gateway Client 開始：只走 HTTPS POST、使用短效 Token Provider，不在網址放私人手牌或在 App 硬編碼服務密鑰。實際 Gateway／匿名 Token 發行／真正 BEN 私有上游部署仍待 A4.2–A4.5；[A4 契約](A4_GATEWAY_CONTRACT_V1.md)。A3.5 及 Android／iOS 裝置 QA 暫停並保留為發布阻擋條件。
 
 **每日挑戰優先級：** P1 可做「固定牌例、無排名」的每日練習體驗；真正跨使用者同牌比較、MP/IMP、排行榜及好友 PK 必須保留到具備伺服器公平性機制的 Phase D/P3。不可把單桌得分冒充 MP 或 IMP。
 
