@@ -263,7 +263,8 @@ class _BridgeTableState extends State<BridgeTable> {
                          session.startBiddingPractice(humanSeat: _selectedSeat);
                        },
                        icon: const Icon(Icons.record_voice_over),
-                       label: Text(copy.t('biddingStart')),
+                       label: Text(copy.t('biddingStart'),
+                           maxLines: 1, overflow: TextOverflow.ellipsis),
                      ),
                     OutlinedButton.icon(
                       key: const Key('history_toggle'),
@@ -560,19 +561,25 @@ class _BridgeTableState extends State<BridgeTable> {
             },
           ),
           Text(copy.t('justDeclareStrain')),
-          DropdownButton<Strain>(
+          SizedBox(
+            width: 178,
+            child: DropdownButton<Strain>(
+            isExpanded: true,
             key: const Key('just_declare_strain'),
             value: _justDeclareStrain,
             // Keep the selector accessible with a visible label.
             items: [for (final v in Strain.values)
               DropdownMenuItem(value: v, child: Text(
                 copy.t('strain${v == Strain.notrump ? 'NT' : v.code}'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ))],
             onChanged: (v) {
               if (v != null) setState(() => _justDeclareStrain = v);
             },
           ),
-          FilledButton.tonalIcon(
+          ),
+          SizedBox(width: 230, child: FilledButton.tonalIcon(
             key: const Key('start_just_declare'),
             onPressed: session.busy || session.saveFailed ||
                 (session.started && !session.finished && !session.biddingPracticeComplete) ||
@@ -587,8 +594,9 @@ class _BridgeTableState extends State<BridgeTable> {
               );
             },
             icon: const Icon(Icons.school),
-            label: Text(copy.t('justDeclareStart')),
-          ),
+            label: Text(copy.t('justDeclareStart'),
+                maxLines: 1, overflow: TextOverflow.ellipsis),
+          )),
         ],
       );
 

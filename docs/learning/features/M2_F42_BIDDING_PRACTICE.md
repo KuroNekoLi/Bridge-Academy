@@ -46,5 +46,8 @@ flutter analyze
 
 **完成標準：** 可以分辨規則合法性、約定語義、AI 策略、隱藏資訊四者的責任與資料來源。尚未實際練習，不能標成 MASTERED。
 
+## 本輪回歸修正
+GitHub Actions 的 Flutter 測試揭露兩個既有功能回歸：Just Declare 完成後的歷史摘要原先僅將固定牌局標為練習（未辨識 Just Declare）；已在 `BridgeSession._summarize` 改以 `state.isJustDeclare` 判定。320px／2.0 倍文字下的 Just Declare 下拉選單及長按鈕改用有界寬度與省略處理，避免英文文字橫向溢位。恢復警告 Widget 測試改為先 scroll into view 再點擊，避免畫面上新增入口影響原有可點擊區。尚待更新 CI 驗證，不宣稱已通過。
+
 ## 下一步
 做 B3.2 ConventionProfile 版本管理、叫牌約定的專家覆核及教學回饋，並補上可驗證的自動化 QA。

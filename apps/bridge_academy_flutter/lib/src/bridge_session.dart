@@ -107,7 +107,8 @@ class BridgeSession extends ChangeNotifier {
       boardNumber: saved.board.number, humanSeat: saved.humanSeat,
       contract: game.contract?.label ?? 'PASS OUT',
       score: game.nsScore!, tricks: game.tricks.length,
-      isPractice: saved.boardMode == BoardMode.training.name,
+      isPractice: saved.state.isJustDeclare ||
+          saved.boardMode == BoardMode.training.name,
       contractMade: game.contract == null
           ? null
           : game.tricks.where((trick) =>

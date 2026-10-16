@@ -121,6 +121,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('older valid backup'), findsOneWidget);
 
+    await tester.ensureVisible(find.byKey(const Key('ack_recovered_checkpoint')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('ack_recovered_checkpoint')));
     await tester.pumpAndSettle();
     expect(session.recoveryNeedsConfirmation, false);
