@@ -44,7 +44,7 @@ jobs:
           sdk: stable
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Fetch exact licensed DDS3 source revision
         run: |
           git clone --filter=blob:none https://github.com/dds-bridge/dds.git /tmp/c1-dds-upstream
