@@ -166,7 +166,7 @@ class _AcademyPageState extends State<AcademyPage> {
 
   void _submit(AcademyQuestion question) {
     if (_feedback != null || _selected == null || _lesson == null ||
-        _persisting || _loading || _storageError) {
+        _persisting || _loading) {
       return;
     }
     final lesson = _lesson!;

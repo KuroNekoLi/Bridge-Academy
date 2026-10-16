@@ -107,7 +107,12 @@ void main() {
     await tester.pumpAndSettle();
     expect((await store.read())!.completedCount, 1);
     final back = find.byKey(const Key('academy_all_lessons'));
+    if (back.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(back, 160,
+        scrollable: find.byType(Scrollable).last, maxScrolls: 20);
+    }
     await tester.ensureVisible(back);
+    await tester.pumpAndSettle();
     await tester.tap(back);
     await tester.pumpAndSettle();
     final show = find.byKey(const Key('c3_show_progress'));
