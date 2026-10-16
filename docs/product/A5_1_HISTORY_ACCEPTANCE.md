@@ -1,6 +1,6 @@
 # A5.1 — Finished Deal History & Replay (player-visible vertical slice)
 
-**Date:** 2026-10-16 · **Status:** IMPLEMENTED / CI PENDING · **Scope:** local training and developer BEN `BridgeSession`. Real Gateway history remains a separate A5.2 milestone.
+**Date:** 2026-10-16 · **Status:** A5.1 SCOPED ENGINEERING VERIFIED (Flutter 91/91 + Web release + Chrome Demo) · **Scope:** local training and developer BEN `BridgeSession`. Real Gateway history remains a separate A5.2 milestone.
 
 ## What a player can do now
 
@@ -31,7 +31,7 @@ Each in-progress checkpoint stores an optional stable per-board `historyId`, so 
 | Toggle locale | Same history and replay rendered in English |
 | Finish an unfinished board | Never archive partial transcript |
 
-Test scope: Dart/Flutter Widget + in-process encrypted-record injection. **Do not label Flutter CI PASS before executed evidence exists.** No real Android emulator, physical devices or public hosted Gateway will run in this stage.
+**Executed evidence:** [Flutter M2 CI #38852504246](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38852504246) **SUCCESS** on source SHA `0a64fe3a8f84287899f941edc946845f417ebc54`: `flutter analyze --no-pub` No issues found, `flutter test --no-pub --reporter expanded` **91/91 PASS** (prior 86, +5 A5.1-focused cases), `flutter build web --no-pub --release` PASS and real Chrome Demo/secure-checkpoint E2E PASS. [Feature Learning Gate #38852504261](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38852504261) SUCCESS. These are scoped local Widget/injected encrypted store tests, not a true browser reload of completed-history storage on a hosted origin, Android/iOS device evidence or server-owned Gateway history. The separate true BEN Chrome regression has its own CI result.
 
 ## Next: A5.2 and A5.3
 
