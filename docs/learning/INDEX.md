@@ -45,7 +45,7 @@
 
 | M2-F25 | A4.1 HTTPS POST Gateway Client、短效 Token 注入、安全 API 契約（Dart 23/23 Mock Adapter CI PASS） | [M2-F25 教學](features/M2_F25_BEN_GATEWAY.md) | [Gateway](../../packages/bridge_ben_adapter/lib/src/ben_gateway_transport.dart) · [Tests](../../packages/bridge_ben_adapter/test/ben_gateway_transport_test.dart) · [Contract](../product/A4_GATEWAY_CONTRACT_V1.md) | DELIVERED |
 
-| M2-F26 | A4.2 匿名 Bearer Session、Rate Limiting、HTTP API 信任邊界（首次測試 lint 修正待驗） | [M2-F26 教學](features/M2_F26_ANONYMOUS_GATEWAY.md) | [Loopback Gateway](../../services/bridge_gateway/lib/src/gateway_service.dart) · [HTTP tests](../../services/bridge_gateway/test/gateway_service_test.dart) · [A4.2 acceptance](../product/A4_GATEWAY_A4_2_ACCEPTANCE.md) | DELIVERED |
+| M2-F26 | A4.2 匿名 Bearer Session、Rate Limiting、HTTP API 信任邊界（localhost HTTP 測試修正待驗） | [M2-F26 教學](features/M2_F26_ANONYMOUS_GATEWAY.md) | [Loopback Gateway](../../services/bridge_gateway/lib/src/gateway_service.dart) · [HTTP tests](../../services/bridge_gateway/test/gateway_service_test.dart) · [A4.2 acceptance](../product/A4_GATEWAY_A4_2_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

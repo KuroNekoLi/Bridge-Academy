@@ -3,7 +3,7 @@
 - Feature ID：M2-F26
 - Milestone：A4.2 Local Gateway
 - 類型：Dart Backend／安全 API／無狀態客戶端
-- 工程狀態：IMPLEMENTED（首輪 CI #38835869874 analyze 因測試建構子 unused_element_parameter 警告失敗；已修正，待重新驗證）
+- 工程狀態：IMPLEMENTED（第一輪 CI lint 修正後，第二輪 #38836007368 localhost 測試的 HttpClient Headers 設定順序錯誤；已修復，待再次 CI）
 - 學習狀態：DELIVERED（非 PRACTICED／MASTERED）
 - 原始碼：`services/bridge_gateway/lib/src/gateway_service.dart`
 - 驗收與測試：`services/bridge_gateway/test/gateway_service_test.dart`、`docs/product/A4_GATEWAY_A4_2_ACCEPTANCE.md`
@@ -49,7 +49,7 @@ dart test --reporter expanded
 dart run bin/serve.dart
 ```
 
-新增 localhost HTTP 整合測試含：兩次 token 不同、過期／偽造 token、匿名發行與決策請求速率限制、偽造 XFF、未知欄位 `deal`、未公開 Dummy 提早輸入、CORS、8KiB body cap、並發請求、BEN 未連接 503、上游帶敏感字串的錯誤遮蔽。**目前使用 FakeBackend，非真 BEN，也沒有正式公開服務。首次 [CI #38835869874](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38835869874) analyze FAIL（僅測試替身兩項 unused optional parameter），已修正；HTTP 測試仍待新 CI 驗證**。裝置 UI/實機測試不在本階段。
+新增 localhost HTTP 整合測試含：兩次 token 不同、過期／偽造 token、匿名發行與決策請求速率限制、偽造 XFF、未知欄位 `deal`、未公開 Dummy 提早輸入、CORS、8KiB body cap、並發請求、BEN 未連接 503、上游帶敏感字串的錯誤遮蔽。**目前使用 FakeBackend，非真 BEN，也沒有正式公開服務。[CI #38835869874](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38835869874) 首次 analyze FAIL（測試建構子 lint）已修正；[CI #38836007368](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836007368) analyze PASS、HTTP Test FAIL（測試 `req.write` 後才設定 Authorization Header，HTTP Headers 已鎖定；修正 Headers-first）。**下次 CI 未完成前不得宣稱 PASS****。裝置 UI/實機測試不在本階段。
 
 ## 練習與自我檢驗
 

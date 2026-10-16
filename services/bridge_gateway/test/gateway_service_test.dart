@@ -50,13 +50,16 @@ Future<_ApiResponse> _request(
     req.followRedirects = false;
     if (json != null) {
       req.headers.contentType = ContentType.json;
-      req.write(jsonEncode(json));
     }
     if (token != null) {
       req.headers.set('authorization', 'Bearer $token');
     }
     for (final entry in headers.entries) {
       req.headers.set(entry.key, entry.value);
+    }
+    // HttpClientRequest commits headers on the first body write.
+    if (json != null) {
+      req.write(jsonEncode(json));
     }
     final res = await req.close();
     final raw = await utf8.decoder.bind(res).join();
