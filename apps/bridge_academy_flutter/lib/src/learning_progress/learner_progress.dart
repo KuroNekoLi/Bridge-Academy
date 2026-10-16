@@ -39,6 +39,7 @@ final class LearnerProgress {
     }
   }
   static const maxAttempts = 500;
+  bool savingEnabled = true;
   final List<LearnerAttempt> _items = [];
   final Set<String> _ids = {};
   final Set<String> _completed = {};
@@ -68,14 +69,24 @@ final class LearnerProgress {
     if (item.correct) _completed.add(item.answer.questionId);
     return true;
   }
-  Map<String, dynamic> toJson() =>
-      {'v': 1, 'items': _items.map((a) => a.toJson()).toList()};
+  Map<String, dynamic> toJson() => {
+    'v': 2,
+    'savingEnabled': savingEnabled,
+    'items': _items.map((a) => a.toJson()).toList(),
+  };
   factory LearnerProgress.fromJson(Object? raw) {
-    if (raw is! Map<String, dynamic> || raw.length != 2 ||
-        raw['v'] != 1 || raw['items'] is! List ||
+    if (raw is! Map<String, dynamic> || raw['items'] is! List ||
         (raw['items'] as List).length > maxAttempts) {
-      throw const FormatException('Invalid learner history version');
+      throw const FormatException('Invalid learner history');
     }
-    return LearnerProgress((raw['items'] as List).map(LearnerAttempt.fromJson));
+    final version = raw['v'];
+    if ((version != 1 && version != 2) ||
+        (version == 1 && raw.length != 2) ||
+        (version == 2 && (raw.length != 3 ||
+            raw['savingEnabled'] is! bool))) {
+      throw const FormatException('Unknown learner history version');
+    }
+    return LearnerProgress((raw['items'] as List).map(LearnerAttempt.fromJson))
+      ..savingEnabled = version == 1 || raw['savingEnabled'] as bool;
   }
 }

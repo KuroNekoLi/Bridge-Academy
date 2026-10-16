@@ -26,6 +26,7 @@ class _AcademyPageState extends State<AcademyPage> {
   late final LearnerStore _store;
   LearnerProgress _history = LearnerProgress();
   bool _enabled = false;
+  bool _savingEnabled = false;
   bool _persisting = false;
   bool _storageError = false;
   bool _loading = true;
@@ -48,6 +49,7 @@ class _AcademyPageState extends State<AcademyPage> {
       if (!mounted) return;
       setState(() {
         _enabled = value != null;
+        _savingEnabled = value?.savingEnabled ?? false;
         _history = value ?? LearnerProgress();
         _loading = false;
       });
@@ -60,7 +62,7 @@ class _AcademyPageState extends State<AcademyPage> {
     setState(() => _persisting = true);
     try {
       await _store.write(_history);
-      if (mounted) setState(() => _enabled = true);
+      if (mounted) setState(() { _enabled = true; _savingEnabled = true; });
     } catch (_) {
       if (mounted) setState(() { _storageError = true; _loading = false; });
     } finally {
@@ -86,6 +88,7 @@ class _AcademyPageState extends State<AcademyPage> {
       if (mounted) {
         setState(() {
         _enabled = false;
+        _savingEnabled = false;
         _history = LearnerProgress();
         _practice = AcademyPractice();
         _storageError = false;
@@ -97,8 +100,28 @@ class _AcademyPageState extends State<AcademyPage> {
       if (mounted) setState(() => _persisting = false);
     }
   }
-  Future<void> _record(AcademyAnswer answer, AcademyFeedback result) async {
+  Future<void> _setSavingEnabled(bool desired) async {
     if (!_enabled || _persisting || _storageError) return;
+    final updated = LearnerProgress(_history.attempts)
+      ..savingEnabled = desired;
+    setState(() => _persisting = true);
+    try {
+      await _store.write(updated);
+      if (mounted) {
+        setState(() {
+          _history = updated;
+          _savingEnabled = desired;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _storageError = true);
+    } finally {
+      if (mounted) setState(() => _persisting = false);
+    }
+  }
+
+  Future<void> _record(AcademyAnswer answer, AcademyFeedback result) async {
+    if (!_enabled || !_savingEnabled || _persisting || _storageError) return;
     late final LearnerProgress updated;
     try {
       updated = LearnerProgress(_history.attempts);
@@ -146,6 +169,11 @@ class _AcademyPageState extends State<AcademyPage> {
           ListTile(title: Text(a.answer.questionId),
             subtitle: Text(a.timestampUtc.toIso8601String()),
             trailing: Icon(a.correct ? Icons.check_circle : Icons.cancel)),
+        OutlinedButton(
+          key: const Key('c3_toggle_saving'),
+          onPressed: _persisting ? null
+            : () => _setSavingEnabled(!_savingEnabled),
+          child: Text(_t(_savingEnabled ? 'pauseHistory' : 'resumeHistory'))),
         OutlinedButton(
           key: const Key('c3_delete'),
           onPressed: _persisting ? null : _delete,
@@ -478,6 +506,8 @@ class _AcademyPageState extends State<AcademyPage> {
     'accuracy': AcademyText('答題正確率', 'Accuracy'),
     'noData': AcademyText('尚無資料', 'No data'),
     'recentAttempts': AcademyText('最近練習', 'Recent attempts'),
+    'pauseHistory': AcademyText('暫停保存（保留現有紀錄）', 'Pause saving (keep history)'),
+    'resumeHistory': AcademyText('繼續保存答題紀錄', 'Resume saving attempts'),
     'deleteHistory': AcademyText('清除所有學習紀錄', 'Delete all learning history'),
     'deleteWarning': AcademyText('所有本機紀錄將刪除且停止保存，無法復原。', 'All local history will be deleted and saving disabled. This cannot be undone.'),
     'cancel': AcademyText('取消', 'Cancel'),

@@ -57,6 +57,12 @@ void main() {
     expect(ledger.correct, 2);
     expect(ledger.skill(sample.skillTag).total, 3);
     expect(ledger.accuracy, closeTo(2 / 3, 0.00001));
+    ledger.savingEnabled = false;
+    final restored = LearnerProgress.fromJson(jsonDecode(jsonEncode(ledger.toJson())));
+    expect(restored.savingEnabled, false);
+    expect(LearnerProgress.fromJson({
+      'v': 1, 'items': [attempt('legacy', true).toJson()],
+    }).savingEnabled, true);
     expect(LearnerProgress.fromJson(jsonDecode(jsonEncode(ledger.toJson()))).toJson(),
       ledger.toJson());
   });
@@ -121,6 +127,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('c3_dashboard')), findsOneWidget);
     expect(find.textContaining('1 / 9'), findsOneWidget);
+    final toggle = find.byKey(const Key('c3_toggle_saving'));
+    await tester.ensureVisible(toggle);
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    expect((await store.read())!.savingEnabled, false);
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    expect((await store.read())!.savingEnabled, true);
     final remove = find.byKey(const Key('c3_delete'));
     await tester.ensureVisible(remove);
     await tester.tap(remove);
