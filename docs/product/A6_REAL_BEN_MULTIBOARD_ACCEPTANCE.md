@@ -2,7 +2,7 @@
 
 **Date**: 2026-10-16  
 **Branch**: `test/a6-real-ben-multiboard`  
-**Status**: IMPLEMENTED / REAL BEN CI RUNNING — **非正式產品 Release Gate**。
+**Status**: **SCOPED VERIFIED — 4/4 genuine BEN complete, 34/34 Gateway tests PASS**。仍**非正式產品 Release Gate**。
 
 ## 設計範圍與真實架構
 本任務是測試／後端驗收，不新增玩家 UI。每副牌均由 *伺服器* 指定完整 `Deal.fromPbn` 與 `BoardDefinition.forNumber`；瀏覽器或 HTTP 玩家不能自行設定 Deal／莊家／局況。專有 `PlayerView` 只含 North 的 ownCards、公開資訊與規則允許後顯示的 dummyCards。Bridge Core 依原本 reducer 決定合法性及終局分數。
@@ -44,9 +44,20 @@ cd services/bridge_gateway
 dart run bin/live_gateway_ben_multiboard.dart
 ```
 
+## 最新可重現執行的驗收證據
+
+[GitHub Actions：A6 四副真 BEN（程式碼 SHA `79a2a40d14ed18823b061dc07de286ba3cc17fee`）](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919463927) **SUCCESS**：
+
+- `dart analyze lib bin/live_gateway_ben_multiboard.dart test/a6_board_fixtures_test.dart`：**No issues found**
+- `dart test`（Gateway 六個 test files）：**34 tests passed**
+- `dart run bin/live_gateway_ben_multiboard.dart`：**4/4 固定牌例、4/4 contracted、每副 13 墩 / 52 張、計分交叉檢查 PASS**。使用**真正 pinned BEN**，不是 mock。
+- 具體記錄：`A6-01-NT`：NT，N/none，NS -250，30 model calls，P50/P95 85/365ms，峰值 RSS 273,252,352 bytes；`A6-02-S`：S，E/ns，NS -1700，32 calls，89/337ms，RSS 268,890,112；`A6-03-H`：**實際合約 S（真叫牌有變化）**，S/ew，NS -100，58 calls，58/454ms，RSS 268,533,760；`A6-04-C`：C，W/both，NS -2600，30 calls，183/568ms，RSS 270,381,056。各副 `modelFailuresBySafeCode: {}`，超時／例外為 **0 次（本輪正常牌局）**。
+- 四副 *模型對局執行* wall elapsed **24,456ms**，不包括 BEN 啟動與 pip/apt 安裝、runner 準備；這次測量不是 benchmark 分布，也不能當成正式服務 p95/SLA。
+- 既有單副真 BEN Chrome E2E 仍由 [master BEN browser CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38913817917) 覆蓋；本次 A6 新 runner 為 **Gateway 層四副完整對局**，尚**未做四副 Flutter Chrome UI**。
+
 ## 證據與未完成
-- [A6 GitHub Actions 初始執行](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38918776609)：**RUNNING / 不可宣稱 PASS，需檢查最後 commit 的新執行**。
-- `A6.1` 固定資料與 server metadata、`A6.2` 四副真模型 Runner、`A6.4` 機器可讀指標、`A6.5` 獨立 CI：已提交程式碼，驗證待結果。
+- [A6 最終程式碼 GitHub Actions](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919463927)：**PASS**，見以上逐項證據。
+- `A6.1` 固定資料與 server metadata、`A6.2` 四副真模型 Runner、`A6.4` 機器可讀指標、`A6.5` 獨立 CI：**SCOPED VERIFIED**。
 - `A6.3` 負面測試重用現有 HTTP／Encrypted Restart／SIGKILL 回歸；多服務同時高負載與生產級恢復不包含本輪。
 - `A4.5` HTTPS 正式部署、安全審查、模型授權與真實成本未完成；Android/iOS 實機／模擬器按要求暫停。
-- 完整牌局 4/4 PASS 前不可將 A6 標為 VERIFIED。
+- 真 BEN **4/4 PASS** 已達 A6 這批驗收條件；但沒有驗證生產服務可靠性、真正跨使用者競賽公平、Android／iOS 或完整 BBO 規格。

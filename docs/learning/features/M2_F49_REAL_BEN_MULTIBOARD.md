@@ -3,10 +3,10 @@
 - Feature ID：M2-F49
 - Milestone：M2／A6
 - 類型：後端／AI 整合／測試工程
-- 工程狀態：IMPLEMENTED（真 BEN CI 待確認）
+- 工程狀態：**SCOPED VERIFIED（真 BEN 四副 4/4、Gateway 34/34）**
 - 學習狀態：DELIVERED（尚未代表已熟練）
 - 原始碼：`services/bridge_gateway/lib/src/a6_board_fixtures.dart`、`services/bridge_gateway/lib/src/authoritative_game.dart`、`services/bridge_gateway/lib/src/gateway_service.dart`、`services/bridge_gateway/bin/live_gateway_ben_multiboard.dart`
-- 驗收與測試：`services/bridge_gateway/test/a6_board_fixtures_test.dart`、`.github/workflows/ben-a6-multiboard.yml`、`docs/product/A6_REAL_BEN_MULTIBOARD_ACCEPTANCE.md`；[CI（狀態待檢查）](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38918776609)
+- 驗收與測試：`services/bridge_gateway/test/a6_board_fixtures_test.dart`、`.github/workflows/ben-a6-multiboard.yml`、`docs/product/A6_REAL_BEN_MULTIBOARD_ACCEPTANCE.md`；[A6 CI 成功證據](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919463927)
 
 ## 功能目的與實際情境
 先前單副真 BEN Chrome／Gateway 完整對局成功，仍無法證明不同 Dealer、Vulnerability 及手牌組合可反覆完成整副牌。A6 用四組「伺服器自有固定測試牌」驅動真 BEN，並讓 Core 檢查 52 張與 Duplicate 分數。這是 QA 基礎能力，**不等於玩家新增功能或上線許可**。
@@ -37,7 +37,7 @@ final gateway = BridgeGatewayService(
 
 ## 驗證與實際證據
 `cd services/bridge_gateway && dart test test/a6_board_fixtures_test.dart` 驗證 PBN、四手／座位、不同 BoardDefinition；`dart run bin/live_gateway_ben_multiboard.dart` 僅在真 BEN loopback 已啟動時才真正測試模型。
-**尚未取得同一最新 SHA 的工作流程成功結果，標記 RUNNING／NOT VERIFIED，不能假稱四副牌已成功。** 證據見 [A6 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38918776609)。
+**已在 GitHub Actions 真正執行、驗證完成**：程式碼 SHA `79a2a40d`，Dart analyze 無問題、Gateway 全套 **34/34 tests PASS**、pinned 真 BEN **4/4 完整牌局、各 13 墩 52 張、score 一致**。包括各副 model p50/p95/max、失敗計數與 RSS 的 sanitized JSON。見 [A6 CI 成功](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919463927)。Android／iOS E2E、正式部署、四副 Flutter Chrome UI 尚未執行，不能稱為正式上線。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 為什麼讓 HTTP 客戶端自己上傳一份 `Deal` 供 AI 測試，即使 Core 可以驗證跟牌規則，也不符合 Bridge Academy 的公平性和隱私設計？
