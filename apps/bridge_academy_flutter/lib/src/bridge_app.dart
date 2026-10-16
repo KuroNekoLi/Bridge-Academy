@@ -783,9 +783,7 @@ class _BridgeTableState extends State<BridgeTable> {
         spacing: 12,
         runSpacing: 8,
         children: [
-          if (session.dailyPractice != null &&
-                                   !session.dailyPractice!.isComplete) ||
-                              (session.fourBoardPractice != null &&
+          if (session.fourBoardPractice != null &&
               !session.fourBoardPractice!.isComplete)
             FilledButton.icon(
               key: const Key('next_practice_board'),
