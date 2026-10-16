@@ -27,6 +27,12 @@ The optional `BenLoopbackBackend` implements `GatewayDecisionBackend`: it maps G
 
 **Important trust blocker:** Anonymous Gateway Session currently carries quota only; requester-supplied `hand/seat` is not verified against a server-owned Deal. No public deployment until server-authoritative game/seat context, stable event-version and request dedup. Localhost HTTP tests are complemented by [genuine pinned BEN bid/lead/play smoke PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285) and [20/20 Gateway HTTP PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641317). Neither provides a 13-trick Gateway game or seat-bound authorization. A3.5/device hold unchanged.
 
+## A4.3.2: session-owned authoritative training game (2026-10-16)
+
+The anonymous capability now binds to **one server-random Bridge Core Deal**, with `SinglePlayerCoordinator` owning all four hands and keeping the human seat North. Only `humanView.toJson()` is returned. New authenticated POST routes `/v1/games/view`, `/v1/games/action`, `/v1/games/advance` derive every actor/hand internally; BenBotPolicy reads the acting robot's own `PlayerView`, not the caller's claimed `hand`. Core validates move legality and `expected_version`; the Session remembers bounded same-ID responses to prevent repeat human clicks (in-memory only).
+
+**Security limitations:** The old caller-supplied `/v1/ai/decision` still exists for loopback/development and must be disabled for a public deploy. Memory-only sessions/idempotency, long-running partial Bot commits, anonymous user ownership, durable transaction log and seat authority for multiplayer remain unaddressed. No production promotion until these are resolved. [Acceptance](product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md); owner-deferred A3.5 and all Android/iOS UI device QA remain open.
+
 ## Components
 ~~~text
 Flutter Android / iOS / Web (render, input, localization)

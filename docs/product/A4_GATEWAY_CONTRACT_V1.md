@@ -55,3 +55,7 @@ dart test --reporter expanded
 **A4.3:** A4.3.1 optional literal-loopback BEN Worker behind Gateway POST is [implemented for local development](A4_GATEWAY_A4_3_1_ACCEPTANCE.md), with isolated HTTP stub BEN tests. A4.3.2 server-owned game/seat authority and event-version dedup, A4.3.3 true pinned BEN model CI and weights/license audit remain OPEN.  
 **A4.4:** App uses production Gateway when configured securely; localized errors and recovery.  
 **A4.5:** Staging/full product acceptance, latency/resources/cost/privacy checks and four seats/16 boards. A3.5 remains deferred and release-blocking.
+
+## A4.3.2: server-owned game routes (not yet deployed)
+
+The legacy `/v1/ai/decision` JSON input is explicitly **development-only**: it trusts caller-submitted `hand`. New scoped training APIs use `/v1/games/view`, `/v1/games/action`, `/v1/games/advance` and **never accept raw hand, deal or seat values**. They use a server-generated Bridge Core Deal bound to the anonymous session, return only human PlayerView, and enforce optimistic version + bounded in-memory request-id dedup. [A4.3.2 acceptance](A4_GATEWAY_A4_3_2_ACCEPTANCE.md). Durable storage and disabling raw interface for public deployments remain explicit blocking tasks.

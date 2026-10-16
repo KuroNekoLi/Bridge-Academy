@@ -4,6 +4,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:bridge_core/bridge_core.dart';
+
+import 'authoritative_game.dart';
 
 /// An A4.3 BEN worker will implement this interface. Never return an action
 /// before the real upstream validates the model response.
@@ -57,8 +60,9 @@ class GatewayConfig {
 }
 
 class _Session {
-  _Session(this.expiresAt);
+  _Session(this.expiresAt, this.game);
   final DateTime expiresAt;
+  final AuthoritativeGame game;
   DateTime? windowStarted;
   int used = 0;
   bool inFlight = false;
@@ -77,7 +81,9 @@ class BridgeGatewayService {
     GatewayDecisionBackend? backend,
     GatewayConfig config = const GatewayConfig(),
     DateTime Function()? clock,
+    Deal Function()? dealFactory,
   })  : _backend = backend ?? const UnavailableDecisionBackend(),
+        _dealFactory = dealFactory ?? Deal.shuffled,
         _config = config,
         _clock = clock ?? DateTime.now {
     if (config.sessionTtl <= Duration.zero ||
@@ -93,6 +99,7 @@ class BridgeGatewayService {
   final GatewayDecisionBackend _backend;
   final GatewayConfig _config;
   final DateTime Function() _clock;
+  final Deal Function() _dealFactory;
   final Random _random = Random.secure();
   final Map<String, _Session> _sessions = {};
   final Map<String, _Window> _bootstrapByIp = {};
@@ -144,8 +151,13 @@ class BridgeGatewayService {
         response.headers.set('Access-Control-Allow-Origin', origin);
         response.headers.set('Vary', 'Origin');
       }
+      final isGame = const {
+        '/v1/games/view',
+        '/v1/games/action',
+        '/v1/games/advance',
+      }.contains(request.uri.path);
       final isApi = request.uri.path == '/v1/sessions/anonymous' ||
-          request.uri.path == '/v1/ai/decision';
+          request.uri.path == '/v1/ai/decision' || isGame;
       if (request.method == 'OPTIONS' && isApi && origin != null) {
         response.statusCode = HttpStatus.noContent;
         response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -168,6 +180,8 @@ class BridgeGatewayService {
       final body = await _readJson(request);
       if (request.uri.path == '/v1/sessions/anonymous') {
         _issueSession(request, body);
+      } else if (isGame) {
+        await _requestGame(request, body);
       } else {
         await _requestDecision(request, body);
       }
@@ -231,7 +245,8 @@ class BridgeGatewayService {
 
     final token = _randomToken();
     // Keep only the SHA-256 token hash in process memory.
-    _sessions[_digest(token)] = _Session(now.add(_config.sessionTtl));
+    _sessions[_digest(token)] = _Session(now.add(_config.sessionTtl),
+        AuthoritativeGame(deal: _dealFactory(), backend: _backend));
     _reply(request.response, 201, {
       'version': 1,
       'access_token': token,
@@ -239,6 +254,52 @@ class BridgeGatewayService {
       'expires_in': _config.sessionTtl.inSeconds,
       'scope': 'ai:decision'
     });
+  }
+
+  /// Server-owned game routes: clients send NO hand, seat, Deal or PBN.
+  /// The 15-minute anonymous capability grants only access to its own game.
+  Future<void> _requestGame(
+    HttpRequest request,
+    Map<String, dynamic> body,
+  ) async {
+    final auth = request.headers.value('authorization');
+    if (auth == null ||
+        !auth.startsWith('Bearer ') ||
+        auth.substring(7).isEmpty ||
+        auth.contains(RegExp(r'[\r\n,]'))) {
+      throw const GatewayFailure(401, 'unauthorized');
+    }
+    final now = _clock().toUtc();
+    final session = _sessions[_digest(auth.substring(7))];
+    if (session == null || !session.expiresAt.isAfter(now)) {
+      throw const GatewayFailure(401, 'unauthorized');
+    }
+    if (session.windowStarted == null ||
+        now.difference(session.windowStarted!) >= _config.window) {
+      session.windowStarted = now;
+      session.used = 0;
+    }
+    if (++session.used > _config.decisionLimit || session.inFlight) {
+      throw const GatewayFailure(429, 'rate_limited');
+    }
+    if (request.uri.path == '/v1/games/view') {
+      if (body.length != 1 || body['version'] != 1) {
+        throw const GatewayFailure(400, 'invalid_request');
+      }
+      _reply(request.response, 200, session.game.view());
+      return;
+    }
+    session.inFlight = true;
+    try {
+      final reply = await session.game.execute(body,
+          advanceBots: request.uri.path == '/v1/games/advance')
+          .timeout(_config.decisionTimeout);
+      _reply(request.response, 200, reply);
+    } on TimeoutException {
+      throw const GatewayFailure(504, 'upstream_timeout');
+    } finally {
+      session.inFlight = false;
+    }
   }
 
   Future<void> _requestDecision(
