@@ -488,7 +488,9 @@ class BridgeSession extends ChangeNotifier {
     int? boardNumber,
   }) async {
     if (busy || _saveFailed ||
-        (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) return;
+        (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
+      return;
+    }
     _fourBoardPractice = null;
     final board = BoardDefinition.forNumber(boardNumber ?? _board.number);
     final deal = boardMode == BoardMode.training
