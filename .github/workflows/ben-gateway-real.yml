@@ -1,4 +1,4 @@
-name: BEN Gateway Real Model Smoke (A4.3.1)
+name: BEN Gateway Real Model Smoke + Full Game (A4.3)
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - "services/bridge_gateway/lib/src/ben_loopback_backend.dart"
       - "services/bridge_gateway/bin/live_gateway_ben_smoke.dart"
+      - "services/bridge_gateway/bin/live_gateway_ben_full_game.dart"
       - ".github/workflows/ben-gateway-real.yml"
   workflow_dispatch:
 
@@ -14,9 +15,9 @@ permissions:
 
 jobs:
   gateway-ben:
-    name: Pinned BEN -> Private Gateway Loopback (Bid/Lead/Play)
+    name: Pinned BEN -> Gateway Smoke + Full 52 Cards
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -95,6 +96,11 @@ jobs:
         run: |
           dart pub get
           dart run bin/live_gateway_ben_smoke.dart
+      - name: Verify genuine BEN full 52-card / 13-trick authoritative Gateway game
+        working-directory: services/bridge_gateway
+        timeout-minutes: 40
+        run: |
+          dart run bin/live_gateway_ben_full_game.dart
       - name: Redacted diagnostics only
         if: failure()
         run: |

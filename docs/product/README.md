@@ -49,3 +49,8 @@
 - 效能數值屬**提議驗收門檻**而非已測試成果。
 
 **目前本產品文件屬需求與交付規劃；文件修訂本身不代表任何新的程式功能已通過測試。**
+
+
+### A4.3.3 — Complete real BEN through authority-owned Gateway
+
+[Full-game acceptance](A4_GATEWAY_A4_3_3_ACCEPTANCE.md) now includes fixed pinned real BEN `/v1/games/view/action/advance` integration with terminal 52-card, 13-trick, score and event-version assertions. Implementation and dedicated long-running true-model CI are in progress; this does NOT authorize production public deployment, restore A3.5/device QA or waive licensing/hosting/privacy gates.

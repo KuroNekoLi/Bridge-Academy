@@ -53,6 +53,8 @@
 
 | M2-F29 | A4.3.2b AES-GCM 加密 Checkpoint、實際 Dart SIGKILL 重啟（32/32 PASS）、Bot 逐步恢復與去重 | [M2-F29 教學](features/M2_F29_ENCRYPTED_GATEWAY_RESTART.md) | [Encrypted store](../../services/bridge_gateway/lib/src/encrypted_session_store.dart) · [Tests](../../services/bridge_gateway/test/encrypted_restart_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md) | DELIVERED |
 
+| M2-F30 | A4.3.3 真 BEN Gateway 完整 52 張牌／13 墩／計分與事件版本驗收 | [M2-F30 教學](features/M2_F30_REAL_BEN_GATEWAY_FULL_GAME.md) | [Full-game runner](../../services/bridge_gateway/bin/live_gateway_ben_full_game.dart) · [真 BEN CI](../../.github/workflows/ben-gateway-real.yml) · [驗收](../product/A4_GATEWAY_A4_3_3_ACCEPTANCE.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。

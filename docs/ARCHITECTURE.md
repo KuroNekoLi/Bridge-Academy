@@ -39,6 +39,10 @@ The anonymous capability now binds to **one server-random Bridge Core Deal**, wi
 
 The opt-in durable mode disables the legacy `/v1/ai/decision` raw caller-hand route; ephemeral dev/test mode retains existing A4.3.1 true BEN smoke. Public release still blocked on multi-worker stores, mid-write SIGKILL/disk durability evidence and key operations (whole-process SIGKILL/new-process recovery is [Gateway CI verified 32/32](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841623172)),, full real BEN game, budget/rights review and deferred A3.5/device QA. [Acceptance](product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md).
 
+## A4.3.3 full genuine BEN game acceptance boundary
+
+A new pinned real BEN executable test at `services/bridge_gateway/bin/live_gateway_ben_full_game.dart` drives a **server-owned full Deal** exclusively via the authenticated localhost Gateway `/v1/games/*` API, not the older raw caller-supplied `/v1/ai/decision`. Fixed trusted fixture is injected through `dealFactory` only in the dedicated test harness; client receives `humanView` only. Bot decisions are genuine pinned BEN via restricted `BenLoopbackBackend`. Terminal checks: 52 unique played cards, 13 completed four-card tricks, all counts zero, final scoring, event version equality, route invocation counts, bounded same-ID replay and privacy, with no private request logs. [Acceptance](product/A4_GATEWAY_A4_3_3_ACCEPTANCE.md). At drafting CI was PENDING; no deployed service, no cross-device QA.
+
 ## Components
 ~~~text
 Flutter Android / iOS / Web (render, input, localization)
