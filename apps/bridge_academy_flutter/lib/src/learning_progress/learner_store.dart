@@ -16,10 +16,11 @@ final class MemoryLearnerStore implements LearnerStore {
   Future<LearnerProgress?> read() async =>
       _value == null ? null : LearnerProgress.fromJson(_value!.toJson());
   @override
-  Future<void> write(LearnerProgress progress) async =>
-      _value = LearnerProgress.fromJson(progress.toJson());
+  Future<void> write(LearnerProgress progress) async {
+    _value = LearnerProgress.fromJson(progress.toJson());
+  }
   @override
-  Future<void> clear() async => _value = null;
+  Future<void> clear() async { _value = null; }
 }
 
 final class EncryptedLearnerStore implements LearnerStore {
