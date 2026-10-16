@@ -178,6 +178,27 @@ void main() {
         r == '/v1/sessions/anonymous').length, 1);
   });
 
+  test('rejects server DTO containing forbidden full-Deal fields', () async {
+    final fixture = _AuthorityFixture();
+    final client = MockClient((request) async {
+      if (request.url.path == '/v1/sessions/anonymous') {
+        return fixture.handle(request);
+      }
+      final filtered = fixture.coordinator.humanView.toJson();
+      return http.Response(jsonEncode({
+        'version': 1,
+        'view': {...filtered, 'hands': 'FORBIDDEN_OPPONENT_HANDS'},
+      }), 200);
+    });
+    final session = GatewayGameSession(GatewayHttpApi(
+      origin: Uri.parse('https://gateway.example.test'), client: client));
+    addTearDown(session.dispose);
+    addTearDown(client.close);
+    await session.startNewGame();
+    expect(session.started, isFalse);
+    expect(session.errorCode, 'gatewayInvalidResponse');
+  });
+
   testWidgets('opt-in Gateway table localized and never shows Demo mode',
       (tester) async {
     final fixture = _AuthorityFixture();

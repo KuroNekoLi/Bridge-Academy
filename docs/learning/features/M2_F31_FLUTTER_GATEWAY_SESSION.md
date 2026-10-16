@@ -40,7 +40,7 @@ flutter test --reporter expanded
 flutter build web --release
 ```
 
-新增 MockClient + Widget 測試：安全 Origin 驗證、Gateway 啟動與 view、伺服器提交成功但 HTTP 回應遺失時用同 Request ID 恢復、401 Token 過期及雙語 UI。其他 Demo/Chrome 與真正 BEN Gateway 全場測試分開驗證。[首次 Bridge Core CI #38847385042](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847385042) FAIL：新增解析器時的文字置換將原本的 PlayerView 類別展開在正規表示式當中，使 300+ 筆 analyzer 警告／錯誤；這是編輯錯誤，不是原始 Bridge Core 失效。已從 Git commit `49772b6` 的 canonical 原檔重建並正確加入解碼 factory，後續 CI 成功之前**仍不可宣稱 PASS**。不可將 MockClient 等同真 BEN，也不會恢復 Android／iOS 實機／模擬器測試。
+新增 MockClient + Widget 測試：安全 Origin 驗證、Gateway 啟動與 view、伺服器提交成功但 HTTP 回應遺失時用同 Request ID 恢復、401 Token 過期、惡意回應包含 `hands` 的隱私拒絕，以及雙語 UI。其他 Demo/Chrome 與真正 BEN Gateway 全場測試分開驗證。[首次 Bridge Core CI #38847385042](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847385042) FAIL：新增解析器時的文字置換將原本的 PlayerView 類別展開在正規表示式當中，使 300+ 筆 analyzer 警告／錯誤；這是編輯錯誤，不是原始 Bridge Core 失效。已從 Git commit `49772b6` 的 canonical 原檔重建並正確加入解碼 factory，後續 CI 成功之前**仍不可宣稱 PASS**。不可將 MockClient 等同真 BEN，也不會恢復 Android／iOS 實機／模擬器測試。
 
 ## 練習與自我檢驗
 
