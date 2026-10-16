@@ -7,12 +7,14 @@ import 'package:flutter/foundation.dart';
 import 'session_persistence.dart';
 import 'completed_history_store.dart';
 import 'four_board_practice.dart';
+import 'daily_practice.dart';
+import 'daily_practice_store.dart';
 import 'bidding_practice.dart';
 import 'completed_pbn_export.dart';
 import 'completed_pbn_import.dart';
 
 enum OpponentMode { demo, ben }
-enum BoardMode { training, fresh, bidding }
+enum BoardMode { training, fresh, bidding, daily }
 
 /// Private in-process game controller for M2: clients only observe PlayerView.
 ///
@@ -25,6 +27,8 @@ class BridgeSession extends ChangeNotifier {
     Deal Function()? freshDealFactory,
     SessionArchiveStore? archiveStore,
     CompletedHistoryStore? historyStore,
+    DailyPracticeStore? dailyStore,
+    DateTime Function()? utcNow,
   })  : _fixedDeal = fixedDeal ?? Deal.fromPbn(
           'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
           'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8',
@@ -32,13 +36,22 @@ class BridgeSession extends ChangeNotifier {
         _botFactory = botFactory,
         _freshDealFactory = freshDealFactory,
         _archiveStore = archiveStore,
-        _historyStore = historyStore;
+        _historyStore = historyStore,
+        _dailyStore = dailyStore,
+        _utcNow = utcNow ?? DateTime.now;
 
   final Deal _fixedDeal;
   final BotPolicy Function(OpponentMode mode)? _botFactory;
   final Deal Function()? _freshDealFactory;
   final SessionArchiveStore? _archiveStore;
   final CompletedHistoryStore? _historyStore;
+  final DailyPracticeStore? _dailyStore;
+  final DateTime Function() _utcNow;
+  DailyPracticeProgress? _dailyPractice;
+  List<DailyPracticeProgress> _dailyRecords = [];
+  bool _dailyLoaded = false;
+  bool _dailySaveFailed = false;
+  String? _dailyError;
   String? _historyId;
   FourBoardPractice? _fourBoardPractice;
   List<StoredHistoryBoard> _historyBoards = [];
@@ -89,6 +102,13 @@ class BridgeSession extends ChangeNotifier {
   Seat get humanSeat => _humanSeat;
   BoardDefinition get board => _board;
   FourBoardPractice? get fourBoardPractice => _fourBoardPractice;
+  DailyPracticeProgress? get dailyPractice => _dailyPractice;
+  List<DailyPracticeProgress> get dailyHistory => List.unmodifiable(_dailyRecords);
+  bool get isDailyPractice => _boardMode == BoardMode.daily && started;
+  bool get dailySaveFailed => _dailySaveFailed;
+  String? get dailyError => _dailyError;
+  DailyPracticeManifest get todaysDaily =>
+      DailyPracticeManifest.forDate(_utcNow().toUtc());
   List<HistorySummary> get completedHistory => List.unmodifiable(_historySummaries);
   String? get historyError => _historyError;
   bool get historySaveFailed => _historySaveFailed;
@@ -115,6 +135,64 @@ class BridgeSession extends ChangeNotifier {
                 trick.winner.isNS == game.contract!.declarer.isNS).length >=
               game.contract!.targetTricks,
     );
+  }
+
+  /// Public results, encrypted outside the active game checkpoint.
+  Future<void> loadDailyPractice() async {
+    if (_dailyLoaded) return;
+    if (_dailyStore == null) {
+      _dailyLoaded = true;
+      return;
+    }
+    try {
+      _dailyRecords = List.of(await _dailyStore.read());
+      _dailyLoaded = true;
+      _dailyError = null;
+    } catch (_) {
+      // Corrupted storage is never replaced by an empty journal.
+      _dailyError = 'dailyLoadError';
+    }
+    notifyListeners();
+  }
+
+  Future<void> _writeDailyPractice() async {
+    final progress = _dailyPractice;
+    if (progress == null || _dailyStore == null) return;
+    await loadDailyPractice();
+    if (!_dailyLoaded) throw const FormatException('Daily journal unavailable');
+    if (_dailyRecords.any((entry) =>
+        entry.challengeId == progress.challengeId &&
+        entry.completed > progress.completed)) {
+      throw const FormatException('Stale daily checkpoint');
+    }
+    final proposed = [
+      progress,
+      ..._dailyRecords.where((entry) =>
+          entry.challengeId != progress.challengeId),
+    ].take(EncryptedDailyPracticeStore.maxDays).toList();
+    try {
+      await _dailyStore.write(proposed);
+      _dailyRecords = proposed;
+      _dailySaveFailed = false;
+      _dailyError = null;
+    } catch (_) {
+      _dailySaveFailed = true;
+      _dailyError = 'dailySaveError';
+      rethrow;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> retryDailySave() async {
+    if (!_dailySaveFailed || busy) return;
+    try {
+      await _persist();
+      await _writeDailyPractice();
+    } catch (_) {
+      _dailyError = 'dailySaveError';
+    }
+    notifyListeners();
   }
 
   Future<void> loadHistory() {
@@ -297,6 +375,7 @@ class BridgeSession extends ChangeNotifier {
   Future<bool> restoreSavedGame() async {
     if (_archiveStore == null || busy || started) return false;
     await loadHistory();
+    await loadDailyPractice();
     _restoring = true;
     notifyListeners();
     var restored = false;
@@ -321,6 +400,7 @@ class BridgeSession extends ChangeNotifier {
           'legacy_${snapshot.state.historyFingerprint}';
       _board = snapshot.board;
       _fourBoardPractice = snapshot.fourBoardPractice;
+      _dailyPractice = snapshot.dailyPractice;
       _humanSeat = snapshot.humanSeat;
       _mode = mode;
       _boardMode = boardMode;
@@ -348,6 +428,7 @@ class BridgeSession extends ChangeNotifier {
     if (restored && finished) {
       await _archiveCompleted();
       await _recordFourBoardFinish();
+      await _recordDailyFinish();
     }
     return restored;
   }
@@ -383,6 +464,7 @@ class BridgeSession extends ChangeNotifier {
         opponentMode: _mode.name, boardMode: _boardMode.name,
         coordinator: _coordinator!, historyId: _historyId,
         fourBoardPractice: _fourBoardPractice,
+        dailyPractice: _dailyPractice,
       ));
       _saveFailed = false;
     } catch (_) {
@@ -399,6 +481,9 @@ class BridgeSession extends ChangeNotifier {
     var successful = false;
     try {
       await _persist();
+      if (_dailyPractice != null && _dailyStore != null) {
+        await _writeDailyPractice();
+      }
       _errorCode = null;
       successful = true;
     } catch (_) {
@@ -443,11 +528,14 @@ class BridgeSession extends ChangeNotifier {
     if (level < 1 || level > 7) {
       throw ArgumentError.value(level, 'level', 'Training level must be 1–7');
     }
-    if (busy || _saveFailed || (started && !finished && !biddingPracticeComplete) ||
+    if (busy || _saveFailed || _dailySaveFailed ||
+        (_dailyPractice != null && !_dailyPractice!.isComplete) ||
+        (started && !finished && !biddingPracticeComplete) ||
         (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
       return;
     }
     _fourBoardPractice = null;
+    _dailyPractice = null;
     final boardNumber = started ? _board.number + 1 : _board.number;
     await _beginBoard(
       board: BoardDefinition.forNumber(boardNumber),
@@ -465,12 +553,14 @@ class BridgeSession extends ChangeNotifier {
 
   /// A standalone auction-only drill; Core remains the legal-call judge.
   Future<void> startBiddingPractice({Seat humanSeat = Seat.north}) async {
-    if (busy || _saveFailed ||
+    if (busy || _saveFailed || _dailySaveFailed ||
+        (_dailyPractice != null && !_dailyPractice!.isComplete) ||
         (started && !finished && !biddingPracticeComplete) ||
         (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
       return;
     }
     _fourBoardPractice = null;
+    _dailyPractice = null;
     await _beginBoard(
       board: BoardDefinition.forNumber(
           started ? _board.number + 1 : _board.number),
@@ -481,16 +571,105 @@ class BridgeSession extends ChangeNotifier {
     );
   }
 
+  /// UTC calendar-day deterministic, unaffiliated solo challenge.
+  /// One scored attempt. A player may explicitly reset only after completion.
+  Future<void> startDailyPractice({
+    Seat humanSeat = Seat.north,
+    DateTime? utcDate,
+    bool restart = false,
+  }) async {
+    if (busy || _saveFailed || _dailySaveFailed ||
+        (_fourBoardPractice != null && !_fourBoardPractice!.isComplete) ||
+        (started && !finished && !biddingPracticeComplete)) {
+      return;
+    }
+    await loadDailyPractice();
+    if (!_dailyLoaded) return;
+    final manifest = DailyPracticeManifest.forDate(utcDate ?? _utcNow());
+    final prior = _dailyRecords.where(
+      (entry) => entry.challengeId == manifest.challengeId,
+    ).toList();
+    if (prior.length > 1) {
+      _dailyError = 'dailyLoadError';
+      notifyListeners();
+      return;
+    }
+    if (prior.isNotEmpty && prior.single.isComplete && !restart) {
+      _dailyPractice = prior.single;
+      notifyListeners();
+      return;
+    }
+    final progress = restart || prior.isEmpty
+        ? DailyPracticeProgress.newChallenge(manifest, humanSeat)
+        : prior.single;
+    _dailyPractice = progress;
+    _fourBoardPractice = null;
+    try {
+      await _writeDailyPractice();
+    } catch (_) {
+      return;
+    }
+    await _beginBoard(
+      board: manifest.boardAt(progress.completed),
+      deal: manifest.dealAt(progress.completed),
+      humanSeat: progress.humanSeat,
+      mode: OpponentMode.demo,
+      boardMode: BoardMode.daily,
+    );
+  }
+
+  Future<void> nextDailyBoard() async {
+    final daily = _dailyPractice;
+    if (daily == null || daily.isComplete || busy || _saveFailed ||
+        _dailySaveFailed || _historySaveFailed || !finished ||
+        daily.results.isEmpty || daily.results.last.id != _historyId) {
+      return;
+    }
+    final index = daily.completed;
+    await _beginBoard(
+      board: daily.manifest.boardAt(index),
+      deal: daily.manifest.dealAt(index),
+      humanSeat: daily.humanSeat,
+      mode: OpponentMode.demo,
+      boardMode: BoardMode.daily,
+    );
+  }
+
+  Future<void> _recordDailyFinish() async {
+    final daily = _dailyPractice;
+    final view = this.view;
+    if (daily == null || daily.isComplete || view == null || !finished ||
+        _historyId == null || _board.number != daily.nextBoardNumber) {
+      return;
+    }
+    _dailyPractice = daily.withResult(FourBoardResult(
+      id: _historyId!,
+      boardNumber: _board.number,
+      contract: view.contract?.label ?? 'PASS OUT',
+      nsScore: view.nsScore!,
+    ));
+    try {
+      await _persist();
+      await _writeDailyPractice();
+    } catch (_) {
+      _dailyError = 'dailySaveError';
+    }
+    notifyListeners();
+  }
+
   /// Starts four distinct newly shuffled practice boards with normal Core
   /// auctions, tricks, and scores. No manufactured MP/IMP comparison.
   Future<void> startFourBoardPractice({
     Seat humanSeat = Seat.north,
     OpponentMode mode = OpponentMode.demo,
   }) async {
-    if (busy || _saveFailed || (started && !finished && !biddingPracticeComplete) ||
+    if (busy || _saveFailed || _dailySaveFailed ||
+        (_dailyPractice != null && !_dailyPractice!.isComplete) ||
+        (started && !finished && !biddingPracticeComplete) ||
         (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
       return;
     }
+    _dailyPractice = null;
     final startNumber = started ? _board.number + 1 : _board.number;
     _fourBoardPractice = FourBoardPractice(
       startBoard: startNumber,
@@ -552,11 +731,13 @@ class BridgeSession extends ChangeNotifier {
     BoardMode boardMode = BoardMode.training,
     int? boardNumber,
   }) async {
-    if (busy || _saveFailed ||
+    if (busy || _saveFailed || _dailySaveFailed ||
+        (_dailyPractice != null && !_dailyPractice!.isComplete) ||
         (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
       return;
     }
     _fourBoardPractice = null;
+    _dailyPractice = null;
     final board = BoardDefinition.forNumber(boardNumber ?? _board.number);
     final deal = boardMode == BoardMode.training
         ? _fixedDeal
@@ -571,7 +752,8 @@ class BridgeSession extends ChangeNotifier {
   /// a new result. The current finished replay is replaced on restart.
   Future<void> replaySameBoard() async {
     final deal = _activeDeal;
-    if (busy || deal == null || !finished || _fourBoardPractice != null) return;
+    if (busy || deal == null || !finished ||
+        _fourBoardPractice != null || _dailyPractice != null) return;
     await _beginBoard(
       board: _board, deal: deal, humanSeat: _humanSeat,
       mode: _mode, boardMode: _boardMode,
@@ -582,7 +764,8 @@ class BridgeSession extends ChangeNotifier {
   /// Only a finished board advances the sequential Duplicate board number.
   /// The player can still restart an unfinished board with newGame().
   Future<void> nextBoard() async {
-    if (busy || !finished || _fourBoardPractice != null) return;
+    if (busy || !finished || _fourBoardPractice != null ||
+        _dailyPractice != null) return;
     await newGame(
       humanSeat: _humanSeat,
       mode: _mode,
@@ -676,6 +859,7 @@ class BridgeSession extends ChangeNotifier {
     if (persisted && finished) {
       await _archiveCompleted();
       await _recordFourBoardFinish();
+      await _recordDailyFinish();
     }
     if (persisted) await _advanceBots();
   }
@@ -701,6 +885,7 @@ class BridgeSession extends ChangeNotifier {
       if (finished) {
         await _archiveCompleted();
         await _recordFourBoardFinish();
+        await _recordDailyFinish();
       }
     } catch (_) {
       // HTTP errors can contain credentials/private hands in upstream logs;

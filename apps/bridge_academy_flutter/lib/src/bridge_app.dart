@@ -6,6 +6,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_copy.dart';
 import 'bridge_session.dart';
+import 'daily_practice_store.dart';
+import 'widgets/daily_practice_panel.dart';
 import 'widgets/bridge_table_components.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bridge_table_toolbar.dart';
@@ -65,6 +67,11 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
     _session = BridgeSession(
+      dailyStore: mobile
+          ? EncryptedDailyPracticeStore.native()
+          : kIsWeb
+              ? EncryptedDailyPracticeStore.browser()
+              : MemoryDailyPracticeStore(),
       historyStore: mobile
           ? EncryptedCompletedHistoryStore.native()
           : kIsWeb
@@ -76,7 +83,7 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
               ? EncryptedTransactionalSessionArchiveStore.browser()
               : PreferencesSessionArchiveStore(),
     );
-    _session!.restoreSavedGame(); // Also loads the separate history archive.
+    _session!.restoreSavedGame(); // Also loads daily and history archives.
   }
 
   @override
@@ -164,7 +171,8 @@ class _BridgeTableState extends State<BridgeTable> {
     setState(() {
       _selectedSeat = widget.session.humanSeat;
       _selectedMode = widget.session.mode;
-      _selectedBoard = widget.session.boardMode == BoardMode.bidding
+      _selectedBoard = (widget.session.boardMode == BoardMode.bidding ||
+              widget.session.boardMode == BoardMode.daily)
           ? BoardMode.fresh : widget.session.boardMode;
     });
   }
@@ -247,6 +255,26 @@ class _BridgeTableState extends State<BridgeTable> {
                       label: Text(copy.t('practiceFourStart')),
                     ),
                     _justDeclareLauncher(session, copy),
+                    FilledButton.tonalIcon(
+                      key: const Key('start_daily_practice'),
+                      onPressed: session.busy || session.saveFailed ||
+                          session.dailySaveFailed ||
+                          (session.started && !session.finished &&
+                              !session.biddingPracticeComplete) ||
+                          (session.fourBoardPractice != null &&
+                              !session.fourBoardPractice!.isComplete)
+                          ? null : () {
+                        setState(() {
+                          _replayIndex = null;
+                          _selectedMode = OpponentMode.demo;
+                          _selectedBoard = BoardMode.fresh;
+                        });
+                        session.startDailyPractice(humanSeat: _selectedSeat);
+                      },
+                      icon: const Icon(Icons.today),
+                      label: Text(copy.t('dailyStart'),
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
                      FilledButton.tonalIcon(
                        key: const Key('start_bidding_practice'),
                        onPressed: session.busy || session.saveFailed ||
@@ -320,6 +348,45 @@ class _BridgeTableState extends State<BridgeTable> {
                     ? session.retryHistorySave : null,
               ),
             ],
+            if (session.dailyPractice != null ||
+                session.dailyHistory.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              DailyPracticePanel(
+                copy: copy,
+                today: session.todaysDaily,
+                active: session.dailyPractice,
+                history: session.dailyHistory,
+                finished: session.finished,
+                canAdvance: !session.busy && !session.saveFailed &&
+                    !session.dailySaveFailed && !session.historySaveFailed,
+                canRestart: !session.busy && !session.saveFailed &&
+                    !session.dailySaveFailed,
+                onNext: () {
+                  setState(() => _replayIndex = null);
+                  session.nextDailyBoard();
+                },
+                onRestart: () => _confirmDailyRestart(session, copy),
+              ),
+            ],
+            if (session.dailyError != null)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Wrap(
+                    spacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(copy.t(session.dailyError!)),
+                      if (session.dailySaveFailed)
+                        TextButton(
+                          key: const Key('daily_retry_save'),
+                          onPressed: session.retryDailySave,
+                          child: Text(copy.t('dailyRetrySave')),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
             if (session.fourBoardPractice != null) ...[
               const SizedBox(height: 8),
               _fourBoardPanel(session, copy),
@@ -521,7 +588,8 @@ class _BridgeTableState extends State<BridgeTable> {
         child: DropdownButtonFormField<BoardMode>(
           key: const Key('board_mode_selector'),
           isExpanded: true,
-          initialValue: _selectedBoard == BoardMode.bidding
+          initialValue: (_selectedBoard == BoardMode.bidding ||
+                  _selectedBoard == BoardMode.daily)
               ? BoardMode.fresh : _selectedBoard,
           decoration: InputDecoration(labelText: copy.t('boardMode')),
           items: [
@@ -599,6 +667,35 @@ class _BridgeTableState extends State<BridgeTable> {
           )),
         ],
       );
+
+  Future<void> _confirmDailyRestart(
+      BridgeSession session, AppCopy copy) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(copy.t('dailyRestartTitle')),
+        content: Text(copy.t('dailyRestartWarning')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(copy.t('dailyRestartCancel')),
+          ),
+          FilledButton(
+            key: const Key('daily_restart_confirm'),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(copy.t('dailyRestartConfirm')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      setState(() => _replayIndex = null);
+      await session.startDailyPractice(
+        humanSeat: session.dailyPractice?.humanSeat ?? _selectedSeat,
+        restart: true,
+      );
+    }
+  }
 
   Widget _biddingPracticePanel(BridgeSession session, AppCopy copy) {
     final view = session.view!;
@@ -688,7 +785,7 @@ class _BridgeTableState extends State<BridgeTable> {
               icon: const Icon(Icons.skip_next),
               label: Text(copy.t('practiceFourNext')),
             ),
-          if (session.fourBoardPractice == null)
+          if (session.fourBoardPractice == null && session.dailyPractice == null)
           OutlinedButton.icon(
             key: const Key('replay_same_board'),
             onPressed: session.busy ? null : () {
@@ -698,7 +795,7 @@ class _BridgeTableState extends State<BridgeTable> {
             icon: const Icon(Icons.replay),
             label: Text(copy.t('replaySameBoard')),
           ),
-          if (session.fourBoardPractice == null)
+          if (session.fourBoardPractice == null && session.dailyPractice == null)
           FilledButton.icon(
             key: const Key('next_board'),
             onPressed: session.busy ? null : () {
