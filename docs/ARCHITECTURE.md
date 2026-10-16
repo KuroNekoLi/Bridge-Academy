@@ -31,7 +31,7 @@ The optional `BenLoopbackBackend` implements `GatewayDecisionBackend`: it maps G
 
 The anonymous capability now binds to **one server-random Bridge Core Deal**, with `SinglePlayerCoordinator` owning all four hands and keeping the human seat North. Only `humanView.toJson()` is returned. New authenticated POST routes `/v1/games/view`, `/v1/games/action`, `/v1/games/advance` derive every actor/hand internally; BenBotPolicy reads the acting robot's own `PlayerView`, not the caller's claimed `hand`. Core validates move legality and `expected_version`; the Session remembers bounded same-ID responses to prevent repeat human clicks (in-memory only).
 
-**Security limitations:** The old caller-supplied `/v1/ai/decision` still exists for loopback/development and must be disabled for a public deploy. Memory-only sessions/idempotency, long-running partial Bot commits, anonymous user ownership, durable transaction log and seat authority for multiplayer remain unaddressed. No production promotion until these are resolved. [Acceptance](product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md); owner-deferred A3.5 and all Android/iOS UI device QA remain open.
+**Security limitations:** The old caller-supplied `/v1/ai/decision` still exists for loopback/development and must be disabled for a public deploy. Memory-only sessions/idempotency, long-running partial Bot commits, anonymous user ownership, durable transaction log and seat authority for multiplayer remain unaddressed. No production promotion until these are resolved. [Scoped Gateway CI 27/27](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175287), [Acceptance](product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md); owner-deferred A3.5 and all Android/iOS UI device QA remain open.
 
 ## Components
 ~~~text

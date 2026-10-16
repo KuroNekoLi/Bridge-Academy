@@ -1,6 +1,6 @@
 # A4.3.2 — Server-owned training game, versioned actions and in-memory dedup
 
-**Status:** IMPLEMENTED / CI PENDING (2026-10-16)  
+**Status:** SCOPED ENGINEERING VERIFIED — 27/27 Gateway tests (2026-10-16)  
 **Scope:** local-only anonymous-session game authority on Bridge Core. **Not** a public service, not crash-durable exactly-once, and not a multiplayer or ranked duplicate server.
 
 ## Trust boundary and endpoints
@@ -30,6 +30,13 @@ The API **does not expose the full four-hand Deal, GameState, event transcript o
 - Execute `cd services/bridge_gateway && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded`
 
 HTTP tests assert no four-hand leak, other-seat injection fails, another token sees a different/version-0 game, idempotent bid, stale/conflicting replay ID, server-only BEN fields, exposed Dummy after opening lead, and unavailable upstream yields 503 without inventing moves. The suite uses a test-injected deterministic server Deal and fake BEN; **neither test data nor client API can set the live Deal**. The previously verified pinned BEN Gateway smoke remains [separate evidence](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285).
+
+## Executed engineering evidence
+
+- Code commit: [5078599](https://github.com/KuroNekoLi/Bridge-Academy/commit/507859946d6e56c272b50d09568fbb61418c6975), test/lesson corrections [1de6bb5](https://github.com/KuroNekoLi/Bridge-Academy/commit/1de6bb5d706415d8e1563645ba0921c714f933d6).
+- [Gateway CI #38839175287](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175287): **SUCCESS**, `dart analyze --fatal-infos` with **No issues found**, `dart test --reporter expanded` **27/27 PASS**. These consist of 14 prior A4.2 HTTP cases, six A4.3.1 private-loopback cases, and seven A4.3.2 server-authority/idempotency cases.
+- [Feature Learning Gate #38839175164](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175164): **SUCCESS**; lesson delivered, not learner-mastered. Initial CI #38838997977 had one incorrect test assertion matching public seat-count text `N: 13` as if it were a four-hand PBN. Assertion now verifies that `deal` and privileged `hands` keys are absent, without weakening private-card checks.
+- The previous independent [genuine pinned BEN Gateway #38837641285](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285) verified bid/lead/play through A4.3.1. This latest A4.3.2 test suite uses a stub backend for its server-owned game-flow assertions. A combined complete 13-trick Gateway+real BEN game is **not yet verified**.
 
 ## Remaining requirements
 

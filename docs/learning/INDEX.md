@@ -49,7 +49,7 @@
 
 | M2-F27 | A4.3.1 BEN Loopback Worker（HTTP 20/20 PASS；真 BEN bid/lead/play PASS） | [M2-F27 教學](features/M2_F27_BEN_LOOPBACK_WORKER.md) | [Loopback Backend](../../services/bridge_gateway/lib/src/ben_loopback_backend.dart) · [HTTP tests](../../services/bridge_gateway/test/ben_loopback_backend_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_1_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F28 | A4.3.2 Server-owned Bridge Core 牌局、expected_version、request_id 去重（測試斷言與教學標題修正待驗） | [M2-F28 教學](features/M2_F28_SERVER_GAME_AUTHORITY.md) | [Game Authority](../../services/bridge_gateway/lib/src/authoritative_game.dart) · [HTTP tests](../../services/bridge_gateway/test/authoritative_game_http_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md) | DELIVERED |
+| M2-F28 | A4.3.2 Server-owned Bridge Core 牌局、expected_version、request_id 去重（Gateway 27/27 CI PASS） | [M2-F28 教學](features/M2_F28_SERVER_GAME_AUTHORITY.md) | [Game Authority](../../services/bridge_gateway/lib/src/authoritative_game.dart) · [HTTP tests](../../services/bridge_gateway/test/authoritative_game_http_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

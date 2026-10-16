@@ -3,7 +3,7 @@
 - Feature ID：M2-F28
 - Milestone：A4.3.2（第一切片）
 - 類型：Dart Server／Bridge Core／授權與一致性
-- 工程狀態：IMPLEMENTED（首次 CI #38838997977 測試 26 PASS／1 FAIL，測試斷言誤判，已修正；最新結果待驗）
+- 工程狀態：ENGINEERING_VERIFIED（Dart analyze + Gateway HTTP 27/27 PASS；僅開發／本機環境）
 - 學習狀態：DELIVERED（不代表使用者已練習或精熟）
 - 程式：[AuthoritativeGame](../../services/bridge_gateway/lib/src/authoritative_game.dart)
 - 測試：[真 localhost HTTP Tests](../../services/bridge_gateway/test/authoritative_game_http_test.dart)
@@ -42,7 +42,7 @@ dart analyze --fatal-infos
 dart test --reporter expanded
 ```
 
-本切片測試是**真實 localhost HTTP + 假 AI Bot**；驗證越權提交 Seat／Deal、另一 Session 隔離、過期版本、同 ID 重送、Bot 由權威 PlayerView 取得資料、Dummy 公開與失效的 AI 回傳 503。**CI 尚未執行，不可寫成通過**。真 BEN 叫牌／首攻／出牌的驗收另有 [真模型 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285)。
+本切片測試是**真實 localhost HTTP + 假 AI Bot**；驗證越權提交 Seat／Deal、另一 Session 隔離、過期版本、同 ID 重送、Bot 由權威 PlayerView 取得資料、Dummy 公開與失效的 AI 回傳 503。[Gateway CI #38839175287](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175287) **Dart analyze 無問題、27/27 真 localhost HTTP 測試 PASS**；其中本功能新增 7 項。首次 CI 曾將公開座位剩餘牌數 `N: 13` 誤認成完整 PBN，修正後以檢查回應中不得出現 `deal`／`hands` 等未授權鍵值通過。[Feature Learning Gate #38839175164](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38839175164) PASS。這不代表持久化 Exactly Once、多人競賽權威或遠端正式環境已驗收。真 BEN 叫牌／首攻／出牌的驗收另有 [真模型 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285)。
 
 ## 練習與自我檢驗
 
