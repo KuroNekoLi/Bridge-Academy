@@ -10,6 +10,9 @@
 ## 為什麼這樣設計
 這和 Android Clean Architecture 的 Domain→Application→UI 邊界一致。錯誤作法是把原始 52 張牌傳進 Widget、Web API 或讓未完成的牌局呼叫 DDS，導致遊戲變相作弊。雙明手分析知道所有人的牌，只能做**事後全知分析**，不代表資訊受限的真人當下必須找得到同一張牌。
 
+## CI 修正紀錄
+Flutter 3.47.7 的 analyze 會因為單行 if 缺少大括號而回傳 info 並阻擋 pipeline；UI 的例外分支改為完整 block，避免風格與失敗處理在未來維護時出錯。
+
 ## 驗收證據
 `flutter test test/c1_5_dds_review_test.dart`、`flutter analyze`、`flutter build web` 都需跑。此任務最初建立時環境缺少 SDK，先標記 NOT RUN，不虛構 PASS。真正 DDS Worker 安裝與授權依 C1 審查文件。
 

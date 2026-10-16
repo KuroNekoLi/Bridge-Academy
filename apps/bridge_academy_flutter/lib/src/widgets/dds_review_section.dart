@@ -24,12 +24,14 @@ class _DdsReviewSectionState extends State<DdsReviewSection> {
         setState(() => _result = result);
       }
     } on DoubleDummyAnalysisException catch (e) {
-      if (mounted) setState(() => _error = switch(e.code) {
-        DoubleDummyFailureCode.unsupportedPlatform ||
-        DoubleDummyFailureCode.unavailable => 'ddsUnavailable',
-        DoubleDummyFailureCode.notFinished => 'ddsNotFinished',
-        _ => 'ddsError',
-      });
+      if (mounted) {
+        setState(() => _error = switch (e.code) {
+          DoubleDummyFailureCode.unsupportedPlatform ||
+          DoubleDummyFailureCode.unavailable => 'ddsUnavailable',
+          DoubleDummyFailureCode.notFinished => 'ddsNotFinished',
+          _ => 'ddsError',
+        });
+      }
     } catch (_) {
       if (mounted) {
         setState(() => _error = 'ddsError');
