@@ -12,10 +12,15 @@
 ## Verification
 - `cd apps/bridge_academy_flutter && flutter analyze && flutter test && flutter build web --release`.
 - Added `test/c3_learning_progress_test.dart` for domain, authenticated encryption/tampering, Widget flow.
-- **Pending CI** until an actual GitHub runner result is available; no Android/iOS hardware tests.
+- **SCOPED VERIFIED**: [Flutter CI run #38919859220](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919859220) on code commit `59faf0297` reports `flutter analyze` (No issues found), **151/151 Flutter tests**, `flutter build web --release` (PASS), and real ChromeDriver demo E2E (PASS). [Feature Learning Gate #38920287566](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38920287566) also PASS after documenting the paused-history change. Android/iOS device tests remain on hold.
 
 ## Limitations
 - A 500-event cap stops future writes rather than silently removing older records.
 - No cloud sync, no authentication, no multi-device records.
 - Web key handling cannot protect against malicious same-origin JavaScript.
 - Existing short-lived B4 practice set still drives per-page progress when opted out.
+
+## Merge handoff
+- Source branch: `feature/c3-learning-progress`; only this branch was updated, not master.
+- Shared code changed: `academy_page.dart`, `secure_session_persistence.dart` (optional key name), `docs/learning/INDEX.md`. Integration Agent should resolve with other branches before merging.
+- Temporary branch CI workflow triggers should be removed before final handoff; the above immutable run URLs remain valid.
