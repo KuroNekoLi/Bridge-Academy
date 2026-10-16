@@ -29,3 +29,6 @@ if (item.correct) _completed.add(item.answer.questionId);
 
 ## 下一步
 保留真正跨版本內容更新、超過 500 筆的淘汰政策作為下一里程碑。
+
+## 新增狀態
+C3 現在可以保留歷史同時暫停或恢復儲存；v2 格式亦可讀取舊版 v1 事件。
