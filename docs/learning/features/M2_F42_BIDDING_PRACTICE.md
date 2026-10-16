@@ -3,10 +3,10 @@
 - Feature ID：M2-F42
 - Milestone：M2／B3.1
 - 類型：Flutter UI／AI 整合
-- 工程狀態：IMPLEMENTED（驗證待 CI）
+- 工程狀態：SCOPED VERIFIED（Flutter analyze／118 測試／Web Release／Chrome Demo）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/bidding_practice.dart`、`bridge_session.dart`、`bridge_app.dart`、`packages/bridge_core/lib/src/single_player_coordinator.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/b3_bidding_practice_test.dart`；NOT RUN
+- 驗收與測試：`apps/bridge_academy_flutter/test/b3_bidding_practice_test.dart`；[CI 118/118 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38905811936)
 
 ## 功能目的與實際情境
 玩家想練與 AI 搭檔叫牌，卻不想為每一副牌再打 13 墩。B3.1 可以建立新的叫牌練習，只進行叫牌，結束後提供已知教學約定的解釋。練習不應記入虛假的終局成績。
@@ -37,7 +37,7 @@ flutter test test/b3_bidding_practice_test.dart
 flutter analyze
 ```
 
-**NOT RUN**：本次執行環境沒有 Dart/Flutter；後續需引用相同 commit 的 Actions 結果。測試覆蓋 HCP、已知與未知競叫、停在叫牌結果、保存／恢復、雙語 UI；沒有真 BEN 及 Android/iOS 裝置測試。
+**EXECUTED on GitHub Actions**：程式碼 Commit `76232aa8`，Flutter analyze 無問題，118/118 Widget／Session tests 通過，Web release build 與 ChromeDriver Demo E2E 皆成功；[CI 證據](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38905811936)。包含 HCP、未知競叫、停止出牌、保存恢復、雙語；未涵蓋 B3 專家評鑑、實際 BEN 約定能力與 Android/iOS 裝置驗收。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 為什麼一個 1NT 叫品符合「15–17 HCP」約定，仍不能當作 AI 或真人真的持有 15–17 點的證據？
@@ -47,7 +47,7 @@ flutter analyze
 **完成標準：** 可以分辨規則合法性、約定語義、AI 策略、隱藏資訊四者的責任與資料來源。尚未實際練習，不能標成 MASTERED。
 
 ## 本輪回歸修正
-GitHub Actions 的 Flutter 測試揭露兩個既有功能回歸：Just Declare 完成後的歷史摘要原先僅將固定牌局標為練習（未辨識 Just Declare）；已在 `BridgeSession._summarize` 改以 `state.isJustDeclare` 判定。320px／2.0 倍文字下的 Just Declare 下拉選單及長按鈕改用有界寬度與省略處理，避免英文文字橫向溢位。恢復警告 Widget 測試改為先 scroll into view 再點擊，避免畫面上新增入口影響原有可點擊區。尚待更新 CI 驗證，不宣稱已通過。
+GitHub Actions 的 Flutter 測試揭露兩個既有功能回歸：Just Declare 完成後的歷史摘要原先僅將固定牌局標為練習（未辨識 Just Declare）；已在 `BridgeSession._summarize` 改以 `state.isJustDeclare` 判定。320px／2.0 倍文字下的 Just Declare 下拉選單及長按鈕改用有界寬度與省略處理，避免英文文字橫向溢位。恢復警告 Widget 測試改為先 scroll into view 再點擊，避免畫面上新增入口影響原有可點擊區。已經透過相同程式碼 SHA 的 [Flutter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38905811936) 驗證 118/118 通過。
 
 ## 下一步
 做 B3.2 ConventionProfile 版本管理、叫牌約定的專家覆核及教學回饋，並補上可驗證的自動化 QA。

@@ -1,6 +1,6 @@
 # B3.1 — 可操作的叫牌練習
 
-**日期：2026-10-16｜Status: IMPLEMENTED, CI PENDING**
+**日期：2026-10-16｜Status: SCOPED VERIFIED (Flutter/Web Demo)**
 
 ## 玩家交付
 - Flutter「開始叫牌練習」：玩家可選 N/E/S/W 座位，和本機教學 Bot 練習四家叫牌。所有行動由 Bridge Core 驗證。
@@ -18,7 +18,7 @@ BA-NATURAL-NT revision 1 是簡化教學範本：前面只有 Pass 的 1NT 開�
 - `cd apps/bridge_academy_flutter && flutter analyze`
 - `cd apps/bridge_academy_flutter && flutter test`
 
-**實際提交前：NOT RUN**。執行環境無 Dart/Flutter SDK，後續需以目前提交 SHA 對應的 GitHub CI 具體結果更新驗收狀態。A4.5、A3.5、Android/iOS 裝置驗收仍依使用者決定暫緩。
+**CI 實際驗證通過（程式碼 SHA `76232aa8`）**：[Flutter M2 Single Player](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38905811936) 顯示 `flutter analyze`「No issues found」、**118/118 tests passed**、**Web Release Build 成功**、**ChromeDriver Demo E2E 成功**；[Feature Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38905811848) 成功。[Bridge Core CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38904989849) 先前同一輪的初始程式碼提交已成功。以上僅為指定執行環境的驗收，非正式上線或全裝置驗收。真 BEN Chrome 回歸與 A4.5 仍不等同於 B3 的示範 Bot 驗收；A3.5、Android/iOS 裝置驗收依使用者決定暫緩。
 
 ## 回退
 如發現相容性問題，可 revert 這次單一 Git commit；保留舊有 A5/B1/B2 checkpoint 格式與模式，無須清除舊資料。
