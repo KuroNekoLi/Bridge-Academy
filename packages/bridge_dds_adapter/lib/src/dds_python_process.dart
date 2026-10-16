@@ -70,6 +70,7 @@ final class DdsPythonProcessAnalyzer implements DoubleDummyAnalyzer {
         bytes.addAll(chunk);
       }
     });
+    final stdoutDone = standardOut.asFuture<void>();
     final discardedErr = process.stderr.drain<void>();
     try {
       timer = Timer(timeout, () {
@@ -82,7 +83,7 @@ final class DdsPythonProcessAnalyzer implements DoubleDummyAnalyzer {
       })));
       await process.stdin.close();
       final exitCode = await process.exitCode;
-      await standardOut.asFuture<void>();
+      await stdoutDone;
       await discardedErr;
       if (timedOut) {
         throw const DoubleDummyAnalysisException(

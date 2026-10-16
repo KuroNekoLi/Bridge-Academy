@@ -1,0 +1,69 @@
+name: C1 DDS trusted postgame analysis
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/c1-dds-analysis']
+    paths:
+      - 'packages/bridge_dds_adapter/**'
+      - '.github/workflows/c1-dds-analysis.yml'
+      - 'docs/product/C1_DDS_*'
+      - 'docs/learning/features/M2_F48_DDS_ANALYSIS.md'
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: packages/bridge_dds_adapter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: dart pub get
+      - run: dart analyze --fatal-infos
+      - run: dart test --reporter expanded
+        # Skipped real-DD tests are NOT counted as genuine DDS success.
+      - run: python -m py_compile tool/dds3_worker.py
+  upstream-native-golden:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: packages/bridge_dds_adapter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch exact licensed DDS3 source revision
+        run: |
+          git clone --filter=blob:none https://github.com/dds-bridge/dds.git /tmp/c1-dds-upstream
+          cd /tmp/c1-dds-upstream
+          git checkout --detach abb1127ba096676a4849f341f300c9827a732342
+          test "$(git rev-parse HEAD)" = "abb1127ba096676a4849f341f300c9827a732342"
+          test -f LICENSE
+      - name: Install bazelisk
+        run: |
+          curl -fLsS https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-linux-amd64 -o /tmp/c1-bazelisk
+          chmod +x /tmp/c1-bazelisk
+      - name: Build pinned upstream DDS3 Python extension wheel
+        run: |
+          cd /tmp/c1-dds-upstream
+          /tmp/c1-bazelisk build -c opt //python:dds3_wheel_dist
+          find bazel-bin/python -name '*.whl' -print
+          WHEEL="$(find bazel-bin/python -type f -name '*.whl' | head -n 1)"
+          test -n "$WHEEL"
+          python -m pip install "$WHEEL"
+          python -c 'from dds3 import calc_dd_table; print("REAL_DDS_IMPORT_OK")'
+      - run: dart pub get
+      - name: True DDS golden 3 deal x 20 cells
+        env:
+          C1_DDS_REAL: '1'
+          C1_DDS_WORKER: 'tool/dds3_worker.py'
+        run: dart test test/dds3_real_golden_test.dart --reporter expanded
