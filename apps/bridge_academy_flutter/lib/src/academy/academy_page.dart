@@ -119,7 +119,7 @@ class _AcademyPageState extends State<AcademyPage> {
         const SizedBox(height: 12),
         for (final lesson in AcademyCatalog.validated())
           Card(
-            key: Key('academy_lesson_' + lesson.lessonId),
+            key: Key('academy_lesson_${lesson.lessonId}'),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -131,16 +131,14 @@ class _AcademyPageState extends State<AcademyPage> {
                   Text(lesson.summary.localized(_english)),
                   const SizedBox(height: 8),
                   Text(
-                    _practice.completedCount(lesson).toString() +
-                        ' / ' + lesson.questions.length.toString() +
-                        ' ' + _t('completedQuestions'),
-                    key: Key('academy_progress_' + lesson.lessonId),
+                    '${_practice.completedCount(lesson)} / ${lesson.questions.length} ${_t('completedQuestions')}',
+                    key: Key('academy_progress_${lesson.lessonId}'),
                   ),
                   const SizedBox(height: 10),
                   Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: FilledButton.tonal(
-                      key: Key('academy_open_' + lesson.lessonId),
+                      key: Key('academy_open_${lesson.lessonId}'),
                       onPressed: () => _open(lesson),
                       child: Text(_t('startLesson')),
                     ),
@@ -164,8 +162,7 @@ class _AcademyPageState extends State<AcademyPage> {
             key: const Key('academy_introduction')),
         const SizedBox(height: 12),
         Text(
-          _t('question') + ' ' + (_index + 1).toString() + ' / ' +
-              lesson.questions.length.toString(),
+          '${_t('question')} ${_index + 1} / ${lesson.questions.length}',
           key: const Key('academy_question_progress'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
@@ -177,12 +174,12 @@ class _AcademyPageState extends State<AcademyPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(question.prompt.localized(_english),
-                    key: Key('academy_question_' + question.questionId),
+                    key: Key('academy_question_${question.questionId}'),
                     style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 16),
                 for (final option in question.options) ...[
                   OutlinedButton(
-                    key: Key('academy_option_' + option.optionId),
+                    key: Key('academy_option_${option.optionId}'),
                     onPressed: _feedback == null
                         ? () => setState(() => _selected = option.optionId)
                         : null,
@@ -229,8 +226,7 @@ class _AcademyPageState extends State<AcademyPage> {
                       key: const Key('academy_explanation')),
                   const SizedBox(height: 8),
                   SelectableText(
-                    _t('ruleReference') + ': ' +
-                        question.explanation.ruleReference,
+                    '${_t('ruleReference')}: ${question.explanation.ruleReference}',
                   ),
                   const SizedBox(height: 12),
                   FilledButton(
@@ -271,9 +267,7 @@ class _AcademyPageState extends State<AcademyPage> {
                     style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text(
-                  _practice.completedCount(lesson).toString() +
-                      ' / ' + lesson.questions.length.toString() +
-                      ' ' + _t('completedQuestions'),
+                  '${_practice.completedCount(lesson)} / ${lesson.questions.length} ${_t('completedQuestions')}',
                   key: const Key('academy_completed_count'),
                 ),
                 const SizedBox(height: 12),
