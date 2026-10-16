@@ -219,6 +219,8 @@ class _BridgeTableState extends State<BridgeTable> {
                     FilledButton.icon(
                       key: const Key('new_game'),
                       onPressed: session.busy ||
+                              (session.dailyPractice != null &&
+                                   !session.dailyPractice!.isComplete) ||
                               (session.fourBoardPractice != null &&
                                !session.fourBoardPractice!.isComplete)
                           ? null
@@ -239,7 +241,9 @@ class _BridgeTableState extends State<BridgeTable> {
                       key: const Key('start_four_board'),
                       onPressed: session.busy || session.saveFailed ||
                           (session.started && !session.finished && !session.biddingPracticeComplete) ||
-                          (session.fourBoardPractice != null &&
+                          (session.dailyPractice != null &&
+                                   !session.dailyPractice!.isComplete) ||
+                              (session.fourBoardPractice != null &&
                            !session.fourBoardPractice!.isComplete)
                           ? null : () {
                         setState(() {
@@ -261,7 +265,9 @@ class _BridgeTableState extends State<BridgeTable> {
                           session.dailySaveFailed ||
                           (session.started && !session.finished &&
                               !session.biddingPracticeComplete) ||
-                          (session.fourBoardPractice != null &&
+                          (session.dailyPractice != null &&
+                                   !session.dailyPractice!.isComplete) ||
+                              (session.fourBoardPractice != null &&
                               !session.fourBoardPractice!.isComplete)
                           ? null : () {
                         setState(() {
@@ -280,7 +286,9 @@ class _BridgeTableState extends State<BridgeTable> {
                        onPressed: session.busy || session.saveFailed ||
                            (session.started && !session.finished &&
                                !session.biddingPracticeComplete) ||
-                           (session.fourBoardPractice != null &&
+                           (session.dailyPractice != null &&
+                                   !session.dailyPractice!.isComplete) ||
+                              (session.fourBoardPractice != null &&
                                !session.fourBoardPractice!.isComplete)
                            ? null : () {
                          setState(() {
@@ -651,7 +659,9 @@ class _BridgeTableState extends State<BridgeTable> {
             key: const Key('start_just_declare'),
             onPressed: session.busy || session.saveFailed ||
                 (session.started && !session.finished && !session.biddingPracticeComplete) ||
-                (session.fourBoardPractice != null &&
+                (session.dailyPractice != null &&
+                                   !session.dailyPractice!.isComplete) ||
+                              (session.fourBoardPractice != null &&
                     !session.fourBoardPractice!.isComplete)
                 ? null : () {
               setState(() => _replayIndex = null);
@@ -773,7 +783,9 @@ class _BridgeTableState extends State<BridgeTable> {
         spacing: 12,
         runSpacing: 8,
         children: [
-          if (session.fourBoardPractice != null &&
+          if (session.dailyPractice != null &&
+                                   !session.dailyPractice!.isComplete) ||
+                              (session.fourBoardPractice != null &&
               !session.fourBoardPractice!.isComplete)
             FilledButton.icon(
               key: const Key('next_practice_board'),

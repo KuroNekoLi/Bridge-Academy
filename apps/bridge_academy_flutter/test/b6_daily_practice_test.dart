@@ -198,6 +198,25 @@ void main() {
     expect(session.board.number, session.dailyPractice!.manifest.startBoard + 1);
   });
 
+  test('B6 corrupt restored daily journal blocks advancing after finish', () async {
+    final archive = _MemoryArchive();
+    final first = _session(
+        archive: archive, daily: MemoryDailyPracticeStore());
+    await first.startDailyPractice();
+    first.dispose();
+
+    final recovered = _session(
+        archive: archive, daily: _BrokenDailyStore());
+    addTearDown(recovered.dispose);
+    expect(await recovered.restoreSavedGame(), true);
+    await _passOut(recovered);
+    expect(recovered.dailySaveFailed, true);
+    expect(recovered.dailyError, 'dailySaveError');
+    final number = recovered.board.number;
+    await recovered.nextDailyBoard();
+    expect(recovered.board.number, number);
+  });
+
   testWidgets('B6 bilingual player controls, next board and summary',
       (tester) async {
     final session = _session(

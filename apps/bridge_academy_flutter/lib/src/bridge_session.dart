@@ -160,7 +160,12 @@ class BridgeSession extends ChangeNotifier {
     final progress = _dailyPractice;
     if (progress == null || _dailyStore == null) return;
     await loadDailyPractice();
-    if (!_dailyLoaded) throw const FormatException('Daily journal unavailable');
+    if (!_dailyLoaded) {
+      _dailySaveFailed = true;
+      _dailyError = 'dailySaveError';
+      notifyListeners();
+      throw const FormatException('Daily journal unavailable');
+    }
     if (_dailyRecords.any((entry) =>
         entry.challengeId == progress.challengeId &&
         entry.completed > progress.completed)) {
