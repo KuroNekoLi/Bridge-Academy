@@ -1,4 +1,3 @@
-import 'package:bridge_academy_flutter/src/app_copy.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/completed_history_store.dart';
@@ -7,8 +6,7 @@ import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-CompletedReplay _terminalReplay(
-    List<Call> auction, {Strain strain = Strain.notrump}) {
+CompletedReplay _terminalReplay(List<Call> auction) {
   var game = GameState.start(
       Deal.suitPerSeat(), Seat.north, Vulnerability.none);
   final frames = <ReplayFrame>[
