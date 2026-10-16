@@ -1,6 +1,6 @@
 # A4.5 — HTTPS / BEN 部署準備與 Release Gate
 
-**日期：2026-10-17。狀態：STATIC PREPARATION IMPLEMENTED；HOSTED STAGING/PRODUCTION NOT DEPLOYED / NOT VERIFIED。**
+**日期：2026-10-17。狀態：STATIC PREPARATION VERIFIED（[GitHub Actions #38983766063](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38983766063) PASS）；HOSTED STAGING/PRODUCTION NOT DEPLOYED / NOT VERIFIED。**
 
 ## 本輪交付
 - `scripts/a4_5_preflight.py`：不接觸秘密、不連網的部署設定 allowlist 與 fail-closed 檢查。只能確認*宣告的設定*是否符合最低條件，**不能證明**配置實際生效或 TLS 安全。
@@ -49,3 +49,7 @@ python3 scripts/a4_5_preflight.py --profile production --config deploy/a4_5/stag
 ```
 
 **合格定義**：只是 STATIC SAFETY PRECHECK，不包含任何免費／付費雲端服務操作或公開發布。正式 staging 與 production 必須各自有真實執行證據與人工核准。A3.5 和 Android/iOS 裝置 QA 按使用者要求保持暫停。
+
+## 實際驗證證據
+- [A4.5 Deployment Readiness CI #38983766063](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38983766063) **SUCCESS**, source SHA `da8978841a32303c084e8e9f35024806e4188b45`. `python3 -m unittest discover`、staging metadata positive static validation、production-profile fail-closed check 均成功。
+- 此驗證**沒有** TLS edge、真 BEN staging HTTP 呼叫、負載測量、外部模型授權審查、金鑰輪換實測。不可把此 CI 當作 production-ready。
