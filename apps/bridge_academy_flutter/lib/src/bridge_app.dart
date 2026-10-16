@@ -11,48 +11,71 @@ import 'widgets/bridge_table_toolbar.dart';
 import 'widgets/bridge_replay_panel.dart';
 import 'session_persistence.dart';
 import 'secure_session_persistence.dart';
+import 'gateway_game_session.dart';
+import 'gateway_http_api.dart';
+import 'gateway_table.dart';
 
 /// App composition: Flutter sees only PlayerView through BridgeSession.
 class BridgeAcademyApp extends StatefulWidget {
-  const BridgeAcademyApp({super.key, this.session});
+  const BridgeAcademyApp({super.key, this.session, this.gatewayApi});
   final BridgeSession? session;
+  /// Test-injected Gateway API; a configured origin is an explicit opt-in.
+  final GatewayApi? gatewayApi;
 
   @override
   State<BridgeAcademyApp> createState() => _BridgeAcademyAppState();
 }
 
 class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
-  late final BridgeSession _session;
-  late final bool _ownsSession;
+  BridgeSession? _session;
+  GatewayGameSession? _gateway;
+  GatewayHttpApi? _ownedGatewayApi;
+  bool _ownsSession = false;
+  bool _gatewayConfigError = false;
   bool _isEnglish = false;
 
   @override
   void initState() {
     super.initState();
-    _ownsSession = widget.session == null;
-    // Native mobile uses AES-GCM + transactional SQLite with a secure key.
-    // Web checkpoints are AES-GCM encrypted with a browser WebCrypto key.
-    // Browser single-key storage remains best effort (not SQLite or XSS-safe).
-    // Missing secure context/key must fail closed, never downgrade to plaintext.
+    if (widget.session != null) {
+      _session = widget.session;
+      return;
+    }
+    // Never silently fall back to Demo when a Gateway was configured.
+    const gatewayOrigin = String.fromEnvironment('BRIDGE_GATEWAY_ORIGIN');
+    if (widget.gatewayApi != null || gatewayOrigin.isNotEmpty) {
+      try {
+        final api = widget.gatewayApi ??
+            (_ownedGatewayApi = GatewayHttpApi(
+              origin: Uri.parse(gatewayOrigin),
+            ));
+        _gateway = GatewayGameSession(api);
+      } catch (_) {
+        _gatewayConfigError = true;
+      }
+      return;
+    }
+
+    _ownsSession = true;
+    // Original encrypted local Demo / developer BEN behavior unchanged.
     final mobile = !kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
-    _session = widget.session ?? BridgeSession(
+    _session = BridgeSession(
       archiveStore: mobile
           ? EncryptedTransactionalSessionArchiveStore.native()
           : kIsWeb
               ? EncryptedTransactionalSessionArchiveStore.browser()
               : PreferencesSessionArchiveStore(),
     );
-    if (_ownsSession) {
-      // The session notifies BridgeTable when the saved game is loaded.
-      _session.restoreSavedGame();
-    }
+    _session!.restoreSavedGame();
   }
 
   @override
   void dispose() {
-    if (_ownsSession) _session.dispose();
+    if (_ownsSession) _session?.dispose();
+    _gateway?.dispose();
+    _ownedGatewayApi?.close();
     super.dispose();
   }
 
@@ -86,7 +109,12 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
             ),
           ],
         ),
-        body: BridgeTable(session: _session, copy: copy),
+        body: _gatewayConfigError
+            ? Center(child: Text(copy.t('gatewayInvalidConfig'),
+                key: const Key('gateway_invalid_config')))
+            : _gateway != null
+                ? GatewayTable(session: _gateway!, copy: copy)
+                : BridgeTable(session: _session!, copy: copy),
       ),
     );
   }

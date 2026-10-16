@@ -47,10 +47,37 @@ Future<void> main() async {
       return;
     }
   }
+  // A4.4 Flutter Web: explicitly allow a trusted browser development
+  // Origin. No '*' wildcard or implicit CORS permission. The Gateway still
+  // binds 127.0.0.1 and accepts only authorized POST game actions.
+  final allowedOrigins = <String>{};
+  final rawOrigins = Platform.environment['GATEWAY_BROWSER_ORIGINS'];
+  if (rawOrigins != null && rawOrigins.isNotEmpty) {
+    try {
+      for (final text in rawOrigins.split(',')) {
+        final uri = Uri.parse(text.trim());
+        if (uri.hasQuery || uri.hasFragment ||
+            uri.userInfo.isNotEmpty ||
+            (uri.path.isNotEmpty && uri.path != '/') ||
+            (uri.scheme != 'https' &&
+                !(uri.scheme == 'http' &&
+                  const {'localhost', '127.0.0.1', '::1'}
+                      .contains(uri.host)))) {
+          throw const FormatException('Invalid browser Origin');
+        }
+        allowedOrigins.add(uri.origin);
+      }
+    } catch (_) {
+      stderr.writeln('Invalid GATEWAY_BROWSER_ORIGINS');
+      exitCode = 64;
+      return;
+    }
+  }
   final gateway = BridgeGatewayService(
     checkpointStore: store,
     backend: benBackend,
     config: GatewayConfig(
+      allowedBrowserOrigins: allowedOrigins,
       decisionTimeout: benBackend == null
           ? const Duration(seconds: 30)
           : const Duration(seconds: 130),

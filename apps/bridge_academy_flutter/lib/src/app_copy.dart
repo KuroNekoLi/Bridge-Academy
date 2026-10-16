@@ -168,6 +168,50 @@ class AppCopy {
       'Demo uses a test bot (NOT BEN), with fixed or shuffled deals.'],
     'liveNotice': ['真 BEN 模式需要可連線的 BEN API，手牌只送往受信任服務。',
       'Live BEN mode requires a reachable, trusted BEN API.'],
+    'gatewayNotice': [
+      '伺服器牌桌模式：牌局與 AI 決策由可信任的 Gateway 管理，不會使用本機示範 Bot。此模式目前僅供明確設定的開發環境。',
+      'Server-owned Gateway table: the server controls the deal and AI. No Demo fallback. Only for explicitly configured development environments.',
+    ],
+    'gatewayNewSession': ['開始新的伺服器牌局', 'Start server-owned deal'],
+    'gatewayRefresh': ['查詢伺服器牌局', 'Refresh server view'],
+    'gatewayRetry': ['重試原請求', 'Retry same request'],
+    'gatewayWaiting': ['等待伺服器回應…', 'Waiting for server…'],
+    'gatewayNotStarted': [
+      '伺服器模式已啟用，按「開始新的伺服器牌局」取得短效 Session。',
+      'Gateway mode is enabled. Start a server-owned deal to obtain a short-lived session.',
+    ],
+    'gatewayInvalidConfig': [
+      'Gateway 網址設定無效。正式服務僅允許 HTTPS；本機開發只允許 localhost。請檢查設定，系統不會自動切回 Demo。',
+      'Invalid Gateway origin. Use HTTPS, or localhost for development. The app will not fall back to Demo.',
+    ],
+    'gatewayExpired': [
+      '此伺服器 Session 已到期或權杖失效。請建立新牌局；舊請求不會以新身分自動重送。',
+      'This server session expired. Start a new deal. The old action will not be retried with a new token.',
+    ],
+    'gatewayConflict': [
+      '伺服器牌局版本或請求識別衝突。請先查詢伺服器最新牌局，不要另送同一張牌。',
+      'Server event version or request ID conflict. Refresh server view before attempting any new action.',
+    ],
+    'gatewayRateLimited': [
+      '伺服器呼叫過於頻繁。請稍後使用原請求重試。',
+      'Too many server requests. Wait, then retry the same request.',
+    ],
+    'gatewayUnavailable': [
+      'Gateway／BEN 暫時無法提供服務。請查詢牌局後用原請求重試，系統不會使用 Demo Bot。',
+      'Gateway/BEN is unavailable. Refresh and retry the original request; there is no Demo fallback.',
+    ],
+    'gatewayOffline': [
+      '網路中斷，尚未確認先前行動是否成功。請查詢伺服器牌局，再重試相同請求。',
+      'Connection lost; the previous action may have committed. Refresh server view, then retry the same request.',
+    ],
+    'gatewayInvalidResponse': [
+      '伺服器回應格式無效，操作已暫停。請檢查 Gateway 服務。',
+      'Invalid server response. Actions are paused; check the Gateway service.',
+    ],
+    'gatewayRetryPending': [
+      '已重新取得伺服器狀態，仍有未確認的請求。按「重試原請求」使用相同的 Request ID，不會建立新行動。',
+      'Server view refreshed, but the previous action is still unconfirmed. Retry with the same request ID.',
+    ],
     'notStarted': ['選擇座位及對手，開始練習。', 'Choose your seat and opponents.'],
   };
 }

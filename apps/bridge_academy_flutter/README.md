@@ -77,3 +77,15 @@ hidden enemy hands, complete PBN, or BEN raw server responses.
 ## A2.8 browser storage boundary
 
 Web defaults to an AES-GCM encrypted local checkpoint with a browser WebCrypto-backed key and legacy plaintext checkpoint migration. Browser requires HTTPS or localhost; clearing browser/origin storage loses recovery. This is **best-effort single-key LocalStorage**, not native SQLite transaction, XSS protection or cloud backup. Android/iOS continue using encrypted SQLite. [Acceptance](../../docs/product/P1_A2_8_BROWSER_ENCRYPTED_CHECKPOINT_ACCEPTANCE.md), [Lesson](../../docs/learning/features/M2_F20_WEB_ENCRYPTED_CHECKPOINT.md).
+
+
+## A4.4 Flutter server-authoritative Gateway (explicit development opt-in)
+
+No Gateway URL is configured by default. Existing Demo/local BEN functionality stays unchanged. To see the new server-owned table in a browser, start the trusted local BEN and Gateway with `GATEWAY_BROWSER_ORIGINS=http://localhost:8000`, then from this app directory:
+
+```bash
+flutter run -d chrome --web-port=8000 \
+  --dart-define=BRIDGE_GATEWAY_ORIGIN=http://127.0.0.1:8086
+```
+
+The Gateway must be separately available; this is a **localhost-only development recipe**, not public deployment. Non-loopback origins require valid HTTPS. The UI obtains a fresh anonymous Bearer token and uses `/v1/games/view/action/advance` with stable request IDs and server-controlled GameState. The token is in RAM only, so browser reload requires a new session. On ambiguous HTTP error, use `Refresh server view` then `Retry same request`; no hidden Demo fallback. [A4.4 acceptance](../../docs/product/A4_GATEWAY_A4_4_ACCEPTANCE.md), [M2-F31 lesson](../../docs/learning/features/M2_F31_FLUTTER_GATEWAY_SESSION.md). Android/iOS device UI QA remains disabled.

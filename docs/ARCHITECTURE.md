@@ -43,6 +43,10 @@ The opt-in durable mode disables the legacy `/v1/ai/decision` raw caller-hand ro
 
 A new pinned real BEN executable test at `services/bridge_gateway/bin/live_gateway_ben_full_game.dart` drives a **server-owned full Deal** exclusively via the authenticated localhost Gateway `/v1/games/*` API, not the older raw caller-supplied `/v1/ai/decision`. Fixed trusted fixture is injected through `dealFactory` only in the dedicated test harness; client receives `humanView` only. Bot decisions are genuine pinned BEN via restricted `BenLoopbackBackend`. Terminal checks: 52 unique played cards, 13 completed four-card tricks, all counts zero, final scoring, event version equality, route invocation counts, bounded same-ID replay and privacy, with no private request logs. [Acceptance](product/A4_GATEWAY_A4_3_3_ACCEPTANCE.md). At implementation SHA `c41cbf5`, [genuine pinned BEN full-game CI #38845244764](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244764) **PASS** for fixed North 6NT, 52 distinct cards/13 tricks/final score/30 true BEN requests; [Gateway CI #38845244822](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244822) 32/32. No deployed service, no full matrix or device QA.
 
+## A4.4 explicit Flutter Gateway mode
+
+The Flutter App launches an independent `GatewayGameSession` and `GatewayTable` only when a `GatewayApi` is injected for tests or `BRIDGE_GATEWAY_ORIGIN` is explicitly defined. Its `GatewayHttpApi` permits only versioned POST `/v1/sessions/anonymous` and `/v1/games/view/action/advance`, with HTTPS or literal loopback HTTP for local development; redirects refused and bearer sent in authorization header, never URL. Server-filtered `PlayerView.fromJson` is typechecked and rendered with existing UI components. Lost-response recovery uses the same action ID and version, never silently switches to Demo. Tokens remain in RAM; no browser persistence/resume claim. CORS opt-in on local Gateway requires `GATEWAY_BROWSER_ORIGINS`. [A4.4 acceptance](product/A4_GATEWAY_A4_4_ACCEPTANCE.md).
+
 ## Components
 ~~~text
 Flutter Android / iOS / Web (render, input, localization)
