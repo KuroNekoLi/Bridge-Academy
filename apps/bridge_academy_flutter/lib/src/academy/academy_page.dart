@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'academy_catalog.dart';
 import 'academy_models.dart';
+import '../learning_progress/learner_progress.dart';
+import '../learning_progress/learner_store.dart';
+import 'package:flutter/foundation.dart';
 
 /// B4 reads authored questions only, not live BridgeSession/Deal/BEN state.
 class AcademyPage extends StatefulWidget {
-  const AcademyPage({super.key, required this.isEnglish});
+  const AcademyPage({super.key, required this.isEnglish, this.learnerStore});
+  final LearnerStore? learnerStore;
   final bool isEnglish;
 
   @override
@@ -13,20 +17,174 @@ class AcademyPage extends StatefulWidget {
 }
 
 class _AcademyPageState extends State<AcademyPage> {
-  final AcademyPractice _practice = AcademyPractice();
+  AcademyPractice _practice = AcademyPractice();
   late bool _english;
   AcademyLesson? _lesson;
   int _index = 0;
   String? _selected;
   AcademyFeedback? _feedback;
+  late final LearnerStore _store;
+  LearnerProgress _history = LearnerProgress();
+  bool _enabled = false;
+  bool _savingEnabled = false;
+  bool _persisting = false;
+  bool _storageError = false;
+  bool _loading = true;
+  bool _dashboard = false;
+  int _sequence = 0;
 
   @override
   void initState() {
     super.initState();
     _english = widget.isEnglish;
+    _store = widget.learnerStore ??
+      (kIsWeb ? EncryptedLearnerStore.browser() : EncryptedLearnerStore.native());
+    _restore();
   }
 
   String _t(String id) => _ui[id]!.localized(_english);
+  Future<void> _restore() async {
+    try {
+      final value = await _store.read();
+      if (!mounted) return;
+      setState(() {
+        _enabled = value != null;
+        _savingEnabled = value?.savingEnabled ?? false;
+        _history = value ?? LearnerProgress();
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() { _storageError = true; _loading = false; });
+    }
+  }
+  Future<void> _enable() async {
+    if (_persisting || _storageError || _loading) return;
+    setState(() => _persisting = true);
+    try {
+      await _store.write(_history);
+      if (mounted) setState(() { _enabled = true; _savingEnabled = true; });
+    } catch (_) {
+      if (mounted) setState(() { _storageError = true; _loading = false; });
+    } finally {
+      if (mounted) setState(() => _persisting = false);
+    }
+  }
+  Future<void> _delete() async {
+    final yes = await showDialog<bool>(context: context,
+      builder: (context) => AlertDialog(
+        title: Text(_t('deleteHistory')),
+        content: Text(_t('deleteWarning')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false),
+            child: Text(_t('cancel'))),
+          FilledButton(onPressed: () => Navigator.pop(context, true),
+            child: Text(_t('deleteHistory'))),
+        ],
+      ));
+    if (yes != true || _persisting) return;
+    setState(() => _persisting = true);
+    try {
+      await _store.clear();
+      if (mounted) {
+        setState(() {
+        _enabled = false;
+        _savingEnabled = false;
+        _history = LearnerProgress();
+        _practice = AcademyPractice();
+        _storageError = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() { _storageError = true; _loading = false; });
+    } finally {
+      if (mounted) setState(() => _persisting = false);
+    }
+  }
+  Future<void> _setSavingEnabled(bool desired) async {
+    if (!_enabled || _persisting || _storageError) return;
+    final updated = LearnerProgress(_history.attempts)
+      ..savingEnabled = desired;
+    setState(() => _persisting = true);
+    try {
+      await _store.write(updated);
+      if (mounted) {
+        setState(() {
+          _history = updated;
+          _savingEnabled = desired;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _storageError = true);
+    } finally {
+      if (mounted) setState(() => _persisting = false);
+    }
+  }
+
+  Future<void> _record(AcademyAnswer answer, AcademyFeedback result) async {
+    if (!_enabled || !_savingEnabled || _persisting || _storageError) return;
+    late final LearnerProgress updated;
+    try {
+      updated = LearnerProgress(_history.attempts);
+      updated.record(LearnerAttempt(
+        id: '${DateTime.now().toUtc().microsecondsSinceEpoch}-${_sequence++}',
+        timestampUtc: DateTime.now().toUtc(),
+        answer: answer,
+        correct: result.correct,
+      ));
+    } catch (_) {
+      if (mounted) setState(() => _storageError = true);
+      return;
+    }
+    setState(() => _persisting = true);
+    try {
+      await _store.write(updated);
+      if (mounted) setState(() => _history = updated);
+    } catch (_) {
+      if (mounted) setState(() { _storageError = true; _loading = false; });
+    } finally {
+      if (mounted) setState(() => _persisting = false);
+    }
+  }
+  Widget _progressView() {
+    final lessons = AcademyCatalog.validated();
+    final questionCount = lessons.fold<int>(0, (n, l) => n + l.questions.length);
+    return ListView(
+      key: const Key('c3_dashboard'),
+      padding: const EdgeInsets.all(12),
+      children: [
+        Text(_t('progressTitle'), style: Theme.of(context).textTheme.titleLarge),
+        Text('${_history.completedCount} / $questionCount ${_t('completedQuestions')}'),
+        Text('${_t('attempts')}: ${_history.total}'),
+        Text('${_t('accuracy')}: ${_history.accuracy == null ? _t('noData') : '${(_history.accuracy! * 100).round()}%'}'),
+        for (final tag in lessons.map((l) => l.skillTag).toSet())
+          ListTile(
+            title: Text(tag),
+            subtitle: Text(_history.skill(tag).accuracy == null
+              ? _t('noData')
+              : '${(_history.skill(tag).accuracy! * 100).round()}%'),
+            trailing: Text('${_history.skill(tag).correct}/${_history.skill(tag).total}'),
+          ),
+        Text(_t('recentAttempts')),
+        for (final a in _history.attempts.reversed.take(8))
+          ListTile(title: Text(a.answer.questionId),
+            subtitle: Text(a.timestampUtc.toIso8601String()),
+            trailing: Icon(a.correct ? Icons.check_circle : Icons.cancel)),
+        OutlinedButton(
+          key: const Key('c3_toggle_saving'),
+          onPressed: _persisting ? null
+            : () => _setSavingEnabled(!_savingEnabled),
+          child: Text(_t(_savingEnabled ? 'pauseHistory' : 'resumeHistory'))),
+        OutlinedButton(
+          key: const Key('c3_delete'),
+          onPressed: _persisting ? null : _delete,
+          child: Text(_t('deleteHistory'))),
+        TextButton(
+          key: const Key('c3_back'),
+          onPressed: () => setState(() => _dashboard = false),
+          child: Text(_t('allLessons'))),
+      ],
+    );
+  }
 
   void _open(AcademyLesson lesson) => setState(() {
         _lesson = lesson;
@@ -42,7 +200,10 @@ class _AcademyPageState extends State<AcademyPage> {
       });
 
   void _submit(AcademyQuestion question) {
-    if (_feedback != null || _selected == null || _lesson == null) return;
+    if (_feedback != null || _selected == null || _lesson == null ||
+        _persisting || _loading) {
+      return;
+    }
     final lesson = _lesson!;
     final result = _practice.submit(
       lesson: lesson,
@@ -56,6 +217,11 @@ class _AcademyPageState extends State<AcademyPage> {
       ),
     );
     setState(() => _feedback = result);
+    _record(AcademyAnswer(
+      lessonId: lesson.lessonId, questionId: question.questionId,
+      skillTag: question.skillTag, schemaVersion: lesson.schemaVersion,
+      selectedOptionId: _selected!,
+    ), result);
   }
 
   void _advance() {
@@ -102,7 +268,8 @@ class _AcademyPageState extends State<AcademyPage> {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 760),
-          child: _lesson == null ? _catalog() : _lessonFlow(_lesson!),
+          child: _dashboard ? _progressView() :
+            _lesson == null ? _catalog() : _lessonFlow(_lesson!),
         ),
       ),
     );
@@ -117,6 +284,25 @@ class _AcademyPageState extends State<AcademyPage> {
         const SizedBox(height: 8),
         Text(_t('scope')),
         const SizedBox(height: 12),
+        if (_loading)
+          const Center(child: CircularProgressIndicator(key: Key('c3_loading'))),
+        if (_storageError) ...[
+          Text(_t('storageError'), key: const Key('c3_storage_error')),
+          OutlinedButton(key: const Key('c3_clear_invalid'),
+            onPressed: _persisting ? null : _delete,
+            child: Text(_t('deleteHistory'))),
+        ],
+        if (!_enabled && !_storageError && !_loading)
+          FilledButton.tonal(
+            key: const Key('c3_enable'),
+            onPressed: _persisting ? null : _enable,
+            child: Text(_t('enableHistory'))),
+        if (_enabled)
+          OutlinedButton.icon(
+            key: const Key('c3_show_progress'),
+            onPressed: () => setState(() => _dashboard = true),
+            icon: const Icon(Icons.bar_chart),
+            label: Text(_t('progressTitle'))),
         for (final lesson in AcademyCatalog.validated())
           Card(
             key: Key('academy_lesson_${lesson.lessonId}'),
@@ -131,7 +317,7 @@ class _AcademyPageState extends State<AcademyPage> {
                   Text(lesson.summary.localized(_english)),
                   const SizedBox(height: 8),
                   Text(
-                    '${_practice.completedCount(lesson)} / ${lesson.questions.length} ${_t('completedQuestions')}',
+                    '${_enabled ? lesson.questions.where((q) => _history.isCompleted(q.questionId)).length : _practice.completedCount(lesson)} / ${lesson.questions.length} ${_t('completedQuestions')}',
                     key: Key('academy_progress_${lesson.lessonId}'),
                   ),
                   const SizedBox(height: 10),
@@ -212,6 +398,8 @@ class _AcademyPageState extends State<AcademyPage> {
                     onPressed: _selected == null ? null : () => _submit(question),
                     child: Text(_t('submit')),
                   ),
+                if (_storageError)
+                  Text(_t('storageError'), key: const Key('c3_answer_storage_error')),
                 if (_feedback case final result?) ...[
                   Text(
                     _t(result.correct ? 'correct' : 'incorrect'),
@@ -267,7 +455,7 @@ class _AcademyPageState extends State<AcademyPage> {
                     style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text(
-                  '${_practice.completedCount(lesson)} / ${lesson.questions.length} ${_t('completedQuestions')}',
+                  '${_enabled ? lesson.questions.where((q) => _history.isCompleted(q.questionId)).length : _practice.completedCount(lesson)} / ${lesson.questions.length} ${_t('completedQuestions')}',
                   key: const Key('academy_completed_count'),
                 ),
                 const SizedBox(height: 12),
@@ -295,9 +483,8 @@ class _AcademyPageState extends State<AcademyPage> {
     'title': AcademyText('橋牌學院｜入門課程', 'Bridge Academy | Beginner lessons'),
     'welcome': AcademyText('選擇你的第一堂課', 'Choose your first lesson'),
     'scope': AcademyText(
-      '原創規則練習，答對才計入本次完成數。目前只保存於此畫面，關閉後不保留進度。',
-      'Original rules quizzes. Only correct answers count. '
-      'Progress resets when this page closes.',
+      '原創規則練習；預設不儲存。只有主動同意後才會加密保留學習紀錄。',
+      'Original rules quizzes. Saving is off by default; opt in to keep encrypted progress.',
     ),
     'startLesson': AcademyText('開始學習', 'Start lesson'),
     'question': AcademyText('第', 'Question'),
@@ -313,9 +500,21 @@ class _AcademyPageState extends State<AcademyPage> {
     'allLessons': AcademyText('回課程列表', 'Back to lessons'),
     'exit': AcademyText('返回牌桌', 'Back to bridge table'),
     'language': AcademyText('切換為英文', 'Switch to Chinese'),
+    'enableHistory': AcademyText('同意加密保存學習紀錄', 'Enable encrypted learning history'),
+    'progressTitle': AcademyText('學習進度', 'Learning progress'),
+    'attempts': AcademyText('答題次數', 'Attempts'),
+    'accuracy': AcademyText('答題正確率', 'Accuracy'),
+    'noData': AcademyText('尚無資料', 'No data'),
+    'recentAttempts': AcademyText('最近練習', 'Recent attempts'),
+    'pauseHistory': AcademyText('暫停保存（保留現有紀錄）', 'Pause saving (keep history)'),
+    'resumeHistory': AcademyText('繼續保存答題紀錄', 'Resume saving attempts'),
+    'deleteHistory': AcademyText('清除所有學習紀錄', 'Delete all learning history'),
+    'deleteWarning': AcademyText('所有本機紀錄將刪除且停止保存，無法復原。', 'All local history will be deleted and saving disabled. This cannot be undone.'),
+    'cancel': AcademyText('取消', 'Cancel'),
+    'storageError': AcademyText('讀寫加密資料失敗，舊資料未被清除。', 'Encrypted history unavailable; old data was not cleared.'),
     'sessionOnly': AcademyText(
-      '本次進度只存在此畫面；後續 C3 才會負責長期學習紀錄。',
-      'Session-only progress; C3 will handle durable learning records.',
+      '未啟用保存時，關閉畫面後不會保留進度。',
+      'Without opting in, progress resets when this page closes.',
     ),
   };
 }
