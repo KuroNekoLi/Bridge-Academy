@@ -164,7 +164,8 @@ class _BridgeTableState extends State<BridgeTable> {
     setState(() {
       _selectedSeat = widget.session.humanSeat;
       _selectedMode = widget.session.mode;
-      _selectedBoard = widget.session.boardMode;
+      _selectedBoard = widget.session.boardMode == BoardMode.bidding
+          ? BoardMode.fresh : widget.session.boardMode;
     });
   }
 
@@ -229,7 +230,7 @@ class _BridgeTableState extends State<BridgeTable> {
                     FilledButton.tonalIcon(
                       key: const Key('start_four_board'),
                       onPressed: session.busy || session.saveFailed ||
-                          (session.started && !session.finished) ||
+                          (session.started && !session.finished && !session.biddingPracticeComplete) ||
                           (session.fourBoardPractice != null &&
                            !session.fourBoardPractice!.isComplete)
                           ? null : () {
@@ -246,6 +247,24 @@ class _BridgeTableState extends State<BridgeTable> {
                       label: Text(copy.t('practiceFourStart')),
                     ),
                     _justDeclareLauncher(session, copy),
+                     FilledButton.tonalIcon(
+                       key: const Key('start_bidding_practice'),
+                       onPressed: session.busy || session.saveFailed ||
+                           (session.started && !session.finished &&
+                               !session.biddingPracticeComplete) ||
+                           (session.fourBoardPractice != null &&
+                               !session.fourBoardPractice!.isComplete)
+                           ? null : () {
+                         setState(() {
+                           _replayIndex = null;
+                           _selectedBoard = BoardMode.fresh;
+                           _selectedMode = OpponentMode.demo;
+                         });
+                         session.startBiddingPractice(humanSeat: _selectedSeat);
+                       },
+                       icon: const Icon(Icons.record_voice_over),
+                       label: Text(copy.t('biddingStart')),
+                     ),
                     OutlinedButton.icon(
                       key: const Key('history_toggle'),
                       onPressed: () => setState(() {
@@ -304,7 +323,9 @@ class _BridgeTableState extends State<BridgeTable> {
               const SizedBox(height: 8),
               _fourBoardPanel(session, copy),
             ],
-            if (session.isJustDeclare) ...[
+            if (session.isBiddingPractice)
+               _biddingPracticePanel(session, copy),
+             if (session.isJustDeclare) ...[
               const SizedBox(height: 8),
               Card(
                 key: const Key('just_declare_active'),
@@ -425,7 +446,8 @@ class _BridgeTableState extends State<BridgeTable> {
               BridgeTableSurface(
                  view: view,
                  copy: copy,
-                 actionsPaused: session.actionsPaused,
+                 actionsPaused: session.actionsPaused ||
+                     (session.isBiddingPractice && session.biddingPracticeComplete),
                  onPlayCard: session.submitCard,
                ),
               const SizedBox(height: 8),
@@ -434,11 +456,11 @@ class _BridgeTableState extends State<BridgeTable> {
               if (!session.finished)
                 _humanControls(view, session, copy)
               else ...[
-                _finishCard(view, copy),
+                if (!session.isBiddingPractice) _finishCard(view, copy),
                 const SizedBox(height: 8),
-                _completedBoardActions(session, copy),
+                if (!session.isBiddingPractice) _completedBoardActions(session, copy),
                 const SizedBox(height: 8),
-                if (!_historyOpen) _replayPanel(session, copy),
+                if (!_historyOpen && !session.isBiddingPractice) _replayPanel(session, copy),
               ],
             ],
               ],
@@ -498,10 +520,11 @@ class _BridgeTableState extends State<BridgeTable> {
         child: DropdownButtonFormField<BoardMode>(
           key: const Key('board_mode_selector'),
           isExpanded: true,
-          initialValue: _selectedBoard,
+          initialValue: _selectedBoard == BoardMode.bidding
+              ? BoardMode.fresh : _selectedBoard,
           decoration: InputDecoration(labelText: copy.t('boardMode')),
           items: [
-            for (final board in BoardMode.values)
+            for (final board in [BoardMode.training, BoardMode.fresh])
               DropdownMenuItem(
                 value: board,
                 child: Text(
@@ -550,7 +573,7 @@ class _BridgeTableState extends State<BridgeTable> {
           FilledButton.tonalIcon(
             key: const Key('start_just_declare'),
             onPressed: session.busy || session.saveFailed ||
-                (session.started && !session.finished) ||
+                (session.started && !session.finished && !session.biddingPracticeComplete) ||
                 (session.fourBoardPractice != null &&
                     !session.fourBoardPractice!.isComplete)
                 ? null : () {
@@ -566,6 +589,38 @@ class _BridgeTableState extends State<BridgeTable> {
           ),
         ],
       );
+
+  Widget _biddingPracticePanel(BridgeSession session, AppCopy copy) {
+    final view = session.view!;
+    final complete = session.biddingPracticeComplete;
+    return Card(
+      key: const Key('bidding_practice_panel'),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(copy.t('biddingTitle'),
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(copy.t('biddingScope')),
+            Text(copy.t('biddingProfile')),
+            if (view.auction.isNotEmpty)
+              Text(copy.t(session.biddingExplanationKey),
+                  key: const Key('bidding_explanation')),
+            if (!complete && session.biddingSuggestion != null)
+              Text("${copy.t('biddingHint')}: ${session.biddingSuggestion!.code}",
+                  key: const Key('bidding_suggestion')),
+            if (complete) ...[
+              Text(copy.t('biddingFinished'),
+                  key: const Key('bidding_finished')),
+              Text(copy.contract(view.contract?.label ?? 'PASS OUT')),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _fourBoardPanel(BridgeSession session, AppCopy copy) {
     final practice = session.fourBoardPractice!;
@@ -658,7 +713,7 @@ class _BridgeTableState extends State<BridgeTable> {
         onSubmitCall: session.submitCall,
       );
     }
-    if (view.phase == Phase.play) {
+    if (view.phase == Phase.play && !session.isBiddingPractice) {
       return BridgePlayerHand(
         view: view,
         copy: copy,

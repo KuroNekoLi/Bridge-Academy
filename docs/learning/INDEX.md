@@ -77,6 +77,8 @@
 
 | M2-F41 | B2.2 四座位莊家練習、定約目標進度、完成／宕約結果、修復 Session 實際缺失（CI PENDING） | [M2-F41 教學](features/M2_F41_JUST_DECLARE_FOUR_SEATS.md) | [BridgeSession](../../apps/bridge_academy_flutter/lib/src/bridge_session.dart) · [牌桌](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart) · [測試](../../apps/bridge_academy_flutter/test/b2_2_declarer_seats_test.dart) · [B2 驗收](../product/B2_JUST_DECLARE_ACCEPTANCE.md) | DELIVERED |
 
+| M2-F42 | B3.1 叫牌練習、自然 NT 示範約定、PlayerView 隱私（CI 待確認） | [M2-F42 教學](features/M2_F42_BIDDING_PRACTICE.md) | [實作](../../apps/bridge_academy_flutter/lib/src/bidding_practice.dart) · [測試](../../apps/bridge_academy_flutter/test/b3_bidding_practice_test.dart) · [B3.1 驗收](../product/B3_BIDDING_PRACTICE_ACCEPTANCE.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。

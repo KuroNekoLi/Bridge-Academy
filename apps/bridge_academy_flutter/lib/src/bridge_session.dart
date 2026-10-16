@@ -7,11 +7,12 @@ import 'package:flutter/foundation.dart';
 import 'session_persistence.dart';
 import 'completed_history_store.dart';
 import 'four_board_practice.dart';
+import 'bidding_practice.dart';
 import 'completed_pbn_export.dart';
 import 'completed_pbn_import.dart';
 
 enum OpponentMode { demo, ben }
-enum BoardMode { training, fresh }
+enum BoardMode { training, fresh, bidding }
 
 /// Private in-process game controller for M2: clients only observe PlayerView.
 ///
@@ -73,6 +74,14 @@ class BridgeSession extends ChangeNotifier {
   bool get started => _coordinator != null;
   bool get finished => _coordinator?.finished ?? false;
   bool get isJustDeclare => _coordinator?.isJustDeclare ?? false;
+  bool get isBiddingPractice => _boardMode == BoardMode.bidding && started;
+  bool get biddingPracticeComplete =>
+      isBiddingPractice && view?.phase != Phase.auction;
+  Call? get biddingSuggestion =>
+      isBiddingPractice && view?.phase == Phase.auction && view!.canAct
+          ? BiddingPracticeProfile.suggest(view!) : null;
+  String get biddingExplanationKey => isBiddingPractice
+      ? BiddingPracticeProfile.explain(view!.auction) : 'biddingUnknown';
   PlayerView? get view => _coordinator?.humanView;
   CompletedReplay? get completedReplay => _coordinator?.completedReplay;
   OpponentMode get mode => _mode;
@@ -233,6 +242,7 @@ class BridgeSession extends ChangeNotifier {
   }
 
   Future<void> _archiveCompleted() async {
+    if (isBiddingPractice) return;
     if (_historyStore == null || _coordinator?.finished != true) {
       return;
     }
@@ -299,7 +309,7 @@ class BridgeSession extends ChangeNotifier {
               .recoveredOlderCheckpoint;
       final mode = OpponentMode.values.byName(snapshot.opponentMode);
       final boardMode = BoardMode.values.byName(snapshot.boardMode);
-      final bot = _createBot(mode);
+      final bot = _createBot(mode, boardMode: boardMode);
       final coordinator = SinglePlayerCoordinator.restore(
         trustedStorageArchive: snapshot.transcript,
         humanSeat: snapshot.humanSeat, bot: bot,
@@ -399,8 +409,11 @@ class BridgeSession extends ChangeNotifier {
     if (successful) await _advanceBots();
   }
 
-  BotPolicy _createBot(OpponentMode mode) {
+  BotPolicy _createBot(OpponentMode mode, {BoardMode? boardMode}) {
     if (_botFactory != null) return _botFactory(mode);
+    if ((boardMode ?? _boardMode) == BoardMode.bidding) {
+      return const BiddingPracticeBot();
+    }
     if (mode == OpponentMode.demo) {
       return const DeterministicTrainingBot();
     }
@@ -429,7 +442,7 @@ class BridgeSession extends ChangeNotifier {
     if (level < 1 || level > 7) {
       throw ArgumentError.value(level, 'level', 'Training level must be 1–7');
     }
-    if (busy || _saveFailed || (started && !finished) ||
+    if (busy || _saveFailed || (started && !finished && !biddingPracticeComplete) ||
         (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
       return;
     }
@@ -449,13 +462,31 @@ class BridgeSession extends ChangeNotifier {
     );
   }
 
+  /// A standalone auction-only drill; Core remains the legal-call judge.
+  Future<void> startBiddingPractice({Seat humanSeat = Seat.north}) async {
+    if (busy || _saveFailed ||
+        (started && !finished && !biddingPracticeComplete) ||
+        (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
+      return;
+    }
+    _fourBoardPractice = null;
+    await _beginBoard(
+      board: BoardDefinition.forNumber(
+          started ? _board.number + 1 : _board.number),
+      deal: _freshDealFactory?.call() ?? Deal.shuffled(),
+      humanSeat: humanSeat,
+      mode: OpponentMode.demo,
+      boardMode: BoardMode.bidding,
+    );
+  }
+
   /// Starts four distinct newly shuffled practice boards with normal Core
   /// auctions, tricks, and scores. No manufactured MP/IMP comparison.
   Future<void> startFourBoardPractice({
     Seat humanSeat = Seat.north,
     OpponentMode mode = OpponentMode.demo,
   }) async {
-    if (busy || _saveFailed || (started && !finished) ||
+    if (busy || _saveFailed || (started && !finished && !biddingPracticeComplete) ||
         (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
       return;
     }
@@ -614,7 +645,8 @@ class BridgeSession extends ChangeNotifier {
 
   Future<void> submitCard(Card card) async {
     final view = this.view;
-    if (actionsPaused || _saveFailed || view == null || view.phase != Phase.play ||
+    if (actionsPaused || _saveFailed || isBiddingPractice ||
+        view == null || view.phase != Phase.play ||
         !view.canAct || view.turn == null ||
         !view.legalCards.contains(card)) {
       return;
@@ -651,6 +683,7 @@ class BridgeSession extends ChangeNotifier {
 
   Future<void> _advanceBots() async {
     if (actionsPaused || _saveFailed || _coordinator == null ||
+        (isBiddingPractice && view?.phase != Phase.auction) ||
         _coordinator!.finished ||
         _coordinator!.humanView.canAct) {
       return;
@@ -661,6 +694,7 @@ class BridgeSession extends ChangeNotifier {
     try {
       await _coordinator!.runBots(
         maxActions: 100,
+        stopAfterAuction: isBiddingPractice,
         afterCommittedAction: _archiveStore == null ? null : _persist,
       );
       if (finished) {

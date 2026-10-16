@@ -76,6 +76,41 @@ class AppCopy {
     'live': ['真正 BEN API', 'Live BEN API'],
     'humanSeat': ['玩家座位', 'Your seat'],
     'newGame': ['開始新牌局', 'Start new deal'],
+    'biddingStart': ['開始叫牌練習', 'Start bidding practice'],
+    'biddingTitle': ['B3 叫牌練習', 'B3 Bidding practice'],
+    'biddingScope': [
+      '只練叫牌，不出牌、不計分；目前使用本機規則 Bot（非 BEN），提示不代表最佳叫品。',
+      'Auction-only: no cards or scores. Local rules bot (NOT BEN); hints are not optimal strategy.',
+    ],
+    'biddingProfile': [
+      '教學約定 BA-NATURAL-NT v1（尚未經外部專家審核）',
+      'Teaching agreement BA-NATURAL-NT v1 (not expert-reviewed)',
+    ],
+    'biddingHint': ['本手牌的示範建議', 'Sample call for your hand'],
+    'biddingFinished': [
+      '叫牌已完成。可以開始下一副練習。',
+      'Auction complete. You may start another drill.',
+    ],
+    'biddingOpening1NT': [
+      '教學約定：前面僅 Pass 的 1NT 開叫，表示 15–17 HCP 均型；無法驗證其他人的真實牌力。',
+      'Teaching agreement: 1NT opening after passes shows 15–17 HCP balanced; does not verify hidden hand strength.',
+    ],
+    'biddingInvite2NT': [
+      '教學約定：搭檔 1NT 開叫後，以 2NT 邀請進局，表示 8–9 HCP（無敵方插叫）。',
+      'Teaching agreement: 2NT invites game with 8–9 HCP after uncontested partner 1NT.',
+    ],
+    'biddingGame3NT': [
+      '教學約定：搭檔 1NT 開叫後的 3NT 進局，表示 10+ HCP（無敵方插叫）。',
+      'Teaching agreement: 3NT game response shows 10+ HCP after uncontested partner 1NT.',
+    ],
+    'biddingAccept3NT': [
+      '教學約定：1NT 開叫者接受搭檔 2NT 邀請，以 3NT 進局。',
+      'Teaching agreement: 1NT opener accepts partner’s 2NT invitation with 3NT.',
+    ],
+    'biddingUnknown': [
+      '此叫品無法在本版約定下確定解釋，不應推測其他人的真實牌力。',
+      'No supported explanation for this call; do not infer hidden hands.',
+    ],
     'justDeclareStart': ['只練莊家（Just Declare）', 'Just Declare practice'],
     'justDeclareLevel': ['選擇定約線位', 'Choose contract level'],
     'justDeclareStrain': ['選擇定約花色', 'Choose contract strain'],

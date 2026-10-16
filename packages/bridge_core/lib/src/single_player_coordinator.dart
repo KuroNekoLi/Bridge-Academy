@@ -147,13 +147,15 @@ class SinglePlayerCoordinator {
   Future<int> runBots({
     int maxActions = 60,
     Future<void> Function()? afterCommittedAction,
+    bool stopAfterAuction = false,
   }) async {
     if (_botRunning) throw const RuleViolation('Bot runner is already active');
     if (maxActions <= 0) throw ArgumentError.value(maxActions, 'maxActions');
     _botRunning = true;
     var applied = 0;
     try {
-      while (!_state.isFinished && _state.actorToPlay != humanSeat) {
+      while (!_state.isFinished && _state.actorToPlay != humanSeat &&
+          (!stopAfterAuction || _state.phase == Phase.auction)) {
         if (applied >= maxActions) {
           throw const RuleViolation('Bot action budget exceeded');
         }

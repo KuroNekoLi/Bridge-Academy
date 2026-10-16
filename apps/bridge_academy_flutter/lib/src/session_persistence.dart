@@ -313,8 +313,12 @@ abstract final class SavedBoardCodec {
     if (opponentMode != 'demo' && opponentMode != 'ben') {
       throw const FormatException('Unknown opponent mode');
     }
-    if (boardMode != 'training' && boardMode != 'fresh') {
+    if (boardMode != 'training' && boardMode != 'fresh' &&
+        boardMode != 'bidding') {
       throw const FormatException('Unknown board source');
+    }
+    if (boardMode == 'bidding' && opponentMode != 'demo') {
+      throw const FormatException('Bidding practice must use demo bot');
     }
     final transcript = Map<String, dynamic>.from(decoded['transcript'] as Map);
     // Replay all actions under the same Bridge Core authority as live play.
