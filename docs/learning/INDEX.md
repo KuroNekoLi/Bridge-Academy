@@ -47,7 +47,7 @@
 
 | M2-F26 | A4.2 匿名 Bearer Session、Rate Limiting、HTTP API 信任邊界（localhost HTTP 14/14 CI PASS） | [M2-F26 教學](features/M2_F26_ANONYMOUS_GATEWAY.md) | [Loopback Gateway](../../services/bridge_gateway/lib/src/gateway_service.dart) · [HTTP tests](../../services/bridge_gateway/test/gateway_service_test.dart) · [A4.2 acceptance](../product/A4_GATEWAY_A4_2_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F27 | A4.3.1 BEN Loopback Worker（HTTP 20/20 PASS；真 BEN Gateway smoke 待 CI） | [M2-F27 教學](features/M2_F27_BEN_LOOPBACK_WORKER.md) | [Loopback Backend](../../services/bridge_gateway/lib/src/ben_loopback_backend.dart) · [HTTP tests](../../services/bridge_gateway/test/ben_loopback_backend_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_1_ACCEPTANCE.md) | DELIVERED |
+| M2-F27 | A4.3.1 BEN Loopback Worker（HTTP 20/20 PASS；真 BEN bid/lead/play PASS） | [M2-F27 教學](features/M2_F27_BEN_LOOPBACK_WORKER.md) | [Loopback Backend](../../services/bridge_gateway/lib/src/ben_loopback_backend.dart) · [HTTP tests](../../services/bridge_gateway/test/ben_loopback_backend_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_1_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

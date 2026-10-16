@@ -25,7 +25,7 @@ A4.1 is a reversible interface seam, **not wired into the default Flutter app**.
 
 The optional `BenLoopbackBackend` implements `GatewayDecisionBackend`: it maps Gateway's POST envelope to pinned BEN GET `/bid`, `/lead`, `/play` **only on an IP-literal loopback** (`127.0.0.1` or `::1`), disables redirects and proxy, bounds response size/time, hides errors and returns only `bid`/`card`. `BEN_INTERNAL_ORIGIN` is explicit opt-in in `bin/serve.dart`; unset means unchanged 503. [Acceptance](product/A4_GATEWAY_A4_3_1_ACCEPTANCE.md).
 
-**Important trust blocker:** Anonymous Gateway Session currently carries quota only; requester-supplied `hand/seat` is not verified against a server-owned Deal. No public deployment until server-authoritative game/seat context, stable event-version and request dedup. Local fake BEN HTTP tests do not constitute true BEN model verification. A3.5/device hold unchanged.
+**Important trust blocker:** Anonymous Gateway Session currently carries quota only; requester-supplied `hand/seat` is not verified against a server-owned Deal. No public deployment until server-authoritative game/seat context, stable event-version and request dedup. Localhost HTTP tests are complemented by [genuine pinned BEN bid/lead/play smoke PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285) and [20/20 Gateway HTTP PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641317). Neither provides a 13-trick Gateway game or seat-bound authorization. A3.5/device hold unchanged.
 
 ## Components
 ~~~text

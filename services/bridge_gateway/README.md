@@ -48,14 +48,14 @@ A4.3: internal BEN adapter, request ID + event-version deduplication, real pinne
 
 ## A4.3.1 private BEN loopback worker (explicit local opt-in)
 
-Run the pinned BEN Python API on the SAME machine bound to \`127.0.0.1:8085\`, then opt in:
+Run the pinned BEN Python API on the SAME machine bound to `127.0.0.1:8085`, then opt in:
 
-\`\`\`bash
+```bash
 cd services/bridge_gateway
 BEN_INTERNAL_ORIGIN=http://127.0.0.1:8085 dart run bin/serve.dart
-\`\`\`
+```
 
-The new \`BenLoopbackBackend\` performs GET \`/bid\`, \`/lead\`, \`/play\` **only over IP-literal loopback**, after the first-party Gateway has authenticated and allowlisted the POST envelope. It rejects DNS hostnames (even \`localhost\`), remote IPs, credentials, redirects, errors and oversize bodies; errors are sanitized. Unset \`BEN_INTERNAL_ORIGIN\` to retain the prior default 503. The Worker makes proposals, never commits a Bridge Core action.
+The new `BenLoopbackBackend` performs GET `/bid`, `/lead`, `/play` **only over IP-literal loopback**, after the first-party Gateway has authenticated and allowlisted the POST envelope. It rejects DNS hostnames (even `localhost`), remote IPs, credentials, redirects, errors and oversize bodies; errors are sanitized. Unset `BEN_INTERNAL_ORIGIN` to retain the prior default 503. The Worker makes proposals, never commits a Bridge Core action.
 
 The working model is **local development only**, NOT an Internet-enabled BEN service. The caller currently supplies a hand without a game/seat binding; anonymous credentials are not full player authorization. Server-owned Bridge Core game state, expected event version, request deduplication, public HTTPS deployment and BEN license/cost reviews remain required.
 
@@ -63,4 +63,4 @@ See [A4.3.1 acceptance](../../docs/product/A4_GATEWAY_A4_3_1_ACCEPTANCE.md) and 
 
 ### Genuine pinned BEN Gateway smoke (separate from stub tests)
 
-[Workflow](../../.github/workflows/ben-gateway-real.yml) checks out `lorserker/ben@72653ec1` with Python 3.12, starts its genuine gameapi.py on loopback, then runs [live_gateway_ben_smoke.dart](bin/live_gateway_ben_smoke.dart) against the **actual BEN model**. The smoke obtains an anonymous Gateway token and executes one bid, one opening lead and one exposed-dummy play; it logs only success flags, never request URLs, hands or raw BEN output. This is not a complete 13-trick test, seat authorization or hosted HTTPS validation. The existing separate live BEN full-game tests remain the longer regression gate. Initial genuine model CI status: **PENDING**.
+[Workflow](../../.github/workflows/ben-gateway-real.yml) checks out `lorserker/ben@72653ec1` with Python 3.12, starts its genuine gameapi.py on loopback, then runs [live_gateway_ben_smoke.dart](bin/live_gateway_ben_smoke.dart) against the **actual BEN model**. The smoke obtains an anonymous Gateway token and executes one bid, one opening lead and one exposed-dummy play; it logs only success flags, never request URLs, hands or raw BEN output. This is not a complete 13-trick test, seat authorization or hosted HTTPS validation. The existing separate live BEN full-game tests remain the longer regression gate. [Real BEN Gateway CI #38837641285](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641285) **SUCCESS**: pinned genuine BEN bid, lead and play via Gateway POST / internal loopback GET; [localhost CI #38837641317](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38837641317) 20/20 PASS. Neither is a complete game or public service.
