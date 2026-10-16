@@ -84,7 +84,8 @@ void main() {
       expect(view['ownCards'], hasLength(13));
       expect((view['ownCards'] as List).every((e) =>
           (e as String).startsWith('C')), isTrue);
-      expect(v.data.toString(), isNot(contains('N:')));
+      expect(v.data.keys, isNot(contains('deal')));
+      expect(view.keys, isNot(contains('hands')));
       expect(view.keys, isNot(contains('deal')));
       expect(backend.calls, 0);
     });
