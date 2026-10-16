@@ -5,11 +5,27 @@
 
 ## 2026-10-15 delivery alignment and current action
 
-**Existing authority remains intact.** A1 (canonical board metadata) is scoped engineering-verified; A2 includes verified Core/Web resume and later native/Web encrypted checkpoint implementations, **not a fully validated cross-device/production recovery solution**. The next **feature-development** slice is **A3 Bridge Table UI V2 design + component decomposition**. A2 deployment security, native durability, browser concurrency, and BEN request idempotency continue as explicit P0 blockers. No device or emulator run is authorized to resolve them yet.
+**Existing authority remains intact.** A1 (canonical board metadata) is scoped engineering-verified; A2 includes verified Core/Web resume and later native/Web encrypted checkpoint implementations, **not a fully validated cross-device/production recovery solution**. A3.5 was expressly deferred by the owner; next feature is **A4 Production BEN Integration**, beginning with A4.1 HTTPS POST client boundary. A2 deployment security, native durability, browser concurrency, and BEN request idempotency continue as explicit P0 blockers. No device or emulator run is authorized to resolve them yet.
 
 **Device-test hold:** owner has paused all real Android/iOS and Android emulator UI/E2E testing until a separate explicit approval. The related GitHub workflows have auto-trigger removed and jobs hard-skipped. Keep A7 device QA in release criteria, but do not schedule, re-enable, or dispatch it; use pure Dart, Flutter analyze/widget, Web builds and existing allowed browser/BEN checks meanwhile. Documentation-only changes do not count as code verification.
 
 **Daily challenge sequencing:** B6/P1 = optional **unranked, reproducible daily practice** on fixed original board sets, with local learning feedback; **D1–D4/P3** = official async duplicate comparison and any ranked daily competition/friend PK. B6 must not claim global fairness, MP/IMP, real peer rankings or anti-cheat authority. This separates a low-cost retention experiment from the server-backed tournament product.
+
+## 2026-10-16 delivery decision — A3.5 deferred; A4 begins
+
+The owner **postponed A3.5 final UI/physical device/assistive tech acceptance** without waiving it. A3.1–A3.4 remain scoped Flutter/Web/real BEN CI verified; **A3 product/release GO is NOT VERIFIED**. Android emulator and physical Android/iOS UI/E2E remain off until separately approved.
+
+**A4: Production BEN Integration** (do not conflate MockClient coverage with production hosting):
+
+| Slice | Deliverable | Status |
+| --- | --- | --- |
+| A4.1 | Versioned authenticated HTTPS POST Gateway client, injected short-lived token supplier; no hand/token in URL; failure/safe-response tests | IMPLEMENTED / CI pending |
+| A4.2 | Server-issued anonymous limited session credentials, authenticated/authorized Gateway, rate limiting and abuse controls | NOT IMPLEMENTED |
+| A4.3 | Private-network BEN worker gateway mediation, stable request identity/dedup and real BEN regressions | NOT IMPLEMENTED |
+| A4.4 | Flutter real Gateway integration, accessible localized errors/retry and secure host configuration | NOT IMPLEMENTED |
+| A4.5 | Staging HTTPS deployment, weights/license, cost/latency/concurrency/privacy review, multi-board acceptance | NOT IMPLEMENTED |
+
+[A4.1 wire contract](A4_GATEWAY_CONTRACT_V1.md). Deployment, credential issuing, server authorization and production latency are not implemented or verified.
 
 ## 1. Status taxonomy and gates
 
@@ -55,7 +71,7 @@ The graph represents completion dependencies and **does not authorize Android de
 | **A1 / P1.1 Board Management** | Board Number, Dealer, Vulnerability, Replay Same Board, Next Board and fixed/fresh labels | Canonical 16-board dealer/vul cycle and repeat at 17; four seats; scoring; BEN wire/Flutter zh-TW/en | [M2-F12 acceptance](P1_A1_BOARD_MANAGEMENT_ACCEPTANCE.md) | **CORE/FLUTTER WEB + FIXED REAL BEN VERIFIED; ANDROID REGRESSION PENDING** |
 | **A2 / P1.2 Persistence** | Best-effort restore prototype with versioned transcript and read-only player projection | [M2-F13 acceptance](P1_A2_PERSISTENCE_ACCEPTANCE.md); reliable encrypted/transactional storage, real crash tests, server idempotency still required | Coordinator replay + SharedPreferencesAsync local checkpoint | **A2 Core/Web checkpoint tests and A2.7 encrypted native storage implemented; A2.8 encrypted Web archive added; [latest Flutter/Chrome CI success](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38757222196). Physical device verification, browser deployment/XSS/multitab review and real BEN exactly-once still BLOCKED/NOT VERIFIED.** |
 | **A3 / P1.3 Table UX V2** | A3.1–A3.3 componentized responsive table/bidding/history/replay; **A3.4 localized card/seat semantics, 48px targets, non-color turn cue, scaled text** | 320/375/768px plus 1.6–2x text, disabled states, Chrome Demo and real BEN; physical TalkBack/VoiceOver and high-fidelity UI review still pending | [A3 acceptance](A3_BRIDGE_TABLE_V2_SPEC.md) · [Flutter 80/80 + Chrome Demo](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474371) · [True BEN Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474505) | **A3.1–A3.4 SCOPED ENGINEERING VERIFIED; A3.5 RELEASE ACCEPTANCE NOT VERIFIED; device QA ON HOLD** |
-| **A4 / P1.4 Real BEN client delivery** | One-click real AI in installed/distributed app; no local Python prerequisite | Authenticated HTTPS and private hand data handling; BEN no silent Demo fallback; 4-seat/16-board matrix; measured p50/p95/errors with actual model settings; fail/retry | Real pinned Python BEN Chrome fixed-board CI; local HTTP GET dev integration | PARTIAL / PRODUCTION BLOCKED |
+| **A4 / P1.4 Real BEN client delivery** | A4.1 optional HTTPS POST gateway client and credential-provider interface, *not wired to live app* | Secure envelope MockClient tests; production gateway/auth/hosting, real BEN and privacy/idempotency still separate release gates | [A4.1 wire contract](A4_GATEWAY_CONTRACT_V1.md) · [Gateway transport](../../packages/bridge_ben_adapter/lib/src/ben_gateway_transport.dart) | **A4.1 IMPLEMENTED / CI PENDING; PRODUCTION BLOCKED** |
 | **A5 / P1.5 History + Same-deal retry** | Persistent finished-deal list, search/filter, replay and labeled training re-run | Survive app restart, import untrusted transcript safely, exact score replay, no original result double-count, no hidden-hand leak | In-memory finished replay exists | PARTIAL |
 | **A6 / P1.6 Multi-board E2E acceptance** | Repeated four+ board playable session, automatic board metadata, recoverable errors | 4 seats × fixed/fresh boards, Pass Out, X/XX, contract game, dummy, 52/13; device/real-AI playtest; CI+human observation | Existing fixed-board CI only | NOT VERIFIED |
 | **A7 / P1.7 Release readiness** | Real installable builds, privacy/license, localizations, telemetry safety, release checklist | Physical Android and iOS + Web smoke; crash/latency profiling, third-party review, device matrix | Android emulator smoke and Flutter Web build | PARTIAL |

@@ -71,6 +71,8 @@ Level/strain and Pass/X/XX buttons are now extracted into a controlled stateless
 - [Feature Learning Gate #38819474409](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38819474409): **SUCCESS**; the M2-F24 Traditional Chinese lesson is delivered, not learner-mastered.
 - **A3.4 scoped engineering acceptance: PASS. A3.5 and device accessibility/release acceptance: NOT VERIFIED.** These tests do not certify TalkBack, VoiceOver, real device ergonomics, contrast ratio across all themes, or screen reader navigation. Owner device QA hold remains active.
 
+**Owner decision 2026-10-16:** A3.5 is DEFERRED, not accepted or canceled. A3.1–A3.4 retain scoped engineering results; Android/iOS device QA, visual approval, VoiceOver/TalkBack and A3 release gate remain explicitly OPEN while A4 proceeds.
+
 ## Compatibility / non-goals
 
 - Do not modify Bridge Core/BoardDefinition, BEN transport, storage migration, score contracts, replay event format, nor enable device workflows.
