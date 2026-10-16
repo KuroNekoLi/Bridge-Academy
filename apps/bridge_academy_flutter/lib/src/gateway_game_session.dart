@@ -112,7 +112,9 @@ class GatewayGameSession extends ChangeNotifier {
   Future<void> submitCall(Call call) async {
     final current = _view;
     if (actionsPaused || current == null ||
-        current.phase != Phase.auction || !current.canAct) return;
+        current.phase != Phase.auction || !current.canAct) {
+      return;
+    }
     await _execute('/v1/games/action', {
       'version': 1,
       'expected_version': current.version,
@@ -125,7 +127,9 @@ class GatewayGameSession extends ChangeNotifier {
   Future<void> submitCard(Card card) async {
     final current = _view;
     if (actionsPaused || current == null || current.phase != Phase.play ||
-        !current.canAct || !current.legalCards.contains(card)) return;
+        !current.canAct || !current.legalCards.contains(card)) {
+      return;
+    }
     await _execute('/v1/games/action', {
       'version': 1,
       'expected_version': current.version,
@@ -138,7 +142,9 @@ class GatewayGameSession extends ChangeNotifier {
   Future<void> _advanceIfNeeded() async {
     final current = _view;
     if (current == null || current.phase == Phase.finished ||
-        current.canAct || _pending != null || _error != null) return;
+        current.canAct || _pending != null || _error != null) {
+      return;
+    }
     await _execute('/v1/games/advance', {
       'version': 1,
       'expected_version': current.version,

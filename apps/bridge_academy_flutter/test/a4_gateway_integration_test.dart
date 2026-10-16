@@ -49,11 +49,16 @@ class _AuthorityFixture {
         'version': 1, 'error': {'code': 'unauthorized'},
       }), 401);
     }
-    Map<String, dynamic> reply([String? id]) => {
-      'version': 1,
-      'view': coordinator.humanView.toJson(),
-      if (id != null) 'request_id': id,
-    };
+    Map<String, dynamic> reply([String? id]) {
+      final value = <String, dynamic>{
+        'version': 1,
+        'view': coordinator.humanView.toJson(),
+      };
+      if (id != null) {
+        value['request_id'] = id;
+      }
+      return value;
+    }
     if (path == '/v1/games/view') {
       return http.Response(jsonEncode(reply()), 200);
     }
