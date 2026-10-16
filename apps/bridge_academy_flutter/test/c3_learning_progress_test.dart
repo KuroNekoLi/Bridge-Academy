@@ -130,7 +130,12 @@ void main() {
     expect(find.byKey(const Key('c3_dashboard')), findsOneWidget);
     expect(find.textContaining('1 / $totalQuestions'), findsOneWidget);
     final toggle = find.byKey(const Key('c3_toggle_saving'));
+    if (toggle.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(toggle, 170,
+        scrollable: find.byType(Scrollable).last, maxScrolls: 30);
+    }
     await tester.ensureVisible(toggle);
+    await tester.pumpAndSettle();
     await tester.tap(toggle);
     await tester.pumpAndSettle();
     expect((await store.read())!.savingEnabled, false);
@@ -138,7 +143,12 @@ void main() {
     await tester.pumpAndSettle();
     expect((await store.read())!.savingEnabled, true);
     final remove = find.byKey(const Key('c3_delete'));
+    if (remove.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(remove, 170,
+        scrollable: find.byType(Scrollable).last, maxScrolls: 30);
+    }
     await tester.ensureVisible(remove);
+    await tester.pumpAndSettle();
     await tester.tap(remove);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete all learning history').last);
