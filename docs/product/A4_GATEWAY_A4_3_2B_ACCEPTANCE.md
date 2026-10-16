@@ -1,6 +1,6 @@
 # A4.3.2b — Encrypted checkpoint, token recovery and replay
 
-**Status:** IMPLEMENTED, CI PENDING (2026-10-16). The storage mechanism is opt-in **localhost single-process development**, not a distributed Event Store or a production release.
+**Status:** SCOPED ENGINEERING VERIFIED (32/32 Gateway tests, including OS SIGKILL restart) on 2026-10-16. The storage mechanism is opt-in **localhost single-process development**, not a distributed Event Store or a production release.
 
 ## What is persisted
 
@@ -27,7 +27,9 @@ A storage error **fails closed** (503 `storage_unavailable`) and blocks further 
 - `cd services/bridge_gateway && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded`
 - Checks: ciphertext excludes four-hand PBN and bearer, same bearer/session/game version restored, successful ID reply exact match after restart, stale/conflicting IDs rejected, interrupted Bot after one committed event resumed without repeating it, wrong-key startup rejected, legacy caller-hand route disabled.
 
-**Current test status: NOT RUN at document creation**. Test harness restarts a fresh Gateway service instance with a fresh store on the same localhost. Separately killing an OS process, fsync guarantees across storage drivers/power loss, multiple worker processes, token revocation, distributed locks, and transactionally durable quotas have not yet been verified.
+**Actual test evidence:** [Gateway CI #38841623172](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841623172) **SUCCESS**, Dart analyzer **No issues found**, **32/32 Dart/localhost tests PASS** at commit `f1dbf74b5c86d4b4e9a91589c5f175458bc72494`; preceding [Gateway CI #38841447564](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841447564) **31/31 PASS** and [Feature Learning Gate #38841447645](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841447645) **SUCCESS**. Of the 32, **four** are encrypted service-store recovery and fault tests; **one** new [process_restart_test.dart](../../services/bridge_gateway/test/process_restart_test.dart) forks a genuine Dart server, commits an action, **SIGKILLs the entire Dart VM** on Ubuntu Linux, spawns a new Dart VM with the SAME external key and original Bearer, and verifies game version, identical idempotent reply, stale request rejection, and raw API 404. It does **not** simulate kill during the middle of an atomic disk write or mid-BEN-call; those remain separate gates.
+
+Production pending: fsync guarantees across storage drivers/power loss, multi-worker store access, token revocation, distributed locks, key operations, and transactionally durable rate quotas have not been verified.
 
 ## Boundaries and next gates
 

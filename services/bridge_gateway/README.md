@@ -24,7 +24,7 @@ The second response issues `access_token` (Bearer), `expires_in:900` seconds and
 
 ## Security model and limits
 
-- Tokens: 256 bits from `Random.secure()`, stored **only as SHA-256 digests** in an in-memory session map. Expire after 15 minutes, and invalidate on process restart. No durable identity or meaningful player/seat ownership yet.
+- Tokens: 256 bits from `Random.secure()`, stored **only as SHA-256 digests** in an in-memory session map. Expire after 15 minutes; ephemeral mode loses sessions on restart, while optional encrypted local mode restores unexpired credentials by their digests. No real account identity or competitive seat ownership yet.
 - Abuse throttling: default max 5 anonymous token issuances per real TCP peer IP per minute, max 1024 active sessions, max 30 decision requests per token/minute and one decision in flight per token. Do not trust arbitrary `X-Forwarded-For`.
 - Schema: strict top-level keys `version/route/input`; `bid/lead/play` only, all known input fields are strings; only `play` accepts the extra exposed `dummy` and `played`. Hand syntax, card count (13), ranks and public played-card encoding are checked. Only `decision.bid` or `decision.card` can exit the backend.
 - Privacy: 8KiB input limit; no-cache JSON; no untrusted browser Origin by default, explicit CORS allowlist for approved origins; only fixed safe error codes, no raw request body, BEN exception, token or private PBN in response/logs.
@@ -86,5 +86,7 @@ dart run bin/serve.dart
 **Keep the same key across restarts**. Store the key separately from ciphertext using a proper secret manager in any future deployment; resetting the key intentionally makes previously saved sessions unreadable and the Gateway refuses startup rather than silently creating new games. Local HTTP is loopback only, with no production TLS. This is not an instruction to expose the process to the Internet.
 
 The state is AES-256-GCM encrypted per token-digest checkpoint, flushed to a temporary file before a same-directory rename. Token hashes, expiry, Bridge Core event archive and bounded successful request ledger are restored on startup; the client must still possess the unexpired bearer token. Each Bot action is saved before the next, allowing an interrupted advance request to be resumed with **the same original request ID and payload** rather than repeating already committed events. In durable mode the legacy raw `POST /v1/ai/decision` is disabled (404), unlike the existing ephemeral-mode development API.
+
+[Real process restart CI #38841623172](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841623172): **SUCCESS, 32/32 Gateway tests**, including an Ubuntu Linux test that SIGKILLs a separate Dart Gateway process and restarts a new one to recover the bearer-bound Bridge Core game and exact request ID reply. This is not a power-loss/fsync/cluster durability guarantee.
 
 Known limits: single-process local lock, no cross-machine replicated store, no power-loss directory fsync certification, no crash-durable peer-IP bootstrap quota, no key rotation or backups, and no 13-trick real BEN Gateway acceptance yet. [A4.3.2b acceptance](../../docs/product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md), [M2-F29 learning note](../../docs/learning/features/M2_F29_ENCRYPTED_GATEWAY_RESTART.md).

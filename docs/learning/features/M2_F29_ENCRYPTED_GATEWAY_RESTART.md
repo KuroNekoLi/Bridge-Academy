@@ -3,7 +3,7 @@
 - Feature ID：M2-F29
 - Milestone：A4.3.2b
 - 類型：Dart Backend／資料持久化／一致性
-- 工程狀態：IMPLEMENTED（CI 尚未驗證）
+- 工程狀態：SCOPED ENGINEERING VERIFIED（Gateway CI 32/32，含 OS SIGKILL 重啟，非正式部署）
 - 學習狀態：DELIVERED（不代表 PRACTICED 或 MASTERED）
 - 原始碼：`services/bridge_gateway/lib/src/encrypted_session_store.dart`、`authoritative_game.dart`、`gateway_service.dart`
 - 驗收與測試：`services/bridge_gateway/test/encrypted_restart_test.dart`、`docs/product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md`
@@ -44,7 +44,7 @@ dart analyze --fatal-infos
 dart test --reporter expanded
 ```
 
-新增測試：同一 bearer 重啟後恢復同一 version、同一 Request ID 返回原結果；中途有 BEN 出錯時，只保存已提交的 Bot Event，再重啟補完而不重複；加密檔不可包含明文完整 PBN、Token、Request ID；錯誤金鑰拒絕啟動；持久模式拒絕用客戶端提供的手牌呼叫舊 Raw API。**CI 尚未執行（NOT RUN）**。
+新增測試：同一 bearer 重啟後恢復同一 version、同一 Request ID 返回原結果；中途有 BEN 出錯時，只保存已提交的 Bot Event，再重啟補完而不重複；加密檔不可包含明文完整 PBN、Token、Request ID；錯誤金鑰拒絕啟動；持久模式拒絕用客戶端提供的手牌呼叫舊 Raw API。[Gateway CI #38841623172](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841623172) 在提交 `f1dbf74` 上 **Dart analyze 無問題、32/32 測試 PASS**；[前一版 CI #38841447564](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841447564) 31/31 PASS。新增 [process_restart_test.dart](../../services/bridge_gateway/test/process_restart_test.dart) 使用獨立 Dart 子程序，執行牌局、以 `SIGKILL` 強制結束進程、重啟後用原 Token/Request ID 驗證版本 1 及回應完全相同；並確認舊版提交手牌 API 被 404 阻止。[Learning Gate #38841447645](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841447645) PASS。仍沒有證明斷電、寫檔中 SIGKILL、跨程序競爭與分散式 Exactly Once。
 
 ## 練習與自我檢驗
 
@@ -56,4 +56,4 @@ dart test --reporter expanded
 
 ## 下一步
 
-A4.3.2c：單獨程序強制終止測試、儲存鍵輪替、跨節點儲存設計；A4.3.3：實際 PINNED BEN Gateway 完整 13 墩測試。A3.5 和 Android/iOS UI 裝置測試仍為延期狀態。
+A4.3.2c：寫檔中強制終止、磁碟斷電／fsync、儲存金鑰輪替、跨節點交易式去重；A4.3.3：實際 PINNED BEN Gateway 完整 13 墩測試。A3.5 和 Android/iOS UI 裝置測試仍為延期狀態。

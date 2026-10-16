@@ -51,7 +51,7 @@
 
 | M2-F28 | A4.3.2 Server-owned Bridge Core 牌局、expected_version、request_id 去重（Gateway 27/27 CI PASS） | [M2-F28 教學](features/M2_F28_SERVER_GAME_AUTHORITY.md) | [Game Authority](../../services/bridge_gateway/lib/src/authoritative_game.dart) · [HTTP tests](../../services/bridge_gateway/test/authoritative_game_http_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_2_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F29 | A4.3.2b AES-GCM 加密 Checkpoint、重啟恢復、Bot 部分提交與去重 | [M2-F29 教學](features/M2_F29_ENCRYPTED_GATEWAY_RESTART.md) | [Encrypted store](../../services/bridge_gateway/lib/src/encrypted_session_store.dart) · [Tests](../../services/bridge_gateway/test/encrypted_restart_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md) | DELIVERED |
+| M2-F29 | A4.3.2b AES-GCM 加密 Checkpoint、實際 Dart SIGKILL 重啟（32/32 PASS）、Bot 逐步恢復與去重 | [M2-F29 教學](features/M2_F29_ENCRYPTED_GATEWAY_RESTART.md) | [Encrypted store](../../services/bridge_gateway/lib/src/encrypted_session_store.dart) · [Tests](../../services/bridge_gateway/test/encrypted_restart_test.dart) · [驗收](../product/A4_GATEWAY_A4_3_2B_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
