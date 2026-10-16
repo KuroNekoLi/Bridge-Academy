@@ -1,6 +1,6 @@
 # A5.3.3 — Import finished PBN into encrypted local history
 
-**Date:** 2026-10-16. **Status:** IMPLEMENTED / CI PENDING. Not a universal PBN engine or public sharing service.
+**Date:** 2026-10-16. **Status:** SCOPED ENGINEERING VERIFIED — Flutter 101/101, Web build, Chrome Demo regression PASS. Not a universal PBN engine or public sharing service.
 
 ## Player-visible change
 
@@ -41,4 +41,4 @@ flutter build web --release
 - Flutter widget: paste/cancel/import, immediate list/replay, zh-TW/en strings.
 - Preserve existing Flutter Web + Demo Chrome and all prior A5 tests.
 
-**CI status at implementation commit:** PENDING / NOT RUN. Real model and Android/iOS device tests are unchanged and not part of this slice. A3.5/device QA remain owner-deferred. Gateway-server history, PBN formats outside this strict subset, multi-board file import, and public tournament interoperability remain OPEN.
+**Executed evidence at implementation commit [406e872](https://github.com/KuroNekoLi/Bridge-Academy/commit/406e872cb40c11e54136f752f214cfbae8d19bde):** [Flutter CI #38868661345](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38868661345) **SUCCESS** — analyzer `No issues found!`, **101/101** Flutter tests PASS (97 baseline + 4 import cases), `flutter build web --release` PASS, real Chrome Demo and secure-checkpoint regression PASS. [Feature Learning Gate #38868661403](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38868661403) **SUCCESS**. Real model and Android/iOS device tests are unchanged and not part of this slice. A3.5/device QA remain owner-deferred. Gateway-server history, PBN formats outside this strict subset, multi-board file import, and public tournament interoperability remain OPEN.

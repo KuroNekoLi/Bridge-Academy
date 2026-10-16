@@ -67,7 +67,7 @@
 
 | M2-F36 | A5.3.2 完整 PBN 十三墩 [Play] 匯出（Flutter 97/97 + Web CI PASS） | [M2-F36 教學](features/M2_F36_PBN_PLAY_EXPORT.md) | [PBN serializer](../../apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart) · [Tests](../../apps/bridge_academy_flutter/test/a5_pbn_export_test.dart) · [驗收](../product/A5_3_2_PBN_PLAY_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F37 | A5.3.3 本機 PBN 匯入：玩家貼上完整牌局、Bridge Core 逐事件驗證、加密封存與可操作複盤（CI 待驗） | [M2-F37 教學](features/M2_F37_COMPLETED_PBN_IMPORT.md) | [Parser](../../apps/bridge_academy_flutter/lib/src/completed_pbn_import.dart) · [匯入畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [測試](../../apps/bridge_academy_flutter/test/a5_pbn_import_test.dart) · [驗收](../product/A5_3_3_PBN_IMPORT_ACCEPTANCE.md) | DELIVERED |
+| M2-F37 | A5.3.3 本機 PBN 匯入：貼上完整牌局、Bridge Core 逐事件驗證、加密複盤（Flutter 101/101 CI PASS） | [M2-F37 教學](features/M2_F37_COMPLETED_PBN_IMPORT.md) | [Parser](../../apps/bridge_academy_flutter/lib/src/completed_pbn_import.dart) · [匯入畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [測試](../../apps/bridge_academy_flutter/test/a5_pbn_import_test.dart) · [驗收](../product/A5_3_3_PBN_IMPORT_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

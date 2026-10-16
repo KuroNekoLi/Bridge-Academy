@@ -3,7 +3,7 @@
 - Feature ID：M2-F37
 - Milestone：A5.3.3
 - 類型：Flutter UI／Domain validation／本機加密歷史
-- 工程狀態：IMPLEMENTED（CI 待驗）
+- 工程狀態：SCOPED ENGINEERING VERIFIED（Flutter 101／101 + Web + Chrome Demo CI PASS）
 - 學習狀態：DELIVERED（不是 PRACTICED 或 MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/completed_pbn_import.dart`、`bridge_session.dart`、`widgets/bridge_history_panel.dart`
 - 驗收與測試：`apps/bridge_academy_flutter/test/a5_pbn_import_test.dart`、`docs/product/A5_3_3_PBN_IMPORT_ACCEPTANCE.md`
@@ -48,7 +48,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --release
 ```
 
-新增測試覆蓋：Demo 完整 13 墩匯出→匯入→複盤；Pass Out；錯誤版號／得分／發牌／Play／部分叫牌；相同資料去重；歷史匯入的雙語 UI。**CI 尚未執行，因此不能把新增功能宣告為已通過。**
+新增測試覆蓋：Demo 完整 13 墩匯出→匯入→複盤；Pass Out；錯誤版號／得分／發牌／Play／部分叫牌；相同資料去重；歷史匯入的雙語 UI。**[Flutter CI #38868661345](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38868661345) SUCCESS：Dart／Flutter 分析無問題、101／101 測試 PASS、Web Release Build PASS、Chrome Demo／加密存檔回歸 PASS。** 實作 commit 為 [406e872](https://github.com/KuroNekoLi/Bridge-Academy/commit/406e872cb40c11e54136f752f214cfbae8d19bde)。[Feature Learning Gate #38868661403](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38868661403) PASS。這只證明限定版 PBN 匯入；完整第三方 PBN 格式互通、正式 Gateway 歷史與 Android／iOS 裝置 QA 仍未驗收。
 
 這是本機歷史匯入，不是 BEN 推理、跨裝置同步、PBN 大規模互通性測試，Android／iOS 裝置 QA 仍依原決定延期。
 
