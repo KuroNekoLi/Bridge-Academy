@@ -95,10 +95,9 @@ jobs:
         run: |
           dart pub get
           dart analyze lib bin/live_gateway_ben_multiboard.dart test/a6_board_fixtures_test.dart
-          dart test test/a6_board_fixtures_test.dart
-          dart test test/authoritative_game_http_test.dart
-          dart test test/ben_loopback_backend_test.dart
-          dart test test/process_restart_test.dart
+          # Complete Gateway negative suite includes 503/timeout, tamper,
+          # wrong bearer, version conflict and SIGKILL/new-process restore.
+          dart test
       - name: A6 / four genuine model + authorized Gateway full games
         working-directory: services/bridge_gateway
         timeout-minutes: 92

@@ -11,6 +11,7 @@ class _MeasuredRealBen implements GatewayDecisionBackend {
   final BenLoopbackBackend actual;
   final counts = <String, int>{};
   final durations = <int>[];
+  final failuresBySafeCode = <String, int>{};
 
   @override
   Future<Map<String, Object?>> decide(
@@ -20,6 +21,11 @@ class _MeasuredRealBen implements GatewayDecisionBackend {
       final result = await actual.decide(route, fields);
       counts.update(route, (old) => old + 1, ifAbsent: () => 1);
       return result;
+    } catch (error) {
+      final code = error is GatewayFailure
+          ? error.code : 'other';
+      failuresBySafeCode.update(code, (n) => n + 1, ifAbsent: () => 1);
+      rethrow;
     } finally {
       timer.stop();
       durations.add(timer.elapsedMilliseconds);
@@ -164,6 +170,12 @@ void _checkPassOut(Map<String, dynamic> state) {
   }
 }
 
+int _p50(List<int> values) {
+  if (values.isEmpty) return 0;
+  final sorted = [...values]..sort();
+  return sorted[(sorted.length * 0.5).ceil() - 1];
+}
+
 int _p95(List<int> values) {
   if (values.isEmpty) return 0;
   final sorted = [...values]..sort();
@@ -218,6 +230,7 @@ Future<Map<String, Object?>> _runBoard(
   );
   final timer = Stopwatch()..start();
   var phase = 'start';
+  var peakRunnerRssBytes = ProcessInfo.currentRss;
   try {
     final port = await gateway.start();
     phase = 'auth';
@@ -254,6 +267,9 @@ Future<Map<String, Object?>> _runBoard(
     var seq = 0;
     phase = 'genuine-bid-lead-play';
     for (var loop = 0; loop < 160 && state['phase'] != 'finished'; loop++) {
+      if (ProcessInfo.currentRss > peakRunnerRssBytes) {
+        peakRunnerRssBytes = ProcessInfo.currentRss;
+      }
       final before = state['version'] as int;
       final requestId = 'a6_${fixture.number}_${(seq++).toString().padLeft(5, '0')}';
       final String endpoint;
@@ -333,12 +349,15 @@ Future<Map<String, Object?>> _runBoard(
       'humanActions': human,
       'benBatches': batches,
       'modelSuccessByRoute': counted.counts,
+      'modelFailuresBySafeCode': counted.failuresBySafeCode,
       'modelTransportCalls': counted.durations.length,
+      'modelTransportP50Ms': _p50(counted.durations),
       'modelTransportP95Ms': _p95(counted.durations),
       'modelTransportMaxMs': counted.durations.isEmpty
           ? 0 : counted.durations.reduce((a, b) => a > b ? a : b),
       'gameElapsedMs': timer.elapsedMilliseconds,
-      'runnerRssBytes': ProcessInfo.currentRss,
+      'peakRunnerRssBytes': peakRunnerRssBytes > ProcessInfo.currentRss
+          ? peakRunnerRssBytes : ProcessInfo.currentRss,
     };
   } on _SafeHttpFailure catch (e) {
     throw StateError('A6_HTTP_FAIL fixture=${fixture.id} step=$phase status=${e.status}');
@@ -357,8 +376,10 @@ Future<void> main() async {
   );
   final elapsed = Stopwatch()..start();
   final successes = <Map<String, Object?>>[];
+  var currentFixtureId = 'start';
   try {
     for (final fixture in a6Fixtures) {
+      currentFixtureId = fixture.id;
       final result = await _runBoard(fixture, ben);
       successes.add(result);
       stdout.writeln(jsonEncode(result)); // sanitized metadata, not hands
@@ -380,7 +401,8 @@ Future<void> main() async {
       'upstream': 'GENUINE_BEN_LOOPBACK_GET',
     }));
   } catch (_) {
-    stderr.writeln('A6_MULTIBOARD_FAIL completed=${successes.length} required=4');
+    stderr.writeln('A6_MULTIBOARD_FAIL fixture=$currentFixtureId '
+        'completed=${successes.length} required=4');
     exitCode = 1;
   } finally {
     ben.close();
