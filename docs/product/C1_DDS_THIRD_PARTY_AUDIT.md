@@ -21,7 +21,7 @@ git clone https://github.com/dds-bridge/dds.git /tmp/c1-dds-upstream
 cd /tmp/c1-dds-upstream
 git checkout --detach abb1127ba096676a4849f341f300c9827a732342
 bazelisk build -c opt //python:dds3_wheel_dist
-find bazel-bin/python -name '*.whl'  # install selected wheel in isolated Python 3.12
+find bazel-bin/python -name '*.whl'  # install selected wheel in isolated Python 3.14
 ```
 
 [Branch-only CI workflow](../../.github/workflows/c1-dds-analysis.yml) drives separate Dart contract/unit checks and **true upstream native DDS** golden tests. Each runtime should have bounded CPU/memory/time. Build must be logged by upstream SHA; full Deal must not appear in CI error logs. Rollback: revert adapter/docs/CI commits only; nothing has modified Bridge Core, Flutter UI, BEN or persisted checkpoint schema.

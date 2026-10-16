@@ -2,7 +2,7 @@
 
 **Target branch**: `test/a6-real-ben-multiboard`  
 **Based on**: `master 08a7fb5efcebd8538cfb70624c8975bd9b3eff88`  
-**Status**: HANDOFF_READY / IMPLEMENTATION_NOT_STARTED  
+**Status**: SCOPED VERIFIED / GENUINE BEN 4/4 (GATEWAY CI)  
 **Provisional lesson ID**: `M2-F49`（在整合時必須再次檢查是否衝突）
 
 ## 目標
@@ -43,3 +43,6 @@
 
 ## 完工交接格式
 請回報 branch 與 HEAD SHA、分段完成情況、實作檔、測試與 CI URL、教學檔、對使用者可見的操作、剩餘風險、與其他分支的衝突風險，最後留一題繁體中文學習題。**測試通過不等於正式產品 Release Gate 通過。**
+
+## Final integration evidence
+Four-board actual BEN regression passed again on [integration CI #38922555451](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38922555451), same merged code SHA `4aa6a1e`. Gateway 34/34 PASS; this is NOT Flutter four-board browser E2E or formal release certification.

@@ -42,3 +42,7 @@ C1_DDS_REAL=1 C1_DDS_WORKER=tool/dds3_worker.py \
 - No persistent DD cache or unauthenticated HTTP interface by design.
 - Client authorization before reading the encrypted terminal archive is **caller responsibility**; `TrustedCompletedBoard` is a trust boundary contract, not an authentication mechanism. No service deployment or distribution approval.
 - Rollback via reverting C1 branch commits; no data migrations, Bridge Core or BEN changes.
+
+## Final reviewed integration evidence (same SHA)
+- [2026-10-16 integration DDS CI #38922555537](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38922555537) at SHA `4aa6a1e513d5bec68c3b4504b7acbd82018fac58`: **contract job PASS** (Dart 6/6 plus 1 deliberately skipped real test, analyze and Web JS compilation); **upstream-native-golden job PASS**, Bazel DDS3 wheel compiled and Python 3.14 imported (`REAL_DDS_IMPORT_OK`), followed by genuine 3-fixed-fixture native Golden PASS. This replaces the earlier pending claim and failed intermediary full workflow conclusions cited above.
+- Integration is **source-only** and remains outside any Flutter replay UI, public DDS HTTP API or redistributed native package. Packaging/security/legal approval is NOT completed.
