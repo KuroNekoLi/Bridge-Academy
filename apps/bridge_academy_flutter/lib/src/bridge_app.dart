@@ -200,7 +200,9 @@ class _BridgeTableState extends State<BridgeTable> {
                     _boardSelector(copy, constraints.maxWidth),
                     FilledButton.icon(
                       key: const Key('new_game'),
-                      onPressed: session.busy
+                      onPressed: session.busy ||
+                              (session.fourBoardPractice != null &&
+                               !session.fourBoardPractice!.isComplete)
                           ? null
                           : () {
                               setState(() => _replayIndex = null);
@@ -214,6 +216,25 @@ class _BridgeTableState extends State<BridgeTable> {
                       label: Text(session.started
                           ? copy.t('restart')
                           : copy.t('newGame')),
+                    ),
+                    FilledButton.tonalIcon(
+                      key: const Key('start_four_board'),
+                      onPressed: session.busy || session.saveFailed ||
+                          (session.started && !session.finished) ||
+                          (session.fourBoardPractice != null &&
+                           !session.fourBoardPractice!.isComplete)
+                          ? null : () {
+                        setState(() {
+                          _replayIndex = null;
+                          _selectedBoard = BoardMode.fresh;
+                        });
+                        session.startFourBoardPractice(
+                          humanSeat: _selectedSeat,
+                          mode: _selectedMode,
+                        );
+                      },
+                      icon: const Icon(Icons.view_module),
+                      label: Text(copy.t('practiceFourStart')),
                     ),
                     OutlinedButton.icon(
                       key: const Key('history_toggle'),
@@ -268,6 +289,10 @@ class _BridgeTableState extends State<BridgeTable> {
                 onRetrySave: session.historySaveFailed
                     ? session.retryHistorySave : null,
               ),
+            ],
+            if (session.fourBoardPractice != null) ...[
+              const SizedBox(height: 8),
+              _fourBoardPanel(session, copy),
             ],
             const SizedBox(height: 8),
             Text(
@@ -451,11 +476,63 @@ class _BridgeTableState extends State<BridgeTable> {
         ),
       );
 
+  Widget _fourBoardPanel(BridgeSession session, AppCopy copy) {
+    final practice = session.fourBoardPractice!;
+    return Card(
+      key: const Key('four_board_panel'),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(copy.t('practiceFourTitle'),
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text('${copy.t('practiceFourCompleted')}: '
+                '${practice.completed} / 4',
+                key: const Key('four_board_progress')),
+            Text('${copy.t('practiceFourHumanScore')}: '
+                '${practice.humanNetScore > 0 ? '+' : ''}'
+                '${practice.humanNetScore}',
+                key: const Key('four_board_score')),
+            Text(copy.t('practiceFourScope')),
+            for (final result in practice.results)
+              ListTile(
+                dense: true,
+                title: Text('${copy.boardNumber(result.boardNumber)} · '
+                    '${result.contract}'),
+                trailing: Text('${practice.humanSeat.isNS
+                    ? result.nsScore : -result.nsScore}'),
+              ),
+            if (practice.isComplete)
+              Text(copy.t('practiceFourFinished'),
+                  key: const Key('four_board_finished'))
+            else if (!session.finished)
+              Text(copy.t('practiceFourCurrent')),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _completedBoardActions(BridgeSession session, AppCopy copy) =>
       Wrap(
         spacing: 12,
         runSpacing: 8,
         children: [
+          if (session.fourBoardPractice != null &&
+              !session.fourBoardPractice!.isComplete)
+            FilledButton.icon(
+              key: const Key('next_practice_board'),
+              onPressed: session.busy || session.saveFailed ||
+                  session.historySaveFailed ? null : () {
+                setState(() => _replayIndex = null);
+                session.nextFourBoardPractice();
+              },
+              icon: const Icon(Icons.skip_next),
+              label: Text(copy.t('practiceFourNext')),
+            ),
+          if (session.fourBoardPractice == null)
           OutlinedButton.icon(
             key: const Key('replay_same_board'),
             onPressed: session.busy ? null : () {
@@ -465,6 +542,7 @@ class _BridgeTableState extends State<BridgeTable> {
             icon: const Icon(Icons.replay),
             label: Text(copy.t('replaySameBoard')),
           ),
+          if (session.fourBoardPractice == null)
           FilledButton.icon(
             key: const Key('next_board'),
             onPressed: session.busy ? null : () {

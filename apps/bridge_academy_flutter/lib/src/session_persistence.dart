@@ -4,6 +4,8 @@ import 'package:bridge_core/bridge_core.dart';
 import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'four_board_practice.dart';
+
 /// Trusted game snapshots contain ALL FOUR PRIVATE HANDS. Never expose them
 /// to widgets, player API objects, analytics, logs, or an AI transport.
 abstract interface class SessionArchiveStore {
@@ -246,6 +248,7 @@ final class SavedBoard {
     required this.state,
     required this.transcript,
     this.historyId,
+    this.fourBoardPractice,
   });
 
   final BoardDefinition board;
@@ -255,6 +258,7 @@ final class SavedBoard {
   final GameState state;
   final Map<String, dynamic> transcript;
   final String? historyId;
+  final FourBoardPractice? fourBoardPractice;
 }
 
 abstract final class SavedBoardCodec {
@@ -267,9 +271,12 @@ abstract final class SavedBoardCodec {
     required String boardMode,
     required SinglePlayerCoordinator coordinator,
     String? historyId,
+    FourBoardPractice? fourBoardPractice,
   }) => jsonEncode({
         'schemaVersion': schemaVersion,
         'historyId': ?historyId,
+        if (fourBoardPractice != null)
+          'fourBoardPractice': fourBoardPractice.toJson(),
         'boardNumber': board.number,
         'humanSeat': humanSeat.letter,
         'opponentMode': opponentMode,
@@ -312,6 +319,25 @@ abstract final class SavedBoardCodec {
     final transcript = Map<String, dynamic>.from(decoded['transcript'] as Map);
     // Replay all actions under the same Bridge Core authority as live play.
     final state = GameTranscript.decode(transcript);
+    final practice = decoded['fourBoardPractice'] == null
+        ? null : FourBoardPractice.fromJson(decoded['fourBoardPractice']);
+    if (practice != null) {
+      final onCurrent = !practice.isComplete &&
+          board.number == practice.nextBoardNumber;
+      final onJustFinished = practice.results.isNotEmpty &&
+          board.number == practice.nextBoardNumber - 1 && state.isFinished;
+      if (boardMode != 'fresh' || practice.humanSeat != seat ||
+          !(onCurrent || onJustFinished)) {
+        throw const FormatException('Four-board progress does not match board');
+      }
+      if (onJustFinished) {
+        final last = practice.results.last;
+        if (last.id != id || last.nsScore != state.nsScore ||
+            last.contract != (state.contract?.label ?? 'PASS OUT')) {
+          throw const FormatException('Practice result does not match game');
+        }
+      }
+    }
     if (state.dealer != board.dealer ||
         state.vulnerability != board.vulnerability ||
         decoded['eventVersion'] != state.version ||
@@ -322,6 +348,7 @@ abstract final class SavedBoardCodec {
       board: board, humanSeat: seat, opponentMode: opponentMode as String,
       boardMode: boardMode as String, state: state, transcript: transcript,
       historyId: id as String?,
+      fourBoardPractice: practice,
     );
   }
 }

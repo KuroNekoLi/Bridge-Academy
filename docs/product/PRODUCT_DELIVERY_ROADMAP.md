@@ -139,7 +139,7 @@ Implemented native Android/iOS encrypted SQLite checkpoint adapter, AES-GCM, key
 
 | Slice | Product output | Boundaries / acceptance |
 | --- | --- | --- |
-| B1 Four-board sessions | Session result aggregation and clear next-board UX | Finish 4 legitimate distinct boards, session summary; per-board and aggregate results not conflated |
+| B1 Four-board sessions | **IMPLEMENTED / FLUTTER CI PENDING:** player-visible Start 4-board practice, four fresh deals, sequential WBF board numbers, signed practice score and terminal summary; practice state stored in encrypted active checkpoint | Finish 4 distinct Core-valid boards, persistent in-progress series, no MP/IMP claim; [B1 acceptance](B1_FOUR_BOARD_PRACTICE_ACCEPTANCE.md) |
 | B2 Just Declare | Predefined legitimate teaching contract, skip ordinary auction for training only | Separate mode with explicit setup state; no fabricated auction or rules bypass in normal matches |
 | B3 Bidding Practice | Pattern-based partnership bidding without forced card play | Versioned ConventionProfile, partner agreements, external expert review |
 | B4 Guided training | Original curated problems and answers; simple progress metrics | One scenario per competency, proven answer rules and no hidden information leakage |
@@ -213,3 +213,7 @@ From the **searchable encrypted history list** players can now explicitly confir
 ## 2026-10-16 — A5.4 recent completed-board statistics (new player UI)
 
 **[SCOPED FLUTTER CI 105/105 + WEB BUILD + CHROME DEMO PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38877191518):** On the existing searchable **已完成的牌局 / Completed deals** screen, display summary chips for the current search/filter: total finished boards, contracts, strictly Bridge Core-derived made ratio, Pass Outs, practice records and the locally aggregated signed duplicate score from the human seat's perspective. The aggregation uses `HistorySummary` safe DTOs only, not privileged PBN or Deal. Pass Out is not counted as a failed contract, and E/W human scores invert canonical NS score. The display is explicitly labeled as a local sample of at most 12 deals (including imports/practice), never IMP/MP/ranking. [Acceptance](A5_4_HISTORY_STATISTICS_ACCEPTANCE.md), [M2-F38 lesson](../learning/features/M2_F38_HISTORY_STATISTICS.md). B1 four-board training session still open; A4.5/device gates unchanged.
+
+## 2026-10-16 — B1 Four-board practice session (player-facing)
+
+**IMPLEMENTED / FLUTTER CI PENDING.** A5.1–A5.4 local history, search, import/export and statistics are already scoped-verified (latest [Flutter 105/105](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38877191518)). Rather than prolonging server-only QA, the next visible product feature is now B1: a four-board practice flow driven by existing Bridge Core, with a Start button, progress/score per deal, Next Practice Board, terminal session summary, and persistence/restoration in the encrypted active checkpoint. It uses four separate fresh deals with canonical board definitions; it is unranked local practice and no IMP/MP comparison is implied. [B1 acceptance](B1_FOUR_BOARD_PRACTICE_ACCEPTANCE.md); [M2-F39 lesson](../learning/features/M2_F39_FOUR_BOARD_PRACTICE.md). Do not treat implementation as CI PASS before an executed run. A4.5 hosting, A3.5 and Android/iOS device QA remain blocked/held.

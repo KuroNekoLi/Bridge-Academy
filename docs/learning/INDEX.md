@@ -71,6 +71,8 @@
 
 | M2-F38 | A5.4 近期歷史統計：成約率、Pass Out、玩家得分與搜尋篩選（Flutter 105/105 PASS） | [M2-F38](features/M2_F38_HISTORY_STATISTICS.md) | [History statistics](../../apps/bridge_academy_flutter/lib/src/history_statistics.dart) · [Player UI](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [Tests](../../apps/bridge_academy_flutter/test/a5_history_statistics_test.dart) · [驗收](../product/A5_4_HISTORY_STATISTICS_ACCEPTANCE.md) | DELIVERED |
 
+| M2-F39 | B1 四副牌練習賽：四副新牌、進度、分數結算、跨重啟接續（CI 待驗） | [M2-F39 教學](features/M2_F39_FOUR_BOARD_PRACTICE.md) | [單人場次模型](../../apps/bridge_academy_flutter/lib/src/four_board_practice.dart) · [牌桌](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/b1_four_board_practice_test.dart) · [B1 驗收](../product/B1_FOUR_BOARD_PRACTICE_ACCEPTANCE.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。

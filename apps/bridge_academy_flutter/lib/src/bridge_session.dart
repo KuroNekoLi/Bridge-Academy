@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 import 'session_persistence.dart';
 import 'completed_history_store.dart';
+import 'four_board_practice.dart';
 import 'completed_pbn_export.dart';
 import 'completed_pbn_import.dart';
 
@@ -38,6 +39,7 @@ class BridgeSession extends ChangeNotifier {
   final SessionArchiveStore? _archiveStore;
   final CompletedHistoryStore? _historyStore;
   String? _historyId;
+  FourBoardPractice? _fourBoardPractice;
   List<StoredHistoryBoard> _historyBoards = [];
   List<HistorySummary> _historySummaries = [];
   Future<void>? _historyLoadFuture;
@@ -76,6 +78,7 @@ class BridgeSession extends ChangeNotifier {
   BoardMode get boardMode => _boardMode;
   Seat get humanSeat => _humanSeat;
   BoardDefinition get board => _board;
+  FourBoardPractice? get fourBoardPractice => _fourBoardPractice;
   List<HistorySummary> get completedHistory => List.unmodifiable(_historySummaries);
   String? get historyError => _historyError;
   bool get historySaveFailed => _historySaveFailed;
@@ -305,6 +308,7 @@ class BridgeSession extends ChangeNotifier {
       _historyId = snapshot.historyId ??
           'legacy_${snapshot.state.historyFingerprint}';
       _board = snapshot.board;
+      _fourBoardPractice = snapshot.fourBoardPractice;
       _humanSeat = snapshot.humanSeat;
       _mode = mode;
       _boardMode = boardMode;
@@ -329,7 +333,10 @@ class BridgeSession extends ChangeNotifier {
       notifyListeners();
     }
     if (advanceBot) await _advanceBots();
-    if (restored && finished) await _archiveCompleted();
+    if (restored && finished) {
+      await _archiveCompleted();
+      await _recordFourBoardFinish();
+    }
     return restored;
   }
 
@@ -363,6 +370,7 @@ class BridgeSession extends ChangeNotifier {
         board: _board, humanSeat: _humanSeat,
         opponentMode: _mode.name, boardMode: _boardMode.name,
         coordinator: _coordinator!, historyId: _historyId,
+        fourBoardPractice: _fourBoardPractice,
       ));
       _saveFailed = false;
     } catch (_) {
@@ -408,6 +416,69 @@ class BridgeSession extends ChangeNotifier {
     return BenBotPolicy(transport);
   }
 
+  /// Starts four distinct newly shuffled practice boards with normal Core
+  /// auctions, tricks, and scores. No manufactured MP/IMP comparison.
+  Future<void> startFourBoardPractice({
+    Seat humanSeat = Seat.north,
+    OpponentMode mode = OpponentMode.demo,
+  }) async {
+    if (busy || _saveFailed || (started && !finished) ||
+        (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
+      return;
+    }
+    final startNumber = started ? _board.number + 1 : _board.number;
+    _fourBoardPractice = FourBoardPractice(
+      startBoard: startNumber,
+      humanSeat: humanSeat,
+      results: const [],
+    );
+    await _beginBoard(
+      board: BoardDefinition.forNumber(startNumber),
+      deal: _freshDealFactory?.call() ?? Deal.shuffled(),
+      humanSeat: humanSeat, mode: mode, boardMode: BoardMode.fresh,
+    );
+  }
+
+  /// Only advance after the last board's terminal result was saved.
+  Future<void> nextFourBoardPractice() async {
+    final practice = _fourBoardPractice;
+    if (practice == null || practice.isComplete || busy || _saveFailed ||
+        _historySaveFailed || !finished || practice.results.isEmpty ||
+        practice.results.last.id != _historyId) {
+      return;
+    }
+    await _beginBoard(
+      board: BoardDefinition.forNumber(practice.nextBoardNumber),
+      deal: _freshDealFactory?.call() ?? Deal.shuffled(),
+      humanSeat: practice.humanSeat, mode: _mode,
+      boardMode: BoardMode.fresh,
+    );
+  }
+
+  Future<void> _recordFourBoardFinish() async {
+    final practice = _fourBoardPractice;
+    final view = this.view;
+    if (practice == null || practice.isComplete || view == null ||
+        !finished || _historyId == null ||
+        _board.number != practice.nextBoardNumber) {
+      return;
+    }
+    _fourBoardPractice = practice.withResult(FourBoardResult(
+      id: _historyId!,
+      boardNumber: _board.number,
+      contract: view.contract?.label ?? 'PASS OUT',
+      nsScore: view.nsScore!,
+    ));
+    // Store the aggregate next to the canonical encrypted active checkpoint.
+    // If writing fails, retrySave() must succeed before another deal.
+    try {
+      await _persist();
+    } catch (_) {
+      _errorCode = 'errorSave';
+    }
+    notifyListeners();
+  }
+
   /// Create/redeal the specified board. Defaults to the current board number
   /// (Board 1 before the first game). A fresh deal gets newly shuffled cards.
   Future<void> newGame({
@@ -416,7 +487,9 @@ class BridgeSession extends ChangeNotifier {
     BoardMode boardMode = BoardMode.training,
     int? boardNumber,
   }) async {
-    if (busy) return;
+    if (busy || _saveFailed ||
+        (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) return;
+    _fourBoardPractice = null;
     final board = BoardDefinition.forNumber(boardNumber ?? _board.number);
     final deal = boardMode == BoardMode.training
         ? _fixedDeal
@@ -431,7 +504,7 @@ class BridgeSession extends ChangeNotifier {
   /// a new result. The current finished replay is replaced on restart.
   Future<void> replaySameBoard() async {
     final deal = _activeDeal;
-    if (busy || deal == null || !finished) return;
+    if (busy || deal == null || !finished || _fourBoardPractice != null) return;
     await _beginBoard(
       board: _board, deal: deal, humanSeat: _humanSeat,
       mode: _mode, boardMode: _boardMode,
@@ -441,7 +514,7 @@ class BridgeSession extends ChangeNotifier {
   /// Only a finished board advances the sequential Duplicate board number.
   /// The player can still restart an unfinished board with newGame().
   Future<void> nextBoard() async {
-    if (busy || !finished) return;
+    if (busy || !finished || _fourBoardPractice != null) return;
     await newGame(
       humanSeat: _humanSeat,
       mode: _mode,
@@ -529,7 +602,10 @@ class BridgeSession extends ChangeNotifier {
       _saving = false;
       notifyListeners();
     }
-    if (persisted && finished) await _archiveCompleted();
+    if (persisted && finished) {
+      await _archiveCompleted();
+      await _recordFourBoardFinish();
+    }
     if (persisted) await _advanceBots();
   }
 
@@ -549,7 +625,10 @@ class BridgeSession extends ChangeNotifier {
         maxActions: 100,
         afterCommittedAction: _archiveStore == null ? null : _persist,
       );
-      if (finished) await _archiveCompleted();
+      if (finished) {
+        await _archiveCompleted();
+        await _recordFourBoardFinish();
+      }
     } catch (_) {
       // HTTP errors can contain credentials/private hands in upstream logs;
       // never show or log raw exception text on the player-facing UI.
