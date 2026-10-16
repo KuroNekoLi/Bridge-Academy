@@ -2,7 +2,7 @@ name: Feature Learning Gate
 
 on:
   push:
-    branches: [master]
+    branches: [master, 'feature/c3-2-personalized-recommendations']
   pull_request:
     types: [opened, synchronize, reopened]
 
