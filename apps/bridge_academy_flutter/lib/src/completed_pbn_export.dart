@@ -53,6 +53,34 @@ abstract final class CompletedPbnExport {
         auction.skip(i).take(4).join(' '),
       '',
     ];
+    if (contract != null) {
+      if (state.tricks.length != 13 ||
+          state.tricks.any((trick) => trick.plays.length != 4)) {
+        throw const FormatException('Incomplete card play in terminal export');
+      }
+      final openingLeader = contract.openingLeader;
+      lines.add('[Play "${openingLeader.letter}"]');
+      // PBN v2.1 uses FIXED compass columns starting at the opening leader,
+      // not the chronological order of cards within each later trick.
+      // Bridge Core retains each card's actual hand owner and winner.
+      final columns = [
+        openingLeader,
+        openingLeader.next,
+        openingLeader.next.next,
+        openingLeader.next.next.next,
+      ];
+      for (final trick in state.tricks) {
+        lines.add(columns.map((seat) {
+          final matches = trick.plays
+              .where((play) => play.handOwner == seat).toList();
+          if (matches.length != 1) {
+            throw const FormatException('Invalid seat layout in PBN play');
+          }
+          return matches.single.card.code;
+        }).join(' '));
+      }
+      lines.add('');
+    }
     return lines.join('\n');
   }
 }

@@ -32,6 +32,8 @@ void main() {
     expect(pbn, contains('[Score "NS +0"]'));
     expect(pbn, contains('[Auction "N"]\nPass Pass Pass Pass'));
     expect(pbn, isNot(contains('[Result ')));
+    expect(pbn, isNot(contains('[Play ')));
+
     final match = RegExp(r'\[Deal "([^"]+)"\]').firstMatch(pbn);
     expect(match, isNotNull);
     expect(Deal.fromPbn(match!.group(1)!).toPbn(),
@@ -66,6 +68,26 @@ void main() {
     expect(pbn, contains('[Auction "N"]\n1NT Pass Pass Pass'));
     expect(pbn, contains('[Score "NS '));
     expect(session.view!.completedTricks, hasLength(13));
+    // PBN 2.1: each row uses the opening leader's fixed compass columns,
+    // even when a different player wins and leads the next trick.
+    final play = pbn.split('[Play "E"]\\n');
+    expect(play, hasLength(2));
+    final rows = play.last.trim().split('\\n');
+    expect(rows, hasLength(13));
+    final tricks = session.view!.completedTricks;
+    for (var i = 0; i < 13; i++) {
+      final tokens = rows[i].split(' ');
+      expect(tokens, hasLength(4));
+      for (var col = 0; col < 4; col++) {
+        final seat = Seat.values[(Seat.east.index + col) % 4];
+        final actual = tricks[i].plays
+            .singleWhere((played) => played.handOwner == seat).card.code;
+        expect(tokens[col], actual);
+      }
+    }
+    final flattened = rows.expand((row) => row.split(' ')).toList();
+    expect(flattened.toSet(), hasLength(52));
+
   });
 
   testWidgets('A5.3 clipboard export requires explicit four-hand consent',
