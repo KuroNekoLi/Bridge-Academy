@@ -1,5 +1,6 @@
 import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -245,6 +246,14 @@ class _BridgeTableState extends State<BridgeTable> {
                 onReplayStep: (step) =>
                     setState(() => _historyStep = step),
                 canDelete: !session.busy,
+                onExportPbn: (id) async {
+                  // The panel requires a separate explicit private-hand
+                  // export confirmation BEFORE calling this callback.
+                  final pbn = session.exportHistoryPbn(id);
+                  if (pbn == null) return false;
+                  await Clipboard.setData(ClipboardData(text: pbn));
+                  return true;
+                },
                 onDelete: (id) async {
                   final removed = await session.deleteHistory(id);
                   if (removed && mounted && _selectedHistoryId == id) {

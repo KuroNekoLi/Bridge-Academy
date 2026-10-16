@@ -21,6 +21,7 @@ class BridgeHistoryPanel extends StatefulWidget {
     required this.onSelect,
     required this.onReplayStep,
     required this.onDelete,
+    this.onExportPbn,
     required this.errorCode,
     required this.onRetrySave,
     this.canDelete = true,
@@ -34,6 +35,8 @@ class BridgeHistoryPanel extends StatefulWidget {
   final ValueChanged<String> onSelect;
   final ValueChanged<int> onReplayStep;
   final Future<void> Function(String) onDelete;
+  /// Called only after the player approves sharing ALL four hands.
+  final Future<bool> Function(String)? onExportPbn;
   final String? errorCode;
   final VoidCallback? onRetrySave;
   final bool canDelete;
@@ -93,6 +96,43 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
     if (confirmed == true && mounted) {
       await widget.onDelete(record.id);
     }
+  }
+
+  Future<void> _confirmExport(HistorySummary record) async {
+    final copy = widget.copy;
+    final export = widget.onExportPbn;
+    if (export == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(copy.t('historyExportTitle')),
+        content: Text(copy.t('historyExportWarning')),
+        actions: [
+          TextButton(
+            key: const Key('history_export_cancel'),
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(copy.t('historyExportCancel')),
+          ),
+          FilledButton(
+            key: const Key('history_export_confirm'),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(copy.t('historyExportConfirm')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    var successful = false;
+    try {
+      successful = await export(record.id);
+    } catch (_) {
+      // Clipboard failures and private deal data must not be logged.
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(copy.t(successful
+          ? 'historyExportSuccess' : 'historyExportFailure'))),
+    );
   }
 
   @override
@@ -189,12 +229,24 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
                   '${record.savedAt.toLocal().toString().substring(0, 16)}'
                   '${record.isPractice ? ' · ${copy.t('historyPractice')}' : ''}',
                 ),
-                trailing: IconButton(
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.onExportPbn != null)
+                      IconButton(
+                        key: Key('history_export_${record.id}'),
+                        tooltip: copy.t('historyExportTitle'),
+                        icon: const Icon(Icons.ios_share),
+                        onPressed: () => _confirmExport(record),
+                      ),
+                    IconButton(
                   key: Key('history_delete_${record.id}'),
                   tooltip: copy.t('historyDeleteTitle'),
                   icon: const Icon(Icons.delete_outline),
                   onPressed: widget.canDelete
                       ? () => _confirmDelete(record) : null,
+                    ),
+                  ],
                 ),
                 onTap: () => widget.onSelect(record.id),
               ),

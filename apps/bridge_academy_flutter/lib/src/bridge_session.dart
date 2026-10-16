@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 import 'session_persistence.dart';
 import 'completed_history_store.dart';
+import 'completed_pbn_export.dart';
 
 enum OpponentMode { demo, ben }
 enum BoardMode { training, fresh }
@@ -129,6 +130,17 @@ class BridgeSession extends ChangeNotifier {
       humanSeat: saved.humanSeat,
       bot: const DeterministicTrainingBot(),
     ).completedReplay;
+  }
+
+  /// PBN is privileged: it contains the original 52-card Deal. Call ONLY
+  /// after a user-confirmed export of a FINISHED stored game. Never expose
+  /// this data in summaries, active PlayerView, analytics or AI requests.
+  String? exportHistoryPbn(String id) {
+    final matching = _historyBoards.where((entry) => entry.id == id);
+    if (matching.isEmpty) return null;
+    final saved = SavedBoardCodec.decode(matching.first.archive);
+    if (!saved.state.isFinished) return null;
+    return CompletedPbnExport.encode(saved);
   }
 
   /// Deletes exactly one finished attempt, without clearing the active game.
