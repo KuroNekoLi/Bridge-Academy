@@ -52,7 +52,7 @@ flutter build web --release
 
 ## 真實瀏覽器／Gateway 全場補充
 
-[真 Chrome CI #38848501397](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848501397) 首輪找到 HTTP 429 `gatewayRateLimited`：30 次／分鐘預設限制不足以完成 13 墩的快速 UI 對局。新 [M2-F32 教學](M2_F32_REAL_BROWSER_GATEWAY.md) 記錄 Root Cause 與局限；開發執行檔明確設定 180（1–240 上限，只有本機），預設仍為 30，重跑待驗。不得將這個開發配額視為上線建議。
+[真 Chrome CI #38848501397](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848501397) 首輪找到 HTTP 429 `gatewayRateLimited`：30 次／分鐘預設限制不足以完成 13 墩的快速 UI 對局。新 [M2-F32 教學](M2_F32_REAL_BROWSER_GATEWAY.md) 記錄 Root Cause 與局限；開發執行檔明確設定 180（1–240 上限，只有本機），預設仍為 30，[修正後真正 Chrome→Gateway→BEN CI #38849429500](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38849429500) 已 **PASS**，包含完整 13 墩真模型牌局；本機配額設定不能視為正式部署容量結論。不得將這個開發配額視為上線建議。
 
 ## 下一步
 

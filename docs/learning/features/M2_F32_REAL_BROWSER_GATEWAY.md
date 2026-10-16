@@ -3,7 +3,7 @@
 - Feature ID：M2-F32
 - Milestone：A4.4 Browser real-network acceptance
 - 類型：Flutter Web／API Gateway／真正 BEN／Rate Limiting
-- 工程狀態：IMPLEMENTED（首次真 Chrome 測試發現 429，修正後 CI 待驗）
+- 工程狀態：SCOPED ENGINEERING VERIFIED（真 Chrome→Gateway→Pinned BEN 13 墩 PASS，開發配額保留上限）
 - 學習狀態：DELIVERED，尚未 PRACTICED 或 MASTERED
 - 測試：`apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart`
 - CI：`.github/workflows/ben-flutter-browser.yml`
@@ -42,7 +42,7 @@ flutter drive --driver=test_driver/integration_test.dart \
   --dart-define=BRIDGE_GATEWAY_ORIGIN=http://127.0.0.1:8086
 ```
 
-既有 [Flutter CI #38848030915](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915) 為 **86/86 Widget/Unit、Web Build、Chrome Demo PASS**。[真 Chrome Gateway 首輪 #38848501397](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848501397) 為 **FAIL（429 Rate Limit）**；這次參數修正尚需新的 CI，不能先宣稱通過。原有真 BEN CLI/Gateway 完整牌局有獨立 CI 證據，不能代替本次 Chrome 驗收。
+既有 [Flutter CI #38848030915](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915) 為 **86/86 Widget/Unit、Web Build、Chrome Demo PASS**。[真 Chrome Gateway 首輪 #38848501397](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848501397) 為 **FAIL（429 Rate Limit）**；修正後 [真 Chrome Gateway CI #38849429500](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38849429500) **SUCCESS**，在 `17ef3fc` 上啟動 pinned 真 BEN + localhost Gateway，再由 Flutter Chrome UI 從伺服器發牌開始打完整副牌，測試斷言 **13 墩、52 張出牌、合法終局版本與計分**。另外 [Gateway CI #38849429494](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38849429494) Dart analyze 與 **32/32 tests PASS**，[Feature Learning Gate #38849429493](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38849429493) PASS。這仍只有一副本機測試牌局，尚無代表性負載與公開主機驗收。原有真 BEN CLI/Gateway 完整牌局有獨立 CI 證據，不能代替本次 Chrome 驗收。
 
 ## 練習與自我檢驗
 
