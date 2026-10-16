@@ -6,6 +6,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> tapKey(WidgetTester tester, String key) async {
   final target = find.byKey(Key(key));
+  // ListView lazily builds the question card: at 320px + 2x text the
+  // button can be outside the current sliver and must be built by scrolling.
+  if (target.evaluate().isEmpty) {
+    await tester.scrollUntilVisible(
+      target,
+      160,
+      scrollable: find.byType(Scrollable).last,
+      maxScrolls: 20,
+    );
+  }
   await tester.ensureVisible(target);
   // ensureVisible can start a scroll animation at 2x text; settle before tap.
   await tester.pumpAndSettle();
