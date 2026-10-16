@@ -28,6 +28,7 @@ class _AcademyPageState extends State<AcademyPage> {
   bool _enabled = false;
   bool _persisting = false;
   bool _storageError = false;
+  bool _loading = true;
   bool _dashboard = false;
   int _sequence = 0;
 
@@ -48,19 +49,20 @@ class _AcademyPageState extends State<AcademyPage> {
       setState(() {
         _enabled = value != null;
         _history = value ?? LearnerProgress();
+        _loading = false;
       });
     } catch (_) {
-      if (mounted) setState(() => _storageError = true);
+      if (mounted) setState(() { _storageError = true; _loading = false; });
     }
   }
   Future<void> _enable() async {
-    if (_persisting || _storageError) return;
+    if (_persisting || _storageError || _loading) return;
     setState(() => _persisting = true);
     try {
       await _store.write(_history);
       if (mounted) setState(() => _enabled = true);
     } catch (_) {
-      if (mounted) setState(() => _storageError = true);
+      if (mounted) setState(() { _storageError = true; _loading = false; });
     } finally {
       if (mounted) setState(() => _persisting = false);
     }
@@ -87,7 +89,7 @@ class _AcademyPageState extends State<AcademyPage> {
         _storageError = false;
       });
     } catch (_) {
-      if (mounted) setState(() => _storageError = true);
+      if (mounted) setState(() { _storageError = true; _loading = false; });
     } finally {
       if (mounted) setState(() => _persisting = false);
     }
@@ -106,7 +108,7 @@ class _AcademyPageState extends State<AcademyPage> {
       await _store.write(updated);
       if (mounted) setState(() => _history = updated);
     } catch (_) {
-      if (mounted) setState(() => _storageError = true);
+      if (mounted) setState(() { _storageError = true; _loading = false; });
     } finally {
       if (mounted) setState(() => _persisting = false);
     }
@@ -161,7 +163,8 @@ class _AcademyPageState extends State<AcademyPage> {
       });
 
   void _submit(AcademyQuestion question) {
-    if (_feedback != null || _selected == null || _lesson == null) return;
+    if (_feedback != null || _selected == null || _lesson == null ||
+        _persisting || _loading || _storageError) return;
     final lesson = _lesson!;
     final result = _practice.submit(
       lesson: lesson,
@@ -242,9 +245,15 @@ class _AcademyPageState extends State<AcademyPage> {
         const SizedBox(height: 8),
         Text(_t('scope')),
         const SizedBox(height: 12),
-        if (_storageError)
+        if (_loading)
+          const Center(child: CircularProgressIndicator(key: Key('c3_loading'))),
+        if (_storageError) ...[
           Text(_t('storageError'), key: const Key('c3_storage_error')),
-        if (!_enabled && !_storageError)
+          OutlinedButton(key: const Key('c3_clear_invalid'),
+            onPressed: _persisting ? null : _delete,
+            child: Text(_t('deleteHistory'))),
+        ],
+        if (!_enabled && !_storageError && !_loading)
           FilledButton.tonal(
             key: const Key('c3_enable'),
             onPressed: _persisting ? null : _enable,
