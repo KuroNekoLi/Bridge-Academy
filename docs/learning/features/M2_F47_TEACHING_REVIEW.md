@@ -3,10 +3,10 @@
 - Feature ID：M2-F47
 - Milestone：M2／B5
 - 類型：Flutter UI／規則可解釋性
-- 工程狀態：IMPLEMENTED（CI 待確認）
+- 工程狀態：SCOPED VERIFIED（Flutter 152/152 + Web + Chrome Demo）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/review/review_timeline.dart`、`apps/bridge_academy_flutter/lib/src/widgets/bridge_replay_panel.dart`、`bridge_history_panel.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/b5_teaching_review_test.dart`；本地 NOT RUN（此環境缺 Flutter SDK）
+- 驗收與測試：`apps/bridge_academy_flutter/test/b5_teaching_review_test.dart`；[Flutter 152/152 CI PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919162697)
 
 ## 功能目的與實際情境
 以前玩家只能在一副已結束的牌局中按上一個／下一個事件；B5 增加「跳到事件」、「下一個重點」與回放當下的規則解釋。已封存的歷史牌局仍從 A5 的加密資料取回，先由 Core 重新驗證歷史事件，再投影為玩家可看的 `PlayerView`。遊戲進行中絕不可開啟完成回放。
@@ -43,7 +43,7 @@ flutter analyze
 flutter test
 flutter build web --release
 ```
-初始文件建立時為 **NOT RUN**；後續 CI 需對應 Commit SHA。針對 B5 的 tests 覆蓋四 Pass、加倍／再加倍、王牌／無王、開首攻明手曝露、明手由莊家操作、公開跟牌、未知約定、完整 History Replay 與雙語 Widget。尚無 Android／iOS 真機驗收。
+**GitHub CI EXECUTED**：原始碼 SHA `7c5d62942a599032ad5610cb4a49d964531d5bfb`，Flutter 3.47.7 / Ubuntu；[Flutter run #38919162697](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919162697) 中靜態分析無問題、152/152 tests 通過、Web Release Build 成功、ChromeDriver Demo E2E 成功；[Feature Learning Gate #38919162925](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919162925) 通過。Android／iOS 實機、真 BEN 策略驗收仍未執行。針對 B5 的 tests 覆蓋四 Pass、加倍／再加倍、王牌／無王、開首攻明手曝露、明手由莊家操作、公開跟牌、未知約定、完整 History Replay 與雙語 Widget。尚無 Android／iOS 真機驗收。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 為何「這手牌沒有跟出領出花色」不能只看 `PlayerView` 就推斷他當時確定缺門？Core 已驗證的合法性和回放畫面可見證據各有何差異？

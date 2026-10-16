@@ -1,6 +1,6 @@
 # B5 — 教學式牌局複盤驗收
 
-**日期：2026-10-16；工程狀態：IMPLEMENTED，最新 CI 待確認。**
+**日期：2026-10-16；工程狀態：B5.1–B5.4 SCOPED VERIFIED（Flutter／Web／Chrome Demo）。**
 
 ## 玩家可操作的交付
 - A5 歷史牌局與剛完成的單人牌局，都可在原有 Replay 中查看 B5 教學規則卡與下一個／上一個重點事件。
@@ -17,8 +17,9 @@
 - Windows/macOS/Android/iOS 原生裝置未實測，不能聲稱正式產品發行驗收。
 
 ## 執行證據
-- 編碼階段尚無 Dart／Flutter SDK 本機測試執行證據。
-- 待 GitHub Actions 執行後更新 SHA、`flutter analyze`、`flutter test`、`flutter build web`、Chrome 等結果；測試未跑前一律為 **NOT RUN**。
+- [Flutter Single Player CI #38919162697](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919162697) 對應真實程式碼 SHA `7c5d62942a599032ad5610cb4a49d964531d5bfb`：`flutter analyze --no-pub` **No issues found**；`flutter test --no-pub --reporter expanded` **152/152 PASS**；`flutter build web --no-pub --release` **PASS**；**ChromeDriver Demo E2E PASS**。
+- [Feature Learning Gate #38919162925](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919162925) **PASS**。
+- 此次僅 Demo/本機已完成歷史牌局；**未執行真 BEN 模型 B5 策略驗收、Android/iOS 實機測試或正式上線驗收**。本地環境無 Dart/Flutter，執行證據來自 GitHub Actions。
 
 ## rollback／合併
 可 Revert B5 commit；原本 CompletedReplay、HistoryStore、Bridge Core 與 Gateway／BEN API 都沒有變動。常見整合衝突僅 `app_copy.dart`、`bridge_history_panel.dart`、`bridge_replay_panel.dart` 與 `docs/learning/INDEX.md`；C1 不能覆蓋 Replay Widget。

@@ -1,8 +1,8 @@
-# B5 — B5 — 終局教學式複盤與規則解釋
+# B5 — 終局教學式複盤與規則解釋
 
 **Target branch**: `feature/b5-teaching-review`  
 **Based on**: `master 08a7fb5efcebd8538cfb70624c8975bd9b3eff88`  
-**Status**: HANDOFF_READY / IMPLEMENTATION_NOT_STARTED  
+**Status**: B5.1–B5.4 SCOPED VERIFIED（Flutter 152/152、Web Build、Chrome Demo）  
 **Provisional lesson ID**: `M2-F47`（在整合時必須再次檢查是否衝突）
 
 ## 目標
@@ -42,3 +42,10 @@
 
 ## 完工交接格式
 請回報 branch 與 HEAD SHA、分段完成情況、實作檔、測試與 CI URL、教學檔、對使用者可見的操作、剩餘風險、與其他分支的衝突風險，最後留一題繁體中文學習題。**測試通過不等於正式產品 Release Gate 通過。**
+
+## 2026-10-16 完工與實測交接
+- 變更：`lib/src/review/review_timeline.dart`、`widgets/bridge_replay_panel.dart`、`widgets/bridge_history_panel.dart`、`app_copy.dart`、`test/b5_teaching_review_test.dart`。
+- [Flutter CI #38919162697](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919162697) source SHA `7c5d62942a599032ad5610cb4a49d964531d5bfb`：analyze **PASS**、152/152 tests **PASS**、Web Release **PASS**、Chrome Demo E2E **PASS**。第一輪測試使用 suit-per-seat fixture 沒有跟牌情境，已改用 mixed-suit 牌例回歸。
+- [Feature Learning Gate #38919162925](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919162925)：**PASS**。
+- 書籤只存在 Widget 的當次開啟頁面；未修改 Bridge Core、HistoryStore schema 或 BEN/Gateway；不宣稱 DDS 最佳解或裝置／正式部署驗收。
+- 合併衝突注意：`app_copy.dart`、`bridge_replay_panel.dart`、`bridge_history_panel.dart`、`docs/learning/INDEX.md`。C1 僅能在下一階段以可信分析 DTO 介接，不可覆寫 B5 複盤 UI。
