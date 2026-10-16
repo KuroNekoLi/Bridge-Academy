@@ -3,10 +3,10 @@
 - Feature ID：M2-F50
 - Milestone：M2 / B4.2
 - 類型：Flutter UI、雙語教材、Bridge Core 規則交叉驗證、C3 整合
-- 工程狀態：IMPLEMENTED（CI 待核）
+- 工程狀態：SCOPED VERIFIED（Flutter 164/164／Web／Demo Chrome）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/academy/academy_advanced_catalog.dart`、`academy_catalog.dart`、`academy_page.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/b4_2_advanced_domain_test.dart`、`b4_2_advanced_widget_test.dart`；**NOT RUN（尚待 CI）**
+- 驗收與測試：`apps/bridge_academy_flutter/test/b4_2_advanced_domain_test.dart`、`b4_2_advanced_widget_test.dart`；**164/164 PASS（Flutter CI #38981030736）**
 
 ## 功能目的與實際情境
 原本 B4.1 的三堂九題著重座位、HCP 與跟牌入門。B4.2 再提供三堂共十二題雙語情境練習：防守跟牌／王牌／明手、定約與計分規劃、如何辨認教學約定的適用邊界。玩家可以照原本的學院流程「選課→作答→錯誤說明與重試→完成→返回」，亦可在 C3 明確同意保存後，於進度頁看到正確率與已完成數。
@@ -38,7 +38,7 @@ flutter test
 flutter build web --release
 ```
 
-狀態：**NOT RUN**。等待分支 Actions 的具體 SHA、測試數和結果。非真 BEN 上課、不含真人橋牌專家內容審核、Android/iOS 裝置 QA 暫停。
+狀態：**VERIFIED（限定 Flutter/Web/Demo Chrome）**。[Flutter CI #38981030736](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38981030736)，程式碼 SHA `ebcad9a1a04e552f25202475adcc3e03786f368e`：Flutter Analyze 無問題、**164/164 測試通過**、Web Release Build 成功、ChromeDriver Demo E2E 通過；[Feature Learning Gate #38981032251](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38981032251) 通過。非真 BEN 上課、不含真人橋牌專家內容審核、Android/iOS 裝置 QA 暫停。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 為什麼「2♦ 是轉到紅心的 Jacoby 約定」即使有 `ConventionExplanationEngine` 的 matched 結果，也不能證明真正 BEN 會這樣叫牌？

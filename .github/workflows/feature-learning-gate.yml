@@ -2,7 +2,7 @@ name: Feature Learning Gate
 
 on:
   push:
-    branches: [master, 'feature/b4-2-advanced-lessons']
+    branches: [master]
   pull_request:
     types: [opened, synchronize, reopened]
 

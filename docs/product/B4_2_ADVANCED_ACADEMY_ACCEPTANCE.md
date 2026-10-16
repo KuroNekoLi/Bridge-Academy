@@ -1,6 +1,6 @@
 # B4.2 — 進階橋牌課程（2026-10-17）
 
-**狀態：程式碼已提交，CI 待執行驗收；不是外部橋牌專家審核完成。**
+**狀態：SCOPED VERIFIED（Flutter／Web／Demo Chrome）；不是外部橋牌專家審核完成。**
 
 ## 玩家可操作交付
 - 保留 B4.1 的 3 堂／9 題，新增防守跟牌、莊家定約及計分、教學叫牌約定 3 堂／12 題，合計 **6 堂／21 題**，全部繁中／英文。
@@ -14,7 +14,13 @@
 - B4.2 widget：新課程可操作、答錯重試、opt-in C3 紀錄、320px／2× 字體與英文切換。
 - 既有 B4.1 與 C3 回歸通過；不變更 Gateway、DDS、牌局規則、正式多玩家模式。
 
-**CI 執行：NOT RUN**（等待對應 GitHub Actions 執行結果；不得將新增測試寫成 PASS）。Android/iOS 實機及模擬器 QA 依既定決策暫停。
+**CI 實際 PASS**：[Flutter CI #38981030736](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38981030736)，來源 Commit `ebcad9a1a04e552f25202475adcc3e03786f368e`。
+- Flutter Analyze：`No issues found`
+- Flutter tests：**164/164 All tests passed**（含 B4.1、B4.2、C3 與全套 Flutter 回歸）
+- Flutter Web Release Build：`Built build/web`
+- ChromeDriver 真瀏覽器 Demo E2E：**PASS**（不等於真 BEN 或正式部署）
+- [Feature Learning Gate #38981032251](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38981032251)：**PASS**。
+- 驗證過程發現 C3 既有 Widget 測試依賴未捲動的 ListView，新增課程使保存開關延後建立；改用 `scrollUntilVisible` 操作真實 UI，保留 C3 保護條件與確認刪除斷言。Android/iOS 實機及模擬器 QA 依既定決策暫停。
 
 ## 檔案與回退
 - `lib/src/academy/academy_advanced_catalog.dart`：原創進階課程
