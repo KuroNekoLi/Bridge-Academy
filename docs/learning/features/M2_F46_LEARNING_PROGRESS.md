@@ -1,7 +1,7 @@
 # M2-F46｜C3 儲存學習進度與 Privacy by Default
 
 - Feature ID：M2-F46
-- 工程狀態：IMPLEMENTED / CI PENDING
+- 工程狀態：SCOPED VERIFIED（Flutter 151/151）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/learning_progress/` 與 `academy/academy_page.dart`
 - 驗收：`docs/product/C3_LEARNING_PROGRESS_ACCEPTANCE.md`
