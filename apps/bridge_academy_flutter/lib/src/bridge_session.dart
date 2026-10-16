@@ -72,6 +72,7 @@ class BridgeSession extends ChangeNotifier {
   String? get errorCode => _errorCode;
   bool get started => _coordinator != null;
   bool get finished => _coordinator?.finished ?? false;
+  bool get isJustDeclare => _coordinator?.isJustDeclare ?? false;
   PlayerView? get view => _coordinator?.humanView;
   CompletedReplay? get completedReplay => _coordinator?.completedReplay;
   OpponentMode get mode => _mode;
@@ -416,6 +417,38 @@ class BridgeSession extends ChangeNotifier {
     return BenBotPolicy(transport);
   }
 
+  /// Player-facing declarer-only training. Contract is an explicit Core
+  /// initial state, never a fabricated auction or a BEN bidding proposal.
+  /// Any of four seats can be declarer; their partner is the public dummy
+  /// only after the opening lead. The opponent is deliberately Demo-only.
+  Future<void> startJustDeclare({
+    required int level,
+    required Strain strain,
+    Seat humanSeat = Seat.north,
+  }) async {
+    if (level < 1 || level > 7) {
+      throw ArgumentError.value(level, 'level', 'Training level must be 1–7');
+    }
+    if (busy || _saveFailed || (started && !finished) ||
+        (_fourBoardPractice != null && !_fourBoardPractice!.isComplete)) {
+      return;
+    }
+    _fourBoardPractice = null;
+    final boardNumber = started ? _board.number + 1 : _board.number;
+    await _beginBoard(
+      board: BoardDefinition.forNumber(boardNumber),
+      deal: _freshDealFactory?.call() ?? Deal.shuffled(),
+      humanSeat: humanSeat,
+      mode: OpponentMode.demo,
+      boardMode: BoardMode.fresh,
+      justDeclareContract: Contract(
+        level: level,
+        strain: strain,
+        declarer: humanSeat,
+      ),
+    );
+  }
+
   /// Starts four distinct newly shuffled practice boards with normal Core
   /// auctions, tricks, and scores. No manufactured MP/IMP comparison.
   Future<void> startFourBoardPractice({
@@ -510,6 +543,7 @@ class BridgeSession extends ChangeNotifier {
     await _beginBoard(
       board: _board, deal: deal, humanSeat: _humanSeat,
       mode: _mode, boardMode: _boardMode,
+      justDeclareContract: _coordinator?.initialTrainingContract,
     );
   }
 
@@ -531,6 +565,7 @@ class BridgeSession extends ChangeNotifier {
     required Seat humanSeat,
     required OpponentMode mode,
     required BoardMode boardMode,
+    Contract? justDeclareContract,
   }) async {
     _transport?.close();
     _transport = null;
@@ -551,6 +586,7 @@ class BridgeSession extends ChangeNotifier {
       vulnerability: board.vulnerability,
       humanSeat: humanSeat,
       bot: _createBot(mode),
+      justDeclareContract: justDeclareContract,
     );
     _saving = true;
     notifyListeners();

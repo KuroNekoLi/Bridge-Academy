@@ -182,6 +182,13 @@ class _BridgeTableState extends State<BridgeTable> {
       builder: (context, _) {
         final session = widget.session;
         final view = session.view;
+        final trainingContract = session.isJustDeclare ? view?.contract : null;
+        final declarerTricks = trainingContract == null || view == null
+            ? 0
+            : view.completedTricks
+                .where((trick) => trick.winner.isNS ==
+                    trainingContract.declarer.isNS)
+                .length;
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -299,8 +306,35 @@ class _BridgeTableState extends State<BridgeTable> {
             ],
             if (session.isJustDeclare) ...[
               const SizedBox(height: 8),
-              Text(copy.t('justDeclareActive'),
-                  key: const Key('just_declare_active')),
+              Card(
+                key: const Key('just_declare_active'),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(copy.t('justDeclareActive')),
+                      if (trainingContract != null) ...[
+                        Text('${copy.t('justDeclareDeclarer')}: '
+                            '${copy.seat(trainingContract.declarer.letter)}'),
+                        Text('${copy.t('justDeclareDummy')}: '
+                            '${copy.seat(trainingContract.dummy.letter)}'),
+                        Text(
+                          copy.justDeclareProgress(
+                              declarerTricks, trainingContract.targetTricks),
+                          key: const Key('just_declare_goal'),
+                        ),
+                        if (session.finished)
+                          Text(
+                            copy.t(declarerTricks >= trainingContract.targetTricks
+                                ? 'justDeclareMade' : 'justDeclareDown'),
+                            key: const Key('just_declare_outcome'),
+                          ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
             ],
             const SizedBox(height: 8),
             Text(
@@ -490,6 +524,7 @@ class _BridgeTableState extends State<BridgeTable> {
         runSpacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
+          Text(copy.t('justDeclareSeatHint')),
           DropdownButton<int>(
             key: const Key('just_declare_level'),
             value: _justDeclareLevel,
@@ -521,7 +556,9 @@ class _BridgeTableState extends State<BridgeTable> {
                 ? null : () {
               setState(() => _replayIndex = null);
               session.startJustDeclare(
-                level: _justDeclareLevel, strain: _justDeclareStrain,
+                level: _justDeclareLevel,
+                strain: _justDeclareStrain,
+                humanSeat: _selectedSeat,
               );
             },
             icon: const Icon(Icons.school),

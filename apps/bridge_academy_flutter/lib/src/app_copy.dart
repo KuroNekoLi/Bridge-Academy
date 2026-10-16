@@ -29,6 +29,8 @@ class AppCopy {
   String historyPage(int current, int total) =>
       '${t('historyPage')}: $current / $total';
   String contract(String value) => '${t('contract')}: $value';
+  String justDeclareProgress(int tricks, int target) =>
+      '${t('justDeclareWonTricks')}: $tricks / $target';
   String formatCard(String code, {required bool legal}) =>
       '${legal ? t('legalCard') : t('card')} $code';
 
@@ -78,9 +80,18 @@ class AppCopy {
     'justDeclareLevel': ['選擇定約線位', 'Choose contract level'],
     'justDeclareStrain': ['選擇定約花色', 'Choose contract strain'],
     'justDeclareActive': [
-      '莊家練習：已指定定約，沒有模擬叫牌。你是北家莊家，首攻後可操作南家明手；目前使用規則示範 Bot，非 BEN。',
-      'Declarer practice: contract was set without an auction. You are North, controlling South dummy after the opening lead. Rules-demo Bot only, not BEN.',
+      '莊家練習：定約直接設定，沒有模擬叫牌。首攻後可操作搭檔的明手；目前使用規則示範 Bot，非 BEN。',
+      'Declarer practice: contract set without an auction. You control partner dummy after the opening lead. Rules-demo Bot only, not BEN.',
     ],
+    'justDeclareSeatHint': [
+      '莊家座位使用上方的「玩家座位」選擇；四個座位均可練習。',
+      'Your declarer seat comes from Your seat above; all four seats are supported.',
+    ],
+    'justDeclareDeclarer': ['莊家', 'Declarer'],
+    'justDeclareDummy': ['明手座位', 'Dummy seat'],
+    'justDeclareWonTricks': ['莊家方已贏墩數／定約目標', 'Declarer tricks / contract target'],
+    'justDeclareMade': ['練習成功：完成定約', 'Practice success: contract made'],
+    'justDeclareDown': ['練習未達標：定約宕掉', 'Practice result: contract defeated'],
     'webCheckpointCaution': [
       '瀏覽器存檔使用加密，仍無法防範同網站惡意程式。請使用受信任的 HTTPS 網站；清除瀏覽器資料將無法恢復牌局。',
       'Browser saves are encrypted, but do not protect against malicious same-site scripts. Use trusted HTTPS sites; clearing browser data prevents recovery.',

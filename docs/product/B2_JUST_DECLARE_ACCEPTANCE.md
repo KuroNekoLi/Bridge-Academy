@@ -29,3 +29,19 @@
 
 ## 安全與待辦
 所有完整牌張僅寫入既有加密本機 Session/History Store。PlayerView 仍為對外唯一合法視角。這不是伺服器部署、真 BEN AI 教學品質、裝置驗收或比賽公平性通過。A4.5、A3.5、Android/iOS 裝置測試仍維持暫停。
+## B2.2 — Four-seat declarer practice and visible contract-goal feedback (implementation)
+
+**Status: IMPLEMENTED / CI NOT VERIFIED**, independent of B2.1's unallocated GitHub Actions runners. [Lesson](../learning/features/M2_F41_JUST_DECLARE_FOUR_SEATS.md).
+
+A review of HEAD found the B2.1 Flutter UI called `BridgeSession.startJustDeclare` and `BridgeSession.isJustDeclare` even though the controller lacked both. This was a real code integration defect, not merely missing test evidence. B2.2 implements the callable controller entry and typed flag, forwards the explicit teaching `Contract` into `SinglePlayerCoordinator`, and preserves `initialTrainingContract` on `replaySameBoard()`. Without these changes the B2.1 Flutter feature could not be compiled as a playable implementation.
+
+Players choose **human/declarer seat N, E, S or W** using the existing Your Seat selector, plus level 1–7 and strain C/D/H/S/NT. The game starts from a **new shuffled Deal**, without Auction. The correct seat clockwise after declarer makes the opening lead, which exposes declarer's partner as Dummy. Existing Bridge Core legality and scoring remain authoritative. The visible Just Declare card now shows declarer, dummy, successful tricks / target (level + 6), and explicit made/down feedback at the end, in zh-TW and English. Normal auction, B1 multi-board and history APIs remain intact. This is explicitly **Demo rules Bot**, not a claim of BEN bidless play.
+
+### Affected sources and acceptance
+
+- `apps/bridge_academy_flutter/lib/src/bridge_session.dart` — real start method, four-seat declarer, retained training contract on same-deal replay.
+- `apps/bridge_academy_flutter/lib/src/bridge_app.dart` / `app_copy.dart` — existing Your Seat drives Just Declare, player-visible progress and made/down result.
+- `apps/bridge_academy_flutter/test/b2_2_declarer_seats_test.dart` — N/E/S/W opening lead, dummy, checkpoint reconstruction, terminal archival/replay, wrong input and bilingual UI.
+- `test/b2_just_declare_test.dart` (existing) and `packages/bridge_core/test/just_declare_test.dart` require a fresh PASS; all Android/iOS/emulator tests remain held.
+
+Do **not** mark B2 accepted until actual Flutter/Core analysis + tests run. No BEN-no-auction API exists, no invented auction, no Android/iOS device acceptance, no multi-player or competition mode. Local encrypted checkpoint/private history do not imply multi-tab or public cloud readiness.
