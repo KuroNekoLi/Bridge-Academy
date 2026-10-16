@@ -20,7 +20,9 @@ class _DdsReviewSectionState extends State<DdsReviewSection> {
     setState(() { _busy = true; _result = null; _error = null; });
     try {
       final result = await widget.onAnalyze!();
-      if (mounted) setState(() => _result = result);
+      if (mounted) {
+        setState(() => _result = result);
+      }
     } on DoubleDummyAnalysisException catch (e) {
       if (mounted) setState(() => _error = switch(e.code) {
         DoubleDummyFailureCode.unsupportedPlatform ||
