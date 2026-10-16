@@ -126,6 +126,15 @@ print(json.dumps({'schemaVersion':1,'solverCommit':
         timeout: const Duration(milliseconds: 100)).analyze(board),
       throwsA(isA<DoubleDummyAnalysisException>().having(
           (e) => e.code, 'code', DoubleDummyFailureCode.timeout)));
+    final cancel = DdsAnalysisCancellation();
+    final cancelled = DdsPythonProcessAnalyzer(workerScript: slow.path,
+        timeout: const Duration(seconds: 4))
+        .analyzeWithCancellation(board, cancellation: cancel);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    cancel.cancel();
+    await expectLater(cancelled,
+      throwsA(isA<DoubleDummyAnalysisException>().having(
+        (e) => e.code, 'code', DoubleDummyFailureCode.cancelled)));
     final noisy = await _temporaryPythonWorker(dir,
       'import sys\nsys.stderr.write("N:PRIVATE_PBN")\nsys.exit(2)\n');
     try {

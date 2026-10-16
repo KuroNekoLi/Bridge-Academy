@@ -30,7 +30,15 @@ final class DdsPythonProcessAnalyzer implements DoubleDummyAnalyzer {
   final Map<String, String> environment;
 
   @override
-  Future<DoubleDummyTable> analyze(TrustedCompletedBoard board) async {
+  Future<DoubleDummyTable> analyze(TrustedCompletedBoard board) =>
+      analyzeWithCancellation(board);
+
+  Future<DoubleDummyTable> analyzeWithCancellation(
+      TrustedCompletedBoard board, {DdsAnalysisCancellation? cancellation}) async {
+    if (cancellation?.isCancelled ?? false) {
+      throw const DoubleDummyAnalysisException(
+          DoubleDummyFailureCode.cancelled);
+    }
     if (!Platform.isLinux && !Platform.isMacOS && !Platform.isWindows) {
       throw const DoubleDummyAnalysisException(
           DoubleDummyFailureCode.unsupportedPlatform);
@@ -56,7 +64,15 @@ final class DdsPythonProcessAnalyzer implements DoubleDummyAnalyzer {
 
     Timer? timer;
     var timedOut = false;
+    var cancelled = false;
+    var finished = false;
     var exceeded = false;
+    cancellation?.whenCancelled.then((_) {
+      if (!finished) {
+        cancelled = true;
+        process.kill();
+      }
+    });
     final bytes = <int>[];
 
     // Consume both channels concurrently: a full stderr pipe must not
@@ -85,6 +101,10 @@ final class DdsPythonProcessAnalyzer implements DoubleDummyAnalyzer {
       final exitCode = await process.exitCode;
       await stdoutDone;
       await discardedErr;
+      if (cancelled) {
+        throw const DoubleDummyAnalysisException(
+            DoubleDummyFailureCode.cancelled);
+      }
       if (timedOut) {
         throw const DoubleDummyAnalysisException(
             DoubleDummyFailureCode.timeout);
@@ -109,8 +129,9 @@ final class DdsPythonProcessAnalyzer implements DoubleDummyAnalyzer {
       throw const DoubleDummyAnalysisException(
           DoubleDummyFailureCode.malformedResponse);
     } finally {
+      finished = true;
       timer?.cancel();
-      if (timedOut || exceeded) process.kill();
+      if (timedOut || exceeded || cancelled) process.kill();
     }
   }
 }

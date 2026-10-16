@@ -18,7 +18,11 @@ final class DdsPythonProcessAnalyzer implements DoubleDummyAnalyzer {
   final Map<String, String> environment;
 
   @override
-  Future<DoubleDummyTable> analyze(TrustedCompletedBoard board) async =>
+  Future<DoubleDummyTable> analyze(TrustedCompletedBoard board) =>
+      analyzeWithCancellation(board);
+
+  Future<DoubleDummyTable> analyzeWithCancellation(
+      TrustedCompletedBoard board, {DdsAnalysisCancellation? cancellation}) async =>
       throw const DoubleDummyAnalysisException(
           DoubleDummyFailureCode.unsupportedPlatform);
 }

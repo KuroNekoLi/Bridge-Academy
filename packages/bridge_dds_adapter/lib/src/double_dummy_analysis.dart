@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:bridge_core/bridge_core.dart';
 
 /// Typed, sanitized failure modes. Never put a private Deal or raw PBN in a
 /// public error, exception, trace, or analytics payload.
 enum DoubleDummyFailureCode {
   invalidTranscript,
+  cancelled,
   notFinished,
   unsupportedPlatform,
   unavailable,
@@ -18,6 +21,17 @@ final class DoubleDummyAnalysisException implements Exception {
 
   @override
   String toString() => 'DoubleDummyAnalysisException: ${code.name}';
+}
+
+/// Cooperative process cancellation; native adapter kills the worker.
+/// Cancellation is per invocation and does not mutate a Bridge Core board.
+final class DdsAnalysisCancellation {
+  final Completer<void> _done = Completer<void>();
+  bool get isCancelled => _done.isCompleted;
+  Future<void> get whenCancelled => _done.future;
+  void cancel() {
+    if (!_done.isCompleted) _done.complete();
+  }
 }
 
 /// A capability created exclusively by a trusted archive after Bridge Core
