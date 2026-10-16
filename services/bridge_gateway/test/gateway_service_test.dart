@@ -15,7 +15,7 @@ const _input = <String, String>{
 };
 
 class _FakeBackend implements GatewayDecisionBackend {
-  _FakeBackend({this.output, this.error});
+  _FakeBackend();
   Map<String, Object?>? output;
   Object? error;
   int calls = 0;
