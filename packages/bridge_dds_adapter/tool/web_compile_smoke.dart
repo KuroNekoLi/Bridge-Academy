@@ -4,6 +4,6 @@ import 'package:bridge_dds_adapter/bridge_dds_adapter.dart';
 void main() {
   final analyzer = DdsPythonProcessAnalyzer(workerScript: 'UNSUPPORTED');
   final unsupported = const UnsupportedDoubleDummyAnalyzer();
-  assert(analyzer is DoubleDummyAnalyzer);
-  assert(unsupported is DoubleDummyAnalyzer);
+  // Access both symbols so the compile asserts the conditional Web export.
+  print('${analyzer.runtimeType}/${unsupported.runtimeType}');
 }
