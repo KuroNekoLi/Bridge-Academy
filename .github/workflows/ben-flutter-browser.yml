@@ -136,6 +136,38 @@ jobs:
             --target=integration_test/browser_ben_declarer_test.dart \
             -d web-server --browser-name=chrome \
             --dart-define=BEN_BASE_URL=http://127.0.0.1:8085
+      - name: Start local first-party Gateway for real Flutter Chrome E2E
+        run: |
+          cd services/bridge_gateway
+          dart pub get
+          nohup env \
+            GATEWAY_BROWSER_ORIGINS=http://localhost:8000,http://127.0.0.1:8000 \
+            BEN_INTERNAL_ORIGIN=http://127.0.0.1:8085 \
+            dart run bin/serve.dart \
+            > "$RUNNER_TEMP/gateway-private.log" 2>&1 &
+          echo "GATEWAY_PID=$!" >> "$GITHUB_ENV"
+          python - <<'PY'
+          import json, time, urllib.request
+          for _ in range(100):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8086/healthz",timeout=2) as r:
+                      data=json.load(r)
+                  if data.get("status")=="ready":
+                      print("LOCAL_GATEWAY_READY")
+                      break
+              except Exception:
+                  time.sleep(1)
+          else:
+              raise SystemExit("Local Gateway failed readiness")
+          PY
+      - name: REAL Chrome browser → Gateway POST → genuine Python BEN full game
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/browser_gateway_real_test.dart \
+            -d web-server --browser-name=chrome --web-port=8000 \
+            --dart-define=BRIDGE_GATEWAY_ORIGIN=http://127.0.0.1:8086
       - name: Sanitized diagnostics on failure
         if: failure()
         shell: bash

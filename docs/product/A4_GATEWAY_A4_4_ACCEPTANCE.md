@@ -1,6 +1,6 @@
 # A4.4 — Flutter authoritative Gateway integration
 
-**2026-10-16. Status: IMPLEMENTED / CI PENDING.** No public HTTPS service has been deployed; A3.5, Android emulator and Android/iOS physical UI/E2E testing are owner-deferred.
+**2026-10-16. Status: FLUTTER/WEB SCOPED VERIFIED; genuine Flutter Chrome→Gateway→BEN E2E pending.** No public HTTPS service has been deployed; A3.5, Android emulator and Android/iOS physical UI/E2E testing are owner-deferred.
 
 ## Scope and startup
 
@@ -35,7 +35,8 @@ The Flutter `BridgeAcademyApp` accepts a test-injected `GatewayApi` or an explic
 - Flutter Widget: opt-in Gateway table and North hand after start, language toggle in English, no Demo/BEN selector in Gateway mode.
 - Existing Flutter unit/widget, Web release build and ChromeDriver demo/secure-checkpoint regressions must pass. Existing pure Dart Gateway suite and pinned real-BEN full-game test retain their independent separate evidence.
 - This A4.4 test suite **does not** prove live Flutter browser-to-real-BEN full-game E2E or a deployed HTTPS server; those require separately named browser acceptance and A4.5.
-- Actual CI status: **NOT RUN at implementation commit**. Update this document and M2-F31 only after exact SHA/run evidence.
+- **[Flutter CI #38848030915](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915), code SHA `dc571be3050a5a81cc27cdc81a3cabbc312efb8f`: SUCCESS.** `flutter analyze --no-pub` no issues; `flutter test` **86/86 PASS**; `flutter build web --release` PASS; real ChromeDriver Demo/secure checkpoint regressions PASS. [Learning Gate #38848030896](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030896) PASS.
+- **New genuine browser acceptance being added:** [browser_gateway_real_test.dart](../../apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart) exercised by the pinned real BEN Chrome workflow, with real first-party loopback Gateway and explicit CORS origin. Unlike the 86 widget tests it uses real Browser HTTP, first-party Gateway and actual Python BEN and checks 13 tricks/52 cards. **CI not yet run at authoring**; do not mark this live chain PASS until run evidence is known. Public HTTPS/deployed server and devices remain out of scope.
 
 ## Release blockers (not waived)
 

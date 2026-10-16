@@ -3,7 +3,7 @@
 - Feature ID：M2-F31
 - Milestone：A4.4
 - 類型：Flutter／HTTP Client／狀態恢復／安全 API
-- 工程狀態：IMPLEMENTED（Bridge Core 已修復且 CI PASS，Flutter 首輪 #38847830454 仍有四項 lint；已修正待 CI，非部署驗收）
+- 工程狀態：ENGINEERING_VERIFIED（Flutter CI 86/86 + Web/Chrome Demo PASS；真 Chrome→Gateway→BEN 全場新測試待 CI）
 - 學習狀態：DELIVERED（尚非 PRACTICED 或 MASTERED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/gateway_http_api.dart`、`gateway_game_session.dart`、`gateway_table.dart`、`packages/bridge_core/lib/src/player_view.dart`
 - 驗收與測試：`apps/bridge_academy_flutter/test/a4_gateway_integration_test.dart`、`docs/product/A4_GATEWAY_A4_4_ACCEPTANCE.md`
@@ -40,7 +40,7 @@ flutter test --reporter expanded
 flutter build web --release
 ```
 
-新增 MockClient + Widget 測試：安全 Origin 驗證、Gateway 啟動與 view、伺服器提交成功但 HTTP 回應遺失時用同 Request ID 恢復、401 Token 過期、惡意回應包含 `hands` 的隱私拒絕，以及雙語 UI。其他 Demo/Chrome 與真正 BEN Gateway 全場測試分開驗證。[首次 Bridge Core CI #38847385042](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847385042) FAIL：新增解析器時的文字置換將原本的 PlayerView 類別展開在正規表示式當中，使 300+ 筆 analyzer 警告／錯誤；這是編輯錯誤，不是原始 Bridge Core 失效。已從 Git commit `49772b6` 的 canonical 原檔重建並正確加入解碼 factory，Core 修正後 [Bridge Core CI #38847678253](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847678253) 已 PASS；[Flutter CI #38847830454](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847830454) 嚴格分析剩三項單行 if 大括號與一項測試 Map lint，已修正待新一輪 CI；**尚未宣布 Flutter PASS**。不可將 MockClient 等同真 BEN，也不會恢復 Android／iOS 實機／模擬器測試。
+新增 MockClient + Widget 測試：安全 Origin 驗證、Gateway 啟動與 view、伺服器提交成功但 HTTP 回應遺失時用同 Request ID 恢復、401 Token 過期、惡意回應包含 `hands` 的隱私拒絕，以及雙語 UI。其他 Demo/Chrome 與真正 BEN Gateway 全場測試分開驗證。[首次 Bridge Core CI #38847385042](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847385042) FAIL：新增解析器時的文字置換將原本的 PlayerView 類別展開在正規表示式當中，使 300+ 筆 analyzer 警告／錯誤；這是編輯錯誤，不是原始 Bridge Core 失效。已從 Git commit `49772b6` 的 canonical 原檔重建並正確加入解碼 factory，Core 修正後 [Bridge Core CI #38847678253](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847678253) 已 PASS；[Flutter CI #38847830454](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847830454) 嚴格分析剩三項單行 if 大括號與一項測試 Map lint，已修正待新一輪 CI；**修正後 Flutter CI [#38848030915](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915) 通過：`flutter analyze` 乾淨、86/86 Unit/Widget 測試、Web Release Build、真 Chrome Demo／加密存檔回歸全部 PASS；[Learning Gate #38848030896](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030896) PASS**。這仍未證明真 Flutter Gateway full-game 或公開部署。另新增 `integration_test/browser_gateway_real_test.dart` + pinned BEN Chrome 工作流程，使用 Chrome Web-Server 固定 8000、Gateway 127.0.0.1:8086，檢查玩家從按開始、3NT 叫牌直到 52 張牌打完。這項新真模型 E2E **待 CI**。不可將 MockClient 等同真 BEN，也不會恢復 Android／iOS 實機／模擬器測試。
 
 ## 練習與自我檢驗
 
