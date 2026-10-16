@@ -12,7 +12,7 @@
 
 你與電腦搭檔叫出 1NT–Pass–2♣，這通常可能是 Stayman；但這個意義**不是單靠字串 2♣ 就能判定**：它取決於是否為搭檔的 1NT **開叫**、有沒有敵方插叫、約定是否啟用、版本是否相符。玩家可在叫牌練習中開啟預覽，看到規則來源及「未經專家審核」標示。無法匹配時顯示 UNKNOWN，而不是臆測。
 
-## 真實程式碼導讀
+## 主要程式碼導讀
 
 `BidContext.fromView(view)` 只將 dealer／viewer／vulnerability／auction 投影成領域輸入；不包含手牌。核心 `ConventionExplanationEngine.resolve` 會先驗證座位順序與叫品階層，拒絕 Double/Redouble 或競叫，再配對選定 Profile 的 exact `calls`、`relativeSeats`。
 
