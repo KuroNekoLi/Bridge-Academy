@@ -3,10 +3,10 @@
 - Feature ID：M2-F48
 - Milestone：C1.1～C1.3
 - 類型：橋牌 AI 整合／純 Dart／可信終局分析
-- 工程狀態：IMPLEMENTED（真 DDS3 CI 驗證待確認）
+- 工程狀態：SCOPED VERIFIED（Dart 契約／JS Web 編譯與真 DDS3 原生 Golden）
 - 學習狀態：DELIVERED
 - 原始碼：`packages/bridge_dds_adapter/lib/src/double_dummy_analysis.dart`、`lib/src/dds_python_process.dart`、`tool/dds3_worker.py`
-- 驗收與測試：`test/double_dummy_analysis_test.dart`、`test/dds3_real_golden_test.dart`、[C1 workflow](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/c1-dds-analysis.yml)（先記 CI PENDING，不造假）
+- 驗收與測試：`test/double_dummy_analysis_test.dart`、`test/dds3_real_golden_test.dart`、[C1 workflow](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/c1-dds-analysis.yml)（[Dart CI 6/6 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919732769)、[True DDS3 native Golden PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919422293)）
 
 ## 功能目的與實際情境
 玩家完成一副橋牌後，未來可以在 B5 複盤頁查看「如果雙方知道所有手牌、某莊家叫某花色，理論上能拿幾墩」的表格。本階段只實作可信分析服務，不直接展示給 Flutter。DDS3 所用資料與真人出牌時的資訊完全不同，因此不能把事後的雙明手結果稱作玩家當下的最佳選擇。
@@ -35,7 +35,7 @@ return TrustedCompletedBoard._(
 常見錯誤是只測一個假 `DoubleDummyAnalyzer`，卻說真 DDS 已通過，或者用雙明手得分推斷人類資訊不充分時「應該」能打出同一張牌。這份工程教材不把任何策略教學評為已經專家審核。
 
 ## 驗證與實際證據
-在 `packages/bridge_dds_adapter` 執行 `dart analyze`、`dart test`、`python3 -m py_compile tool/dds3_worker.py`；**普通測試內的假 Python worker 是 API 契約測試，不是真實 DDS**。真正驗證須先從 pinned `abb1127` 生成 Python 原生 wheel，再設 `C1_DDS_REAL=1` 執行 `test/dds3_real_golden_test.dart`。該測試有三副固定、相互旋轉的完整牌，驗證 5×4 值與兩次分析一致。尚未有相同 SHA 的 CI 成功紀錄時請標記 PENDING，不以預期 PASS 取代事實。
+在 `packages/bridge_dds_adapter` 執行 `dart analyze`、`dart test`、`python3 -m py_compile tool/dds3_worker.py`；**普通測試內的假 Python worker 是 API 契約測試，不是真實 DDS**。真正驗證須先從 pinned `abb1127` 生成 Python 原生 wheel，再設 `C1_DDS_REAL=1` 執行 `test/dds3_real_golden_test.dart`。該測試有三副固定、相互旋轉的完整牌，驗證 5×4 值與兩次分析一致。已透過 GitHub Actions 真正執行：原生 pinned DDS3 Python 3.14 建置與三副牌 Golden [PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919422293)，Dart 類型、安全、取消及 Web JS 編譯 [PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919732769)。分別對應不同程式 SHA，最後需再次確認同版驗收。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 如果玩家在第 7 墩只看得到自己與已攤開的明手，為什麼不能直接呼叫這個 DDS3 adapter 並稱其答案是公平的「最佳一手」？

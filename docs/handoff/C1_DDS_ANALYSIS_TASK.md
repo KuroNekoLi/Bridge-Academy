@@ -2,7 +2,7 @@
 
 **Target branch**: `feature/c1-dds-analysis`  
 **Based on**: `master 08a7fb5efcebd8538cfb70624c8975bd9b3eff88`  
-**Status**: HANDOFF_READY / IMPLEMENTATION_NOT_STARTED  
+**Status**: C1.1–C1.3 SCOPED IMPLEMENTED + VERIFIED (Dart/Linux native CI), C1.4 isolated service; B5/C1.5 Flutter UI intentionally pending  
 **Provisional lesson ID**: `M2-F48`（在整合時必須再次檢查是否衝突）
 
 ## 目標
@@ -41,3 +41,11 @@
 
 ## 完工交接格式
 請回報 branch 與 HEAD SHA、分段完成情況、實作檔、測試與 CI URL、教學檔、對使用者可見的操作、剩餘風險、與其他分支的衝突風險，最後留一題繁體中文學習題。**測試通過不等於正式產品 Release Gate 通過。**
+
+## 實作完成交接（2026-10-16）
+- 程式碼：`packages/bridge_dds_adapter/lib/src/{double_dummy_analysis.dart,dds_python_process.dart,dds_python_process_stub.dart}`、`tool/dds3_worker.py`，無 DDS binary/vendor 程式碼。
+- 資料流程：加密可信存檔（授權由 caller 負責）→ `GameTranscript.decode`（逐行動重播驗證，未終局拒絕）→ `TrustedCompletedBoard` → Python DDS3 stdin → 20-cell DD table。Web 依條件匯出返回 `unsupportedPlatform`。
+- 真 DDS3 upstream 固定 `abb1127ba096676a4849f341f300c9827a732342`（Apache-2.0），原生 CI 採 Python 3.14、`calc_dd_table`；無商用打包授權批准／手機支援聲明。
+- Dart 6 tests + Web compile：[證據](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919732769)；真 DDS3 3×20 Golden：[證據](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919422293)。最後整合 Commit 使用 `[dds-golden]` 觸發同版重驗。
+- 交由 C1.5／B5 後續整合玩家畫面，不要在本分支修改 replay/widget 或讓 live BEN 拿到 52 張。
+- 未驗證：Android/iOS（使用者暫停）、Flutter App 完整回歸（未改 Flutter）、真實 DDS 重發行權與 Web/WASM。追蹤 `docs/product/C1_DDS_ANALYSIS_ACCEPTANCE.md`。

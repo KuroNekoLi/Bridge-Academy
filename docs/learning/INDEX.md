@@ -81,7 +81,7 @@
 
 | M2-F43 | B6 每日固定四副牌、UTC manifest、AES-GCM 進度、Flutter UI（[124/124 tests + Web/Chrome Demo PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38910655183)） | [M2-F43 教學](features/M2_F43_DAILY_PRACTICE.md) | [模型](../../apps/bridge_academy_flutter/lib/src/daily_practice.dart) · [測試](../../apps/bridge_academy_flutter/test/b6_daily_practice_test.dart) · [驗收](../product/B6_DAILY_PRACTICE_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F48 | C1 DDS3 雙明手終局分析：可信事件重播、跨程序隱私隔離、5×4 API 與真 DDS Golden Gate（CI 待確認） | [M2-F48](features/M2_F48_DDS_ANALYSIS.md) | [DDS adapter](../../packages/bridge_dds_adapter/lib/bridge_dds_adapter.dart) · [tests](../../packages/bridge_dds_adapter/test/double_dummy_analysis_test.dart) · [acceptance](../product/C1_DDS_ANALYSIS_ACCEPTANCE.md) | DELIVERED |
+| M2-F48 | C1 DDS3 雙明手終局分析：可信事件重播、跨程序隔離、5×4 API、[真 DDS3 Golden PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919422293)、[Dart／Web PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38919732769) | [M2-F48](features/M2_F48_DDS_ANALYSIS.md) | [DDS adapter](../../packages/bridge_dds_adapter/lib/bridge_dds_adapter.dart) · [tests](../../packages/bridge_dds_adapter/test/double_dummy_analysis_test.dart) · [acceptance](../product/C1_DDS_ANALYSIS_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
