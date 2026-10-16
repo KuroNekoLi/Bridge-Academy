@@ -52,6 +52,6 @@ dart test --reporter expanded
 ## Next delivery slices
 
 **A4.2:** [Loopback gateway](../../services/bridge_gateway/README.md) implemented with token TTL, SHA-256 hashed in-memory sessions, bounded requests/CORS and real localhost HTTP integration tests; server game/seat identity verification, durable auth, public TLS and remote BEN are NOT provided. [A4.2 acceptance](A4_GATEWAY_A4_2_ACCEPTANCE.md).  
-**A4.3:** Private BEN mediation, bounded queue, stable request identities, genuine pinned BEN integration and model/weights license review.  
+**A4.3:** A4.3.1 optional literal-loopback BEN Worker behind Gateway POST is [implemented for local development](A4_GATEWAY_A4_3_1_ACCEPTANCE.md), with isolated HTTP stub BEN tests. A4.3.2 server-owned game/seat authority and event-version dedup, A4.3.3 true pinned BEN model CI and weights/license audit remain OPEN.  
 **A4.4:** App uses production Gateway when configured securely; localized errors and recovery.  
 **A4.5:** Staging/full product acceptance, latency/resources/cost/privacy checks and four seats/16 boards. A3.5 remains deferred and release-blocking.

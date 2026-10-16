@@ -5,7 +5,7 @@
 
 ## 2026-10-15 delivery alignment and current action
 
-**Existing authority remains intact.** A1 (canonical board metadata) is scoped engineering-verified; A2 includes verified Core/Web resume and later native/Web encrypted checkpoint implementations, **not a fully validated cross-device/production recovery solution**. A3.5 was expressly deferred by the owner; next feature is **A4 Production BEN Integration**, A4.1 client scoped verified; current implementation work is A4.2 localhost Gateway. A4.3 private BEN worker and hosted endpoint remain pending. A2 deployment security, native durability, browser concurrency, and BEN request idempotency continue as explicit P0 blockers. No device or emulator run is authorized to resolve them yet.
+**Existing authority remains intact.** A1 (canonical board metadata) is scoped engineering-verified; A2 includes verified Core/Web resume and later native/Web encrypted checkpoint implementations, **not a fully validated cross-device/production recovery solution**. A3.5 was expressly deferred by the owner; next feature is **A4 Production BEN Integration**, A4.1 client scoped verified; current implementation work is A4.2 localhost Gateway. A4.3.1 BEN loopback worker now under test; A4.3.2 trusted game/seat + event version dedup and A4.3.3 real BEN acceptance remain pending. Hosted HTTPS remains blocked. A2 deployment security, native durability, browser concurrency, and BEN request idempotency continue as explicit P0 blockers. No device or emulator run is authorized to resolve them yet.
 
 **Device-test hold:** owner has paused all real Android/iOS and Android emulator UI/E2E testing until a separate explicit approval. The related GitHub workflows have auto-trigger removed and jobs hard-skipped. Keep A7 device QA in release criteria, but do not schedule, re-enable, or dispatch it; use pure Dart, Flutter analyze/widget, Web builds and existing allowed browser/BEN checks meanwhile. Documentation-only changes do not count as code verification.
 
@@ -21,7 +21,7 @@ The owner **postponed A3.5 final UI/physical device/assistive tech acceptance** 
 | --- | --- | --- |
 | A4.1 | Versioned authenticated HTTPS POST Gateway client, injected short-lived token supplier; no hand/token in URL; failure/safe-response tests | **SCOPED VERIFIED: [23/23 Adapter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162); no remote Gateway** |
 | A4.2 | **Loopback-only** Gateway with anonymous 15m bearer capability, per-peer/per-token quotas, strict API field/schema validation and injected backend | **SCOPED VERIFIED**: [14/14 real localhost HTTP CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219472); **not remote BEN, not verified seat/board authorization, not public HTTPS deployment** |
-| A4.3 | Private-network BEN worker gateway mediation, stable request identity/dedup and real BEN regressions | NOT IMPLEMENTED |
+| A4.3 | **A4.3.1** literal-loopback BEN GET worker behind authenticated local Gateway POST; **A4.3.2** server-controlled game/seat authority and request dedup; **A4.3.3** pinned real BEN acceptance | **A4.3.1 IMPLEMENTED / HTTP CI PENDING**; 3.2/3.3 OPEN, no production authorization |
 | A4.4 | Flutter real Gateway integration, accessible localized errors/retry and secure host configuration | NOT IMPLEMENTED |
 | A4.5 | Staging HTTPS deployment, weights/license, cost/latency/concurrency/privacy review, multi-board acceptance | NOT IMPLEMENTED |
 

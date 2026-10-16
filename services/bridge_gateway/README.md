@@ -44,3 +44,19 @@ Workflow: [Bridge Gateway A4.2 CI](../../.github/workflows/bridge-gateway.yml). 
 ## Next
 
 A4.3: internal BEN adapter, request ID + event-version deduplication, real pinned BEN tests, deployment/weights rights and safe upstream timeout/cost controls. Do not wire these development tokens into a deployed Flutter app.
+
+
+## A4.3.1 private BEN loopback worker (explicit local opt-in)
+
+Run the pinned BEN Python API on the SAME machine bound to \`127.0.0.1:8085\`, then opt in:
+
+\`\`\`bash
+cd services/bridge_gateway
+BEN_INTERNAL_ORIGIN=http://127.0.0.1:8085 dart run bin/serve.dart
+\`\`\`
+
+The new \`BenLoopbackBackend\` performs GET \`/bid\`, \`/lead\`, \`/play\` **only over IP-literal loopback**, after the first-party Gateway has authenticated and allowlisted the POST envelope. It rejects DNS hostnames (even \`localhost\`), remote IPs, credentials, redirects, errors and oversize bodies; errors are sanitized. Unset \`BEN_INTERNAL_ORIGIN\` to retain the prior default 503. The Worker makes proposals, never commits a Bridge Core action.
+
+The working model is **local development only**, NOT an Internet-enabled BEN service. The caller currently supplies a hand without a game/seat binding; anonymous credentials are not full player authorization. Server-owned Bridge Core game state, expected event version, request deduplication, public HTTPS deployment and BEN license/cost reviews remain required.
+
+See [A4.3.1 acceptance](../../docs/product/A4_GATEWAY_A4_3_1_ACCEPTANCE.md) and [M2-F27 lesson](../../docs/learning/features/M2_F27_BEN_LOOPBACK_WORKER.md).
