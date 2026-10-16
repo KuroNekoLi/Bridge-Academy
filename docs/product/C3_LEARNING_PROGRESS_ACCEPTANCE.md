@@ -5,9 +5,9 @@
 ## Implemented
 - B4 `AcademyPractice` remains sole grader, `LearnerAttempt` stores only answer metadata (no Deal, PBN, or hidden seats).
 - Default opt-out: only on explicit activation an AES-GCM ledger is created under a dedicated browser key/native SQLite file and purpose-specific AAD. Existing session/daily stores are untouched.
-- Versioned v1, capped at 500 attempts and 96 KiB. Unknown version/tampering are rejected instead of silently resetting; user may explicitly clear damaged data.
+- Versioned v2 with explicit v1 read-compatibility, capped at 500 attempts and 96 KiB. Unknown version/tampering are rejected instead of silently resetting; user may explicitly clear damaged data.
 - Summary of completed question IDs, real attempt-based correct rate, skill-tag rates (including empty data), and recent attempts.
-- Enabling and deletion require intentional interaction; deletion disables persistence.
+- Opt-in, pause/resume and permanent deletion are distinct actions: pause retains existing encrypted records; resume records new answers; deletion clears them and disables persistence.
 
 ## Verification
 - `cd apps/bridge_academy_flutter && flutter analyze && flutter test && flutter build web --release`.
