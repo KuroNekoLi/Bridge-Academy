@@ -254,6 +254,7 @@ class _BridgeTableState extends State<BridgeTable> {
                   await Clipboard.setData(ClipboardData(text: pbn));
                   return true;
                 },
+                onImportPbn: session.importHistoryPbn,
                 onDelete: (id) async {
                   final removed = await session.deleteHistory(id);
                   if (removed && mounted && _selectedHistoryId == id) {

@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'session_persistence.dart';
 import 'completed_history_store.dart';
 import 'completed_pbn_export.dart';
+import 'completed_pbn_import.dart';
 
 enum OpponentMode { demo, ben }
 enum BoardMode { training, fresh }
@@ -141,6 +142,59 @@ class BridgeSession extends ChangeNotifier {
     final saved = SavedBoardCodec.decode(matching.first.archive);
     if (!saved.state.isFinished) return null;
     return CompletedPbnExport.encode(saved);
+  }
+
+  /// Import an externally pasted *completed* first-party PBN into the
+  /// encrypted local history. This never starts a new live game, never calls
+  /// BEN, and never replaces the active checkpoint or exposes the Deal to UI.
+  Future<bool> importHistoryPbn(String pbn) async {
+    if (_historyStore == null || busy || _historyDeleting) return false;
+    await loadHistory();
+    if (!_historyLoaded) {
+      _historyError = 'errorHistoryLoad';
+      notifyListeners();
+      return false;
+    }
+    _historyDeleting = true; // Serialize local history writes and deletes.
+    try {
+      final id = _newHistoryId();
+      final archive = CompletedPbnImport.toLocalArchive(
+        pbn, historyId: id,
+      );
+      final imported = SavedBoardCodec.decode(archive);
+      // One logical completed transcript must not be counted twice because
+      // it was pasted again (even after an app restart).
+      if (_historyBoards.any((item) {
+        final existing = SavedBoardCodec.decode(item.archive);
+        return existing.board.number == imported.board.number &&
+            existing.state.historyFingerprint ==
+                imported.state.historyFingerprint;
+      })) {
+        _historyError = 'errorHistoryDuplicate';
+        notifyListeners();
+        return false;
+      }
+      final record = StoredHistoryBoard(
+        id: id, savedAt: DateTime.now().toUtc(), archive: archive,
+      );
+      final proposed = [record, ..._historyBoards]
+          .take(EncryptedCompletedHistoryStore.maxItems)
+          .toList();
+      await _historyStore.write(proposed);
+      _historyBoards = proposed;
+      _historySummaries = proposed.map(_summarize).toList();
+      _historyError = null;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      // Syntax, legality, score, crypto and persistence errors never echo
+      // the untrusted PBN or the four secret hands.
+      _historyError = 'errorHistoryImport';
+      notifyListeners();
+      return false;
+    } finally {
+      _historyDeleting = false;
+    }
   }
 
   /// Deletes exactly one finished attempt, without clearing the active game.

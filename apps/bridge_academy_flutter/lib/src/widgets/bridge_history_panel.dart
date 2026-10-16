@@ -22,6 +22,7 @@ class BridgeHistoryPanel extends StatefulWidget {
     required this.onReplayStep,
     required this.onDelete,
     this.onExportPbn,
+    this.onImportPbn,
     required this.errorCode,
     required this.onRetrySave,
     this.canDelete = true,
@@ -37,6 +38,8 @@ class BridgeHistoryPanel extends StatefulWidget {
   final Future<void> Function(String) onDelete;
   /// Called only after the player approves sharing ALL four hands.
   final Future<bool> Function(String)? onExportPbn;
+  /// Pasted PBN is handled exclusively within local encrypted history.
+  final Future<bool> Function(String)? onImportPbn;
   final String? errorCode;
   final VoidCallback? onRetrySave;
   final bool canDelete;
@@ -135,6 +138,65 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
     );
   }
 
+  Future<void> _importPbn() async {
+    final submit = widget.onImportPbn;
+    if (submit == null) return;
+    var pasted = '';
+    final copy = widget.copy;
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(copy.t('historyImportTitle')),
+        content: SizedBox(
+          width: 520,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(copy.t('historyImportWarning')),
+                const SizedBox(height: 12),
+                TextField(
+                  key: const Key('history_import_input'),
+                  maxLines: 7,
+                  maxLength: 65536,
+                  decoration: InputDecoration(
+                    labelText: copy.t('historyImportHint'),
+                    border: const OutlineInputBorder(),
+                  ),
+                  onChanged: (value) => pasted = value,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            key: const Key('history_import_cancel'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(copy.t('historyImportCancel')),
+          ),
+          FilledButton(
+            key: const Key('history_import_confirm'),
+            onPressed: () => Navigator.pop(dialogContext, pasted),
+            child: Text(copy.t('historyImportConfirm')),
+          ),
+        ],
+      ),
+    );
+    if (result == null || !mounted) return;
+    var ok = false;
+    try {
+      ok = await submit(result);
+    } catch (_) {
+      // No private PBN or parser detail in player-visible errors.
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(copy.t(ok
+          ? 'historyImportSuccess' : 'historyImportFailure')),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final copy = widget.copy;
@@ -152,6 +214,16 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
           children: [
             Text(copy.t('historyTitle'),
                 style: Theme.of(context).textTheme.titleMedium),
+            if (widget.onImportPbn != null)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  key: const Key('history_import_open'),
+                  icon: const Icon(Icons.input),
+                  onPressed: _importPbn,
+                  label: Text(copy.t('historyImportTitle')),
+                ),
+              ),
             if (widget.errorCode != null) ...[
               Text(copy.t(widget.errorCode!),
                   key: const Key('history_error')),
