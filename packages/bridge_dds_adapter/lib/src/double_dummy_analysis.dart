@@ -100,13 +100,14 @@ final class DoubleDummyTable {
     return _rows[row][declarer.index];
   }
 
-  Map<Strain, Map<Seat, int>> get byStrain => Map.unmodifiable({
-    for (final strain in Strain.values)
-      strain: Map.unmodifiable({
-        for (final seat in Seat.values)
-          seat: tricks(strain: strain, declarer: seat),
-      }),
-  });
+  Map<Strain, Map<Seat, int>> get byStrain =>
+      Map<Strain, Map<Seat, int>>.unmodifiable({
+        for (final strain in Strain.values)
+          strain: Map<Seat, int>.unmodifiable({
+            for (final seat in Seat.values)
+              seat: tricks(strain: strain, declarer: seat),
+          }),
+      });
 
   factory DoubleDummyTable.fromWorkerResponse(
       Map<String, dynamic> payload, TrustedCompletedBoard board) {
