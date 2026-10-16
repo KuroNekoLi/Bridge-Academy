@@ -3,7 +3,7 @@
 - Feature ID：M2-F33
 - Milestone：A5.1 Local Completed History
 - 類型：Flutter UI／資料持久化／Bridge Core
-- 工程狀態：IMPLEMENTED（首輪 CI #38851955243 Dart analyze 因 SavedBoardCodec 文字替換錯誤失敗；已從 canonical 原檔重建並修正 Widget 匯入，待重新驗證）
+- 工程狀態：IMPLEMENTED（首輪 CI #38851955243 Dart analyze 因 SavedBoardCodec 文字替換錯誤失敗；已從 canonical 原檔重建並修正 Widget 匯入；第二輪 CI #38852293968 還有兩項嚴格 nullable/lint 警告，已改為安全的 null-aware 判斷／map entry，待重新驗證）
 - 學習狀態：DELIVERED（尚未 PRACTICED／MASTERED）
 - 程式：`lib/src/completed_history_store.dart`、`lib/src/bridge_session.dart`、`lib/src/widgets/bridge_history_panel.dart`
 - 驗收：`docs/product/A5_1_HISTORY_ACCEPTANCE.md`、`test/a5_history_test.dart`

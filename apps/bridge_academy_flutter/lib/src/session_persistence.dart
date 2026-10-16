@@ -269,7 +269,7 @@ abstract final class SavedBoardCodec {
     String? historyId,
   }) => jsonEncode({
         'schemaVersion': schemaVersion,
-        if (historyId != null) 'historyId': historyId,
+        'historyId': ?historyId,
         'boardNumber': board.number,
         'humanSeat': humanSeat.letter,
         'opponentMode': opponentMode,

@@ -131,8 +131,7 @@ class BridgeSession extends ChangeNotifier {
   }
 
   Future<void> _archiveCompleted() async {
-    if (_historyStore == null || _coordinator == null ||
-        !_coordinator.finished) {
+    if (_historyStore == null || _coordinator?.finished != true) {
       return;
     }
     await loadHistory();
