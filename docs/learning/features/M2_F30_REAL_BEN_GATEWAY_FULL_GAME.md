@@ -3,7 +3,7 @@
 - Feature ID：M2-F30
 - Milestone：A4.3.3
 - 類型：Dart／HTTP Gateway／Python 真實 AI／端對端驗收
-- 工程狀態：IMPLEMENTED（真 BEN Full Game CI 待驗，非 PRODUCTION READY）
+- 工程狀態：SCOPED ENGINEERING VERIFIED（真正 BEN Gateway 完成 13 墩；非 PRODUCTION READY）
 - 學習狀態：DELIVERED（未表示已練習或掌握）
 - 原始碼：`services/bridge_gateway/bin/live_gateway_ben_full_game.dart`
 - 驗收與測試：`docs/product/A4_GATEWAY_A4_3_3_ACCEPTANCE.md`、`.github/workflows/ben-gateway-real.yml`
@@ -47,7 +47,7 @@ dart analyze --fatal-infos
 dart run bin/live_gateway_ben_full_game.dart
 ```
 
-CI 會檢查 BIN Python 的確啟動，先跑 A4.3.1 真 BEN Smoke，再跑這個完整 52 張牌測試。**撰寫時 CI 尚未完成，不可宣稱 PASS**。這一副固定牌驗收無法代表所有隨機牌局，也無法證明公開的 HTTPS、生產環境限流、抗濫用、模型授權成本、跨 OS 或裝置 UX 全部沒問題。
+CI 會檢查 BEN Python 的確啟動，先跑 A4.3.1 真 BEN Smoke，再跑這個完整 52 張牌測試。[True BEN Gateway Full Game CI #38845244764](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244764) 在 [`c41cbf5`](https://github.com/KuroNekoLi/Bridge-Academy/commit/c41cbf5fdf7cd27af142c6a5b6f6d07ef1466f56) **PASS**！使用真 pinned BEN SHA `72653ec1`、Python 3.12；最後 **6NT、North 莊、南北 -250、13 墩、52 張不重複、auction=6、version=58**，總共呼叫真 BEN `bid:4`、`lead:1`、`play:25`（30 次），BEN 呼叫 p95 996 ms、最慢 2129 ms，整局約 10.7 秒。這些只是單一固定 CI 牌例、降低抽樣量的資源數字，不能當正式產品效能 SLO。[Gateway 靜態分析與 Unit HTTP CI #38845244822](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244822) 32/32 PASS，[Feature Learning Gate #38845244725](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244725) PASS。這一副固定牌驗收無法代表所有隨機牌局，也無法證明公開的 HTTPS、生產環境限流、抗濫用、模型授權成本、跨 OS 或裝置 UX 全部沒問題。
 
 ## 練習與自我檢驗
 
@@ -59,4 +59,4 @@ CI 會檢查 BIN Python 的確啟動，先跑 A4.3.1 真 BEN Smoke，再跑這�
 
 ## 下一步
 
-成功後以正確 CI run 記錄真 BEN 版本、Python 環境、至少一副完整牌局與 3 個路由的模型呼叫計數。A4.4 才實作 Flutter 接到 Gateway 的持續遊戲流程；A4.5 才進行正式 HTTPS 與授權／記憶體／成本驗收。A3.5 和 Android／iOS 模擬器、實機測試持續依使用者決策延後。
+已完成單副牌固定 CI 驗收，並記錄 BEN 版本、Python 環境、完整 13 墩與三條路由計數。下一步應加入多副不同發牌者／局況／王牌／Pass Out／Double 回歸，避免只依賴固定 6NT 牌例。A4.4 才實作 Flutter 接到 Gateway 的持續遊戲流程；A4.5 才進行正式 HTTPS 與授權／記憶體／成本驗收。A3.5 和 Android／iOS 模擬器、實機測試持續依使用者決策延後。

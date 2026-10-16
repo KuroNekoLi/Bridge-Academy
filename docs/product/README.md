@@ -53,4 +53,4 @@
 
 ### A4.3.3 — Complete real BEN through authority-owned Gateway
 
-[Full-game acceptance](A4_GATEWAY_A4_3_3_ACCEPTANCE.md) now includes fixed pinned real BEN `/v1/games/view/action/advance` integration with terminal 52-card, 13-trick, score and event-version assertions. Implementation and dedicated long-running true-model CI are in progress; this does NOT authorize production public deployment, restore A3.5/device QA or waive licensing/hosting/privacy gates.
+[Full-game acceptance](A4_GATEWAY_A4_3_3_ACCEPTANCE.md) now includes fixed pinned real BEN `/v1/games/view/action/advance` integration with terminal 52-card, 13-trick, score and event-version assertions. [Pinned real BEN full-game CI #38845244764](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244764) passed (52 unique cards, 13 tricks, 30 real BEN calls) on one fixed fixture; this does NOT authorize production public deployment, restore A3.5/device QA or waive licensing/hosting/privacy gates.

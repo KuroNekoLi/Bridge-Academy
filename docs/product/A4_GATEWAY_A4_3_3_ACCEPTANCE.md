@@ -1,6 +1,6 @@
 # A4.3.3 — Pinned BEN Full 52-card Gateway Game
 
-**Date:** 2026-10-16 · **Status:** IMPLEMENTED / REAL BEN CI PENDING.  
+**Date:** 2026-10-16 · **Status:** SCOPED ENGINEERING VERIFIED — pinned genuine BEN complete 52-card / 13-trick authoritative Gateway game.  
 **Acceptance target:** One fixed, deterministic, *genuine BEN neural-model* deal reaches 52 unique played cards, 13 completed tricks and an authoritative Bridge Core score through the **authenticated Gateway game API**. No mocks, Demo, arbitrary client-provided hands or Android/iOS device CI.
 
 ## Integration diagram
@@ -35,7 +35,9 @@ BEN uses pinned `lorserker/ben@72653ec1b5c17116faea229e9b975ea5622aa1f7`, Python
 - Runner: [ben-gateway-real.yml](../../.github/workflows/ben-gateway-real.yml). It reuses the already-installed pinned BEN dependencies and service within the same workflow job as the A4.3.1 three-route real-model smoke, avoiding a second lengthy BEN installation.
 - CI command: `cd services/bridge_gateway && dart pub get && dart run bin/live_gateway_ben_full_game.dart`, with pinned local genuine Python BEN listening on `127.0.0.1:8085`.
 - Independent Dart suite: `dart analyze --fatal-infos && dart test --reporter expanded`.
-- **At document creation:** CI NOT RUN for this complete Gateway game. It must not be described as passed until the actual job finishes.
+- **Executed evidence:** [True BEN Full Gateway #38845244764](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244764) **SUCCESS** on code commit [`c41cbf5`](https://github.com/KuroNekoLi/Bridge-Academy/commit/c41cbf5fdf7cd27af142c6a5b6f6d07ef1466f56). Original pinned BEN SHA `72653ec1b5c17116faea229e9b975ea5622aa1f7`, Python 3.12, Ubuntu 24.04, BEN dev CI sampling. The same job first printed genuine BEN `{"result":"PASS","realBen":true,...,"routes":{"bid":true,"lead":true,"play":true}}`, then printed the full-game `A4_3_3_REAL_BEN_FULL_52_CARD_GATEWAY_GAME` **PASS**.
+- **Actual safe aggregate full-game metrics (one CI sample only):** tested final **6NT**, North declarer, dummy South, **auctionCount=6**, **13 tricks**, **52 unique cards**, **terminalVersion=58**, NS duplicate score **-250**, **28 human actions**, **25 bot advance batches**, **30 successful true BEN requests** (`bid:4`, `lead:1`, `play:25`), real BEN call p95 **996 ms**, max **2,129 ms**, complete game elapsed **10,737 ms**. These are CI-fixture measurements, NOT a stable capacity/SLO, not broad model-quality benchmarks.
+- [Gateway CI #38845244822](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244822) **SUCCESS**, strict `dart analyze --fatal-infos` clean, **32/32 Dart/localhost tests PASS**; [Feature Learning Gate #38845244725](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244725) **SUCCESS**.
 - CI fixture permits longer anonymous session TTL and more Gateway calls **only for this test**. The public/default config remains 15 minutes and per-token rate-limited. Real production capacity needs separate quotas, queue, TTL/reconnect and real-world sampling.
 
 **Still OPEN:** Real end-to-end **encrypted persistence + full BEN game together** (A4.3.2b separately proved encrypted restart), partial-BEN mid-request kill, full multi-seed/seat/vulnerability/contract scenarios and pass-out/Double/Redouble, persistent transactional dedup over multiple servers, proper hosted TLS, BEN model-weights and GPL obligations, memory/CPU/RSS/cost/p95 SLO, cross-device UX and owner-deferred A3.5. A green 1-board full game is **SCOPED ENGINEERING VERIFIED**, not A4 Production Ready.
@@ -46,4 +48,4 @@ Failure log may include only which stage failed: bootstrap, initial-view, human-
 
 ## Next
 
-If the real full game passes, update the Roadmap and M2-F30 lesson with precise run ID, code SHA, deal/trick counts and non-sensitive request-count/latency metrics. Then tackle A4.4 Flutter integration and A4.5 staging security, durable topology and infrastructure cost only after reviewing unresolved release blockers; no Android/iOS device QA without explicit owner authorization.
+**Single fixed-board full-game PASS is now recorded.** Next phase is A4.4 Flutter Gateway integration and A4.5 staged security, durability topology and operating cost, after reviewing release blockers and public origin/credential configuration. Expand A4.3.3 coverage to multiple random board seeds, seats, vulnerability, strain, doubled/redoubled and PASS OUT. Android/iOS device QA and A3.5 remain owner-deferred.
