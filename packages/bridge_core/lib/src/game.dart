@@ -20,6 +20,7 @@ class GameState {
     required this.phase,
     required this.turn,
     required this.contract,
+    required this.initialTrainingContract,
     required this.hands,
     required List<AuctionEntry> auction,
     required List<PlayedCard> currentTrick,
@@ -35,8 +36,28 @@ class GameState {
     return GameState._(
       deal: deal, dealer: dealer, vulnerability: vulnerability,
       phase: Phase.auction, turn: dealer, contract: null,
+      initialTrainingContract: null,
       hands: frozenHands(deal.hands), auction: const [], currentTrick: const [],
       tricks: const [], events: const [], nsScore: null,
+    );
+  }
+
+  /// Starts directly at play for a named, explicit training contract.
+  /// No auction events are invented; this mode is never a ranked result.
+  factory GameState.justDeclareStart(
+    Deal deal, Seat dealer, Vulnerability vulnerability, Contract contract,
+  ) {
+    if (contract.level < 1 || contract.level > 7 ||
+        contract.doubling != Doubling.none) {
+      throw const RuleViolation('Invalid training contract');
+    }
+    return GameState._(
+      deal: deal, dealer: dealer, vulnerability: vulnerability,
+      phase: Phase.play, turn: contract.openingLeader,
+      contract: contract, initialTrainingContract: contract,
+      hands: frozenHands(deal.hands), auction: const [],
+      currentTrick: const [], tricks: const [], events: const [],
+      nsScore: null,
     );
   }
 
@@ -46,6 +67,9 @@ class GameState {
   final Phase phase;
   final Seat? turn;
   final Contract? contract;
+  /// Non-null only for a preconfigured declarer-training deal.
+  final Contract? initialTrainingContract;
+  bool get isJustDeclare => initialTrainingContract != null;
   final Map<Seat, Set<Card>> hands;
   final List<AuctionEntry> auction;
   final List<PlayedCard> currentTrick;
@@ -73,8 +97,11 @@ class GameState {
   /// Non-cryptographic deterministic fingerprint of initial PBN + event log.
   /// This is for regression/replay, NOT security, authentication or consensus.
   String get historyFingerprint {
+    final prefix = initialTrainingContract == null ? '' :
+        'JUST_DECLARE:${initialTrainingContract!.label}:'
+        '${initialTrainingContract!.declarer.letter}|';
     final seed = '${deal.toPbn()}|${dealer.letter}|${vulnerability.name}|'
-        '${events.map((e) => e.canonical).join('|')}';
+        '$prefix${events.map((e) => e.canonical).join('|')}';
     var hash = 0x811c9dc5;
     for (final unit in seed.codeUnits) {
       hash = ((hash ^ unit) * 0x01000193) & 0xffffffff;
@@ -175,7 +202,7 @@ abstract final class BridgeGame {
           complete ? Phase.play : Phase.auction,
       turn: isPassOut ? null :
           complete ? contract!.openingLeader : action.actor.next,
-      contract: contract,
+      contract: contract, initialTrainingContract: state.initialTrainingContract,
       hands: state.hands, auction: auction,
       currentTrick: state.currentTrick, tricks: state.tricks,
       events: [...state.events, GameEvent(state.version + 1, action)],
@@ -220,7 +247,9 @@ abstract final class BridgeGame {
       vulnerability: state.vulnerability,
       phase: complete ? Phase.finished : Phase.play,
       turn: complete ? null : turn,
-      contract: contract, hands: frozenHands(hands),
+      contract: contract,
+      initialTrainingContract: state.initialTrainingContract,
+      hands: frozenHands(hands),
       auction: state.auction, currentTrick: inProgress,
       tricks: tricks,
       events: [...state.events, GameEvent(state.version + 1, action)],
@@ -246,8 +275,11 @@ abstract final class BridgeGame {
 
   /// Event replay reconstructs history through the SAME validation boundary.
   static GameState replay(Deal deal, Seat dealer, Vulnerability vulnerability,
-      Iterable<GameAction> actions) {
-    var state = GameState.start(deal, dealer, vulnerability);
+      Iterable<GameAction> actions, {Contract? justDeclareContract}) {
+    var state = justDeclareContract == null
+        ? GameState.start(deal, dealer, vulnerability)
+        : GameState.justDeclareStart(deal, dealer, vulnerability,
+            justDeclareContract);
     for (final action in actions) {
       state = apply(state, action);
     }

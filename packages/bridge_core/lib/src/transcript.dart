@@ -4,7 +4,14 @@ import 'model.dart';
 /// Versioned full-information archive. NEVER send directly to a player.
 abstract final class GameTranscript {
   static Map<String, Object?> encode(GameState state) => {
-    'schemaVersion': 1,
+    'schemaVersion': state.isJustDeclare ? 2 : 1,
+    if (state.initialTrainingContract case final training?)
+      'trainingContract': {
+        'level': training.level,
+        'strain': training.strain.code,
+        'declarer': training.declarer.letter,
+        'doubling': training.doubling.name,
+      },
     'dealPbn': state.deal.toPbn(),
     'dealer': state.dealer.letter,
     'vulnerability': state.vulnerability.name,
@@ -24,8 +31,12 @@ abstract final class GameTranscript {
   }
 
   static GameState decode(Map<String, dynamic> archive) {
-    if (archive['schemaVersion'] != 1) {
+    final schemaVersion = archive['schemaVersion'];
+    if (schemaVersion != 1 && schemaVersion != 2) {
       throw const FormatException('Unsupported transcript version');
+    }
+    if (schemaVersion == 1 && archive.containsKey('trainingContract')) {
+      throw const FormatException('Training marker forbidden in regular game');
     }
     final deal = Deal.fromPbn(archive['dealPbn'] as String);
     final dealer = Seat.fromLetter(archive['dealer'] as String);
@@ -34,7 +45,30 @@ abstract final class GameTranscript {
       (e) => e.name == vulName,
       orElse: () => throw const FormatException('Unknown vulnerability'),
     );
-    var state = GameState.start(deal, dealer, vulnerability);
+    Contract? contract;
+    if (schemaVersion == 2) {
+      final value = archive['trainingContract'];
+      if (value is! Map<String, dynamic> || value.length != 4 ||
+          value['level'] is! int || value['strain'] is! String ||
+          value['declarer'] is! String || value['doubling'] != 'none') {
+        throw const FormatException('Invalid declarer practice contract');
+      }
+      final level = value['level'] as int;
+      if (level < 1 || level > 7) {
+        throw const FormatException('Invalid practice level');
+      }
+      final strain = Strain.values.firstWhere(
+        (s) => s.code == value['strain'],
+        orElse: () => throw const FormatException('Invalid practice strain'),
+      );
+      contract = Contract(
+        level: level, strain: strain,
+        declarer: Seat.fromLetter(value['declarer'] as String),
+      );
+    }
+    var state = contract == null
+        ? GameState.start(deal, dealer, vulnerability)
+        : GameState.justDeclareStart(deal, dealer, vulnerability, contract);
     final entries = archive['events'] as List<dynamic>;
     for (final raw in entries) {
       final entry = Map<String, dynamic>.from(raw as Map);

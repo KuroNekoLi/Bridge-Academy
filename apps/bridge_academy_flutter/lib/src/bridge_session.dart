@@ -148,7 +148,7 @@ class BridgeSession extends ChangeNotifier {
     final matching = _historyBoards.where((entry) => entry.id == id);
     if (matching.isEmpty) return null;
     final saved = SavedBoardCodec.decode(matching.first.archive);
-    if (!saved.state.isFinished) return null;
+    if (!saved.state.isFinished || saved.state.isJustDeclare) return null;
     return CompletedPbnExport.encode(saved);
   }
 

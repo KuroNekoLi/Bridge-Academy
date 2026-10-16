@@ -60,7 +60,11 @@ class SinglePlayerCoordinator {
     required Vulnerability vulnerability,
     required this.humanSeat,
     required BotPolicy bot,
-  }) : _state = GameState.start(deal, dealer, vulnerability),
+    Contract? justDeclareContract,
+  }) : _state = justDeclareContract == null
+          ? GameState.start(deal, dealer, vulnerability)
+          : GameState.justDeclareStart(deal, dealer, vulnerability,
+              justDeclareContract),
        _bot = bot;
 
   SinglePlayerCoordinator._restored(this._state, this.humanSeat, this._bot);
@@ -90,6 +94,8 @@ class SinglePlayerCoordinator {
   /// A regression hash only, not a cryptographic authentication tag.
   String get historyFingerprint => _state.historyFingerprint;
   bool get finished => _state.isFinished;
+  bool get isJustDeclare => _state.isJustDeclare;
+  Contract? get initialTrainingContract => _state.initialTrainingContract;
 
   /// Only the authorized human seat is exposed, not an arbitrary Seat.
   PlayerView get humanView => PlayerView.forSeat(_state, humanSeat);
@@ -100,9 +106,12 @@ class SinglePlayerCoordinator {
   CompletedReplay? get completedReplay {
     if (!_state.isFinished) return null;
     final frames = <ReplayFrame>[];
-    var history = GameState.start(
-      _state.deal, _state.dealer, _state.vulnerability,
-    );
+    var history = _state.initialTrainingContract == null
+        ? GameState.start(
+            _state.deal, _state.dealer, _state.vulnerability)
+        : GameState.justDeclareStart(
+            _state.deal, _state.dealer, _state.vulnerability,
+            _state.initialTrainingContract!);
     frames.add(ReplayFrame(PlayerView.forSeat(history, humanSeat), null));
     for (final event in _state.events) {
       history = BridgeGame.apply(history, event.action);

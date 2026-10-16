@@ -143,6 +143,8 @@ class _BridgeTableState extends State<BridgeTable> {
   BoardMode _selectedBoard = BoardMode.training;
   int _bidLevel = 1;
   Strain _bidStrain = Strain.notrump;
+  int _justDeclareLevel = 3;
+  Strain _justDeclareStrain = Strain.notrump;
   int? _replayIndex;
   bool _historyOpen = false;
   String? _selectedHistoryId;
@@ -236,6 +238,7 @@ class _BridgeTableState extends State<BridgeTable> {
                       icon: const Icon(Icons.view_module),
                       label: Text(copy.t('practiceFourStart')),
                     ),
+                    _justDeclareLauncher(session, copy),
                     OutlinedButton.icon(
                       key: const Key('history_toggle'),
                       onPressed: () => setState(() {
@@ -293,6 +296,11 @@ class _BridgeTableState extends State<BridgeTable> {
             if (session.fourBoardPractice != null) ...[
               const SizedBox(height: 8),
               _fourBoardPanel(session, copy),
+            ],
+            if (session.isJustDeclare) ...[
+              const SizedBox(height: 8),
+              Text(copy.t('justDeclareActive'),
+                  key: const Key('just_declare_active')),
             ],
             const SizedBox(height: 8),
             Text(
@@ -474,6 +482,52 @@ class _BridgeTableState extends State<BridgeTable> {
             if (value != null) setState(() => _selectedBoard = value);
           },
         ),
+      );
+
+  Widget _justDeclareLauncher(BridgeSession session, AppCopy copy) =>
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          DropdownButton<int>(
+            key: const Key('just_declare_level'),
+            value: _justDeclareLevel,
+            tooltip: copy.t('justDeclareLevel'),
+            items: [for (var i = 1; i <= 7; i++)
+              DropdownMenuItem(value: i, child: Text('$i'))],
+            onChanged: (v) {
+              if (v != null) setState(() => _justDeclareLevel = v);
+            },
+          ),
+          DropdownButton<Strain>(
+            key: const Key('just_declare_strain'),
+            value: _justDeclareStrain,
+            tooltip: copy.t('justDeclareStrain'),
+            items: [for (final v in Strain.values)
+              DropdownMenuItem(value: v, child: Text(
+                copy.t('strain${v == Strain.notrump ? 'NT' : v.code}'),
+              ))],
+            onChanged: (v) {
+              if (v != null) setState(() => _justDeclareStrain = v);
+            },
+          ),
+          FilledButton.tonalIcon(
+            key: const Key('start_just_declare'),
+            onPressed: session.busy || session.saveFailed ||
+                (session.started && !session.finished) ||
+                (session.fourBoardPractice != null &&
+                    !session.fourBoardPractice!.isComplete)
+                ? null : () {
+              setState(() => _replayIndex = null);
+              session.startJustDeclare(
+                level: _justDeclareLevel, strain: _justDeclareStrain,
+              );
+            },
+            icon: const Icon(Icons.school),
+            label: Text(copy.t('justDeclareStart')),
+          ),
+        ],
       );
 
   Widget _fourBoardPanel(BridgeSession session, AppCopy copy) {

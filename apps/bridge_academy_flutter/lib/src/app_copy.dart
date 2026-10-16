@@ -74,6 +74,13 @@ class AppCopy {
     'live': ['真正 BEN API', 'Live BEN API'],
     'humanSeat': ['玩家座位', 'Your seat'],
     'newGame': ['開始新牌局', 'Start new deal'],
+    'justDeclareStart': ['只練莊家（Just Declare）', 'Just Declare practice'],
+    'justDeclareLevel': ['選擇定約線位', 'Choose contract level'],
+    'justDeclareStrain': ['選擇定約花色', 'Choose contract strain'],
+    'justDeclareActive': [
+      '莊家練習：已指定定約，沒有模擬叫牌。你是北家莊家，首攻後可操作南家明手；目前使用規則示範 Bot，非 BEN。',
+      'Declarer practice: contract was set without an auction. You are North, controlling South dummy after the opening lead. Rules-demo Bot only, not BEN.',
+    ],
     'webCheckpointCaution': [
       '瀏覽器存檔使用加密，仍無法防範同網站惡意程式。請使用受信任的 HTTPS 網站；清除瀏覽器資料將無法恢復牌局。',
       'Browser saves are encrypted, but do not protect against malicious same-site scripts. Use trusted HTTPS sites; clearing browser data prevents recovery.',

@@ -10,6 +10,11 @@ abstract final class CompletedPbnExport {
     if (!state.isFinished) {
       throw const FormatException('PBN export requires a completed deal');
     }
+    // Standard PBN Auction + contract would imply an auction that never
+    // happened. Declarer-training transcript v2 cannot be exported as one.
+    if (state.isJustDeclare) {
+      throw const FormatException('Just Declare has no real auction to export');
+    }
     final contract = state.contract;
     final vulnerability = switch (state.vulnerability) {
       Vulnerability.none => 'None',
