@@ -83,10 +83,12 @@ class BridgeGatewayService {
     GatewayConfig config = const GatewayConfig(),
     DateTime Function()? clock,
     Deal Function()? dealFactory,
+    BoardDefinition? trainingBoard,
     EncryptedSessionStore? checkpointStore,
   })  : _checkpointStore = checkpointStore,
         _backend = backend ?? const UnavailableDecisionBackend(),
         _dealFactory = dealFactory ?? Deal.shuffled,
+        _trainingBoard = trainingBoard,
         _config = config,
         _clock = clock ?? DateTime.now {
     if (config.sessionTtl <= Duration.zero ||
@@ -103,6 +105,8 @@ class BridgeGatewayService {
   final GatewayConfig _config;
   final DateTime Function() _clock;
   final Deal Function() _dealFactory;
+  /// Server-owned fixture board information (never read from HTTP).
+  final BoardDefinition? _trainingBoard;
   final EncryptedSessionStore? _checkpointStore;
   final Random _random = Random.secure();
   final Map<String, _Session> _sessions = {};
@@ -290,7 +294,9 @@ class BridgeGatewayService {
     final token = _randomToken();
     // Keep only the SHA-256 token hash in process memory.
     final digest = _digest(token);
-    final game = AuthoritativeGame(deal: _dealFactory(), backend: _backend);
+    final game = AuthoritativeGame(
+        deal: _dealFactory(), backend: _backend,
+        trainingBoard: _trainingBoard);
     final session = _Session(now.add(_config.sessionTtl), game);
     game.setCheckpoint(() => _persistSession(digest, session));
     _sessions[digest] = session;
