@@ -548,20 +548,22 @@ class _BridgeTableState extends State<BridgeTable> {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(copy.t('justDeclareSeatHint')),
+          Text(copy.t('justDeclareLevel')),
           DropdownButton<int>(
             key: const Key('just_declare_level'),
             value: _justDeclareLevel,
-            tooltip: copy.t('justDeclareLevel'),
+            // DropdownButton has no tooltip parameter (Flutter 3.47).
             items: [for (var i = 1; i <= 7; i++)
               DropdownMenuItem(value: i, child: Text('$i'))],
             onChanged: (v) {
               if (v != null) setState(() => _justDeclareLevel = v);
             },
           ),
+          Text(copy.t('justDeclareStrain')),
           DropdownButton<Strain>(
             key: const Key('just_declare_strain'),
             value: _justDeclareStrain,
-            tooltip: copy.t('justDeclareStrain'),
+            // Keep the selector accessible with a visible label.
             items: [for (final v in Strain.values)
               DropdownMenuItem(value: v, child: Text(
                 copy.t('strain${v == Strain.notrump ? 'NT' : v.code}'),

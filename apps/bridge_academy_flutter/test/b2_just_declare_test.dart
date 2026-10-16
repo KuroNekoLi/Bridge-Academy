@@ -100,7 +100,7 @@ void main() {
     expect(session.view!.contract!.label, '3NT');
     expect(session.view!.auction, isEmpty);
     expect(session.view!.dummyExposed, true);
-    expect(find.byKey(const Key('dummy_card_' + 'HA')), findsOneWidget);
+    expect(find.byKey(const Key('dummy_card_HA')), findsOneWidget);
     await _tap(tester, 'toggle_locale');
     expect(find.textContaining('Declarer practice:'), findsOneWidget);
     expect(find.text('Just Declare practice'), findsOneWidget);

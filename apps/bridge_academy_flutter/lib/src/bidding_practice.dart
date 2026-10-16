@@ -46,7 +46,9 @@ abstract final class BiddingPracticeProfile {
   static String explain(List<AuctionEntry> auction) {
     if (auction.isEmpty) return 'biddingUnknown';
     var index = auction.length - 1;
-    while (index >= 0 && auction[index].call is Pass) index--;
+    while (index >= 0 && auction[index].call is Pass) {
+      index--;
+    }
     if (index < 0) return 'biddingUnknown';
     final last = auction[index];
     final before = auction.take(index).toList();
