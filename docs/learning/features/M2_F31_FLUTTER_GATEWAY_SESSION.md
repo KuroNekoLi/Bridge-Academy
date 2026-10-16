@@ -50,6 +50,10 @@ flutter build web --release
 
 **完成標準：** 能區分伺服器權威 GameState、僅可見 PlayerView、事件版本、Request ID 去重、Token 生命週期與 Widget 狀態；且知道目前尚無持久 Token 和公開正式 Gateway。
 
+## 真實瀏覽器／Gateway 全場補充
+
+[真 Chrome CI #38848501397](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848501397) 首輪找到 HTTP 429 `gatewayRateLimited`：30 次／分鐘預設限制不足以完成 13 墩的快速 UI 對局。新 [M2-F32 教學](M2_F32_REAL_BROWSER_GATEWAY.md) 記錄 Root Cause 與局限；開發執行檔明確設定 180（1–240 上限，只有本機），預設仍為 30，重跑待驗。不得將這個開發配額視為上線建議。
+
 ## 下一步
 
 A4.4 完成 CI 後，要補真實 Flutter Chrome→localhost Gateway→真 BEN 的端到端驗收，並進行 A4.5 HTTPS、流量/容量/模型授權/成本及部署。A3.5、Android／iOS 裝置 UI/E2E 仍待使用者另外授權。

@@ -73,11 +73,23 @@ Future<void> main() async {
       return;
     }
   }
+  // Explicit development-only quota override for a complete 52-card board.
+  // The default 30/minute still applies unless an operator opts in.
+  // This executable binds loopback only; never expose this override as a
+  // remotely configurable public API.
+  final quotaText = Platform.environment['GATEWAY_DEV_DECISION_LIMIT'];
+  final devQuota = quotaText == null ? 30 : int.tryParse(quotaText);
+  if (devQuota == null || devQuota < 1 || devQuota > 240) {
+    stderr.writeln('GATEWAY_DEV_DECISION_LIMIT must be between 1 and 240');
+    exitCode = 64;
+    return;
+  }
   final gateway = BridgeGatewayService(
     checkpointStore: store,
     backend: benBackend,
     config: GatewayConfig(
       allowedBrowserOrigins: allowedOrigins,
+      decisionLimit: devQuota,
       decisionTimeout: benBackend == null
           ? const Duration(seconds: 30)
           : const Duration(seconds: 130),

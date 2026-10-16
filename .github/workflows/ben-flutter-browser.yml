@@ -142,6 +142,7 @@ jobs:
           dart pub get
           nohup env \
             GATEWAY_BROWSER_ORIGINS=http://localhost:8000,http://127.0.0.1:8000 \
+            GATEWAY_DEV_DECISION_LIMIT=180 \
             BEN_INTERNAL_ORIGIN=http://127.0.0.1:8085 \
             dart run bin/serve.dart \
             > "$RUNNER_TEMP/gateway-private.log" 2>&1 &

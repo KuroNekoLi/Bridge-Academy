@@ -41,6 +41,10 @@ The Flutter `BridgeAcademyApp` accepts a test-injected `GatewayApi` or an explic
 - **True BEN evidence remains separate:** [Gateway full 52-card pinned true BEN #38845244764](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244764) PASS before this Flutter change; it validates server+model, not browser-to-Gateway. Latest real Flutter Chrome BEN regression is independently run; exact latest status must be checked separately.
 - **Non-goal:** A4.4 does not yet certify a live Flutter browser → localhost Gateway → true BEN full game; A4.5 hosted TLS, token refresh, platform storage, load/cost and licensing remain unresolved.
 
+## Actual Chrome→Gateway→BEN full-game run (pending corrected quota)
+
+[First full-browser CI #38848501397](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848501397): **FAIL at HTTP 429 `gatewayRateLimited`**, rather than a BEN routing or browser CORS failure. A real 52-card UI journey can exceed the default per-token 30 requests per minute, since every human action and bot advancement consumes Gateway quota. The loopback-only development executable now accepts bounded explicit `GATEWAY_DEV_DECISION_LIMIT` (1–240), and the real Chrome CI opts into **180**; the production default remains **30**. **Re-run result pending**. This does not approve a production quota or capacity policy; A4.5 must measure model cost, abuse and multiuser fairness. [Engineering lesson M2-F32](../learning/features/M2_F32_REAL_BROWSER_GATEWAY.md).
+
 ## Release blockers (not waived)
 
 No Flutter persistent bearer across browser restarts (deliberately memory-only), no universal identity/seat authority for ranked play, no multi-instance transactional request ledger, no authoritative deployed origin, no production token refresh/secure storage, no verified real Flutter Chrome-to-Python BEN replay, no 16-board matrix, no installed mobile UI/assistive QA, no weights/licenses/operating-cost acceptance. The backend's legacy raw caller-hand API must remain disabled for any public deployment. A3.5 remains deferred.

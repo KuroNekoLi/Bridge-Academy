@@ -101,3 +101,7 @@ Known limits: single-process local lock, no cross-machine replicated store, no p
 ### A4.4 Flutter Web local CORS opt-in
 
 When starting the localhost development Gateway for the Flutter Web app served at `http://localhost:8000`, provide `GATEWAY_BROWSER_ORIGINS=http://localhost:8000`. This does **not** change loopback binding or grant identities/seat permissions. The origin must be an explicit HTTPS site or localhost/127.0.0.1/::1 HTTP development origin; wildcard and arbitrary public HTTP are prohibited. Use `flutter run -d chrome --web-port=8000 --dart-define=BRIDGE_GATEWAY_ORIGIN=http://127.0.0.1:8086` within `apps/bridge_academy_flutter`. Other CLI consumers have no browser Origin and remain unaffected. [A4.4 acceptance](../../docs/product/A4_GATEWAY_A4_4_ACCEPTANCE.md).
+
+### A4.4 real-browser quota discovery (development only)
+
+The first real Chrome→Gateway→Python BEN full-board workflow [#38848501397](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848501397) **FAILED with HTTP 429** during real gameplay. The default `GatewayConfig.decisionLimit=30` requests/minute remains unchanged. For explicitly trusted loopback development only, `bin/serve.dart` accepts `GATEWAY_DEV_DECISION_LIMIT` **1–240**, and the pinned real Chrome E2E sets 180. This provides a bounded test quota without disabling rate limiting. Public staging must independently size CPU/model quotas, concurrent users and abuse controls. [M2-F32 lesson](../../docs/learning/features/M2_F32_REAL_BROWSER_GATEWAY.md).

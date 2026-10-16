@@ -57,6 +57,8 @@
 
 | M2-F31 | A4.4 Flutter 伺服器權威 Gateway Session、斷線安全重送、隱私回應拒絕及 zh-TW/en（Flutter 86/86 + Web Build + Chrome Demo CI PASS） | [M2-F31](features/M2_F31_FLUTTER_GATEWAY_SESSION.md) | [Gateway API](../../apps/bridge_academy_flutter/lib/src/gateway_http_api.dart) · [Session](../../apps/bridge_academy_flutter/lib/src/gateway_game_session.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/a4_gateway_integration_test.dart) · [驗收](../product/A4_GATEWAY_A4_4_ACCEPTANCE.md) | DELIVERED |
 
+| M2-F32 | 真 Chrome→Gateway→BEN 13 墩 E2E 與每分鐘 429 配額設計 | [M2-F32 教學](features/M2_F32_REAL_BROWSER_GATEWAY.md) | [Live browser test](../../apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart) · [BEN Chrome CI](../../.github/workflows/ben-flutter-browser.yml) · [驗收](../product/A4_GATEWAY_A4_4_ACCEPTANCE.md) | DELIVERED |
+
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。
 2. 建立 docs/learning/features/Mx_Fxx_TOPIC.md，填入實作路徑和實測證據。
