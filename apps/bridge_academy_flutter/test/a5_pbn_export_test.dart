@@ -95,7 +95,7 @@ void main() {
     expect(copied, isNull);
     await _tap(tester, 'history_export_cancel');
     expect(copied, isNull);
-    await _tap(tester, 'history_export_' + id);
+    await _tap(tester, 'history_export_$id');
     await _tap(tester, 'history_export_confirm');
     expect(copied, contains('[Deal "N:'));
     expect(copied, contains('Pass Pass Pass Pass'));

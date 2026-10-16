@@ -3,7 +3,7 @@
 - Feature ID：M2-F35
 - Milestone：A5.3.1
 - 類型：Flutter UI／橋牌交換格式／隱私邊界
-- 工程狀態：IMPLEMENTED（首次 Flutter CI 嚴格 lint 發現 13 項問題；已修正待重測）
+- 工程狀態：IMPLEMENTED（首次 CI 13 項 lint；第二次 #38862763069 剩 1 項測試字串 lint，修正後待驗）
 - 學習狀態：DELIVERED（未視為已練習或精熟）
 - 原始碼：[CompletedPbnExport](../../apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart)、[BridgeSession](../../apps/bridge_academy_flutter/lib/src/bridge_session.dart)、[History Panel](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart)
 - 驗收：[A5.3.1 驗收](../product/A5_3_1_PBN_EXPORT_ACCEPTANCE.md)、[Flutter 測試](../../apps/bridge_academy_flutter/test/a5_pbn_export_test.dart)
@@ -49,7 +49,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --no-pub --release
 \`\`\`
 
-測試包含 Pass Out 四次叫牌、52 張牌從 PBN \`[Deal]\` 往返還原、有定約 13 墩的結果欄位、已刪除項目不可匯出，以及真正的 Widget 按取消不複製、按確認才複製。第一次 Flutter CI [#38862357907](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357907) 的嚴格 analyzer **FAIL（13 項純 lint）**：PBN 字串相加、測試多餘 helper、測試鍵值拼接。已修復為 Dart 字串插值，保留原本的 lint 與 PBN／隱私驗收要求；最新 CI 尚待執行。
+測試包含 Pass Out 四次叫牌、52 張牌從 PBN \`[Deal]\` 往返還原、有定約 13 墩的結果欄位、已刪除項目不可匯出，以及真正的 Widget 按取消不複製、按確認才複製。第一次 Flutter CI [#38862357907](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357907) 的嚴格 analyzer **FAIL（13 項純 lint）**：PBN 字串相加、測試多餘 helper、測試鍵值拼接。已修復為 Dart 字串插值，保留原本的 lint 與 PBN／隱私驗收要求；第二次 [Flutter CI #38862763069](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862763069) 又找到測試檔第 98 行遺留的字串串接 1 項；已修成字串插值，新 CI 待驗。
 
 ## 練習與自我檢驗
 
