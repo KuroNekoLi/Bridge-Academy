@@ -63,7 +63,7 @@
 
 | M2-F34 | A5.2 歷史搜尋／篩選／5 筆分頁／刪除確認及加密 tombstone（Flutter 94/94 PASS、lint 修復教學已同步） | [M2-F34 教學](features/M2_F34_HISTORY_MANAGEMENT.md) | [History UI](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [Encrypted Store](../../apps/bridge_academy_flutter/lib/src/completed_history_store.dart) · [Tests](../../apps/bridge_academy_flutter/test/a5_history_management_test.dart) · [驗收](../product/A5_2_HISTORY_MANAGEMENT_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F35 | A5.3.1 歷史終局 PBN 匯出：雙語確認、52 張原始牌張、完整叫牌、隱私警告 | [M2-F35 教學](features/M2_F35_COMPLETED_PBN_EXPORT.md) | [PBN 產生器](../../apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart) · [可操作畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [Flutter 測試](../../apps/bridge_academy_flutter/test/a5_pbn_export_test.dart) · [驗收](../product/A5_3_1_PBN_EXPORT_ACCEPTANCE.md) | DELIVERED |
+| M2-F35 | A5.3.1 歷史終局 PBN 匯出：雙語確認、52 張原始牌張、完整叫牌、隱私警告（lint 修正重驗中） | [M2-F35 教學](features/M2_F35_COMPLETED_PBN_EXPORT.md) | [PBN 產生器](../../apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart) · [可操作畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [Flutter 測試](../../apps/bridge_academy_flutter/test/a5_pbn_export_test.dart) · [驗收](../product/A5_3_1_PBN_EXPORT_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

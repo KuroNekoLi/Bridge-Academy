@@ -23,29 +23,32 @@ abstract final class CompletedPbnExport {
         DoubleCall() => 'X',
         RedoubleCall() => 'XX',
         Bid(:final level, :final strain) =>
-            level.toString() + strain.code,
+            '$level${strain.code}',
       };
     }).toList();
+
+    final result = contract == null
+        ? null
+        : state.tricks.where(
+            (trick) => trick.winner.isNS == contract.declarer.isNS).length;
+    final nsScore = state.nsScore!;
 
     final lines = <String>[
       '[Event "Bridge Academy completed practice"]',
       '[Site "Local"]',
-      '[Board "' + saved.board.number.toString() + '"]',
-      '[Dealer "' + state.dealer.letter + '"]',
-      '[Vulnerable "' + vulnerability + '"]',
+      '[Board "${saved.board.number}"]',
+      '[Dealer "${state.dealer.letter}"]',
+      '[Vulnerable "$vulnerability"]',
       // This tag exposes ALL HANDS. Share only after explicit user consent.
-      '[Deal "' + state.deal.toPbn() + '"]',
+      '[Deal "${state.deal.toPbn()}"]',
       '[Scoring "None"]',
       if (contract != null)
-        '[Declarer "' + contract.declarer.letter + '"]',
-      '[Contract "' + (contract?.label ?? 'Pass') + '"]',
+        '[Declarer "${contract.declarer.letter}"]',
+      '[Contract "${contract?.label ?? 'Pass'}"]',
       if (contract != null)
-        '[Result "' + state.tricks.where(
-            (trick) => trick.winner.isNS == contract.declarer.isNS)
-            .length.toString() + '"]',
-      '[Score "NS ' + (state.nsScore! >= 0 ? '+' : '') +
-          state.nsScore.toString() + '"]',
-      '[Auction "' + state.dealer.letter + '"]',
+        '[Result "$result"]',
+      '[Score "NS ${nsScore >= 0 ? '+' : ''}$nsScore"]',
+      '[Auction "${state.dealer.letter}"]',
       for (var i = 0; i < auction.length; i += 4)
         auction.skip(i).take(4).join(' '),
       '',

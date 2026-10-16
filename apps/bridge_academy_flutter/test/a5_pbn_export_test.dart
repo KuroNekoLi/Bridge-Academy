@@ -13,12 +13,6 @@ Future<void> _tap(WidgetTester tester, String key) async {
   await tester.pumpAndSettle();
 }
 
-Future<void> _passOut(BridgeSession session) async {
-  await session.newGame();
-  await session.submitCall(const Pass());
-  expect(session.finished, isTrue);
-}
-
 void main() {
   test('A5.3 PBN exports only completed stored deal, round-trips four hands',
       () async {
@@ -96,7 +90,7 @@ void main() {
     await _tap(tester, 'pass');
     final id = session.completedHistory.single.id;
     await _tap(tester, 'history_toggle');
-    await _tap(tester, 'history_export_' + id);
+    await _tap(tester, 'history_export_$id');
     expect(find.text('PBN 含這副已完成牌局的四家完整手牌、叫牌與結果。確認後會複製到系統剪貼簿，其他應用程式可能讀取，請只分享給信任的人。'), findsOneWidget);
     expect(copied, isNull);
     await _tap(tester, 'history_export_cancel');

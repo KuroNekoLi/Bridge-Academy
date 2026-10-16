@@ -1,6 +1,6 @@
 # A5.3.1 — Player-confirmed completed-history PBN export
 
-**Date:** 2026-10-16 · **Status:** IMPLEMENTED / FLUTTER CI PENDING · **Local history only**
+**Date:** 2026-10-16 · **Status:** IMPLEMENTED / LINT CORRECTIONS PENDING NEW CI · **Local history only**
 
 ## What a player can now do
 
@@ -25,6 +25,10 @@ The PBN includes the original 52-card \`[Deal]\`, duplicate board number, actual
 | PBN data | \`Deal\` roundtrip, board/dealer/vulnerability, Pass Out with four Pass, contract/declarer/Result and NS score | Unit tests |
 | Privacy | Consent required before private 52-card Deal copied to external OS clipboard | Widget assertion |
 | Regression | Existing Flutter tests, Web release build and Chrome Demo checkpoint E2E | **PENDING CI** |
+
+## First CI / diagnosis
+
+[Flutter CI #38862357907](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357907) failed strict analyzer before tests: 13 style issues (prefer string interpolation, test helper unused). The production and tests were corrected without lowering analyzer policy or disabling privacy checks; latest rerun is pending. [Feature Learning Gate #38862357980](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38862357980) passed for the initial feature commit.
 
 ## Known limitations and next slices
 
