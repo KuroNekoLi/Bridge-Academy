@@ -83,11 +83,13 @@ class _AcademyPageState extends State<AcademyPage> {
     setState(() => _persisting = true);
     try {
       await _store.clear();
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _enabled = false;
         _history = LearnerProgress();
         _storageError = false;
-      });
+        });
+      }
     } catch (_) {
       if (mounted) setState(() { _storageError = true; _loading = false; });
     } finally {
@@ -164,7 +166,9 @@ class _AcademyPageState extends State<AcademyPage> {
 
   void _submit(AcademyQuestion question) {
     if (_feedback != null || _selected == null || _lesson == null ||
-        _persisting || _loading || _storageError) return;
+        _persisting || _loading || _storageError) {
+      return;
+    }
     final lesson = _lesson!;
     final result = _practice.submit(
       lesson: lesson,
