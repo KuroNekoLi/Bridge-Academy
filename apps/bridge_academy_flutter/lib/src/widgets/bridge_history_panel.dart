@@ -406,6 +406,7 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
                     0, widget.selectedReplay!.lastIndex),
                 copy: copy,
                 onSelectIndex: widget.onReplayStep,
+                reviewId: widget.selectedId,
               ),
             ],
           ],

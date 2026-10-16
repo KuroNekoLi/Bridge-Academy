@@ -227,6 +227,96 @@ class AppCopy {
       '四副不同隨機發牌，顯示原始 Duplicate 得分加總；不是 MP、IMP 或賽事排名。',
       'Four fresh deals, sum of raw duplicate scores only; not MP, IMP or a ranking.',
     ],
+    'reviewNotesTitle': ['B5 教學式複盤', 'B5 Guided review'],
+    'reviewStrategyUnknown': [
+      '策略品質：未分析（UNKNOWN）。此頁不代表 DDS 最佳打法或 BEN 真正意圖。',
+      'Strategy quality: NOT ANALYZED (UNKNOWN). No DDS best-play or BEN intent is inferred.',
+    ],
+    'reviewRuleTag': ['規則', 'Rule'],
+    'reviewConventionTag': ['約定前提・未經專家審核', 'Teaching agreement · unreviewed'],
+    'reviewUnknownTag': ['未知', 'Unknown'],
+    'reviewStartRule': [
+      '此為已完成牌局的初始公開狀態。回放不會修改原始牌局。',
+      'This is the initial state of a completed deal; replay does not mutate it.',
+    ],
+    'reviewBidRule': [
+      '叫品必須符合 Bridge Core 的合法性規則，叫品本身不證明叫牌者的實際牌力。',
+      'A bid must satisfy Bridge Core legality; it does not verify the bidder’s actual hand strength.',
+    ],
+    'reviewConventionUnknown': [
+      '目前沒有符合公開叫牌上下文的教學約定，不應推測暗手。',
+      'No teaching agreement matches this public auction context. Hidden hands cannot be inferred.',
+    ],
+    'reviewPassRule': [
+      'Pass 由 Bridge Core 計入叫牌進度；不是對牌力或策略品質的驗證。',
+      'Bridge Core records PASS in the auction; it is not proof of strength or strategy quality.',
+    ],
+    'reviewPassOutRule': [
+      '四家依序 Pass，牌局直接結束、沒有定約，原始南北得分為 0。',
+      'Four consecutive passes end the deal with no contract and N/S score 0.',
+    ],
+    'reviewDoubleRule': [
+      '合法加倍（X）會影響最終計分；不表示此時的叫牌有最佳策略。',
+      'A legal Double (X) changes final scoring; this says nothing about strategic optimality.',
+    ],
+    'reviewRedoubleRule': [
+      '合法再加倍（XX）會改變最終計分，不代表教學約定已匹配。',
+      'A legal Redouble (XX) changes final scoring; it does not imply a matched teaching agreement.',
+    ],
+    'reviewContractRule': [
+      '叫牌完成後由 Bridge Core 決定莊家、王牌與定約目標（6 + 線位）。',
+      'After the auction Bridge Core determines declarer, strain and required tricks (6 + level).',
+    ],
+    'reviewNoTrumpRule': [
+      '無王（NT）沒有王牌花色；牌墩勝負由正式跟牌與牌力規則決定。',
+      'No Trump (NT) has no trump suit; Bridge Core determines trick winners.',
+    ],
+    'reviewTrumpRule': [
+      '有王定約具有指定王牌花色；仍須先遵守跟牌義務。',
+      'Suit contracts have a trump suit; players must still follow suit when able.',
+    ],
+    'reviewLeadRule': [
+      '每墩第一張牌決定本墩領出花色；其後有該花色必須跟牌。',
+      'The first card sets the led suit for that trick; players must follow suit when able.',
+    ],
+    'reviewFollowSuit': [
+      '此牌與本墩領出花色相同，屬於跟牌的可見例子。',
+      'This card matches the led suit and visibly follows suit.',
+    ],
+    'reviewOffSuitUnknown': [
+      '此張不是領出花色；從公開回放不能證明當時所有未公開手牌的持牌情況。',
+      'This card is off-suit; public replay cannot prove the contents of any still-hidden hand.',
+    ],
+    'reviewDummyReveal': [
+      '開出首攻後明手正式公開；在此之前不會顯示明手牌面。',
+      'Dummy becomes public after the opening lead, never before.',
+    ],
+    'reviewDummyControl': [
+      '本次由莊家代明手選牌，出牌所有權仍屬於明手座位。',
+      'Declarer selects for dummy; the card still belongs to the dummy seat.',
+    ],
+    'reviewTrickComplete': [
+      '一墩四張牌均已完成；勝方由 Bridge Core 判定（見上方上一墩勝者）。',
+      'All four cards complete a trick; Bridge Core determines its winner (shown above).',
+    ],
+    'reviewOfficialScore': [
+      '此南北得分由 Bridge Core 在終局產生，不是複盤自行計算。',
+      'This N/S score is produced by Bridge Core at the terminal result, not recalculated by review.',
+    ],
+    'reviewTargetTricks': ['定約至少需要的墩數', 'Tricks needed to make contract'],
+    'reviewJumpTitle': ['直接跳到事件', 'Jump to event'],
+    'reviewStartEvent': ['開始', 'Start'],
+    'reviewAuctionEvent': ['叫牌', 'Auction'],
+    'reviewPlayEvent': ['出牌', 'Play'],
+    'reviewPreviousKey': ['上一個重點', 'Previous key event'],
+    'reviewNextKey': ['下一個重點', 'Next key event'],
+    'reviewMark': ['標記學習重點', 'Mark learning point'],
+    'reviewUnmark': ['取消重點標記', 'Unmark learning point'],
+    'reviewMarkedTitle': ['本頁標記的事件', 'Marked events this session'],
+    'reviewBookmarksTemporary': [
+      '標記只保留在目前開啟的複盤頁面，不會寫入牌局歷史。',
+      'Bookmarks last only while this review panel is open; no history is changed.',
+    ],
     'replaySameBoard': ['重打同一副牌', 'Replay same board'],
     'boardMode': ['發牌方式', 'Deal source'],
     'trainingBoard': ['固定教學牌例', 'Fixed training deal'],
