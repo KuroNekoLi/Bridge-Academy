@@ -26,6 +26,8 @@ class AppCopy {
   String remaining(int count) => '${t('remaining')}: $count';
   String trickCount(int count) => '${t('tricks')}: $count / 13';
   String score(int score) => "${t('nsScore')}: ${score > 0 ? '+' : ''}$score";
+  String historyPage(int current, int total) =>
+      '${t('historyPage')}: $current / $total';
   String contract(String value) => '${t('contract')}: $value';
   String formatCard(String code, {required bool legal}) =>
       '${legal ? t('legalCard') : t('card')} $code';
@@ -135,6 +137,21 @@ class AppCopy {
     'currentTrick': ['本墩出牌', 'Current trick'],
     'historyOpen': ['歷史牌局', 'Deal history'],
     'historyClose': ['收起歷史', 'Close history'],
+    'historySearch': ["搜尋牌號、定約、分數或座位","Search board, contract, score or seat"],
+    'historyFilter': ["篩選牌局","Filter deals"],
+    'historyFilterAll': ["全部牌局","All deals"],
+    'historyFilterContracts': ["有定約","Contract deals"],
+    'historyFilterPassOut': ["四家不叫","Pass Out"],
+    'historyFilterPractice': ["練習牌局","Practice deals"],
+    'historyNoResults': ["沒有符合條件的牌局。","No matching deals."],
+    'historyPage': ["頁數","Page"],
+    'historyPagePrevious': ["上一頁","Previous page"],
+    'historyPageNext': ["下一頁","Next page"],
+    'historyDeleteTitle': ["刪除這副牌局？","Delete this deal?"],
+    'historyDeleteWarning': ["此動作將永久刪除此副歷史紀錄及複盤資料，不會中斷目前的牌局，也無法復原。","This permanently deletes this saved deal and its replay. Your current game is unaffected. This cannot be undone."],
+    'historyDeleteCancel': ["取消","Cancel"],
+    'historyDeleteConfirm': ["確認刪除","Delete deal"],
+    'errorHistoryDelete': ["無法刪除歷史牌局，請稍後重試。","Could not delete the saved deal. Please retry."],
     'historyTitle': ['已完成的牌局', 'Completed deals'],
     'historyEmpty': ['還沒有完成的牌局，先打一副牌吧。',
       'No finished boards yet. Play a deal to start your history.'],

@@ -41,6 +41,7 @@ class BridgeSession extends ChangeNotifier {
   Future<void>? _historyLoadFuture;
   bool _historyLoaded = false;
   bool _historySaveFailed = false;
+  bool _historyDeleting = false;
   String? _historyError;
   SinglePlayerCoordinator? _coordinator;
   Deal? _activeDeal;
@@ -130,6 +131,32 @@ class BridgeSession extends ChangeNotifier {
     ).completedReplay;
   }
 
+  /// Deletes exactly one finished attempt, without clearing the active game.
+  /// The encrypted store persists a deletion marker before the UI changes.
+  Future<bool> deleteHistory(String id) async {
+    if (_historyStore == null || busy || _historyDeleting) return false;
+    await loadHistory();
+    if (!_historyLoaded || !_historyBoards.any((item) => item.id == id)) {
+      return false;
+    }
+    _historyDeleting = true;
+    try {
+      await _historyStore!.delete(id);
+      _historyBoards = _historyBoards.where((item) => item.id != id).toList();
+      _historySummaries =
+          _historySummaries.where((item) => item.id != id).toList();
+      _historyError = null;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      _historyError = 'errorHistoryDelete';
+      notifyListeners();
+      return false;
+    } finally {
+      _historyDeleting = false;
+    }
+  }
+
   Future<void> _archiveCompleted() async {
     if (_historyStore == null || _coordinator?.finished != true) {
       return;
@@ -142,6 +169,14 @@ class BridgeSession extends ChangeNotifier {
     }
     final id = _historyId ??= _newHistoryId();
     if (_historyBoards.any((item) => item.id == id)) return;
+    // A restored terminal checkpoint must not recreate a user-deleted board.
+    try {
+      if (await _historyStore.isDeleted(id)) return;
+    } catch (_) {
+      _historyError = 'errorHistoryLoad';
+      notifyListeners();
+      return;
+    }
     final item = StoredHistoryBoard(
       id: id,
       savedAt: DateTime.now().toUtc(),

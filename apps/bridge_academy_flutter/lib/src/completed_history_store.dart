@@ -45,19 +45,33 @@ final class HistorySummary {
 abstract interface class CompletedHistoryStore {
   Future<List<StoredHistoryBoard>> read();
   Future<void> write(List<StoredHistoryBoard> items);
+  /// A deletion tombstone prevents a still-current finished checkpoint from
+  /// silently recreating the same history item after an app restart.
+  Future<void> delete(String id);
+  Future<bool> isDeleted(String id);
 }
 
 /// Test-only, process-local storage. Not suitable for player history.
 final class MemoryCompletedHistoryStore implements CompletedHistoryStore {
   List<StoredHistoryBoard> _records = [];
+  final Set<String> _deletedIds = {};
 
   @override
   Future<List<StoredHistoryBoard>> read() async => List.of(_records);
 
   @override
   Future<void> write(List<StoredHistoryBoard> items) async {
-    _records = List.of(items);
+    _records = List.of(items.where((item) => !_deletedIds.contains(item.id)));
   }
+
+  @override
+  Future<void> delete(String id) async {
+    _deletedIds.add(id);
+    _records = _records.where((item) => item.id != id).toList();
+  }
+
+  @override
+  Future<bool> isDeleted(String id) async => _deletedIds.contains(id);
 }
 
 /// Encrypted, single-record bounded history collection. Each update commits
@@ -116,10 +130,13 @@ final class EncryptedCompletedHistoryStore implements CompletedHistoryStore {
     return SecretKey(bytes);
   }
 
-  @override
-  Future<List<StoredHistoryBoard>> read() async {
+  static const _maxDeletedIds = 64;
+  static final _idPattern = RegExp(r'^[a-zA-Z0-9_-]{8,64}$');
+
+  Future<({List<StoredHistoryBoard> items, List<String> deleted})>
+      _load() async {
     final record = await _records.readRecord();
-    if (record == null) return const [];
+    if (record == null) return (items: <StoredHistoryBoard>[], deleted: <String>[]);
     if (record.length != 4 ||
         record['v'] != _version ||
         record['nonce'] is! String ||
@@ -140,9 +157,20 @@ final class EncryptedCompletedHistoryStore implements CompletedHistoryStore {
     }
     final data = jsonDecode(utf8.decode(plaintext));
     if (data is! Map<String, dynamic> ||
-        data.length != 2 || data['v'] != _version ||
-        data['items'] is! List) {
+        (data.length != 2 && data.length != 3) ||
+        data['v'] != _version ||
+        data['items'] is! List ||
+        (data.containsKey('deleted') && data['deleted'] is! List)) {
       throw const FormatException('Invalid history data');
+    }
+    final tombstones = data['deleted'] as List? ?? [];
+    if (tombstones.length > _maxDeletedIds ||
+        tombstones.any((id) => id is! String || !_idPattern.hasMatch(id))) {
+      throw const FormatException('Invalid deletion markers');
+    }
+    final deleted = tombstones.cast<String>();
+    if (deleted.toSet().length != deleted.length) {
+      throw const FormatException('Duplicate deletion markers');
     }
     final list = data['items'] as List;
     if (list.length > maxItems) {
@@ -164,18 +192,23 @@ final class EncryptedCompletedHistoryStore implements CompletedHistoryStore {
         archive: element['archive'] as String,
       );
       _validate(item);
-      if (!seen.add(item.id)) {
-        throw const FormatException('Duplicate history ID');
+      if (!seen.add(item.id) || deleted.contains(item.id)) {
+        throw const FormatException('Duplicate or deleted history item');
       }
       results.add(item);
     }
-    return List.unmodifiable(results);
+    return (items: results, deleted: deleted);
   }
 
-  @override
-  Future<void> write(List<StoredHistoryBoard> items) async {
-    if (items.length > maxItems || items.map((e) => e.id).toSet().length != items.length) {
-      throw const FormatException('Invalid history count or duplicate ID');
+  Future<void> _save(List<StoredHistoryBoard> items,
+      List<String> deleted) async {
+    if (items.length > maxItems ||
+        items.map((e) => e.id).toSet().length != items.length ||
+        deleted.length > _maxDeletedIds ||
+        deleted.toSet().length != deleted.length ||
+        deleted.any((id) => !_idPattern.hasMatch(id)) ||
+        items.any((item) => deleted.contains(item.id))) {
+      throw const FormatException('Invalid history count or deletion marker');
     }
     for (final item in items) {
       _validate(item);
@@ -190,6 +223,7 @@ final class EncryptedCompletedHistoryStore implements CompletedHistoryStore {
             'archive': item.archive,
           },
       ],
+      'deleted': deleted,
     }));
     if (encoded.length > _maxPlaintextBytes) {
       throw const FormatException('History storage full');
@@ -204,4 +238,33 @@ final class EncryptedCompletedHistoryStore implements CompletedHistoryStore {
       'mac': base64Encode(encrypted.mac.bytes),
     });
   }
+
+  @override
+  Future<List<StoredHistoryBoard>> read() async =>
+      List.unmodifiable((await _load()).items);
+
+  @override
+  Future<void> write(List<StoredHistoryBoard> items) async {
+    final state = await _load();
+    await _save(items, state.deleted);
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    if (!_idPattern.hasMatch(id)) {
+      throw const FormatException('Invalid history ID');
+    }
+    final state = await _load();
+    if (state.deleted.contains(id)) return;
+    // Bounded retention: oldest deletion markers can be discarded because
+    // only the current checkpoint can rearchive one old ID after restart.
+    final tombstones = [id, ...state.deleted].take(_maxDeletedIds).toList();
+    await _save(
+      state.items.where((item) => item.id != id).toList(), tombstones,
+    );
+  }
+
+  @override
+  Future<bool> isDeleted(String id) async =>
+      (await _load()).deleted.contains(id);
 }

@@ -62,3 +62,7 @@ Approved workflow (2026-10-15): commit and push verified work directly to master
 
 ## Task output format
 Goal / Feature IDs / Changed files / Design decision / Executed tests + command / Evidence / Lesson links and key idea / One learner question / Known limitations / Next step. A partial test does not imply complete acceptance.
+
+## A5.2 local history management (2026-10-16)
+
+A5.1 [91/91 Flutter scoped verified](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38852504246) delivered a local encrypted completed-history list. A5.2 adds player-searchable and filterable completed deals, five-item pagination, per-item deletion confirmation and encrypted deletion tombstones to prevent re-archival from an older terminal checkpoint; scoped Flutter CI pending. Do not conflate this with the separate Gateway authoritative history (A5.3), full PBN export, distributed game retention or A4.5 production readiness. Android/iOS emulator and device UI tests, plus A3.5, stay on owner-requested hold.

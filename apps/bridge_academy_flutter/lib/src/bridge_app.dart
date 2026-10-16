@@ -244,6 +244,16 @@ class _BridgeTableState extends State<BridgeTable> {
                 }),
                 onReplayStep: (step) =>
                     setState(() => _historyStep = step),
+                canDelete: !session.busy,
+                onDelete: (id) async {
+                  final removed = await session.deleteHistory(id);
+                  if (removed && mounted && _selectedHistoryId == id) {
+                    setState(() {
+                      _selectedHistoryId = null;
+                      _historyStep = 0;
+                    });
+                  }
+                },
                 errorCode: session.historyError,
                 onRetrySave: session.historySaveFailed
                     ? session.retryHistorySave : null,
