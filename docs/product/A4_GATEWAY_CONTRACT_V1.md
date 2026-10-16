@@ -7,7 +7,7 @@
 ```text
 BridgeSession -> SinglePlayerCoordinator -> seat-filtered PlayerView
   -> BenBotPolicy -> BenGatewayTransport
-  -> [A4.2 FUTURE] authenticated HTTPS Gateway, rate limits and session ownership
+  -> [A4.2 LOCAL DEV] anonymous bearer-capability Gateway on loopback, rate limits, restricted input
   -> [A4.3 FUTURE] private network Python BEN (/bid, /lead, /play)
   -> AI action proposal -> Bridge Core validates and commits action
 ```
@@ -28,7 +28,7 @@ Transport refuses non-HTTPS origins, embedded credentials, query/fragment/path, 
 
 ## What A4.1 does not solve
 
-- Gateway service, HTTPS certificate/host, session bootstrap or any real authentication **do not exist yet**. `GatewayAccessTokenProvider` is a dependency-injection seam, not an authentication implementation. Never put a shared secret or long-lived bearer token in Flutter/Dart defines, source or packaged assets.
+- A4.2 provides a **loopback-only** Dart gateway and an anonymous 15-minute capability token; **deployed HTTPS, real identity/game-seat authorization, shared persistent sessions and a genuine BEN worker do not exist yet**. `GatewayAccessTokenProvider` is a dependency-injection seam, not an authentication implementation. Never put a shared secret or long-lived bearer token in Flutter/Dart defines, source or packaged assets.
 - Future anonymous access (no required player account) still needs a **server-issued short-lived, scope-limited** credential and anti-abuse/rate limit. Authentication, seat/session authorization and request validation must be server-enforced on each request; UI checks alone do not prove secrecy. See [OWASP API Security](https://api-security.owasp.org/editions/2023/en/0x11-t10/).
 - The future Gateway may use BEN's existing GET only **inside a trusted private network**; prevent raw URL/query logging, caching, proxy traces and public ingress. BEN GPL-3.0 / model weights / native binaries require separate documented rights analysis before hosted release.
 - A POST transport does not provide exactly-once application. Server must define stable session+event version/request identity and durable deduplication/expected-version conflict semantics before automatic network retries.
@@ -51,7 +51,7 @@ dart test --reporter expanded
 
 ## Next delivery slices
 
-**A4.2:** Anonymous short-lived session/bootstrap + server request validation, authorization, rate limits and audit-safe observability. Requires an approved hosting/provider/cost budget.  
+**A4.2:** [Loopback gateway](../../services/bridge_gateway/README.md) implemented with token TTL, SHA-256 hashed in-memory sessions, bounded requests/CORS and real localhost HTTP integration tests; server game/seat identity verification, durable auth, public TLS and remote BEN are NOT provided. [A4.2 acceptance](A4_GATEWAY_A4_2_ACCEPTANCE.md).  
 **A4.3:** Private BEN mediation, bounded queue, stable request identities, genuine pinned BEN integration and model/weights license review.  
 **A4.4:** App uses production Gateway when configured securely; localized errors and recovery.  
 **A4.5:** Staging/full product acceptance, latency/resources/cost/privacy checks and four seats/16 boards. A3.5 remains deferred and release-blocking.

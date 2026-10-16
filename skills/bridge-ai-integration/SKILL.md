@@ -14,7 +14,7 @@ BEN generates **proposals**. Bridge Core validates legality, applies moves and r
 ## A4 production network contract (2026-10-16)
 
 - `BenGatewayTransport`: HTTPS POST v1 to a proposed first-party Gateway, Mock-only [Adapter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162). Inject a short-lived authorized session token, never compile service tokens into Flutter `--dart-define` or use URL Query for private hands.
-- Gateway and anonymous credential bootstrap, server authorization and rate limiting, private BEN upstream worker, durable idempotency and real deployment remain A4.2+; DO NOT label A4.1 Mock as a deployed endpoint.
+- A4.2 implements loopback-only anonymous bearer token issuance, input validation and in-memory per-peer/token throttling with a stub backend for HTTP integration tests. This is a capability quota, **NOT verified seat/game authorization**, HTTPS deployment, or real BEN. Private upstream BEN, remote deduplication and live host remain A4.3+. Do not present localhost stub tests as AI service acceptance.
 - A3.5 and Android/iOS device UI test are owner-deferred. Preserve local real BEN regression, never quietly fall back to Demo.
 
 ## Workflow

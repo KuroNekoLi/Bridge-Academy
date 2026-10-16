@@ -1,0 +1,35 @@
+name: Bridge Gateway A4.2 CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "services/bridge_gateway/**"
+      - ".github/workflows/bridge-gateway.yml"
+  pull_request:
+    paths:
+      - "services/bridge_gateway/**"
+      - ".github/workflows/bridge-gateway.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  gateway:
+    name: Dart Gateway Static and Loopback Integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/bridge_gateway
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Resolve dependencies
+        run: dart pub get
+      - name: Strict Dart analysis
+        run: dart analyze --fatal-infos
+      - name: Localhost Gateway HTTP contract tests (stub BEN only)
+        run: dart test --reporter expanded

@@ -1,0 +1,11 @@
+name: bridge_gateway
+description: Loopback-only development API gateway for Bridge Academy AI decisions
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  crypto: ^3.0.6
+dev_dependencies:
+  test: ^1.25.0
+  lints: ^6.1.0

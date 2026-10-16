@@ -13,6 +13,14 @@ Bridge Core validates all proposed moves before commit.
 
 A4.1 is a reversible interface seam, **not wired into the default Flutter app**. The new transport requires HTTPS, no embedded credentials/URL query, injected ephemeral bearer provider, route and field allowlist, sanitized errors, no redirects/automatic retry and capped response. It cannot protect against a compromised server or issue its own credentials. Future A4.2 must issue short-lived anonymous credentials, validate authorization and rate limits server-side; A4.3 isolates BEN's old private-hand GET within the private network and implements stable dedup/version semantics. See [wire contract](product/A4_GATEWAY_CONTRACT_V1.md) and [MockAdapter CI 23/23](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38833132162). **No production hosting or BEN service is now available. A3.5 remains owner-deferred and device QA remains disabled.**
 
+## A4.2 local-only first-party Gateway boundary (2026-10-16)
+
+- Dart `services/bridge_gateway` exposes `GET /healthz`, `POST /v1/sessions/anonymous` and `POST /v1/ai/decision` on **127.0.0.1** by default; non-loopback bind is rejected. Local HTTP is not public TLS; any public reverse proxy needs a separate security decision/implementation.
+- Issues 256-bit `Random.secure()` anonymous bearer capabilities; stores SHA-256 hashes in process memory, TTL default 15 minutes, no account requirement. Per-peer issuance rate limit and per-token rate/concurrency caps are in-memory and not cluster-aware.
+- Filtered A4.1 v1 request schema is enforced at the boundary; unknown fields, whole `deal`, early Dummy fields and private error echo rejected. Proposals go through an injectable `GatewayDecisionBackend`; the default returns **503 unavailable**, never fabricated BEN strategy. Flutter remains unchanged and is NOT connected to this service.
+- A **bearer capability is not a player, seat, or deal authorization proof**. There is no server-owned GameState here; a caller can submit a plausible hand of their choice. For formal fair-play/competitive settings, the server must bind tokens to actual game/seat and derive PlayerView server-side. A4.3 also needs durable action IDs/event-version dedup and real BEN private-network worker.
+- Localhost HTTP tests inject a fake backend, not a model. Evidence/status: [A4.2 acceptance](product/A4_GATEWAY_A4_2_ACCEPTANCE.md). A3.5 and device UI acceptance remain owner-deferred.
+
 ## Components
 ~~~text
 Flutter Android / iOS / Web (render, input, localization)
