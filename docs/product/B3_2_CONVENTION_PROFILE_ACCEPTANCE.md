@@ -1,7 +1,7 @@
 # B3.2 / C2 — Versioned Convention Explainer Acceptance
 
 **Branch**: `feature/b3-convention-profile`
-**Status**: IMPLEMENTED / CI PENDING
+**Status**: SCOPED VERIFIED (Flutter unit/widget + Web + Chrome demo; expert review pending)
 **Date**: 2026-10-16
 
 ## Player-visible slice
@@ -28,7 +28,7 @@ These sources guide *proposed* descriptions only; the current profile has **not*
 - `cd apps/bridge_academy_flutter && flutter analyze --no-pub`
 - `cd apps/bridge_academy_flutter && flutter test --no-pub`
 - `cd apps/bridge_academy_flutter && flutter build web --no-pub --release`
-- GitHub Actions run: **PENDING** (do not treat authored test files as executed evidence).
+- **EXECUTED / PASS:** [Flutter branch CI #38909043985](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38909043985)（Commit `38d2e96e2d8ce437d90162d1e3c2de1fd8a172fe`）：`flutter analyze --no-pub` **No issues found**；`flutter test --no-pub` **129/129 passed**；`flutter build web --no-pub --release` **PASS**；ChromeDriver demo browser E2E **PASS**。
 - Tests `test/b3_2_convention_profile_test.dart` and `test/b3_2_convention_widget_test.dart`; regression requires B3.1, A5/B1/B2 and ordinary Flutter test suite.
 
 ## Remaining gates / limitations

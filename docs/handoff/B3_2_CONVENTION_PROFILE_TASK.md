@@ -2,7 +2,7 @@
 
 **Branch**: `feature/b3-convention-profile`  
 **Base**: `2a382ac2230afc8059b93f3d4271ccb9bab14c74` (master at assignment)  
-**Status**: IMPLEMENTED / CI PENDING  
+**Status**: SCOPED VERIFIED (Flutter 129/129 + Web + Chrome Demo, expert review open)  
 **Standalone source**: 此分支的 `AGENT_TASK.md`。請執行程式、測試與文件，不只交分析報告。
 
 **目標**：在 B3.1 的有限自然 NT 示範上新增可版本化 `ConventionProfile` 與嚴格依公開叫牌上下文運作的解釋引擎，先讓玩家看見可信的、標記審核狀態的約定資訊。**不得**把選擇 Profile 說成 BEN 會自動遵守該體系。
@@ -49,4 +49,6 @@ Feature module: `apps/bridge_academy_flutter/lib/src/conventions/convention_prof
 UI module: `apps/bridge_academy_flutter/lib/src/widgets/bidding_convention_panel.dart`; B3.1 `bridge_app.dart` thin mount.
 Tests: `test/b3_2_convention_profile_test.dart`, `test/b3_2_convention_widget_test.dart`.
 Acceptance and learner note: `docs/product/B3_2_CONVENTION_PROFILE_ACCEPTANCE.md`, `docs/learning/features/M2_F43_CONVENTION_PROFILE.md`.
+Validation: [Flutter branch CI #38909043985](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38909043985)（Commit `38d2e96e2d8ce437d90162d1e3c2de1fd8a172fe`），Flutter analyze clean, 129/129 tests, Web release and Chrome Demo browser PASS.
+External expert approval, real BEN system compatibility and native device QA are not covered.
 Do not merge this branch automatically; review feature-only diff first.

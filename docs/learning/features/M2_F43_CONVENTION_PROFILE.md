@@ -3,10 +3,10 @@
 - Feature ID：M2-F43
 - Milestone：M2 / B3.2
 - 類型：Flutter UI／叫牌約定 Domain
-- 工程狀態：IMPLEMENTED（CI 待查）
+- 工程狀態：SCOPED VERIFIED（129/129 Flutter、Web、Chrome Demo）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/conventions/convention_profile.dart`、`lib/src/widgets/bidding_convention_panel.dart`、`lib/src/bidding_practice.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/b3_2_convention_profile_test.dart`、`test/b3_2_convention_widget_test.dart`；NOT RUN（直到具體 CI 完成）
+- 驗收與測試：`apps/bridge_academy_flutter/test/b3_2_convention_profile_test.dart`、`test/b3_2_convention_widget_test.dart`；[Flutter branch CI #38909043985](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38909043985)（Commit `38d2e96e2d8ce437d90162d1e3c2de1fd8a172fe`） PASS
 
 ## 功能目的與實際情境
 
@@ -42,7 +42,7 @@ flutter test --no-pub
 flutter build web --no-pub --release
 ```
 
-本次提交前 **NOT RUN**，需等待 GitHub Actions 同 SHA 的結果。純 Dart fixtures 涵蓋四家座位、四種局況、開叫、邀請、進局、Stayman、Jacoby、X/XX、插叫、版本失配、非法座位與叫價；Widget 測試覆蓋 zh-TW/en、切換預覽、來源、320px 和文字縮放。這些均不是專家審核或 BEN 策略驗證。
+**實際已於 GitHub Actions 執行通過：** [Flutter branch CI #38909043985](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38909043985)（Commit `38d2e96e2d8ce437d90162d1e3c2de1fd8a172fe`），`flutter analyze` 無問題、`flutter test` **129/129 PASS**、Flutter Web release build 成功、Chrome Demo E2E 成功。純 Dart fixtures 涵蓋四家座位、四種局況、開叫、邀請、進局、Stayman、Jacoby、X/XX、插叫、版本失配、非法座位與叫價；Widget 測試覆蓋 zh-TW/en、切換預覽、來源、320px 和文字縮放。這些均不是專家審核或 BEN 策略驗證。
 
 ## 練習與自我檢驗
 
