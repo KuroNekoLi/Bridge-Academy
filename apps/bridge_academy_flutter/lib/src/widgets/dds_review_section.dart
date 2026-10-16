@@ -31,7 +31,9 @@ class _DdsReviewSectionState extends State<DdsReviewSection> {
         _ => 'ddsError',
       });
     } catch (_) {
-      if (mounted) setState(() => _error = 'ddsError');
+      if (mounted) {
+        setState(() => _error = 'ddsError');
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
