@@ -4,6 +4,8 @@ on:
     branches: [master]
     paths:
       - "apps/bridge_academy_flutter/**"
+      - "packages/bridge_core/**"
+      - "packages/bridge_ben_adapter/**"
       - ".github/workflows/flutter-single-player.yml"
   workflow_dispatch:
 

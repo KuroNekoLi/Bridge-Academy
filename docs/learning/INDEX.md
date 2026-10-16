@@ -55,7 +55,7 @@
 
 | M2-F30 | A4.3.3 真 BEN Gateway 完整 52 張牌／13 墩／計分／版本驗收（Full-game CI PASS） | [M2-F30 教學](features/M2_F30_REAL_BEN_GATEWAY_FULL_GAME.md) | [Full-game runner](../../services/bridge_gateway/bin/live_gateway_ben_full_game.dart) · [真 BEN CI](../../.github/workflows/ben-gateway-real.yml) · [驗收](../product/A4_GATEWAY_A4_3_3_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F31 | A4.4 Flutter Gateway Session／失敗重試／雙語（86/86 Flutter PASS；真 Chrome→Gateway→BEN CI 待驗） | [M2-F31](features/M2_F31_FLUTTER_GATEWAY_SESSION.md) | [Gateway API](../../apps/bridge_academy_flutter/lib/src/gateway_http_api.dart) · [Session](../../apps/bridge_academy_flutter/lib/src/gateway_game_session.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/a4_gateway_integration_test.dart) · [驗收](../product/A4_GATEWAY_A4_4_ACCEPTANCE.md) | DELIVERED |
+| M2-F31 | A4.4 Flutter 伺服器權威 Gateway Session、斷線安全重送、隱私回應拒絕及 zh-TW/en（Flutter 86/86 + Web Build + Chrome Demo CI PASS） | [M2-F31](features/M2_F31_FLUTTER_GATEWAY_SESSION.md) | [Gateway API](../../apps/bridge_academy_flutter/lib/src/gateway_http_api.dart) · [Session](../../apps/bridge_academy_flutter/lib/src/gateway_game_session.dart) · [Flutter tests](../../apps/bridge_academy_flutter/test/a4_gateway_integration_test.dart) · [驗收](../product/A4_GATEWAY_A4_4_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

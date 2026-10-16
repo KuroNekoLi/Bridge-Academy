@@ -1,10 +1,13 @@
 name: Bridge Gateway A4.2 CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [master]
     paths:
       - "services/bridge_gateway/**"
+      - "packages/bridge_core/**"
+      - "packages/bridge_ben_adapter/**"
       - ".github/workflows/bridge-gateway.yml"
   pull_request:
     paths:

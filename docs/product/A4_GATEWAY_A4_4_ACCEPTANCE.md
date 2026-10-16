@@ -1,6 +1,6 @@
 # A4.4 — Flutter authoritative Gateway integration
 
-**2026-10-16. Status: FLUTTER/WEB SCOPED VERIFIED; genuine Flutter Chrome→Gateway→BEN E2E pending.** No public HTTPS service has been deployed; A3.5, Android emulator and Android/iOS physical UI/E2E testing are owner-deferred.
+**2026-10-16. Status: SCOPED FLUTTER/WEB ENGINEERING VERIFIED — 86/86 tests + Chrome Demo regression PASS.** No public HTTPS service has been deployed; A3.5, Android emulator and Android/iOS physical UI/E2E testing are owner-deferred.
 
 ## Scope and startup
 
@@ -9,9 +9,10 @@ The existing Demo and direct-local BEN developer modes remain unchanged **when n
 ```bash
 # Terminal 1 — start trusted BEN Python on 127.0.0.1:8085.
 # Terminal 2 — run localhost Gateway with approved browser origin.
+cd services/bridge_gateway
 GATEWAY_BROWSER_ORIGINS=http://localhost:8000 \
   BEN_INTERNAL_ORIGIN=http://127.0.0.1:8085 \
-  dart run services/bridge_gateway/bin/serve.dart
+  dart run bin/serve.dart
 # Terminal 3 — run Flutter Web from apps/bridge_academy_flutter:
 flutter run -d chrome --web-port=8000 \
   --dart-define=BRIDGE_GATEWAY_ORIGIN=http://127.0.0.1:8086
@@ -35,8 +36,10 @@ The Flutter `BridgeAcademyApp` accepts a test-injected `GatewayApi` or an explic
 - Flutter Widget: opt-in Gateway table and North hand after start, language toggle in English, no Demo/BEN selector in Gateway mode.
 - Existing Flutter unit/widget, Web release build and ChromeDriver demo/secure-checkpoint regressions must pass. Existing pure Dart Gateway suite and pinned real-BEN full-game test retain their independent separate evidence.
 - This A4.4 test suite **does not** prove live Flutter browser-to-real-BEN full-game E2E or a deployed HTTPS server; those require separately named browser acceptance and A4.5.
-- **[Flutter CI #38848030915](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915), code SHA `dc571be3050a5a81cc27cdc81a3cabbc312efb8f`: SUCCESS.** `flutter analyze --no-pub` no issues; `flutter test` **86/86 PASS**; `flutter build web --release` PASS; real ChromeDriver Demo/secure checkpoint regressions PASS. [Learning Gate #38848030896](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030896) PASS.
-- **New genuine browser acceptance being added:** [browser_gateway_real_test.dart](../../apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart) exercised by the pinned real BEN Chrome workflow, with real first-party loopback Gateway and explicit CORS origin. Unlike the 86 widget tests it uses real Browser HTTP, first-party Gateway and actual Python BEN and checks 13 tricks/52 cards. **CI not yet run at authoring**; do not mark this live chain PASS until run evidence is known. Public HTTPS/deployed server and devices remain out of scope.
+- **Executed Flutter evidence:** [Flutter M2 Single Player CI #38848030915](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915) **SUCCESS** on Flutter sources/test correction commit [`dc571be`](https://github.com/KuroNekoLi/Bridge-Academy/commit/dc571be3050a5a81cc27cdc81a3cabbc312efb8f): `flutter analyze --no-pub` **No issues found**, `flutter test --no-pub --reporter expanded` **86/86 PASS** (prior baseline 80, +6 new A4.4 tests), `flutter build web --release` **PASS**; **real ChromeDriver Demo tabletop and browser secure-checkpoint E2E both PASS**. These Chrome tests still run original Demo UI (not Gateway).
+- **Pure Core evidence:** [Bridge Core CI #38847678253](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38847678253) **SUCCESS** after `PlayerView.fromJson` canonical-layout restoration. [Learning Gate #38848030896](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030896) **SUCCESS**.
+- **True BEN evidence remains separate:** [Gateway full 52-card pinned true BEN #38845244764](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244764) PASS before this Flutter change; it validates server+model, not browser-to-Gateway. Latest real Flutter Chrome BEN regression is independently run; exact latest status must be checked separately.
+- **Non-goal:** A4.4 does not yet certify a live Flutter browser → localhost Gateway → true BEN full game; A4.5 hosted TLS, token refresh, platform storage, load/cost and licensing remain unresolved.
 
 ## Release blockers (not waived)
 
