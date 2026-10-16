@@ -1,9 +1,10 @@
 import 'academy_models.dart';
+import 'academy_advanced_catalog.dart';
 
 /// Original, copyright-clean beginner questions. No active game hand, online
 /// convention claim, external question bank or player data is accessed.
 abstract final class AcademyCatalog {
-  static const List<AcademyLesson> lessons = [
+  static final List<AcademyLesson> lessons = [
     AcademyLesson(
       lessonId: 'b4.cards-and-seats',
       schemaVersion: 1,
@@ -232,6 +233,7 @@ abstract final class AcademyCatalog {
         ),
       ],
     ),
+    ...AcademyAdvancedCatalog.lessons,
   ];
 
   static List<AcademyLesson> validated() {
