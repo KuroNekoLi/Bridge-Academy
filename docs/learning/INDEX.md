@@ -65,7 +65,7 @@
 
 | M2-F35 | A5.3.1 歷史終局 PBN 匯出：雙語確認、52 張原始牌張、完整叫牌、隱私警告（Flutter 97／97 + Web Build + Chrome Demo PASS） | [M2-F35 教學](features/M2_F35_COMPLETED_PBN_EXPORT.md) | [PBN 產生器](../../apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart) · [可操作畫面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_history_panel.dart) · [Flutter 測試](../../apps/bridge_academy_flutter/test/a5_pbn_export_test.dart) · [驗收](../product/A5_3_1_PBN_EXPORT_ACCEPTANCE.md) | DELIVERED |
 
-| M2-F36 | A5.3.2 完整 PBN 十三墩 [Play] 匯出（新增程式與測試，CI 待驗） | [M2-F36 教學](features/M2_F36_PBN_PLAY_EXPORT.md) | [PBN serializer](../../apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart) · [Tests](../../apps/bridge_academy_flutter/test/a5_pbn_export_test.dart) · [驗收](../product/A5_3_2_PBN_PLAY_ACCEPTANCE.md) | DELIVERED |
+| M2-F36 | A5.3.2 完整 PBN 十三墩 [Play] 匯出（Flutter 97/97 + Web CI PASS） | [M2-F36 教學](features/M2_F36_PBN_PLAY_EXPORT.md) | [PBN serializer](../../apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart) · [Tests](../../apps/bridge_academy_flutter/test/a5_pbn_export_test.dart) · [驗收](../product/A5_3_2_PBN_PLAY_ACCEPTANCE.md) | DELIVERED |
 
 ## 新功能加入方式
 1. 直接推送 master 時，仍給每個獨立功能唯一 ID：Mx-Fxx。

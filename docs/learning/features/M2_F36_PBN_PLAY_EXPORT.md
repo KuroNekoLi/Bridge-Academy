@@ -3,7 +3,7 @@
 - Feature ID：M2-F36
 - Milestone：A5.3.2（本機已完成牌局）
 - 類型：玩家可見的 PBN 匯出、資料互通
-- 工程狀態：IMPLEMENTED，CI 待驗
+- 工程狀態：SCOPED ENGINEERING VERIFIED（Flutter 97/97、Web Release、Chrome Demo CI PASS）
 - 學習狀態：DELIVERED（尚未 PRACTICED / MASTERED）
 - 程式：`apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart`
 - 測試：`apps/bridge_academy_flutter/test/a5_pbn_export_test.dart`
@@ -53,7 +53,7 @@ flutter test --no-pub --reporter expanded
 flutter build web --release
 ```
 
-測試覆蓋：Pass Out 不產生 `[Play]`；合約牌局產生十三行，每行依首攻固定座位排列四張；所有 52 張出牌不重複且逐張與 Bridge Core 終局 `completedTricks` 一致；A5.3.1 的未完成／已刪除不能匯出與剪貼簿確認仍保留。**新增提交尚未完成 CI：NOT RUN**。既有 A5.3.1 [Flutter 97/97](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38863038248) 屬於上一版，不能冒稱這一版證據。
+測試覆蓋：Pass Out 不產生 `[Play]`；合約牌局產生十三行，每行依首攻固定座位排列四張；所有 52 張出牌不重複且逐張與 Bridge Core 終局 `completedTricks` 一致；A5.3.1 的未完成／已刪除不能匯出與剪貼簿確認仍保留。[Flutter CI #38866531814](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38866531814) 已執行：**flutter analyze 沒有問題、97/97 Unit／Widget PASS、Web Release Build 和 Chrome Demo E2E PASS**。第一次新測試的換行字串寫錯，於 `71364d0` 修正後通過；production serializer 和既有隱私測試均未放寬。真實第三方 PBN 匯入工具相容性仍未驗證。既有 A5.3.1 [Flutter 97/97](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38863038248) 屬於上一版，不能冒稱這一版證據。
 
 ## 練習與自我檢驗
 

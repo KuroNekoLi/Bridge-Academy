@@ -1,6 +1,6 @@
 # A5.3.2 — Full completed PBN [Play] section
 
-**Date:** 2026-10-16. **Status:** IMPLEMENTED / CI PENDING.
+**Date:** 2026-10-16. **Status:** SCOPED ENGINEERING VERIFIED — Flutter 97/97 + Web Release + Chrome Demo
 
 ## Player-facing change
 
@@ -19,3 +19,7 @@ Pass Out emits no `[Play]`, preserving four actual Pass calls. The existing Deal
 Source: `apps/bridge_academy_flutter/lib/src/completed_pbn_export.dart`, test `apps/bridge_academy_flutter/test/a5_pbn_export_test.dart`. PBN standard: https://sackab.fi/data/PBN/PBN21a_1.pdf §3.6.
 
 **NOT in scope:** remote Gateway histories, PBN import or cross-device synchronization. One local completed-board PBN export remains a user-authorized privacy-sensitive operation, not a general release certification.
+
+## Executed CI and limitations
+
+[Flutter CI #38866531814](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38866531814) **SUCCESS** on code commit [`71364d0`](https://github.com/KuroNekoLi/Bridge-Academy/commit/71364d0c89efa7f716f9cc21e955d63e50a62566): `flutter analyze --no-pub` no issues, **97/97 Flutter tests PASS**, Web Release Build and Chrome Demo/secure checkpoint E2E PASS. [Feature Learning Gate #38866531783](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38866531783) PASS. The first run [#38866437516](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38866437516) failed a NEWLINE test separator (not the production serializer); the test assertion was corrected with no relaxed verification. Real external PBN importer interoperability, Gateway remote archive and device QA are still **NOT VERIFIED**.
