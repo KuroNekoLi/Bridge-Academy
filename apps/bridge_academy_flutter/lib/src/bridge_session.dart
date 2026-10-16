@@ -141,7 +141,7 @@ class BridgeSession extends ChangeNotifier {
     }
     _historyDeleting = true;
     try {
-      await _historyStore!.delete(id);
+      await _historyStore.delete(id);
       _historyBoards = _historyBoards.where((item) => item.id != id).toList();
       _historySummaries =
           _historySummaries.where((item) => item.id != id).toList();

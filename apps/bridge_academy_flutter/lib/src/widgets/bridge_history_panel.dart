@@ -178,21 +178,19 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
               ),
             for (final record in visible)
               ListTile(
-                key: Key('history_item_' + record.id),
+                key: Key('history_item_${record.id}'),
                 selected: widget.selectedId == record.id,
                 leading: const Icon(Icons.history),
-                title: Text(copy.boardNumber(record.boardNumber) + ' · ' +
-                    (record.contract == 'PASS OUT'
-                        ? copy.t('historyPassOut') : record.contract)),
+                title: Text('${copy.boardNumber(record.boardNumber)} · '
+                    '${record.contract == 'PASS OUT' ? copy.t('historyPassOut') : record.contract}'),
                 subtitle: Text(
-                  copy.score(record.score) + ' · ' +
-                  copy.seat(record.humanSeat.letter) + ' · ' +
-                  record.savedAt.toLocal().toString().substring(0, 16) +
-                  (record.isPractice
-                      ? ' · ' + copy.t('historyPractice') : ''),
+                  '${copy.score(record.score)} · '
+                  '${copy.seat(record.humanSeat.letter)} · '
+                  '${record.savedAt.toLocal().toString().substring(0, 16)}'
+                  '${record.isPractice ? ' · ${copy.t('historyPractice')}' : ''}',
                 ),
                 trailing: IconButton(
-                  key: Key('history_delete_' + record.id),
+                  key: Key('history_delete_${record.id}'),
                   tooltip: copy.t('historyDeleteTitle'),
                   icon: const Icon(Icons.delete_outline),
                   onPressed: widget.canDelete

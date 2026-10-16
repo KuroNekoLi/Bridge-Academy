@@ -100,7 +100,7 @@ void main() {
       (tester) async {
     var records = List<HistorySummary>.generate(7, (i) =>
         HistorySummary(
-          id: 'history_test_' + i.toString(),
+          id: 'history_test_$i',
           savedAt: DateTime.utc(2026, 10, 16),
           boardNumber: i + 1,
           humanSeat: Seat.north,
