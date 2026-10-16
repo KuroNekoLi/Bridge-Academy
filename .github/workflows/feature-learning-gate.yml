@@ -2,7 +2,7 @@ name: Feature Learning Gate
 
 on:
   push:
-    branches: [master]
+    branches: [master, 'feature/b6-daily-practice']
   pull_request:
     types: [opened, synchronize, reopened]
 
