@@ -1,7 +1,7 @@
 name: Flutter M2 Single Player
 on:
   push:
-    branches: [master, integration/c1-5-c3-2-b4-2-a4-5-reviewed-20261017]
+    branches: [master]
     paths:
       - "apps/bridge_academy_flutter/**"
       - "packages/bridge_core/**"

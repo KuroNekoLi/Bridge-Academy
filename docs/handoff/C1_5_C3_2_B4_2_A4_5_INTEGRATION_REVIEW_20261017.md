@@ -3,7 +3,7 @@
 **Date:** 2026-10-17  
 **Base:** master 6b93bfcfb7f852c1521a29f164694ae4f6779921  
 **Integration branch:** `integration/c1-5-c3-2-b4-2-a4-5-reviewed-20261017`  
-**Status:** PRE-MERGE REVIEW; waiting for merged-tree CI before master promotion.
+**Status:** APPROVED FOR SCOPED MASTER MERGE, NOT release/production approval.
 
 ## Reviewed sources and boundaries
 - C1.5 `feature/c1-5-dds-review-integration` @ `c5c24d5e7fd954aa45c6fde1c074fd3b13b905ea`: terminal-only trusted transcript -> typed 5×4 DDS table; Flutter/Web mock adapter tests passed; **native DDS worker was not executed in this feature's CI**. Browser unsupported, no real per-move SolveBoard, not a live cheat surface. Source CI Flutter 161/161 and Learning Gate PASS.
@@ -29,7 +29,14 @@
 The first combined Flutter run [#38985456049](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985456049) **FAILED 4 widget tests** while the independent Chrome Demo job passed. Review traced the failures to a missing B4.2 course-list bilingual welcome copy and to C3/C3.2 widget tests assuming lazily-created controls were already mounted after B4.2 expanded to six lessons. Restored B4.2's zh-TW/en welcome; used bounded scrollUntilVisible for the two genuinely offscreen controls. A second full combined test is mandatory. The next branch push also corrects the Feature Learning Gate failure on that code-only fix: the lesson and index now document the integration-regression knowledge and the six-lesson catalog.
 
 ## CI evidence
-PENDING merged-tree CI. Update with exact run URLs/SHA after tests complete.
+
+- [Flutter CI #38985726254](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985726254) @ `a5d5f361e3bf5f8f4e8bf116ff3cd625adea54ee`: `flutter analyze` **No issues**, **174/174 Flutter PASS**, `flutter build web --release` **PASS**, ChromeDriver Demo browser E2E **PASS**.
+- [Learning Gate #38985807858](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985807858) @ `964294c6fca99d83a23f98d8ab7ada14c3a85e5f`: **PASS**. The earlier code-only fix at `a5d5f36` briefly failed the learning gate, resolved by updating both lessons and the index. The verified source tree is unchanged by the subsequent documentation-only commit.
+- [A4.5 staging static preflight #38985456108](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985456108) @ `2ebbe2da7fbb759857dc039911521d00e40f6013`: **PASS**, includes staging auth guard source, no Docker build or hosted deployment.
+- [True BEN Chrome E2E #38985456098](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985456098) @ `2ebbe2da7fbb759857dc039911521d00e40f6013`: **PASS**. The newer [true BEN CI #38985726283](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985726283) on the Flutter-tested commit was still **IN PROGRESS at review finalization**. Code changes after `2ebbe2da` only repaired Academy copy/test scrolling; no Gateway/Bridge Core/BEN domain changes.
+- Initial combined Flutter #38985456049 failed four integration-specific UI tests; this is recorded rather than hidden. All four succeeded within final 174/174 and no new player feature was dropped.
+- Workflow branch filters are restored by the final integration commit; master push triggers normal master CI again. Full native DDS3 runtime E2E on C1.5 and actual HTTPS staging deployment have **NOT RUN** and are separate release gates.
+
 
 ## Rollback
 Revert by merge boundaries after reviewing the stored C3 schema (no migration introduced), never force-push master. Feature branch source histories remain retained.
