@@ -4,6 +4,7 @@ import 'academy_catalog.dart';
 import 'academy_models.dart';
 import '../learning_progress/learner_progress.dart';
 import '../learning_progress/learner_store.dart';
+import '../learning_progress/learning_recommendations.dart';
 import 'package:flutter/foundation.dart';
 
 /// B4 reads authored questions only, not live BridgeSession/Deal/BEN state.
@@ -186,9 +187,10 @@ class _AcademyPageState extends State<AcademyPage> {
     );
   }
 
-  void _open(AcademyLesson lesson) => setState(() {
+  void _open(AcademyLesson lesson, {String? questionId}) => setState(() {
         _lesson = lesson;
-        _index = 0;
+        final i = lesson.questions.indexWhere((q) => q.questionId == questionId);
+        _index = i < 0 ? 0 : i;
         _selected = null;
         _feedback = null;
       });
@@ -275,6 +277,41 @@ class _AcademyPageState extends State<AcademyPage> {
     );
   }
 
+  Widget _recommendations(List<AcademyLesson> lessons) {
+    final ranked = LearningRecommendationEngine.recommend(
+      lessons: lessons, progress: _history,
+      nowUtc: DateTime.now().toUtc(), hasConsent: _enabled,
+    );
+    return Column(
+      key: const Key('c3_2_recommendations'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 12),
+        Text(_t('recTitle'), style: Theme.of(context).textTheme.titleLarge),
+        Text(_t(_savingEnabled ? 'recDisclosure' : 'recPaused')),
+        for (final item in ranked)
+          Card(
+            child: ListTile(
+              key: Key('c3_2_recommend_${item.lesson.lessonId}'),
+              title: Text(item.lesson.title.localized(_english)),
+              subtitle: Text(
+                '${_t(switch (item.reason) {
+                  RecommendationReason.lowAccuracy => 'recLow',
+                  RecommendationReason.recentMistake => 'recRecent',
+                  RecommendationReason.notStarted => 'recNew',
+                  RecommendationReason.unfinished => 'recIncomplete',
+                  RecommendationReason.review => 'recReview',
+                })} · ${_t('recSample')}: ${item.correct}/${item.attempts}'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: _persisting ? null : () =>
+                _open(item.lesson, questionId: item.questionId),
+            ),
+          ),
+        const Divider(),
+      ],
+    );
+  }
+
   Widget _catalog() {
     return ListView(
       key: const Key('academy_lesson_list'),
@@ -303,6 +340,8 @@ class _AcademyPageState extends State<AcademyPage> {
             onPressed: () => setState(() => _dashboard = true),
             icon: const Icon(Icons.bar_chart),
             label: Text(_t('progressTitle'))),
+        if (_enabled && !_storageError && !_loading)
+          _recommendations(AcademyCatalog.validated()),
         for (final lesson in AcademyCatalog.validated())
           Card(
             key: Key('academy_lesson_${lesson.lessonId}'),
@@ -506,6 +545,19 @@ class _AcademyPageState extends State<AcademyPage> {
     'accuracy': AcademyText('答題正確率', 'Accuracy'),
     'noData': AcademyText('尚無資料', 'No data'),
     'recentAttempts': AcademyText('最近練習', 'Recent attempts'),
+    'recTitle': AcademyText('推薦下一堂練習', 'Recommended next lessons'),
+    'recDisclosure': AcademyText(
+      '依同意保留的本機答題紀錄排序；規則式推薦，不代表專業 AI 判定。',
+      'Ranked from your opted-in local history; rules, not an AI diagnosis.'),
+    'recPaused': AcademyText(
+      '已暫停保存；僅用先前保留的答題紀錄，不記錄新作答。',
+      'Saving is paused. Only previously kept local attempts are used.'),
+    'recLow': AcademyText('至少三次作答且正確率偏低', 'Low accuracy across at least three attempts'),
+    'recRecent': AcademyText('最近 14 天仍有未修正的錯題', 'Uncorrected wrong answer in the past 14 days'),
+    'recNew': AcademyText('尚未開始的課程', 'Not started yet'),
+    'recIncomplete': AcademyText('繼續未完成的課程', 'Continue an incomplete lesson'),
+    'recReview': AcademyText('已完成，適合複習', 'Completed, available to review'),
+    'recSample': AcademyText('答對／總作答', 'Correct / attempts'),
     'pauseHistory': AcademyText('暫停保存（保留現有紀錄）', 'Pause saving (keep history)'),
     'resumeHistory': AcademyText('繼續保存答題紀錄', 'Resume saving attempts'),
     'deleteHistory': AcademyText('清除所有學習紀錄', 'Delete all learning history'),
