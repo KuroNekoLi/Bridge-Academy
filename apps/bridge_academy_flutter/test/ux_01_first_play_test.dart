@@ -85,8 +85,14 @@ void main() {
     expect(find.text('How would you like to practice?'), findsOneWidget);
     await tapKey(tester, 'ux_home_learn');
     expect(find.byType(AcademyPage), findsOneWidget);
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+    // Navigation is useful only if a real lesson can be answered.
+    await tapKey(tester, 'academy_open_b4.cards-and-seats');
+    await tapKey(tester, 'academy_option_b');
+    await tapKey(tester, 'academy_submit');
+    expect(find.byKey(const Key('academy_correct')), findsOneWidget);
+    await tapKey(tester, 'academy_all_lessons');
+    await tapKey(tester, 'academy_back');
+    expect(find.byType(AcademyPage), findsNothing);
     await tapKey(tester, 'ux_home_custom');
     expect(find.byKey(const Key('new_game')), findsOneWidget);
     await tapKey(tester, 'ux_app_home');

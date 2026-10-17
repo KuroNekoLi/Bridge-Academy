@@ -35,7 +35,7 @@ flutter analyze
 flutter test
 flutter build web --release
 ```
-目前 NOT RUN locally。另有瀏覽器 `browser_ux_01_first_play_test.dart` 可追蹤 Home → Demo → Pass，須等待真正 Chrome 結果才能改 VERIFIED。人工研究狀態：USER_STUDY_NOT_RUN。Android／iOS 裝置測試仍暫停。
+第一輪 CI 靜態分析與 WebCrypto 瀏覽器測試曾失敗，已依實際日誌修正；完整回歸待確認（NOT RUN locally）。新版教學驗收還加上 Home → 學院 → 實際答對第一題 → 回首頁。另有瀏覽器 `browser_ux_01_first_play_test.dart` 可追蹤 Home → Demo → Pass，須等待真正 Chrome 結果才能改 VERIFIED。人工研究狀態：USER_STUDY_NOT_RUN。Android／iOS 裝置測試仍暫停。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 如果玩家在 BEN 輪到出牌時點了「首頁」，為什麼返回牌桌時不能重新呼叫 `newGame()`？這跟 Android 的 Activity/Compose 狀態管理有什麼關係？
