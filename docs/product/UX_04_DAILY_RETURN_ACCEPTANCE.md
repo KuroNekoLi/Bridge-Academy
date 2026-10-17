@@ -14,6 +14,9 @@
 ## 資料／隱私
 只使用 B6 的加密持久化結果及 PlayerView 支援的公開 Session flags；不載入其它座位手牌、DDS、PBN 或 C3 opt-in 之外的學習資料。無雲端服務、排名、MP/IMP 比較、streak、推播與遙測。每日非競賽。Android/iOS 真機及模擬器 QA 保持停用。
 
+## 第一輪回歸紀錄
+[Flutter CI #38990256215](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990256215) Flutter Analyze 通過、Chrome Demo E2E 通過，但全量 Widget 測試 177 PASS／2 FAIL（B1/B6 同名「已完成副數」造成 Finder 歧義）。已以 UX-04 獨立「今日挑戰進度」修正，不變更 B1/B6。須等本次修正後新 CI PASS 才可宣稱驗收完成。
+
 ## 驗收與測試
 `cd apps/bridge_academy_flutter && flutter analyze && flutter test && flutter build web --release`。
 `test/ux_04_daily_return_test.dart` 涵蓋：UTC 換日、0/4、1/4、4/4、舊日未完成、活躍非每日牌局、損毀每日帳本、恢復確認、雙語與真正 Widget 點擊進下一副。**CI PENDING**（未宣稱已通過）。

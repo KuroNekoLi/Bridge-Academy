@@ -45,7 +45,7 @@ class UxDailyReturnPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text('${copy.t('dailyCompleted')}: $progress / 4',
+            Text('${copy.t('uxDailyProgressLabel')}: $progress / 4',
                 key: const Key('ux_daily_completed')),
             Text(copy.t(summary.stateCopyKey),
                 key: const Key('ux_daily_state')),

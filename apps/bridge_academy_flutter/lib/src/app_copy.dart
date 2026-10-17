@@ -225,6 +225,9 @@ class AppCopy {
       '正在處理牌局，稍後便可繼續。',
       'The board is processing; please wait.',
     ],
+    'uxDailyProgressLabel': [
+      '今日挑戰進度', 'Today’s challenge progress',
+    ],
     'uxDailyBegin': ['開始今日四副牌', 'Start today’s four deals'],
     'uxDailyRestore': ['接續今天的練習', 'Resume today’s practice'],
     'uxDailyContinue': ['回到進行中的牌桌', 'Continue current board'],

@@ -27,6 +27,9 @@ if (recoveryNeeded) {
 ## 為什麼這樣設計
 類似 Android ViewModel 將資料層 truth 映射成 Compose UI State。UTC 是每日牌局 ID 的一部分，台北本地午夜不一定等於 UTC 換日。舊日期未完成、其他未完成牌局或讀寫失敗都不默默覆蓋紀錄。近期只展示最多三個本機已有日期及完成副數，不推測勝率、連勝、MP、IMP 或玩家弱點。
 
+## 整合測試的設計教訓
+新增 UX-04 摘要不能與 B1／B6 原有的「已完成副數」Text 完全重複，否則原本的 Widget finder `find.text` 會找到兩個元件，造成錯誤回歸；UX-04 改用「今日挑戰進度」獨立文案，保留 B1／B6 正式文字與既有測試契約。另因 Dart 的 collection if 新 lint，建議在 `Map` 完成建立後才依 `active != null` 明確寫入，保持資料投影一致。
+
 ## 驗證與實際證據
 ```bash
 cd apps/bridge_academy_flutter
