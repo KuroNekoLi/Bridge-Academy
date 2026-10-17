@@ -141,7 +141,7 @@ class UxPostgameResultPanel extends StatelessWidget {
                   key: const Key('ux02_tricks')),
               Text(
                 '${copy.t(difference! >= 0 ? 'ux02_made' : 'ux02_down')}: '
-                '${difference >= 0 ? '+' : ''}$difference',
+                '${difference! >= 0 ? '+' : ''}$difference',
                 key: const Key('ux02_outcome'),
               ),
             ],
