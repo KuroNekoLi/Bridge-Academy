@@ -29,6 +29,10 @@ void main() {
       key: ValueKey('a28_web_fresh_application'),
     ));
     await tester.pumpAndSettle();
+    // UX-01 now opens the public Home. The encrypted checkpoint is visible
+    // only when the player explicitly enters the table, without a new deal.
+    expect(find.byKey(const Key('ux_home_screen')), findsOneWidget);
+    await tapBrowser(tester, 'ux_home_custom');
     expect(find.byKey(const Key('web_checkpoint_caution')), findsOneWidget);
     await tapBrowser(tester, 'new_game');
     expect(find.byKey(const Key('error_message')), findsNothing,
@@ -62,6 +66,8 @@ void main() {
     await tester.runAsync(() =>
         Future<void>.delayed(const Duration(milliseconds: 500)));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('ux_home_screen')), findsOneWidget);
+    await tapBrowser(tester, 'ux_home_custom');
     expect(find.byKey(const Key('restored_game')), findsOneWidget);
     expect(find.byKey(const Key('final_result')), findsOneWidget);
     expect(find.byKey(const Key('board_number')), findsOneWidget);

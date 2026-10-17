@@ -16,7 +16,7 @@ Commands: `cd apps/bridge_academy_flutter && flutter analyze && flutter test && 
 Browser: `flutter drive --driver=test_driver/integration_test.dart --target=integration_test/browser_ux_01_first_play_test.dart -d web-server --browser-name=chrome`. 
 Test cases: guest quick Demo -> Core action, resume without replacement, explicit abandonment confirmation, bilingual Academy navigation, 320/375px screens, injected Gateway no fallback.
 
-**Execution:** NOT RUN locally (this workspace does not include Dart/Flutter). CI run URL and verdict pending. Device emulator and Android/iOS physical E2E remain on explicit owner hold.
+**Execution:** Initial CI [#38990276470](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990276470) failed Flutter analysis (corrected) and previous default table-first WebCrypto browser assumption (test adapted to Home → Table). Full verification remains pending. NOT RUN locally (this workspace does not include Dart/Flutter). CI run URL and verdict pending. Device emulator and Android/iOS physical E2E remain on explicit owner hold.
 
 ## User study
 **USER_STUDY_NOT_RUN.** Recruiting 5 beginners + 5 experienced players, observing the time to first legal action, successful return from Learning and perceived Demo/BEN distinction remain pending. No retention, task-success, or satisfaction numbers are invented.
