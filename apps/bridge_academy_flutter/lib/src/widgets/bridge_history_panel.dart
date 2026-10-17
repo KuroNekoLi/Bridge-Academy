@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:bridge_core/bridge_core.dart' hide Card;
+import 'package:bridge_dds_adapter/bridge_dds_adapter.dart';
 import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
@@ -24,6 +25,7 @@ class BridgeHistoryPanel extends StatefulWidget {
     required this.onDelete,
     this.onExportPbn,
     this.onImportPbn,
+    this.onAnalyzeDds,
     required this.errorCode,
     required this.onRetrySave,
     this.canDelete = true,
@@ -41,6 +43,7 @@ class BridgeHistoryPanel extends StatefulWidget {
   final Future<bool> Function(String)? onExportPbn;
   /// Pasted PBN is handled exclusively within local encrypted history.
   final Future<bool> Function(String)? onImportPbn;
+  final Future<DoubleDummyTable> Function(String id)? onAnalyzeDds;
   final String? errorCode;
   final VoidCallback? onRetrySave;
   final bool canDelete;
@@ -407,6 +410,8 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
                 copy: copy,
                 onSelectIndex: widget.onReplayStep,
                 reviewId: widget.selectedId,
+                onAnalyzeDds: widget.onAnalyzeDds == null || widget.selectedId == null
+                    ? null : () => widget.onAnalyzeDds!(widget.selectedId!),
               ),
             ],
           ],

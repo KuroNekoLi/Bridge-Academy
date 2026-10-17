@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
 import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_dds_adapter/bridge_dds_adapter.dart';
 import 'package:flutter/foundation.dart';
 
 import 'session_persistence.dart';
@@ -29,6 +30,7 @@ class BridgeSession extends ChangeNotifier {
     CompletedHistoryStore? historyStore,
     DailyPracticeStore? dailyStore,
     DateTime Function()? utcNow,
+    DoubleDummyAnalyzer? ddsAnalyzer,
   })  : _fixedDeal = fixedDeal ?? Deal.fromPbn(
           'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
           'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8',
@@ -38,7 +40,8 @@ class BridgeSession extends ChangeNotifier {
         _archiveStore = archiveStore,
         _historyStore = historyStore,
         _dailyStore = dailyStore,
-        _utcNow = utcNow ?? DateTime.now;
+        _utcNow = utcNow ?? DateTime.now,
+        _ddsAnalyzer = ddsAnalyzer ?? const UnsupportedDoubleDummyAnalyzer();
 
   final Deal _fixedDeal;
   final BotPolicy Function(OpponentMode mode)? _botFactory;
@@ -47,6 +50,7 @@ class BridgeSession extends ChangeNotifier {
   final CompletedHistoryStore? _historyStore;
   final DailyPracticeStore? _dailyStore;
   final DateTime Function() _utcNow;
+  final DoubleDummyAnalyzer _ddsAnalyzer;
   DailyPracticeProgress? _dailyPractice;
   List<DailyPracticeProgress> _dailyRecords = [];
   bool _dailyLoaded = false;
@@ -224,6 +228,36 @@ class BridgeSession extends ChangeNotifier {
       _historyError = 'errorHistoryLoad';
     }
     notifyListeners();
+  }
+
+  /// Privileged terminal-only DDS operation, never returns private cards.
+  Future<DoubleDummyTable> analyzeHistoryDds(String id) async {
+    await loadHistory();
+    final matches = _historyBoards.where((item) => item.id == id);
+    if (matches.length != 1) {
+      throw const DoubleDummyAnalysisException(
+          DoubleDummyFailureCode.unavailable);
+    }
+    try {
+      final saved = SavedBoardCodec.decode(matches.single.archive);
+      return await _ddsAnalyzer.analyze(
+          TrustedCompletedBoard.fromTrustedTranscript(saved.transcript));
+    } on DoubleDummyAnalysisException {
+      rethrow;
+    } catch (_) {
+      throw const DoubleDummyAnalysisException(
+          DoubleDummyFailureCode.invalidTranscript);
+    }
+  }
+
+  Future<DoubleDummyTable> analyzeCompletedDds() async {
+    final coordinator = _coordinator;
+    if (coordinator == null || !coordinator.finished) {
+      throw const DoubleDummyAnalysisException(
+          DoubleDummyFailureCode.notFinished);
+    }
+    return _ddsAnalyzer.analyze(TrustedCompletedBoard.fromTrustedTranscript(
+        coordinator.snapshotForTrustedStorage()));
   }
 
   CompletedReplay? historyReplay(String id) {
