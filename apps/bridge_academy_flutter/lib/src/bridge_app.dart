@@ -671,6 +671,7 @@ class _BridgeTableState extends State<BridgeTable> {
             const SizedBox(height: 8),
             UxDailyReturnPanel(
               copy: copy,
+              showNextAction: !session.finished,
               summary: DailyReturnSummary.from(
                 now: DateTime.parse('${session.todaysDaily.utcDay}T00:00:00Z'),
                 active: session.dailyPractice,

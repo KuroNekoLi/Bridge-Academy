@@ -43,3 +43,6 @@ flutter build web --release
 **思考題：** 玩家台北時間 10 月 18 日 01:00 開啟遊戲，為何每日挑戰可能仍顯示 10 月 17 日 UTC？
 **5–15 分鐘練習（可選）：** 增加「昨天完成、今天沒有紀錄」的測試，證明不會顯示假 streak。
 **完成標準：** 能解釋 Domain 進度、公開 DTO 和 Widget 如何保護隱私及避免錯誤重發。
+
+## UX-02 與 UX-04 交互整合：單一下一副按鈕
+在本分支中，完成一副 B6 每日練習時，UX-02 結果卡已經提供受 Core Session 控制的「下一副」主要操作；若 UX-04 也顯示可點擊的下一副，就會有兩個入口，使用者可能不知道要選哪一個。整合後 `UxDailyReturnPanel.showNextAction` 預設為 `true`（保持單獨元件可重用與歷史測試意圖），但 `BridgeTable` 根據 `!session.finished` 暫時隱藏 UX-04 的重複按鈕，終局由 UX-02 的 `next_daily_board` 負責。測試要檢查只有一個 CTA，並以 bounded `scrollUntilVisible` 存取長列表中尚未掛載的 Widget。這是 UI 單一操作責任（single action owner）的案例，且不修改 B6 每日挑戰儲存模型。

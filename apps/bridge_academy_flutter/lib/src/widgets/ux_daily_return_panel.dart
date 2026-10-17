@@ -11,12 +11,15 @@ class UxDailyReturnPanel extends StatelessWidget {
     required this.onStart,
     required this.onContinue,
     required this.onNext,
+    this.showNextAction = true,
     required this.onRestart,
     required this.onPracticeBidding,
   });
 
   final AppCopy copy;
   final DailyReturnSummary summary;
+  /// UX-02 owns terminal Next; hide this button to prevent duplicate actions.
+  final bool showNextAction;
   final VoidCallback onStart, onContinue, onNext, onRestart, onPracticeBidding;
 
   @override
@@ -74,7 +77,7 @@ class UxDailyReturnPanel extends StatelessWidget {
                     icon: const Icon(Icons.play_circle),
                     label: Text(copy.t('uxDailyContinue')),
                   ),
-                if (summary.canNext)
+                if (summary.canNext && showNextAction)
                   FilledButton.icon(
                     key: const Key('ux_daily_next'),
                     onPressed: onNext,

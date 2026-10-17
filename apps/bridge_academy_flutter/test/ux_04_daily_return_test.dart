@@ -79,6 +79,11 @@ class BrokenDailyStore implements DailyPracticeStore {
 
 Future<void> tapVisible(WidgetTester tester, String id) async {
   final target = find.byKey(Key(id));
+  // The result card can be below the lazy ListView cache.
+  if (target.evaluate().isEmpty) {
+    await tester.scrollUntilVisible(target, 170,
+        scrollable: find.byType(Scrollable).last, maxScrolls: 35);
+  }
   await tester.ensureVisible(target);
   await tester.pumpAndSettle();
   await tester.tap(target);
@@ -157,7 +162,9 @@ void main() {
     expect(session.dailyPractice!.completed, 0);
     await tapVisible(tester, 'pass');
     expect(session.dailyPractice!.completed, 1);
-    await tapVisible(tester, 'ux_daily_next');
+    expect(find.byKey(const Key('ux_daily_next')), findsNothing);
+    expect(find.byKey(const Key('next_daily_board')), findsOneWidget);
+    await tapVisible(tester, 'next_daily_board');
     expect(session.board.number, session.dailyPractice!.manifest.startBoard + 1);
     expect(session.view!.phase, Phase.auction);
     await tapVisible(tester, 'toggle_locale');

@@ -26,7 +26,7 @@
 
 ## Review focus and risk boundaries
 
-- Make sure result CTA and UX-04 daily Next do not present duplicate/conflicting controls in a finished board.
+- **Resolved:** while a B6 board has finished, UX-02's terminal result is sole owner of Next; the UX-04 summary still shows progress but hides its secondary next action. A regression test checks exactly one Next and invokes the Core session's existing `nextDailyBoard`. Keep this behavior when adjusting homepage design.
 - Navigation from history→academy→same timeline index must never create or mutate a game; opt-out learning attempts remain unrecorded.
 - Home's Demo and genuine BEN must not be silently conflated; gateway server session cannot be locally restored as BridgeSession.
 - Core owns scoring, pass-out and legal transitions. Finished PBN/hidden hands cannot be leaked via new UI or analytics.
