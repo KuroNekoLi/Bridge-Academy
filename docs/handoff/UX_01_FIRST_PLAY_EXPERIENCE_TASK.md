@@ -1,6 +1,6 @@
 # Bridge Academy — UX-01: 首頁、模式導航與第一次練習
 
-**狀態**：TASK READY／Implementation NOT STARTED  
+**狀態**：IMPLEMENTED／CI PENDING（實際玩家研究尚未執行）  
 **分支**：`feature/ux-01-first-play-experience`  
 **源自**：`master@41d0ac604554dc3581cbe59b796b172e81270ee9`  
 **暫定教學 ID**：`M2-F53`（整合時再查重）

@@ -2,7 +2,7 @@ name: Feature Learning Gate
 
 on:
   push:
-    branches: [master]
+    branches: [master, 'feature/ux-01-first-play-experience']
   pull_request:
     types: [opened, synchronize, reopened]
 

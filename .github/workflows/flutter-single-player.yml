@@ -1,7 +1,7 @@
 name: Flutter M2 Single Player
 on:
   push:
-    branches: [master]
+    branches: [master, 'feature/ux-01-first-play-experience']
     paths:
       - "apps/bridge_academy_flutter/**"
       - "packages/bridge_core/**"
@@ -82,4 +82,8 @@ jobs:
           flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/browser_secure_checkpoint_test.dart \
+            -d web-server --browser-name=chrome
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/browser_ux_01_first_play_test.dart \
             -d web-server --browser-name=chrome
