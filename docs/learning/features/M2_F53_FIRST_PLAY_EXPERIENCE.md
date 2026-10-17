@@ -3,10 +3,10 @@
 - Feature ID：M2-F53
 - Milestone：M2／UX-01
 - 類型：Flutter UI／導航與會話生命週期
-- 工程狀態：IMPLEMENTED（CI 待驗證）
+- 工程狀態：SCOPED VERIFIED（Flutter + Web，Chrome E2E 待確認）
 - 學習狀態：DELIVERED（未要求使用者完成學習練習）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/experience/first_play_home.dart`、`bridge_app.dart`、`bridge_session.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/ux_01_first_play_test.dart`、`integration_test/browser_ux_01_first_play_test.dart`；NOT RUN locally
+- 驗收與測試：`apps/bridge_academy_flutter/test/ux_01_first_play_test.dart`、`integration_test/browser_ux_01_first_play_test.dart`；[181/181 Flutter + Web PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990644555)，Chrome 執行中
 
 ## 功能目的與實際情境
 玩家想進入 Bridge Academy 練第一副牌，不應先理解不同 Bot 的網路與模型設定。UX-01 將首頁顯示為四個實際可用入口，點「快速開始」由原有 `BridgeSession.newGame` 建立 Demo 牌局，再交由原有 Bridge Core 驗證合法叫牌。再次返回首頁時，只要牌局未完成，就能返回同一副，而不是偷偷重洗牌。
@@ -35,7 +35,7 @@ flutter analyze
 flutter test
 flutter build web --release
 ```
-第一輪 CI 靜態分析與 WebCrypto 瀏覽器測試曾失敗，已依實際日誌修正；完整回歸待確認（NOT RUN locally）。新版教學驗收還加上 Home → 學院 → 實際答對第一題 → 回首頁。另有瀏覽器 `browser_ux_01_first_play_test.dart` 可追蹤 Home → Demo → Pass，須等待真正 Chrome 結果才能改 VERIFIED。人工研究狀態：USER_STUDY_NOT_RUN。Android／iOS 裝置測試仍暫停。
+第一輪 CI 靜態分析與 WebCrypto 瀏覽器測試曾失敗，已依實際日誌修正；完整回歸待確認（NOT RUN locally）。新版教學驗收還加上 Home → 學院 → 實際答對第一題 → 回首頁。另有瀏覽器 `browser_ux_01_first_play_test.dart` 可追蹤 Home → Demo → Pass，Chrome 尚未完成時不可宣稱 E2E PASS。人工研究狀態：USER_STUDY_NOT_RUN。Android／iOS 裝置測試仍暫停。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 如果玩家在 BEN 輪到出牌時點了「首頁」，為什麼返回牌桌時不能重新呼叫 `newGame()`？這跟 Android 的 Activity/Compose 狀態管理有什麼關係？
