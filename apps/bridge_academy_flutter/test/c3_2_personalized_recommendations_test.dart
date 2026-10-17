@@ -157,7 +157,12 @@ void main() {
     await tester.tap(progress);
     await tester.pumpAndSettle();
     final delete = find.byKey(const Key('c3_delete'));
+    if (delete.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(delete, 170,
+          scrollable: find.byType(Scrollable).last, maxScrolls: 35);
+    }
     await tester.ensureVisible(delete);
+    await tester.pumpAndSettle();
     await tester.tap(delete);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete all learning history').last);

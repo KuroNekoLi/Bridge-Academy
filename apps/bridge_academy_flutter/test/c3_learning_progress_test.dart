@@ -102,7 +102,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(await store.read(), isNotNull);
     final open = find.byKey(Key('academy_open_${sample.lessonId}'));
+    // Six catalog lessons plus C3.2 recommendations are lazily built.
+    if (open.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(open, 170,
+          scrollable: find.byType(Scrollable).last, maxScrolls: 35);
+    }
     await tester.ensureVisible(open);
+    await tester.pumpAndSettle();
     await tester.tap(open);
     await tester.pumpAndSettle();
     final option = find.byKey(Key('academy_option_${question.correctOptionId}'));
