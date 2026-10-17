@@ -8,6 +8,7 @@ import '../app_copy.dart';
 import '../completed_history_store.dart';
 import '../history_statistics.dart';
 import 'bridge_replay_panel.dart';
+import '../experience/review_learning/review_learning_map.dart';
 
 enum HistoryFilter { all, contracts, passOut, practice }
 
@@ -26,6 +27,7 @@ class BridgeHistoryPanel extends StatefulWidget {
     this.onExportPbn,
     this.onImportPbn,
     this.onAnalyzeDds,
+    this.onPracticeConcept,
     required this.errorCode,
     required this.onRetrySave,
     this.canDelete = true,
@@ -44,6 +46,7 @@ class BridgeHistoryPanel extends StatefulWidget {
   /// Pasted PBN is handled exclusively within local encrypted history.
   final Future<bool> Function(String)? onImportPbn;
   final Future<DoubleDummyTable> Function(String id)? onAnalyzeDds;
+  final void Function(String historyId, ReviewLearningTarget)? onPracticeConcept;
   final String? errorCode;
   final VoidCallback? onRetrySave;
   final bool canDelete;
@@ -409,6 +412,8 @@ class _BridgeHistoryPanelState extends State<BridgeHistoryPanel> {
                     0, widget.selectedReplay!.lastIndex),
                 copy: copy,
                 onSelectIndex: widget.onReplayStep,
+                onPracticeConcept: widget.onPracticeConcept == null || widget.selectedId == null
+                    ? null : (target) => widget.onPracticeConcept!(widget.selectedId!, target),
                 reviewId: widget.selectedId,
                 onAnalyzeDds: widget.onAnalyzeDds == null || widget.selectedId == null
                     ? null : () => widget.onAnalyzeDds!(widget.selectedId!),

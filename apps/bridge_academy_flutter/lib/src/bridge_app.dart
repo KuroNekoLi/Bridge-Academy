@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_copy.dart';
 import 'academy/academy_page.dart';
+import 'experience/review_learning/review_learning_map.dart';
 import 'bridge_session.dart';
 import 'daily_practice_store.dart';
 import 'widgets/daily_practice_panel.dart';
@@ -369,6 +370,31 @@ class _BridgeTableState extends State<BridgeTable> {
   int _historyStep = 0;
   bool _syncedRestore = false;
 
+  /// Navigator preserves this BridgeTable state: opening a learning route
+  /// never changes the original review frame or starts a fresh game.
+  Future<void> _practiceFromReview(ReviewLearningTarget target,
+      {String? historyId}) async {
+    if (historyId != null &&
+        !widget.session.completedHistory.any((h) => h.id == historyId)) {
+      return;
+    }
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => AcademyPage(
+        isEnglish: widget.copy.isEnglish,
+        initialLessonId: target.lessonId,
+        initialQuestionId: target.questionId,
+      ),
+    ));
+    if (!mounted) return;
+    if (historyId != null &&
+        !widget.session.completedHistory.any((h) => h.id == historyId)) {
+      setState(() {
+        _selectedHistoryId = null;
+        _historyStep = 0;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -612,6 +638,8 @@ class _BridgeTableState extends State<BridgeTable> {
                 }),
                 onReplayStep: (step) =>
                     setState(() => _historyStep = step),
+                onPracticeConcept: (id, target) =>
+                    _practiceFromReview(target, historyId: id),
                 canDelete: !session.busy,
                 onExportPbn: (id) async {
                   // The panel requires a separate explicit private-hand
@@ -1153,6 +1181,7 @@ class _BridgeTableState extends State<BridgeTable> {
       index: index,
       copy: copy,
       onSelectIndex: (value) => setState(() => _replayIndex = value),
+      onPracticeConcept: (target) => _practiceFromReview(target),
       onAnalyzeDds: session.analyzeCompletedDds,
     );
   }
