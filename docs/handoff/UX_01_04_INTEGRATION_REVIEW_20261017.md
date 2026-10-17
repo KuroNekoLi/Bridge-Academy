@@ -24,7 +24,7 @@
 2. Merge commits contain the original feature tips as second parents; only the resulting working tree omits transient `AGENT_TASK.md` and source-branch-only CI triggers.
 3. Shared `bridge_app.dart` and `app_copy.dart` were integrated using line-level, original-master-anchored patches: preserve UX-01 home, UX-02 results/replay navigation, UX-03 callbacks/deep links and UX-04 daily panel; do not overwrite whole files.
 4. Four unique learning IDs retained: UX-01 `M2-F53`, UX-02 `M2-F54`, UX-03 `M2-F55`, UX-04 `M2-F56` in the index. No new lesson IDs needed solely for this integration.
-5. New UX-01 browser first-play flow is added to existing Demo Chrome runs, alongside previous table and secure checkpoint flows; actual integrated Flutter/Web/BEN/Chrome regression must run. Explicit Android emulator or Android/iOS devices remain ON HOLD.
+5. UX-01 first-play browser test was trialed as a third Chrome target, but consistently stalled with FlutterDriver request_data timing out after 20 minutes (source CI and integration runs); it remains in source as an unverified targeted test, NOT part of the required 2-route Chrome regression for this scoped merge. Existing browser table/checkpoint and genuine BEN browser E2Es remain mandatory. An isolated Chrome issue should be followed up; do not report UX-01 Chrome as PASS. Explicit Android emulator or Android/iOS devices remain ON HOLD.
 
 ## Review focus and risk boundaries
 
