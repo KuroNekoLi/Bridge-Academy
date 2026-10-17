@@ -16,6 +16,8 @@
 
 **Source documents may still show CI PENDING because their final handoff documentation was not synchronized with the later workflow verdict. Source scope is distinct from integrated acceptance.**
 
+**Latest UX-01 source handoff:** the source branch later advanced to `d4e8a8ec9c86db6f5f5e764ac95bf9753dec216b` with documentation, CI-note and temporary task cleanup only; no changes to tested runtime source. This later commit is explicitly included as a second-parent merge, preserving the feature branch's final history.
+
 ## Merge order and conflict policy
 
 1. UX-01 app shell → UX-02 terminal results → UX-03 review-to-learn → UX-04 daily return.
