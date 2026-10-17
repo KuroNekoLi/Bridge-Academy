@@ -44,6 +44,11 @@ void main() {
         reason: 'This E2E requires an explicitly configured local Gateway');
 
     await tester.pumpWidget(const BridgeAcademyApp());
+    // UX-01 deliberately opens Home instead of assuming a table-first app.
+    // Explicit Gateway selection must preserve genuine BEN, never Demo.
+    expect(find.byKey(const Key('ux_home_screen')), findsOneWidget);
+    expect(find.byKey(const Key('ux_home_quick_start')), findsNothing);
+    await _tap(tester, 'ux_home_gateway');
     expect(find.byKey(const Key('gateway_mode_notice')), findsOneWidget);
     expect(find.byKey(const Key('mode_selector')), findsNothing);
     await _tap(tester, 'gateway_start');

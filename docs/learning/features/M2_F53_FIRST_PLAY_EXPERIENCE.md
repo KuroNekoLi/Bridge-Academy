@@ -46,3 +46,6 @@ flutter build web --release
 
 ## 下一步
 完成 UX-02 的牌局結果與複盤導引，連成打牌→回顧的真正玩家路徑。
+
+## UX 整合回歸：真的 BEN 在首頁後仍必須驗證
+之前 A4.4 的真 Chrome／Gateway／BEN 驗收測試直接 `pumpWidget(BridgeAcademyApp())` 就期待 `gateway_mode_notice` 出現；UX-01 改成讓實際使用者先看首頁後，這個測試在 [整合 BEN #38991549552](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38991549552) 正確失敗。測試已修正為必須先看到 `ux_home_screen`、確認沒有 Demo 快速開始，再點 `ux_home_gateway`，方可驗證真正 Gateway 牌桌並沿用全副 BEN 對局與 Bridge Core 計分測試。這是用「真正玩家旅程」取代「直接進入內部 Widget」的 E2E 驗證。改動後整合 CI 仍須實際通過才能宣稱成功。

@@ -35,6 +35,9 @@
 - A4.5 staging static artifacts are unrelated and do **not** mean production hosting is live. Do not enable ranking/IMP, login or notifications.
 - User interviews not performed (`USER_STUDY_NOT_RUN`); Android/iOS device gate untouched.
 
+## Integration regression discovered
+- [First real BEN integration #38991549552](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38991549552) **FAILED** in legacy `browser_gateway_real_test.dart`: expected `gateway_mode_notice` immediately after `BridgeAcademyApp()`, but UX-01 now legitimately starts on Home. The test (not BEN/Core) was using obsolete table-first navigation. Updated the true BEN E2E to assert Home, the absence of Demo quick-start, then click `ux_home_gateway` before exercising the real 52-card gateway game. Full re-run pending.
+
 ## Integrated CI
 
 PENDING. Do not merge to master until mandatory checks are green. Note exact SHA and run URLs with conclusions, including any failures and corrections.
