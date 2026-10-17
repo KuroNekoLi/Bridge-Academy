@@ -26,7 +26,7 @@
 - Android/iOS emulator and physical device UI/E2E stay **on user hold**. No PR; after merged CI succeeds, fast-forward master only with non-forced expected-SHA lease.
 
 ## Integration CI regression and correction
-The first combined Flutter run [#38985456049](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985456049) **FAILED 4 widget tests** while the independent Chrome Demo job passed. Review traced the failures to a missing B4.2 course-list bilingual welcome copy and to C3/C3.2 widget tests assuming lazily-created controls were already mounted after B4.2 expanded to six lessons. Restored B4.2's zh-TW/en welcome; used bounded scrollUntilVisible for the two genuinely offscreen controls. A second full combined test is mandatory.
+The first combined Flutter run [#38985456049](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38985456049) **FAILED 4 widget tests** while the independent Chrome Demo job passed. Review traced the failures to a missing B4.2 course-list bilingual welcome copy and to C3/C3.2 widget tests assuming lazily-created controls were already mounted after B4.2 expanded to six lessons. Restored B4.2's zh-TW/en welcome; used bounded scrollUntilVisible for the two genuinely offscreen controls. A second full combined test is mandatory. The next branch push also corrects the Feature Learning Gate failure on that code-only fix: the lesson and index now document the integration-regression knowledge and the six-lesson catalog.
 
 ## CI evidence
 PENDING merged-tree CI. Update with exact run URLs/SHA after tests complete.

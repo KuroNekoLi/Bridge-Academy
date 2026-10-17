@@ -47,3 +47,6 @@ flutter build web --release
 
 ## 下一步
 增加更多原創且有審核依據的教材，才有充分選擇空間。若將來推出跨裝置同步，需另行取得同意，不能藉由此推薦功能擴大資料傳輸。
+
+## 多功能整合後的回歸教訓（2026-10-17）
+單獨 C3.2 測試時只有三堂課；B4.2 在同一學院增加了三堂課，故 `LearningRecommendationEngine.recommend(lessons: AcademyCatalog.validated())` 的推薦數會動態擴充。測試應以 `lessons.length` 為準，不應硬寫 3。大量建議卡增加 ListView 長度，`WidgetTester.ensureVisible` 無法操作尚未被懶載入建立的 Widget；要先使用 `scrollUntilVisible`。這是 UI 中「資料驅動呈現」與「惰性建構」的重要差別。
