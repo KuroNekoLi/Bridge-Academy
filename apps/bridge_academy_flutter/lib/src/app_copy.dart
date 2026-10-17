@@ -228,6 +228,12 @@ class AppCopy {
       'Four fresh deals, sum of raw duplicate scores only; not MP, IMP or a ranking.',
     ],
     'reviewNotesTitle': ['B5 教學式複盤', 'B5 Guided review'],
+    'ux03RelatedLearning': ['相關學習機會', 'Related learning'],
+    'ux03NoMatchingLesson': [
+      '此步驟暫時沒有經規則驗證且對應的練習題；仍可繼續複盤。',
+      'No verified matching exercise for this step. Continue reviewing.',
+    ],
+    'ux03PracticeConcept': ['練習這個觀念', 'Practice this concept'],
     'reviewStrategyUnknown': [
       '策略品質：未分析（UNKNOWN）。此頁不代表 DDS 最佳打法或 BEN 真正意圖。',
       'Strategy quality: NOT ANALYZED (UNKNOWN). No DDS best-play or BEN intent is inferred.',

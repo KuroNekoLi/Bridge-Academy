@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../app_copy.dart';
 import 'dds_review_section.dart';
 import '../review/review_timeline.dart';
+import '../experience/review_learning/review_learning_map.dart';
 import 'bridge_table_components.dart';
 
 /// Terminal history uses filtered, immutable replay frames only.
@@ -17,6 +18,7 @@ class BridgeCompletedReplayPanel extends StatelessWidget {
     required this.onSelectIndex,
     this.reviewId,
     this.onAnalyzeDds,
+    this.onPracticeConcept,
   });
 
   final CompletedReplay replay;
@@ -26,11 +28,13 @@ class BridgeCompletedReplayPanel extends StatelessWidget {
   /// Only for ephemeral in-page bookmarks; this is not a persistent store ID.
   final String? reviewId;
   final Future<DoubleDummyTable> Function()? onAnalyzeDds;
+  final ValueChanged<ReviewLearningTarget>? onPracticeConcept;
 
   @override
   Widget build(BuildContext context) {
     final timeline = ReviewTimeline.fromReplay(replay);
     final step = timeline.steps[index];
+    final target = ReviewLearningMap.forStep(step);
     final frame = step.frame;
     final view = frame.view;
     final action = frame.action;
@@ -117,6 +121,23 @@ class BridgeCompletedReplayPanel extends StatelessWidget {
                   key: Key('review_insight_${note.key}'),
                 ),
               ),
+            const SizedBox(height: 8),
+            Text(copy.t('ux03RelatedLearning'),
+                style: Theme.of(context).textTheme.titleSmall),
+            if (target == null)
+              Text(copy.t('ux03NoMatchingLesson'),
+                  key: const Key('ux03_no_matching_lesson'))
+            else ...[
+              Text(copy.t(target.evidenceKey),
+                  key: const Key('ux03_related_rule')),
+              if (onPracticeConcept != null)
+                FilledButton.tonalIcon(
+                  key: const Key('ux03_practice_concept'),
+                  onPressed: () => onPracticeConcept!(target),
+                  icon: const Icon(Icons.school_outlined),
+                  label: Text(copy.t('ux03PracticeConcept')),
+                ),
+            ],
             const SizedBox(height: 8),
             DdsReviewSection(
               key: ValueKey('dds_${reviewId ?? replay.historyFingerprint}'),
