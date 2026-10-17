@@ -180,6 +180,66 @@ class AppCopy {
     'vul_ew': ['東西有局', 'E/W vulnerable'],
     'vul_both': ['雙方有局', 'Both vulnerable'],
     'nextBoard': ['下一副牌', 'Next board'],
+    'uxDailyTitle': ['今天的練習', 'Today’s practice'],
+    'uxDailyNotRanked': [
+      '固定四副本機示範牌局，非排名、非 BEN 比賽（日期採 UTC）。',
+      'Four fixed local Demo deals, not a ranked event or BEN match (UTC date).',
+    ],
+    'uxDailyEmpty': [
+      '今天尚未開始。可依照自己的步調練習，不計算連續登入。',
+      'No practice started today. Play at your pace; no streak tracking.',
+    ],
+    'uxDailyReady': [
+      '今天已有保存進度。接續練習不會清除先前的分數。',
+      'Saved progress found. Resume without clearing your scores.',
+    ],
+    'uxDailyPlaying': [
+      '這副牌正在進行中，可回到下方牌桌操作。',
+      'A board is in progress. Continue at the table below.',
+    ],
+    'uxDailyBetween': [
+      '本副已完成，現在可以前往下一副固定牌局。',
+      'Board finished. The next original deal is ready.',
+    ],
+    'uxDailyDone': [
+      '四副牌都完成了！下一個 UTC 日期會有新牌，現在也可以練習叫牌。',
+      'All four complete. More deals arrive next UTC day; you can practice bidding.',
+    ],
+    'uxDailyPrevious': [
+      '較早 UTC 日期的練習尚未完成。先保留並接續，不會自動覆寫。',
+      'An earlier UTC-day challenge is unfinished; it will not be replaced silently.',
+    ],
+    'uxDailyBlocked': [
+      '另有進行中的牌局或四副牌練習，請先完成再開始今日挑戰。',
+      'Another board or four-board practice is active. Finish it first.',
+    ],
+    'uxDailyRecovery': [
+      '請先確認已恢復的舊版存檔，再繼續每日練習。',
+      'Please acknowledge the recovered checkpoint before continuing.',
+    ],
+    'uxDailyStorage': [
+      '資料讀寫失敗；為避免覆寫進度，已暫停每日操作。',
+      'Storage failed. Daily actions are paused to prevent overwriting progress.',
+    ],
+    'uxDailyWaiting': [
+      '正在處理牌局，稍後便可繼續。',
+      'The board is processing; please wait.',
+    ],
+    'uxDailyBegin': ['開始今日四副牌', 'Start today’s four deals'],
+    'uxDailyRestore': ['接續今天的練習', 'Resume today’s practice'],
+    'uxDailyContinue': ['回到進行中的牌桌', 'Continue current board'],
+    'uxDailyBidding': ['下一步：練習叫牌', 'Next: practice bidding'],
+    'uxDailyRecent': [
+      '近期練習（僅本機已保存紀錄）',
+      'Recent practice (locally saved records only)',
+    ],
+    'uxDailyNoHistory': [
+      '目前沒有已儲存的每日練習紀錄。',
+      'No saved daily practice history yet.',
+    ],
+    'uxDailyPreviousDay': [
+      '未完成的舊練習（UTC）', 'Older unfinished challenge (UTC)',
+    ],
     'dailyStart': ['開始每日挑戰', 'Start daily challenge'],
     'dailyTitle': ['B6 每日固定四副牌', 'B6 Daily four-board challenge'],
     'dailyScope': [

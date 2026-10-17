@@ -10,6 +10,8 @@ import 'academy/academy_page.dart';
 import 'bridge_session.dart';
 import 'daily_practice_store.dart';
 import 'widgets/daily_practice_panel.dart';
+import 'widgets/ux_daily_return_panel.dart';
+import 'experience/daily/daily_return_summary.dart';
 import 'widgets/bridge_table_components.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bidding_convention_panel.dart';
@@ -183,6 +185,7 @@ class _BridgeTableState extends State<BridgeTable> {
   String? _selectedHistoryId;
   int _historyStep = 0;
   bool _syncedRestore = false;
+  final GlobalKey _dailyBoardAnchor = GlobalKey();
 
   @override
   void initState() {
@@ -383,6 +386,55 @@ class _BridgeTableState extends State<BridgeTable> {
                     ? session.retryHistorySave : null,
               ),
             ],
+            const SizedBox(height: 8),
+            UxDailyReturnPanel(
+              copy: copy,
+              summary: DailyReturnSummary.from(
+                now: DateTime.parse('${session.todaysDaily.utcDay}T00:00:00Z'),
+                active: session.dailyPractice,
+                history: session.dailyHistory,
+                started: session.started,
+                finished: session.finished,
+                isDaily: session.isDailyPractice,
+                hasOtherFourBoard: session.fourBoardPractice != null &&
+                    !session.fourBoardPractice!.isComplete,
+                busy: session.busy,
+                saveFailed: session.saveFailed,
+                dailySaveFailed: session.dailySaveFailed,
+                historySaveFailed: session.historySaveFailed,
+                recoveryNeeded: session.recoveryNeedsConfirmation,
+                dailyError: session.dailyError != null,
+              ),
+              onStart: () {
+                setState(() {
+                  _replayIndex = null;
+                  _selectedBoard = BoardMode.fresh;
+                  _selectedMode = OpponentMode.demo;
+                });
+                session.startDailyPractice(humanSeat: _selectedSeat);
+              },
+              onContinue: () {
+                final context = _dailyBoardAnchor.currentContext;
+                if (context != null) {
+                  Scrollable.ensureVisible(context,
+                      duration: const Duration(milliseconds: 220),
+                      alignment: 0.08);
+                }
+              },
+              onNext: () {
+                setState(() => _replayIndex = null);
+                session.nextDailyBoard();
+              },
+              onRestart: () => _confirmDailyRestart(session, copy),
+              onPracticeBidding: () {
+                setState(() {
+                  _replayIndex = null;
+                  _selectedBoard = BoardMode.fresh;
+                  _selectedMode = OpponentMode.demo;
+                });
+                session.startBiddingPractice(humanSeat: _selectedSeat);
+              },
+            ),
             if (session.dailyPractice != null ||
                 session.dailyHistory.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -483,12 +535,15 @@ class _BridgeTableState extends State<BridgeTable> {
               Text(copy.t('notStarted'), key: const Key('empty_state')),
             ] else ...[
               const SizedBox(height: 12),
-              BridgeBoardHeader(
+              KeyedSubtree(
+                key: _dailyBoardAnchor,
+                child: BridgeBoardHeader(
                  boardNumber: session.board.number,
                  view: view,
                  busy: session.busy,
                  copy: copy,
                ),
+              ),
               if (session.restoredFromStorage)
                 Text(copy.t('restoredGame'),
                     key: const Key('restored_game')),

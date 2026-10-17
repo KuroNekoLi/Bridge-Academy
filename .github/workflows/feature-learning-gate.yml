@@ -2,7 +2,7 @@ name: Feature Learning Gate
 
 on:
   push:
-    branches: [master]
+    branches: [master, feature/ux-04-daily-return-loop]
   pull_request:
     types: [opened, synchronize, reopened]
 
