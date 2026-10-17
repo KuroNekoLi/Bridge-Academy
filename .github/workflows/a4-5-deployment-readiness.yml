@@ -2,7 +2,7 @@ name: A4.5 Deployment Readiness (static)
 on:
   workflow_dispatch:
   push:
-    branches: [master, feature/a4-5-deployment-readiness]
+    branches: [master, feature/a4-5-deployment-readiness, integration/c1-5-c3-2-b4-2-a4-5-reviewed-20261017]
     paths:
       - 'scripts/a4_5_preflight.py'
       - 'scripts/test_a4_5_preflight.py'

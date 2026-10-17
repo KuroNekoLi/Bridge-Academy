@@ -2,7 +2,7 @@ name: Feature Learning Gate
 
 on:
   push:
-    branches: [master]
+    branches: [master, integration/c1-5-c3-2-b4-2-a4-5-reviewed-20261017]
   pull_request:
     types: [opened, synchronize, reopened]
 

@@ -31,14 +31,14 @@ List<LearningRecommendation> recommend(LearnerProgress progress,
       nowUtc: clock ?? now, hasConsent: consent);
 
 void main() {
-  test('C3.2 opt-out never recommends; new user gets all three lessons', () {
+  test('C3.2 opt-out never recommends; new user gets all catalog lessons', () {
     final ledger = LearnerProgress([attempt(lessons.first, 0, 'x', false)]);
     expect(recommend(ledger, consent: false), isEmpty);
     final fresh = recommend(LearnerProgress());
-    expect(fresh, hasLength(3));
+    expect(fresh, hasLength(lessons.length));
     expect(fresh.every((r) =>
         r.reason == RecommendationReason.notStarted), isTrue);
-    expect(fresh.map((r) => r.lesson.lessonId).toSet(), hasLength(3));
+    expect(fresh.map((r) => r.lesson.lessonId).toSet(), hasLength(lessons.length));
     expect(() => recommend(ledger, clock: DateTime(2026, 10, 17)),
         throwsArgumentError);
   });

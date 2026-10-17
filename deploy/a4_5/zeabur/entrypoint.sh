@@ -4,8 +4,11 @@ umask 077
 : "${GATEWAY_CHECKPOINT_KEY_B64:?External 32-byte encryption key required}"
 : "${GATEWAY_BROWSER_ORIGINS:?Explicit HTTPS browser Origin required}"
 : "${STAGING_BASIC_AUTH_FILE:?Private htpasswd file path required}"
-[[ "${GATEWAY_BROWSER_ORIGINS}" == https://* ]] || { echo 'Only HTTPS origin allowed' >&2; exit 64; }
+[[ "${GATEWAY_BROWSER_ORIGINS}" =~ ^https://[a-zA-Z0-9.-]+(:[0-9]{1,5})?$ ]] || { echo 'Exactly one HTTPS origin with no path, wildcard or insecure fallback required' >&2; exit 64; }
+[[ "${STAGING_BASIC_AUTH_FILE}" == /run/secrets/staging_htpasswd ]] || { echo 'htpasswd path must match nginx.conf' >&2; exit 64; }
 [[ -s "${STAGING_BASIC_AUTH_FILE}" ]] || { echo 'Missing nonempty htpasswd file' >&2; exit 64; }
+# The nginx worker, not only the root entrypoint, must be able to read the secret.
+runuser -u www-data -- test -r "${STAGING_BASIC_AUTH_FILE}" || { echo 'nginx worker cannot read htpasswd' >&2; exit 64; }
 [[ -f /opt/ben/src/gameapi.py ]] || { echo 'BEN missing' >&2; exit 78; }
 [[ -d /data/checkpoints ]] || { echo 'Checkpoint volume missing' >&2; exit 78; }
 chmod 700 /data/checkpoints

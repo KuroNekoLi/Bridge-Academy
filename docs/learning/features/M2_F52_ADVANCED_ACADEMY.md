@@ -1,6 +1,6 @@
-# M2-F50｜B4.2 進階課程：從靜態題庫到可驗證的玩家教學
+# M2-F52｜B4.2 進階課程：從靜態題庫到可驗證的玩家教學
 
-- Feature ID：M2-F50
+- Feature ID：M2-F52
 - Milestone：M2 / B4.2
 - 類型：Flutter UI、雙語教材、Bridge Core 規則交叉驗證、C3 整合
 - 工程狀態：SCOPED VERIFIED（Flutter 164/164／Web／Demo Chrome）

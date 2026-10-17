@@ -1,6 +1,6 @@
-# M2-F50｜C3.2 本機個人化學習推薦
+# M2-F51｜C3.2 本機個人化學習推薦
 
-- Feature ID：M2-F50
+- Feature ID：M2-F51
 - Milestone：M2／C3.2
 - 類型：Flutter UI／規則式推薦
 - 工程狀態：SCOPED VERIFIED（Flutter 165/165、Web／Chrome Demo）

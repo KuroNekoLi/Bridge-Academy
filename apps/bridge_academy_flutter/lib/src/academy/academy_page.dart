@@ -519,7 +519,7 @@ class _AcademyPageState extends State<AcademyPage> {
   }
 
   static const Map<String, AcademyText> _ui = {
-    'title': AcademyText('橋牌學院｜入門課程', 'Bridge Academy | Beginner lessons'),
+    'title': AcademyText('橋牌學院｜入門與進階', 'Bridge Academy | Beginner and intermediate'),
     'welcome': AcademyText('選擇你的第一堂課', 'Choose your first lesson'),
     'scope': AcademyText(
       '原創規則練習；預設不儲存。只有主動同意後才會加密保留學習紀錄。',
