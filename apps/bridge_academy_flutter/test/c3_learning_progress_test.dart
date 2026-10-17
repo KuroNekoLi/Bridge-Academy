@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final sample = AcademyCatalog.validated().first;
+final totalQuestions = AcademyCatalog.validated()
+    .fold<int>(0, (count, lesson) => count + lesson.questions.length);
 final question = sample.questions.first;
 
 AcademyAnswer answer(String option) => AcademyAnswer(
@@ -126,9 +128,14 @@ void main() {
     await tester.tap(show);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('c3_dashboard')), findsOneWidget);
-    expect(find.textContaining('1 / 9'), findsOneWidget);
+    expect(find.textContaining('1 / $totalQuestions'), findsOneWidget);
     final toggle = find.byKey(const Key('c3_toggle_saving'));
+    if (toggle.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(toggle, 170,
+        scrollable: find.byType(Scrollable).last, maxScrolls: 30);
+    }
     await tester.ensureVisible(toggle);
+    await tester.pumpAndSettle();
     await tester.tap(toggle);
     await tester.pumpAndSettle();
     expect((await store.read())!.savingEnabled, false);
@@ -136,7 +143,12 @@ void main() {
     await tester.pumpAndSettle();
     expect((await store.read())!.savingEnabled, true);
     final remove = find.byKey(const Key('c3_delete'));
+    if (remove.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(remove, 170,
+        scrollable: find.byType(Scrollable).last, maxScrolls: 30);
+    }
     await tester.ensureVisible(remove);
+    await tester.pumpAndSettle();
     await tester.tap(remove);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete all learning history').last);
@@ -156,7 +168,7 @@ void main() {
     await tester.ensureVisible(progress);
     await tester.tap(progress);
     await tester.pumpAndSettle();
-    expect(find.textContaining('1 / 9'), findsOneWidget);
+    expect(find.textContaining('1 / $totalQuestions'), findsOneWidget);
     expect(find.textContaining('100%'), findsWidgets);
     await tester.tap(find.byKey(const Key('academy_toggle_locale')));
     await tester.pumpAndSettle();

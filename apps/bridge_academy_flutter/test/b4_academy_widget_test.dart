@@ -81,7 +81,7 @@ void main() {
       home: AcademyPage(isEnglish: false),
     ));
     await tapKey(tester, 'academy_toggle_locale');
-    expect(find.text('Choose your first lesson'), findsOneWidget);
+    expect(find.text('Choose a lesson'), findsOneWidget);
     await tapKey(tester, 'academy_open_b4.cards-and-seats');
     expect(find.text('How many cards are in a standard bridge deck?'),
         findsOneWidget);

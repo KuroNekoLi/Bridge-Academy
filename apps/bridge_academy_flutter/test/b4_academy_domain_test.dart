@@ -19,15 +19,15 @@ AcademyAnswer choose(
     );
 
 void main() {
-  test('B4 has 3 original lessons, 9 questions and globally stable IDs', () {
+  test('B4 has six original lessons, 21 questions and stable IDs', () {
     final lessons = AcademyCatalog.validated();
-    expect(lessons, hasLength(3));
-    expect(lessons.expand((lesson) => lesson.questions), hasLength(9));
-    expect(lessons.map((lesson) => lesson.lessonId).toSet(), hasLength(3));
+    expect(lessons, hasLength(6));
+    expect(lessons.expand((lesson) => lesson.questions), hasLength(21));
+    expect(lessons.map((lesson) => lesson.lessonId).toSet(), hasLength(6));
     expect(
         lessons.expand((lesson) => lesson.questions)
             .map((question) => question.questionId).toSet(),
-        hasLength(9));
+        hasLength(21));
     for (final lesson in lessons) {
       expect(lesson.schemaVersion, AcademyValidator.schemaVersion);
       for (final question in lesson.questions) {
