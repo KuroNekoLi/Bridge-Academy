@@ -12,6 +12,7 @@ class DailyPracticePanel extends StatelessWidget {
     required this.active,
     required this.history,
     required this.finished,
+    this.showNextAction = true,
     required this.canAdvance,
     required this.canRestart,
     required this.onNext,
@@ -23,6 +24,7 @@ class DailyPracticePanel extends StatelessWidget {
   final DailyPracticeProgress? active;
   final List<DailyPracticeProgress> history;
   final bool finished;
+  final bool showNextAction;
   final bool canAdvance;
   final bool canRestart;
   final VoidCallback onNext;
@@ -73,7 +75,7 @@ class DailyPracticePanel extends StatelessWidget {
                     label: Text(copy.t('dailyRestart'),
                         maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
-              ] else if (finished) ...[
+              ] else if (finished && showNextAction) ...[
                 FilledButton.icon(
                   key: const Key('next_daily_board'),
                   onPressed: canAdvance ? onNext : null,
