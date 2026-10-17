@@ -49,8 +49,10 @@ final class DailyReturnSummary {
         && !active.isComplete ? active : null;
     final byDate = <String, DailyPracticeProgress>{
       for (final entry in history) entry.manifest.utcDay: entry,
-      if (active != null) active.manifest.utcDay: active,
     };
+    if (active != null) {
+      byDate[active.manifest.utcDay] = active;
+    }
     final dates = byDate.keys.toList()..sort((a,b) => b.compareTo(a));
     final recent = List<DailyPracticeProgress>.unmodifiable(
       dates.take(3).map((day) => byDate[day]!),
