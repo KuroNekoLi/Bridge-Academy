@@ -190,7 +190,9 @@ class _BridgeTableState extends State<BridgeTable> {
   Future<void> _practiceFromReview(ReviewLearningTarget target,
       {String? historyId}) async {
     if (historyId != null &&
-        !widget.session.completedHistory.any((h) => h.id == historyId)) return;
+        !widget.session.completedHistory.any((h) => h.id == historyId)) {
+      return;
+    }
     await Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (_) => AcademyPage(
         isEnglish: widget.copy.isEnglish,

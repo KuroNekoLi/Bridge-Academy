@@ -54,3 +54,5 @@ flutter build web --release
 
 ## 下一步
 與 UX-01／UX-02／UX-04 整合，完成全鏈路 Flutter/Web 複盤返回測試和真人觀察；目前 USER_STUDY_NOT_RUN。
+
+**整合測試修正紀錄：** Flutter CI 在初次提交 [#38990088814](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990088814) 回報 3 項 curly-braces lint；已補齊完整區塊，也修正 Widget 測試切換同類型 `AcademyPage` 時需要新的 key 才能重新觸發 `initState` 的情境。待重新跑 CI 後更新驗收。

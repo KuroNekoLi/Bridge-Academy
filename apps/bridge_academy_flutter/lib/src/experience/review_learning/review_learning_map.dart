@@ -42,10 +42,14 @@ abstract final class ReviewLearningMap {
           questionId = 'b4.play.four-spades';
         }
       }
-      if (questionId == null) continue;
+      if (questionId == null) {
+        continue;
+      }
       for (final lesson in lessons) {
         if (lesson.schemaVersion != AcademyValidator.schemaVersion ||
-            lesson.skillTag.trim().isEmpty) continue;
+            lesson.skillTag.trim().isEmpty) {
+          continue;
+        }
         for (final q in lesson.questions) {
           if (q.questionId == questionId &&
               q.skillTag == lesson.skillTag &&

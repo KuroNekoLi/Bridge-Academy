@@ -59,7 +59,9 @@ class _AcademyPageState extends State<AcademyPage> {
   /// opening a different question; they never change the learner opt-in.
   void _openInitialQuestion() {
     if (widget.initialLessonId == null &&
-        widget.initialQuestionId == null) return;
+        widget.initialQuestionId == null) {
+      return;
+    }
     final matches = AcademyCatalog.validated().where((lesson) =>
         lesson.lessonId == widget.initialLessonId &&
         lesson.schemaVersion == AcademyValidator.schemaVersion &&

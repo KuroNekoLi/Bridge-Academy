@@ -146,6 +146,7 @@ void main() {
     expect(find.byKey(const Key('academy_correct')), findsOneWidget);
     expect(await store.read(), isNull);
     await tester.pumpWidget(const MaterialApp(home: AcademyPage(
+      key: ValueKey('stale-deep-link'),
       isEnglish: true,
       initialLessonId: 'b4.play-and-contract',
       initialQuestionId: 'outdated-question',
