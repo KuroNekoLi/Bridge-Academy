@@ -10,6 +10,7 @@ import 'academy/academy_page.dart';
 import 'bridge_session.dart';
 import 'daily_practice_store.dart';
 import 'widgets/daily_practice_panel.dart';
+import 'widgets/ux_postgame_result_panel.dart';
 import 'widgets/bridge_table_components.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bidding_convention_panel.dart';
@@ -179,6 +180,10 @@ class _BridgeTableState extends State<BridgeTable> {
   int _justDeclareLevel = 3;
   Strain _justDeclareStrain = Strain.notrump;
   int? _replayIndex;
+  bool _reviewFocused = false;
+  final _resultAnchor = GlobalKey();
+  final _replayAnchor = GlobalKey();
+  final _historyAnchor = GlobalKey();
   bool _historyOpen = false;
   String? _selectedHistoryId;
   int _historyStep = 0;
@@ -207,6 +212,37 @@ class _BridgeTableState extends State<BridgeTable> {
   void dispose() {
     widget.session.removeListener(_syncRestoredSelection);
     super.dispose();
+  }
+
+  void _scrollTo(GlobalKey anchor) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final target = anchor.currentContext;
+      if (!mounted || target == null) return;
+      Scrollable.ensureVisible(target,
+          duration: const Duration(milliseconds: 160), alignment: 0.08);
+    });
+  }
+
+  void _openPostgameReplay() {
+    setState(() {
+      _historyOpen = false;
+      _reviewFocused = true;
+    });
+    _scrollTo(_replayAnchor);
+  }
+
+  void _showPostgameResult() {
+    setState(() => _reviewFocused = false);
+    _scrollTo(_resultAnchor);
+  }
+
+  void _openPostgameHistory() {
+    setState(() {
+      _historyOpen = true;
+      _reviewFocused = false;
+      _selectedHistoryId = null;
+    });
+    _scrollTo(_historyAnchor);
   }
 
   @override
@@ -344,7 +380,7 @@ class _BridgeTableState extends State<BridgeTable> {
               ),
             ),
             if (_historyOpen) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: 8, key: _historyAnchor),
               BridgeHistoryPanel(
                 history: session.completedHistory,
                 copy: copy,
@@ -392,6 +428,7 @@ class _BridgeTableState extends State<BridgeTable> {
                 active: session.dailyPractice,
                 history: session.dailyHistory,
                 finished: session.finished,
+                showNextAction: !session.finished,
                 canAdvance: !session.busy && !session.saveFailed &&
                     !session.dailySaveFailed && !session.historySaveFailed,
                 canRestart: !session.busy && !session.saveFailed &&
@@ -558,12 +595,15 @@ class _BridgeTableState extends State<BridgeTable> {
               const SizedBox(height: 8),
               if (!session.finished)
                 _humanControls(view, session, copy)
-              else ...[
-                if (!session.isBiddingPractice) _finishCard(view, copy),
-                const SizedBox(height: 8),
-                if (!session.isBiddingPractice) _completedBoardActions(session, copy),
-                const SizedBox(height: 8),
-                if (!_historyOpen && !session.isBiddingPractice) _replayPanel(session, copy),
+              else if (!session.isBiddingPractice) ...[
+                KeyedSubtree(
+                  key: _resultAnchor,
+                  child: _postgameResultPanel(session, view, copy),
+                ),
+                if (!_historyOpen) ...[
+                  SizedBox(height: 8, key: _replayAnchor),
+                  _replayPanel(session, copy),
+                ],
               ],
             ],
               ],
@@ -805,45 +845,61 @@ class _BridgeTableState extends State<BridgeTable> {
     );
   }
 
-  Widget _completedBoardActions(BridgeSession session, AppCopy copy) =>
-      Wrap(
-        spacing: 12,
-        runSpacing: 8,
-        children: [
-          if (session.fourBoardPractice != null &&
-              !session.fourBoardPractice!.isComplete)
-            FilledButton.icon(
-              key: const Key('next_practice_board'),
-              onPressed: session.busy || session.saveFailed ||
-                  session.historySaveFailed ? null : () {
-                setState(() => _replayIndex = null);
-                session.nextFourBoardPractice();
-              },
-              icon: const Icon(Icons.skip_next),
-              label: Text(copy.t('practiceFourNext')),
-            ),
-          if (session.fourBoardPractice == null && session.dailyPractice == null)
-          OutlinedButton.icon(
-            key: const Key('replay_same_board'),
-            onPressed: session.busy ? null : () {
-              setState(() => _replayIndex = null);
-              session.replaySameBoard();
-            },
-            icon: const Icon(Icons.replay),
-            label: Text(copy.t('replaySameBoard')),
-          ),
-          if (session.fourBoardPractice == null && session.dailyPractice == null)
-          FilledButton.icon(
-            key: const Key('next_board'),
-            onPressed: session.busy ? null : () {
-              setState(() => _replayIndex = null);
-              session.nextBoard();
-            },
-            icon: const Icon(Icons.skip_next),
-            label: Text(copy.t('nextBoard')),
-          ),
-        ],
-      );
+  /// Core owns the score and next deal; this panel holds navigation only.
+  Widget _postgameResultPanel(
+      BridgeSession session, PlayerView view, AppCopy copy) {
+    final four = session.fourBoardPractice;
+    final daily = session.dailyPractice;
+    final advance = four != null
+        ? (four.isComplete
+            ? PostgameAdvance.none : PostgameAdvance.fourBoard)
+        : daily != null
+            ? (daily.isComplete
+                ? PostgameAdvance.none : PostgameAdvance.dailyBoard)
+            : session.isJustDeclare
+                ? PostgameAdvance.none : PostgameAdvance.nextBoard;
+    final blocked = session.actionsPaused || session.saveFailed ||
+        session.historySaveFailed || session.dailySaveFailed;
+    return UxPostgameResultPanel(
+      copy: copy,
+      result: PostgameResult.fromFinishedView(
+        view: view, boardNumber: session.board.number,
+        isJustDeclare: session.isJustDeclare,
+      ),
+      advance: advance,
+      canChangeBoard: !blocked,
+      canReview: session.completedReplay != null,
+      canHistory: session.completedHistory.isNotEmpty,
+      canRetry: four == null && daily == null,
+      blocked: blocked,
+      reviewFocused: _reviewFocused,
+      onReview: _openPostgameReplay,
+      onBackToResult: _showPostgameResult,
+      onHistory: _openPostgameHistory,
+      onNext: () {
+        setState(() {
+          _replayIndex = null;
+          _reviewFocused = false;
+          _historyOpen = false;
+        });
+        if (four != null) {
+          session.nextFourBoardPractice();
+        } else if (daily != null) {
+          session.nextDailyBoard();
+        } else {
+          session.nextBoard();
+        }
+      },
+      onRetry: () {
+        setState(() {
+          _replayIndex = null;
+          _reviewFocused = false;
+          _historyOpen = false;
+        });
+        session.replaySameBoard();
+      },
+    );
+  }
 
   Widget _humanControls(PlayerView view, BridgeSession session, AppCopy copy) {
     if (view.phase == Phase.auction) {
@@ -881,21 +937,5 @@ class _BridgeTableState extends State<BridgeTable> {
       onAnalyzeDds: session.analyzeCompletedDds,
     );
   }
-
-  Widget _finishCard(PlayerView view, AppCopy copy) => Card(
-        key: const Key('final_result'),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(copy.t('end'), style: Theme.of(context).textTheme.titleLarge),
-              if (view.contract == null) Text(copy.t('passOut')),
-              if (view.contract != null)
-                Text(copy.contract(view.contract!.label)),
-              if (view.nsScore != null) Text(copy.score(view.nsScore!)),
-            ],
-          ),
-        ),
-      );
 
 }
