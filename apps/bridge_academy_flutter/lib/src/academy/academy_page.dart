@@ -9,7 +9,17 @@ import 'package:flutter/foundation.dart';
 
 /// B4 reads authored questions only, not live BridgeSession/Deal/BEN state.
 class AcademyPage extends StatefulWidget {
-  const AcademyPage({super.key, required this.isEnglish, this.learnerStore});
+  const AcademyPage({
+    super.key,
+    required this.isEnglish,
+    this.learnerStore,
+    this.initialLessonId,
+    this.initialQuestionId,
+  });
+
+  /// Deep links carry public catalog IDs only, never a Deal or PBN.
+  final String? initialLessonId;
+  final String? initialQuestionId;
   final LearnerStore? learnerStore;
   final bool isEnglish;
 
@@ -32,15 +42,38 @@ class _AcademyPageState extends State<AcademyPage> {
   bool _storageError = false;
   bool _loading = true;
   bool _dashboard = false;
+  bool _linkedQuestionUnavailable = false;
   int _sequence = 0;
 
   @override
   void initState() {
     super.initState();
     _english = widget.isEnglish;
+    _openInitialQuestion();
     _store = widget.learnerStore ??
       (kIsWeb ? EncryptedLearnerStore.browser() : EncryptedLearnerStore.native());
     _restore();
+  }
+
+  /// Stale or absent course IDs fail closed to the catalog instead of
+  /// opening a different question; they never change the learner opt-in.
+  void _openInitialQuestion() {
+    if (widget.initialLessonId == null &&
+        widget.initialQuestionId == null) return;
+    final matches = AcademyCatalog.validated().where((lesson) =>
+        lesson.lessonId == widget.initialLessonId &&
+        lesson.schemaVersion == AcademyValidator.schemaVersion &&
+        lesson.questions.any((q) =>
+            q.questionId == widget.initialQuestionId &&
+            q.skillTag == lesson.skillTag)).toList();
+    if (matches.length != 1) {
+      _linkedQuestionUnavailable = true;
+      return;
+    }
+    final lesson = matches.single;
+    _lesson = lesson;
+    _index = lesson.questions.indexWhere(
+        (q) => q.questionId == widget.initialQuestionId);
   }
 
   String _t(String id) => _ui[id]!.localized(_english);
@@ -259,6 +292,13 @@ class _AcademyPageState extends State<AcademyPage> {
           icon: const Icon(Icons.arrow_back),
         ),
         actions: [
+          if (widget.initialLessonId != null)
+            IconButton(
+              key: const Key('ux03_return_review'),
+              tooltip: _t('ux03ReturnToReview'),
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.keyboard_return),
+            ),
           IconButton(
             key: const Key('academy_toggle_locale'),
             tooltip: _t('language'),
@@ -318,6 +358,9 @@ class _AcademyPageState extends State<AcademyPage> {
       padding: const EdgeInsets.all(12),
       children: [
         Text(_t('welcome'), style: Theme.of(context).textTheme.titleLarge),
+        if (_linkedQuestionUnavailable)
+          Text(_t('ux03InvalidLesson'),
+              key: const Key('ux03_invalid_lesson')),
         const SizedBox(height: 8),
         Text(_t('scope')),
         const SizedBox(height: 12),
@@ -383,6 +426,13 @@ class _AcademyPageState extends State<AcademyPage> {
       key: const Key('academy_question_list'),
       padding: const EdgeInsets.all(12),
       children: [
+        if (widget.initialLessonId != null)
+          TextButton.icon(
+            key: const Key('ux03_return_review_body'),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.arrow_back),
+            label: Text(_t('ux03ReturnToReview')),
+          ),
         Text(lesson.introduction.localized(_english),
             key: const Key('academy_introduction')),
         const SizedBox(height: 12),
@@ -526,6 +576,10 @@ class _AcademyPageState extends State<AcademyPage> {
       'Original rules quizzes. Saving is off by default; opt in to keep encrypted progress.',
     ),
     'startLesson': AcademyText('開始學習', 'Start lesson'),
+    'ux03ReturnToReview': AcademyText('返回原複盤步驟', 'Return to review'),
+    'ux03InvalidLesson': AcademyText(
+      '原先推薦的題目已不存在，請從課程列表選擇。',
+      'That linked question is no longer available. Choose a lesson.'),
     'question': AcademyText('第', 'Question'),
     'completedQuestions': AcademyText('題完成', 'questions completed'),
     'submit': AcademyText('提交答案', 'Submit answer'),
