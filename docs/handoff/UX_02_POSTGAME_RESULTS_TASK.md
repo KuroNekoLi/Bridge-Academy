@@ -1,6 +1,6 @@
 # Bridge Academy — UX-02: 完整牌局結果與下一步操作
 
-**狀態**：TASK READY／Implementation NOT STARTED  
+**狀態**：SCOPED VERIFIED / FEATURE IMPLEMENTED（詳見 UX_02_POSTGAME_RESULTS_ACCEPTANCE.md）  
 **分支**：`feature/ux-02-postgame-results`  
 **源自**：`master@41d0ac604554dc3581cbe59b796b172e81270ee9`  
 **暫定教學 ID**：`M2-F54`（整合時再查重）

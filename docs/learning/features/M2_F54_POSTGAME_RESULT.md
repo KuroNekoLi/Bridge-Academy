@@ -3,10 +3,10 @@
 - Feature ID：M2-F54
 - Milestone：M2／UX-02 Postgame Results
 - 類型：Flutter UI／PlayerView 邊界／結果頁導航
-- 工程狀態：IMPLEMENTED（待本分支 CI）
+- 工程狀態：SCOPED VERIFIED（Flutter 180/180 + Web + Chrome Demo）
 - 學習狀態：DELIVERED（沒有玩家學習證據，非 PRACTICED）
 - 原始碼：`apps/bridge_academy_flutter/lib/src/widgets/ux_postgame_result_panel.dart`、`apps/bridge_academy_flutter/lib/src/bridge_app.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/ux_02_postgame_result_test.dart`；執行結果 NOT RUN
+- 驗收與測試：`apps/bridge_academy_flutter/test/ux_02_postgame_result_test.dart`；[Flutter 180/180 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990365337)
 
 ## 功能目的與實際情境
 
@@ -51,7 +51,9 @@ flutter test
 flutter build web --release
 ```
 
-**NOT RUN**：此執行環境沒有 Dart/Flutter SDK；不能把測試編寫完成等同於測試成功。GitHub Actions 需在分支上執行後更新證據。
+**已由 GitHub Actions 實際執行**：`3608110c` 對應 [Flutter CI #38990365337](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990365337)：Flutter 3.47.7；Analyze 無問題、180/180 測試通過、Web Release Build 成功、Chrome Demo E2E 通過。
+
+**一次真實重構教訓**：Dart 在 `difference!` 第一個判斷之後已對區域變數執行 flow promotion，第二個 `difference!` 其實多餘；Flutter Analyzer 會回報 `unnecessary_non_null_assertion` 且 CI 以 warning 擋下。移除多餘的 `!` 後重跑才得到真實 PASS；不能用肉眼檢查取代 `flutter analyze`。
 
 涵蓋未終局拒絕、Pass Out（四個真實 Pass、0 分、無 13 墩）、Just Declare 13 墩與 N/E 分數視角、複盤前後 Core 版本不變、下一副、禁用狀態和 320px 大字體。真 BEN staging、Android/iOS 裝置端不在本次 UX02 範圍。
 

@@ -2,7 +2,7 @@
 
 **日期**：2026-10-17  
 **分支**：`feature/ux-02-postgame-results`  
-**狀態**：IMPLEMENTED / CI PENDING  
+**狀態**：SCOPED VERIFIED / Flutter-Web Demo (非正式產品 Release)  
 **範圍**：Flutter 單人 Demo/既有 B1、B2、B6 終局；不是正式 BEN 部署、裝置 Release 或競賽排名。
 
 ## 玩家可以做什麼
@@ -23,7 +23,9 @@
 - 新測試：`apps/bridge_academy_flutter/test/ux_02_postgame_result_test.dart`。
 - 回歸：`bridge_app_test.dart`、`completed_replay_test.dart`、`b1_four_board_practice_test.dart`、`b2_just_declare_test.dart`、`b6_daily_practice_test.dart`，以及所有 Flutter 測試。
 - `cd apps/bridge_academy_flutter && flutter analyze && flutter test && flutter build web --release`。
-- **目前 NOT RUN**：執行環境沒有 Dart/Flutter SDK，待本分支 GitHub Actions 執行並更新明確 run URL／數量；不把測試檔存在當成 PASS。
+- **實際驗收證據**：版本 `3608110c7696cc2665e24cc89e0f19d1e05ca13b`，Flutter 3.47.7，[GitHub Flutter M2 CI #38990365337](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990365337) **PASS**：`flutter analyze --no-pub`「No issues found」、`flutter test --no-pub --reporter expanded` **180/180 All tests passed**、`flutter build web --no-pub --release` **PASS**、ChromeDriver 真瀏覽器 Demo E2E **PASS**。本次未連線真 BEN staging，也未執行 Android/iOS 裝置 QA。
+
+第一輪 CI #38990266043 曾因一項 `unnecessary_non_null_assertion` Analyzer 警告停止，已修正且第二輪證明通過。與之並行的 [Learning Gate #38990365343](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990365343) 顯示 **FAILED**，原因是 Analyzer 修正屬於程式變更但該筆 Commit 未同步更新學習文章與索引；後續依正式規範補充教學證據並重新執行。
 - 目前沒有在本輪執行 Android emulator、實體 Android／iOS QA；按產品 Owner 指示持續暫停。
 
 ## 待實測使用者研究
