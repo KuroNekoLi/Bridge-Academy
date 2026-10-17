@@ -2,7 +2,7 @@
 
 **Branch:** `feature/ux-04-daily-return-loop`  
 **Base:** master `41d0ac604554dc3581cbe59b796b172e81270ee9`  
-**Status:** IMPLEMENTED / CI PENDING
+**Status:** SCOPED VERIFIED / HANDOFF READY
 
 ## 玩家交付
 - 每次打開牌桌可見今日 UTC 日期、0/4～4/4、非排名 Demo 規則及空狀態。

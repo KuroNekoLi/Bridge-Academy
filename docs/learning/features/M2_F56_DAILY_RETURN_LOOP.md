@@ -3,10 +3,10 @@
 - Feature ID：M2-F56
 - Milestone：UX-04
 - 類型：Domain projection／Flutter presentation
-- 工程狀態：IMPLEMENTED（待 CI 驗證）
+- 工程狀態：SCOPED VERIFIED（Flutter 179/179、Web、Chrome Demo）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/experience/daily/daily_return_summary.dart`、`widgets/ux_daily_return_panel.dart`
-- 驗收：`test/ux_04_daily_return_test.dart`，CI 待填
+- 驗收：`test/ux_04_daily_return_test.dart`，[Flutter CI 179/179 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990454977)；[Feature Learning Gate PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990454982)
 
 ## 功能目的與實際情境
 玩家回訪時想知道今天的四副固定牌局是否完成、能否安全接續。UX-04 把已存在的 B6 本機加密進度與盤面狀態投影為 UI，而不是另造資料庫。畫面永遠顯示 UTC 日期、0–4/4、非排名標示與空狀態。
