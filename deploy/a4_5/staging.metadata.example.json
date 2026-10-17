@@ -1,0 +1,21 @@
+{
+  "environment": "staging",
+  "public_origin": "https://staging.example.invalid",
+  "tls_termination": true,
+  "gateway_bind": "127.0.0.1",
+  "ben_bind": "127.0.0.1",
+  "raw_decision_enabled": false,
+  "browser_origins": [
+    "https://staging.example.invalid"
+  ],
+  "checkpoint_encrypted": true,
+  "checkpoint_key_external": true,
+  "anonymous_access": true,
+  "single_instance": true,
+  "persistent_rate_limits": false,
+  "external_identity": false,
+  "distributed_idempotency": false,
+  "license_approved": false,
+  "capacity_evidence": false,
+  "rollback_tested": false
+}
