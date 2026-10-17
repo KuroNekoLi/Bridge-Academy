@@ -33,3 +33,23 @@ jobs:
             exit 1
           fi
           echo 'Production has not been approved'
+
+      - name: Check Zeabur staging structure without deploying
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          d=Path('deploy/a4_5/zeabur')
+          for p in ('Dockerfile','entrypoint.sh','healthcheck.sh','nginx.conf','README.md'):
+              assert (d/p).is_file(), p
+          docker=(d/'Dockerfile').read_text()
+          entry=(d/'entrypoint.sh').read_text()
+          proxy=(d/'nginx.conf').read_text()
+          assert 'EXPOSE 8080' in docker
+          assert '72653ec1b5c17116faea229e9b975ea5622aa1f7' in docker
+          assert '127.0.0.1:8085' in entry and '127.0.0.1:8086' in entry
+          assert 'auth_basic_user_file' in proxy
+          assert '127.0.0.1:8086' in proxy
+          print('STAGING_STRUCTURE_STATIC_OK - Docker not built')
+          PY
+          bash -n deploy/a4_5/zeabur/entrypoint.sh
+          sh -n deploy/a4_5/zeabur/healthcheck.sh
