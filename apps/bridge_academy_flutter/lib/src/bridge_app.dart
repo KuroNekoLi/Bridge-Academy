@@ -69,7 +69,9 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
   Future<void> _quickStart() async {
     final session = _session;
     if (session == null || session.busy || session.saveFailed ||
-        session.dailySaveFailed || session.recoveryNeedsConfirmation) return;
+        session.dailySaveFailed || session.recoveryNeedsConfirmation) {
+      return;
+    }
     final seriesPending =
         (session.dailyPractice != null &&
             !session.dailyPractice!.isComplete) ||
@@ -89,7 +91,9 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
   Future<void> _dailyStart() async {
     final session = _session;
     if (session == null || session.busy || session.saveFailed ||
-        session.dailySaveFailed || session.recoveryNeedsConfirmation) return;
+        session.dailySaveFailed || session.recoveryNeedsConfirmation) {
+      return;
+    }
     if (session.started && !session.finished ||
         (session.fourBoardPractice != null &&
             !session.fourBoardPractice!.isComplete)) {
