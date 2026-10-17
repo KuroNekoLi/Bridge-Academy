@@ -3,10 +3,10 @@
 - Feature ID：M2-F55
 - Milestone：M2／UX-03
 - 類型：Flutter UI／只讀 Domain Mapping
-- 工程狀態：IMPLEMENTED（CI PENDING）
+- 工程狀態：SCOPED VERIFIED（Flutter 180/180 + Web + Chrome Demo）
 - 學習狀態：DELIVERED
 - 原始碼：`apps/bridge_academy_flutter/lib/src/experience/review_learning/review_learning_map.dart`、`widgets/bridge_replay_panel.dart`、`academy/academy_page.dart`、`bridge_app.dart`
-- 驗收與測試：`apps/bridge_academy_flutter/test/ux_03_review_learn_test.dart`，CI 待完成
+- 驗收與測試：`apps/bridge_academy_flutter/test/ux_03_review_learn_test.dart`；[Flutter 180/180、Web、Chrome PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990226292)
 
 ## 功能目的與實際情境
 玩家看到終局 B5 複盤的規則解釋時，可以直接做相關 B4 練習題。例如四次 Pass 構成 Pass Out、Core 確認的跟牌，然後按「返回原複盤步驟」回到剛才的事件。未同意保留學習歷史仍可作答。
@@ -24,7 +24,9 @@ for (final insight in step.insights) {
     questionId = 'b4.play.pass-out';
   }
   // 其他規則以相同方式檢查可驗證前提
-  if (questionId == null) continue;
+  if (questionId == null) {
+    continue;
+  }
 }
 ```
 
@@ -43,7 +45,7 @@ flutter test test/ux_03_review_learn_test.dart
 flutter test
 flutter build web --release
 ```
-目前 **NOT RUN / PENDING**，CI 完成後需更新實際 commit SHA、測試與 Web／Chrome 狀態。預期檢查 mapping、歷史路由返回、雙語、opt-out、失效 ID 與 320px／2 倍字體；不含實體 Android/iOS、BEN 策略驗收及真人使用者觀察。
+**實際 EXECUTED：** [Flutter CI #38990226292](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990226292) on commit `075006562f654cac9e3884de6c84d3bf6b272572`：`flutter analyze` 無問題、**180/180 測試 PASS**、Web Release Build 與 Chrome Demo E2E PASS；[Learning Gate #38990226274](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990226274) PASS。映射、歷史回放、opt-out、過期 ID、320px／2× 字體等已涵蓋；真 BEN/native DDS、Android/iOS 與真人觀察 NOT RUN。
 
 ## 練習與自我檢驗
 **思考題（1 題）：** 為什麼 `ReviewEvidence.convention` 即使有 ruleId，也不應直接推成「AI 最佳叫牌」的學院建議？
@@ -55,4 +57,4 @@ flutter build web --release
 ## 下一步
 與 UX-01／UX-02／UX-04 整合，完成全鏈路 Flutter/Web 複盤返回測試和真人觀察；目前 USER_STUDY_NOT_RUN。
 
-**整合測試修正紀錄：** Flutter CI 在初次提交 [#38990088814](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990088814) 回報 3 項 curly-braces lint；已補齊完整區塊，也修正 Widget 測試切換同類型 `AcademyPage` 時需要新的 key 才能重新觸發 `initState` 的情境。待重新跑 CI 後更新驗收。
+**整合測試修正紀錄：** 首次 [Flutter CI #38990088814](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990088814) 3 項 curly-braces lint 失敗，已修正。對同類型 AcademyPage 的 stale deep link 測試使用新的 ValueKey，確保觸發 initState；後續 [#38990226292](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990226292) 180/180 PASS。

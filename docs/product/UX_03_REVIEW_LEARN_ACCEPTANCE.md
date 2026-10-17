@@ -1,7 +1,7 @@
 # UX-03 — 複盤 → 原創題目 → 返回同一事件
 
 - **分支**：`feature/ux-03-review-learn-loop`
-- **目前狀態**：IMPLEMENTED / CI PENDING（不是產品正式上線驗收）
+- **目前狀態**：SCOPED VERIFIED（Flutter／Web Demo，非正式上線）
 - **依據**：PRD GJ-03、UX-03 handoff、B5 ReviewTimeline、B4 Academy、C3 opt-in
 - **資料界線**：只有終局 `CompletedReplay` 的過濾 `PlayerView` 與公開 Academy IDs
 
@@ -23,7 +23,7 @@ flutter test test/ux_03_review_learn_test.dart
 flutter test
 flutter build web --release
 ```
-**分支 CI 尚未結束：NOT RUN／PENDING**。請以本功能最新 SHA 的 GitHub Actions 更新，不得把測試檔視為 PASS。真人研究：USER_STUDY_NOT_RUN。Android/iOS emulator/real-device UI/E2E 依使用者決策持續暫停。
+**GitHub CI 已實際驗證：** [Flutter M2 Single Player #38990226292](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990226292)，原始碼 `075006562f654cac9e3884de6c84d3bf6b272572`：`flutter analyze --no-pub` **No issues found**；全套 `flutter test --no-pub --reporter expanded` **180/180 PASS**（包含 UX-03 新測試）；`flutter build web --no-pub --release` **PASS**；ChromeDriver Demo **PASS**。[Learning Gate #38990226274](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990226274) **PASS**。初次 [Flutter #38990088814](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990088814) 3 項 lint 失敗已修正。真人研究：USER_STUDY_NOT_RUN；真 BEN/native DDS、Android/iOS emulator／實機仍未因本功能驗收。
 
 ## Integration／Rollback
 保留 UX-01 Shell、UX-02 結果頁、UX-04 每日面板；UX-03 只在 `BridgeTable` 既有 replay/history 接線。依 UX-01 → UX-02 → UX-03 → UX-04 順序整合，處理共用 `bridge_app.dart` 的小段差異。可撤回本分支而不刪除既有加密學習紀錄、B5 歷史牌局與 Core 事件。
