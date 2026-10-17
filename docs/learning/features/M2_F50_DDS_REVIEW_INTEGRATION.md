@@ -3,7 +3,7 @@
 - Feature ID：M2-F50
 
 - 功能：在 B5 終局複盤新增玩家主動觸發 DDS3 的 5×4 分析表。
-- 學習狀態：DELIVERED；驗收：NOT RUN（缺 SDK）。
+- 學習狀態：DELIVERED；驗收：Flutter 161/161 + Web + Chrome Demo PASS；真 DDS Worker NOT RUN。
 - 核心檔案：`lib/src/bridge_session.dart`、`widgets/dds_review_section.dart`、`packages/bridge_dds_adapter/lib/src/double_dummy_analysis.dart`
 
 ## 功能目的與實際情境
@@ -19,7 +19,7 @@
 Flutter 3.47.7 的 analyze 會因為單行 if 缺少大括號而回傳 info 並阻擋 pipeline；UI 的例外分支改為完整 block，避免風格與失敗處理在未來維護時出錯。
 
 ## 驗證與實際證據
-`flutter test test/c1_5_dds_review_test.dart`、`flutter analyze`、`flutter build web` 都需跑。此任務最初建立時環境缺少 SDK，先標記 NOT RUN，不虛構 PASS。真正 DDS Worker 安裝與授權依 C1 審查文件。
+`flutter test test/c1_5_dds_review_test.dart`、`flutter analyze`、`flutter build web` 都需跑。本地環境無 SDK，但 [GitHub Actions #38984253536](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38984253536) 執行了 161/161 tests、Analyze、Web Build 與 Chrome Demo E2E，皆 PASS；原生 DDS Worker 的真引擎端對端尚未執行，不可稱為已驗收。真正 DDS Worker 安裝與授權依 C1 審查文件。
 
 ## 練習與自我檢驗
 

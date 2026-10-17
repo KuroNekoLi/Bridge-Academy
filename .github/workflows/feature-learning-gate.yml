@@ -2,7 +2,7 @@ name: Feature Learning Gate
 
 on:
   push:
-    branches: [master, 'feature/c1-5-dds-review-integration']
+    branches: [master]
   pull_request:
     types: [opened, synchronize, reopened]
 
