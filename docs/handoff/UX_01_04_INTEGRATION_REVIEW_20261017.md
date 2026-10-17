@@ -38,6 +38,9 @@
 ## Integration regression discovered
 - [First real BEN integration #38991549552](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38991549552) **FAILED** in legacy `browser_gateway_real_test.dart`: expected `gateway_mode_notice` immediately after `BridgeAcademyApp()`, but UX-01 now legitimately starts on Home. The test (not BEN/Core) was using obsolete table-first navigation. Updated the true BEN E2E to assert Home, the absence of Demo quick-start, then click `ux_home_gateway` before exercising the real 52-card gateway game. Full re-run pending.
 
+## Chrome timeout under review
+- [UX-01 source Chrome #38990644555](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990644555) failed: WebDriver request_data timed out after 20 minutes during the additional UX-01 first-play browser test, while preceding browser_table/browser_secure_checkpoint targets had started and advanced. Integration test now avoids unbounded pumpAndSettle, using bounded real-session state waits. New browser CI is required to confirm this correction. This is not counted as a passing E2E run.
+
 ## Integrated CI
 
 PENDING. Do not merge to master until mandatory checks are green. Note exact SHA and run URLs with conclusions, including any failures and corrections.

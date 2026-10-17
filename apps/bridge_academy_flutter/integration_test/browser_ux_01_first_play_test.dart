@@ -16,21 +16,33 @@ void main() {
     final start = find.byKey(const Key('ux_home_quick_start'));
     await tester.ensureVisible(start);
     await tester.tap(start);
-    await tester.pumpAndSettle();
+    // A real browser uses wall-clock Future scheduling; don't spin
+    // pumpAndSettle while a bot or transition may keep animating.
+    await tester.runAsync(() async {
+      for (var i = 0; i < 40 && !session.started; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    });
+    await tester.pump(const Duration(milliseconds: 120));
     expect(session.started, true);
     final initial = session.view!.version;
     final pass = find.byKey(const Key('pass'));
     await tester.ensureVisible(pass);
     await tester.tap(pass);
-    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      for (var i = 0; i < 50 && session.view!.version == initial; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    });
+    await tester.pump(const Duration(milliseconds: 120));
     expect(session.view!.version, greaterThan(initial));
     await tester.tap(find.byKey(const Key('ux_app_home')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 120));
     if (!session.finished) {
       final resume = find.byKey(const Key('ux_home_resume'));
       await tester.ensureVisible(resume);
       await tester.tap(resume);
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 120));
       expect(session.view!.version, greaterThan(initial));
     }
   });

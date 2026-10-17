@@ -49,3 +49,6 @@ flutter build web --release
 
 ## UX 整合回歸：真的 BEN 在首頁後仍必須驗證
 之前 A4.4 的真 Chrome／Gateway／BEN 驗收測試直接 `pumpWidget(BridgeAcademyApp())` 就期待 `gateway_mode_notice` 出現；UX-01 改成讓實際使用者先看首頁後，這個測試在 [整合 BEN #38991549552](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38991549552) 正確失敗。測試已修正為必須先看到 `ux_home_screen`、確認沒有 Demo 快速開始，再點 `ux_home_gateway`，方可驗證真正 Gateway 牌桌並沿用全副 BEN 對局與 Bridge Core 計分測試。這是用「真正玩家旅程」取代「直接進入內部 Widget」的 E2E 驗證。改動後整合 CI 仍須實際通過才能宣稱成功。
+
+## Web E2E 工程注意：避免無界線的 pumpAndSettle
+在真 Chrome 上 [UX-01 Browser CI #38990644555](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38990644555) 的 `browser_table_test`、`browser_secure_checkpoint_test` 已跑過，新增 `browser_ux_01_first_play_test` 長時間未結束而導致 FlutterDriver `request_data` 20 分鐘 timeout。單純 `pumpAndSettle` 對等待非同步 Bot／進度動畫的 Web 實作不一定會完成。本整合測試將其改成短時 `pump` 搭配有明確上限的真實狀態輪詢，必要時在幾秒內失敗，避免測試卡死。此改動須由新 Chrome CI 確認結果，不能直接宣稱已修復。
