@@ -24,10 +24,10 @@ if (recoveryNeeded) {
 
 `UxDailyReturnPanel` 只依 state 提供開始、接續、下一副、確認重練與已完成後練叫牌 CTA。真正開始／繼續透過 `BridgeSession.startDailyPractice`、`nextDailyBoard`，仍讓 Bridge Core 決定合法行動；「返回牌桌」只是捲動定位，不重發牌。
 
-## 設計取捨與安全
+## 為什麼這樣設計
 類似 Android ViewModel 將資料層 truth 映射成 Compose UI State。UTC 是每日牌局 ID 的一部分，台北本地午夜不一定等於 UTC 換日。舊日期未完成、其他未完成牌局或讀寫失敗都不默默覆蓋紀錄。近期只展示最多三個本機已有日期及完成副數，不推測勝率、連勝、MP、IMP 或玩家弱點。
 
-## 驗證與證據
+## 驗證與實際證據
 ```bash
 cd apps/bridge_academy_flutter
 flutter analyze
@@ -36,7 +36,7 @@ flutter build web --release
 ```
 程式碼提交時 **NOT RUN**；需等此分支 GitHub Actions 的實際結果，不能以存在的測試檔案取代 PASS。
 
-## 自我檢驗
+## 練習與自我檢驗
 **思考題：** 玩家台北時間 10 月 18 日 01:00 開啟遊戲，為何每日挑戰可能仍顯示 10 月 17 日 UTC？
 **5–15 分鐘練習（可選）：** 增加「昨天完成、今天沒有紀錄」的測試，證明不會顯示假 streak。
 **完成標準：** 能解釋 Domain 進度、公開 DTO 和 Widget 如何保護隱私及避免錯誤重發。
