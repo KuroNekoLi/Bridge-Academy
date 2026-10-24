@@ -9,6 +9,7 @@ on:
       - 'apps/bridge_academy_flutter/lib/src/bridge_app.dart'
       - 'apps/bridge_academy_flutter/lib/src/app_copy.dart'
       - 'apps/bridge_academy_flutter/test/m4_custom_convention_draft_test.dart'
+      - 'services/bridge_gateway/test/m47_custom_draft_routing_guard_test.dart'
       - '.github/workflows/m4-custom-convention-drafts.yml'
   workflow_dispatch:
 permissions:
@@ -35,7 +36,13 @@ jobs:
           flutter pub get
           flutter analyze --no-pub
           flutter test test/m4_custom_convention_draft_test.dart --reporter expanded
+      - name: M4.7 actual Gateway HTTP admission rejection
+        working-directory: services/bridge_gateway
+        run: |
+          dart pub get
+          dart analyze --fatal-infos
+          dart test test/m47_custom_draft_routing_guard_test.dart --reporter expanded
       - name: Scope guard
         run: |
-          echo "M4: ONLY LOCAL CUSTOM CONVENTION DRAFTS; no edited BEN/BBA system support."
+          echo "M4: editable drafts + auditable history + expert handoff + Gateway rejection; NO edited BEN/BBA execution support."
           echo "No runtime Gateway activation, mobile emulator, device QA or production approval."
