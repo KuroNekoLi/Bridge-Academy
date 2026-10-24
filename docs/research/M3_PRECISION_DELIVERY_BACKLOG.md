@@ -1,14 +1,14 @@
 # M3 Precision Club — delivery backlog and release gates
 
 > Created: 2026-10-24. Baseline: master + [M3 Precision research evidence](M3_PRECISION_SPIKE_ACCEPTANCE.md).  
-> Engineering research is **not** product activation. Owner has chosen Precision Club as the third *future* base system; specific variant is now DECIDED: BBA Meckwell Precision V1; scope of license and release remain unverified.
+> Engineering research is **not** product activation. Owner has chosen Precision Club as the third *future* base system; specific variant DECIDED: BBA Meckwell Precision V1; owner confirms commercial hosting/modification/redistribution rights, while documentary review and release gates remain separate.
 
 ## M3.1 — Source / license / variant discovery
 Status: **VARIANT SELECTED / PERMISSION REPORTED / LICENSING SCOPE OPEN**
 
 - BEN pinned ad8608af only advertises 21GF-GIB, 21GF, SAYC as native playable bidders.
 - Pinned BBA/CC/Meckwell.bbsa is native EPBot system 3, one-notrump 13–15. Public Meckwell Lite v1.13.0 dated 2026-01-05 says 13–16; do not conflate.
-- BBA/EPBot upstream README lacks explicit public license; **project owner reports obtaining BBA permission on 2026-10-24**, but hosted/commercial/redistribution scope remains to be reviewed. Do not assume broader rights.
+- BBA/EPBot upstream README lacks explicit public license; **project owner reports obtaining BBA permission on 2026-10-24**, and then explicitly confirms permission for hosted/commercial use, modification and redistribution (owner-reported). Exact grant/third-party provenance remains to be reviewed for release.
 - Exact upstream hashes and concern recorded in [OPEN_SOURCE_AUDIT](../OPEN_SOURCE_AUDIT.md), [ADR-030](../DECISIONS.md).
 
 Product variant and exact source card revision are **decided**: [BBA Meckwell Precision V1](../conventions/PRECISION_BBA_MECKWELL_V1.md), ID `BA-PRECISION-MECKWELL/r1`, 1NT 13–15, SHA pinned. User reports BBA permission has been obtained; detailed written rights matrix and expert meaning checklist remain OPEN for release.
@@ -29,19 +29,19 @@ Exit for **complete system semantics** still requires 1C forcing continuation, n
 **Owner permission update**: project owner explicitly confirmed BBA **commercial hosting, modification and redistribution** authorization. Record permission as granted by owner; underlying grant/version/notice review is separate administrative evidence and does not prevent isolated engineering.
 
 
-Status: **RESEARCH-ONLY TYPE IN PLACE / INTEGRATION BLOCKED**
+Status: **SCOPED VERIFIED: NATIVE AUCTION PROVIDER / FULL-GAME INTEGRATION PENDING**
 
 - [PrecisionResearchCatalog](../../packages/bridge_conventions/lib/src/precision_research.dart) models separate source profiles and backend/license/expert approval. It cannot be selected by ConventionCatalog or Flutter.
-- With V1 variant selected, after grant scope and semantics evidence: define `PrecisionBiddingProvider` returning only a proposed CallAction from safe PlayerView, actor seat and immutable GameSystems; BBA native, own rules engine, or separately trained neural backend must be swappable.
+- **IMPLEMENTED:** [BbaPrecisionBiddingProvider](../../packages/bridge_precision_adapter/lib/src/precision_bidding_provider.dart) returns only a proposed CallAction from a private PlayerView; [sidecar](../../scripts/precision_m33_sidecar.py) uses pinned native EPBot and immutable V1 metadata. Full GameSystems registration waits until M3.4 capability/evidence gates.
 - For mixed pairs BBA must interpret both own and opponents' system, not send `PRECISION` into unavailable BEN /bid; cardplay compatibility is independently required.
-- Add loopback-only protocol with no hidden cards, bounded concurrency, sanitized errors, request idempotency; reject all unsupported calls/versions rather than fallback.
+- **IMPLEMENTED:** localhost POST body, caps on request/response, single native worker and bounded queue, sanitized errors, invalid schema/version rejection. **NOT IMPLEMENTED:** full Gateway request-ID persistence or transaction idempotency, and mixed-engine full-game/lead/play.
 
-Exit: exact card/version + provider implementation, 100+ expert reviewed golden bid fixture set, Bridge Core action validation and full NS/EW test matrix.
+M3.3 provider exit: **SCOPED VERIFIED** ([real CI #40095599137](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095599137): 18 true EPBot HTTP proposals including 2 auction-continuation contexts + Dart-to-Core bid). Expert-reviewed 100+ golden fixtures, full NS/EW game matrix and full player-facing release remain M3.4/M3.5 gates.
 
 ## M3.4 — Real Gateway / Flutter opt-in
 Status: **BLOCKED / NOT IMPLEMENTED**
 
-- After licensed provider, register a new `BA-PRECISION/<revision>` in the *server* allowlist with backend ID/version and model/artifact fingerprint.
+- After provider/full-game acceptance, register new `BA-PRECISION-MECKWELL/<revision>` in the *server* allowlist with backend ID/version and model/artifact fingerprint.
 - Extend Gateway's available capability negotiation and server-owned NS/EW pairing to support different provider protocols; preserve legacy checkpoints.
 - Only then add bilingual Precision choice in Flutter; show exact variant name, stop editing once game begins.
 - Keep existing BEN 21GF/SAYC fully unchanged and run separate end-to-end Android/iOS device QA only when owner lifts the existing hold.
@@ -57,4 +57,4 @@ Status: **NOT RUN / RELEASE NO-GO**
 - Ranked robot tournaments remain D/P3 gated on comparable seeds/engine versions and fairness.
 - Android/iOS QA is owner-deferred; no automatic dispatch.
 
-**Current release judgment:** V1 convention specification CHOSEN; native M3 research feasibility GO; license scope and full-play expert verification PENDING; player-facing Precision and production Precision NO-GO. Use [M3 report](M3_PRECISION_SPIKE_ACCEPTANCE.md) as SoT for observed evidence.
+**Current release judgment:** V1 CHOSEN; owner confirms commercial BBA hosting/editing/redistribution rights; M3.3 native bid Provider engineering scoped PASS; grant paperwork/third-party manifest, expert goldens, two-way mixed-game routing and target VPS remain PENDING. Player-facing Precision and production Precision NO-GO. Use [M3 report](M3_PRECISION_SPIKE_ACCEPTANCE.md) as SoT for observed evidence.
