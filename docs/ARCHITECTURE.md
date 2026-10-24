@@ -1,5 +1,25 @@
 # Architecture v0.1 — boundaries first
 
+## M3.4–M3.5：受控原生 BBA mixed-table 實驗，並非競賽級 Hybrid BEN（2026-10-24）
+
+```text
+Flutter研究建置：--dart-define=BA_M34_RESEARCH_PRECISION=true
+       ↓ client submits NS/EW profile IDs only
+Loopback Gateway: M34_RESEARCH_ENABLED=true; M34_RESEARCH_BBA_ORIGIN
+       ↓ server validates pinned GameSystems & native /health
+AuthoritativeGame → Private PlayerView (actor hand + public history)
+       ↓ BbaResearchTablePolicy (uses BOTH NS/EW real BBA .bbsa)
+Native sidecar POST /v1/precision/table-bid → real EPBot proposed auction Call
+       ↓ Bridge Core legality + server encrypted checkpoint/replay
+Research-only deterministic legal cardplay → 52 cards/13 tricks/score
+```
+
+`ConventionCatalog.precisionMeckwell` pins immutable V1 but is **not** advertised in default `candidateProfiles`; it is available only behind explicit Gateway and Flutter research opt-ins. All native source .so + Meckwell card hashes are verified on sidecar startup. No client can request arbitrary .bbsa filenames or other seats' private hands. Both 2/1/SAYC sides are interpreted through BBA compatible `.bbsa` cards, not BEN neural Precision reader (unavailable). Caller-only hand, no GET hand URLs, no raw errors in client or uploaded worker logs. The developer Gateway still binds localhost. Shutdown/sidecar loss never causes fallback to a different bidding system.
+
+[CI #40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596) passed two true native BBA-arc technical 52-card/13-trick games. M3.5 1000 genuine opening proposals all succeeded with P95=12.96ms and worker RSS ~77.4MiB on isolated Linux CI. Neither implies expert convention correctness, trained precision-aware defensive decisions, Android/iOS UX validation, TLS, commercial deployment or 4GB VPS concurrency suitability. [M3.4 acceptance](research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md) · [M3.5 metrics](research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md).
+
+
+
 ## M3.3 — BBA Meckwell Precision native Provider (2026-10-24)
 
 **Real native auction-proposal integration scoped PASS / M3.4 full-game pending.**
