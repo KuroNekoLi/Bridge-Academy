@@ -137,6 +137,9 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M1 狀態（2026-10-24）**：M1.1 靜態能力探針 SCOPED VERIFIED；M1.2 隔離新 BEN 真實啟動／SHA256／GET / SCOPED VERIFIED（[CI #40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217)、[驗收](../research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md)）；**M1.3 真實 2/1/SAYC 叫牌和 M1.4 RAM/部署決策仍未完成**。不可把兩個子階段的 PASS 等同 M1 整體 GO。
+
+
 | 里程碑 | 交付 | 最低驗收條件 | 不可假稱 |
 |---|---|---|---|
 | **M1 上游 BEN 多制度可行性** | 版本釘選、systems.conf 審核工具、GET / live capabilities probe、可重現單元測試、真模型評估方案 | 21GF、SAYC 靜態 capability 及（啟動真 BEN 後）API 實測分別報告，未跑要 NOT RUN | 靜態設定可用≠真模型可用 |
