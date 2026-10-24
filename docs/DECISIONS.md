@@ -1,5 +1,17 @@
 # Architecture and Product Decision Log
 
+## ADR-032 — M3.3 採隔離 EPBot PrecisionBiddingProvider，而非偽裝成 BEN Neural（2026-10-24）
+
+**IMPLEMENTED / AUCTION-PROPOSAL SCOPE / NOT FULL-GAME READY.**
+
+Bridge Academy 第三種叫牌制度沿用已核准之 [BBA Meckwell Precision V1](conventions/PRECISION_BBA_MECKWELL_V1.md)（`BA-PRECISION-MECKWELL/r1`、1NT 13–15、固定上游 native library 與 card SHA）。使用者已明確說明 **取得 BBA 商業託管、修改、再散布授權**；權利確認記錄為 `OWNER_REPORTED_GRANTED`，不再宣稱「未取得授權」。原始契約與元件清冊可存非公開合規紀錄，正式散布仍要核對授權的具體第三方/二進位版本、notice 和作業義務。
+
+**技術決策：** 不將不存在的 `BEN:PRECISION` 網路或 `ourSystem=PRECISION` 加入既有 BEN Adapter。獨立 `bridge_precision_adapter` 提供 `BbaPrecisionBiddingProvider`（只從 seat-filtered `PlayerView` 提出 CallAction），由 `BbaPrecisionLoopbackTransport` 以 127.0.0.1 POST body 與 `precision_m33_sidecar.py` 溝通。Native service 啟動時必須驗證 BEN source SHA、Meckwell.bbsa SHA、EPBot native binary SHA；以 actor NS/EW 決定「我方 Meckwell」和敵方 `BEN-21GF.bbsa`／`BEN-SAYC.bbsa`，不得傳完整 Deal 或接受任意 `.bbsa` 路徑。只啟用 `--research-only`，錯誤碼不洩露原生 stack/URL/hand。
+
+**安全與非目標：** Bridge Core 仍是唯一合法性權威。此階段只處理 Precision 方的 `/bid` 出價，**不是全局 BotPolicy 出牌**，也不構成真 BEN 21GF/SAYC 對 Precision 的雙向理解。M3.4 前繼續禁止正式 `ConventionCatalog` 登錄、Gateway/Flutter 開局及 production release，避免中途默默切回不相容模型。M3.4 必須選擇並證明對手 reader 策略或如實標示「全桌 BBA 模式」，再用完整牌局／golden fixtures 驗收。
+
+**執行證據：** [M3.3 Scoped CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/precision-m33-provider.yml) · [研究驗收](research/M3_3_PRECISION_PROVIDER_ACCEPTANCE.md) · [工程學習 F13](learning/features/M3_F13_PRECISION_BIDDING_PROVIDER.md) / [F14](learning/features/M3_F14_BBA_NATIVE_SIDECAR.md)。真原生開叫首輪 16/16 + Dart→EPBot→Core 1/1 已通過；後續續叫上下文 CI 以最新 run 為準。
+
 ## ADR-031 — Precision 單一正式約定版本：BBA Meckwell Precision V1（2026-10-24）
 
 **CONVENTION SPEC SELECTED; PLAYER RUNTIME NOT APPROVED.** 第三套制度正式選定 BBA Meckwell Precision V1（1NT 13–15），產品 ID `BA-PRECISION-MECKWELL/r1`。唯一版本資料來源是 BEN commit `ad8608af6e6bfe095863023f344f3cb2cbafec3d` 的 `BBA/CC/Meckwell.bbsa`，SHA-256 `5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc`，BBA type 3。與 Meckwell Lite v1.13.0 的 1NT 13–16 **非同一制度**。變更來源卡的規則或 hash 需要新增 revision，不能靜默覆寫歷史牌局。
