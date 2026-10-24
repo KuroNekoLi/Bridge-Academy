@@ -194,6 +194,18 @@ def read_rss(pid: int) -> int:
     return 0
 
 
+def read_cpu_seconds(pid: int) -> float | None:
+    """Linux per-process user+system CPU time, in seconds, not wall time."""
+    try:
+        raw = Path(f"/proc/{pid}/stat").read_text()
+        # proc comm can contain spaces or closing parentheses: split after last ') '.
+        fields = raw.rsplit(") ", 1)[1].split()
+        ticks = int(fields[11]) + int(fields[12])  # utime/stime fields 14/15
+        return ticks / os.sysconf("SC_CLK_TCK")
+    except (OSError, ValueError, IndexError):
+        return None
+
+
 def verify_capabilities(url: str) -> dict:
     data = get_json(url, "/")
     playable = data.get("playsSystems")
@@ -303,6 +315,9 @@ def run_m14(url: str, fixtures: list[dict], *, pid: int | None = None,
             secondary_url: str | None = None, secondary_pid: int | None = None,
             timeout: float = 65., rounds: int = 1) -> dict:
     verify_capabilities(url)
+    cpu_begins = {label: read_cpu_seconds(p) if p else None
+                  for label, p in (("primary", pid), ("secondary", secondary_pid))}
+    cpu_wall_start = time.perf_counter()
     # Same BEN commits and model settings; the varied eight-fixture batch
     # contains openings and first responses. This is not a steady-state load test.
     first = fixtures[:8] * rounds
@@ -352,7 +367,20 @@ def run_m14(url: str, fixtures: list[dict], *, pid: int | None = None,
              "secondaryPeakKiB": max((s["secondary"] for s in samples), default=None),
              "combinedPeakKiB": max((s["primary"] + s["secondary"] for s in samples), default=None),
              "rssSamples": len(samples)}
+    cpu_wall_elapsed = max(time.perf_counter() - cpu_wall_start, .0001)
+    cpu_data = {}
+    for label, p in (("primary", pid), ("secondary", secondary_pid)):
+        start_cpu = cpu_begins[label]
+        end_cpu = read_cpu_seconds(p) if p else None
+        delta = (max(0., end_cpu - start_cpu)
+                 if start_cpu is not None and end_cpu is not None else None)
+        cpu_data[label] = {
+            "processCpuSeconds": round(delta, 3) if delta is not None else None,
+            "averageCpuPercentOfOneCore": round(delta / cpu_wall_elapsed * 100, 1)
+                if delta is not None else None,
+        }
     return {"status":"PASS", "scope":"BEN_ISOLATED_CI_CAPACITY_SAMPLE_NOT_VPS_PRODUCTION",
+            "cpuObserved": cpu_data,
             "sampleFixtureCount": len(fixtures), "perBatchRequestCount": len(first),
             "stats": perf, "twoProcess": secondary, "observedRss": peaks,
             "targetVps4gb": "NOT_TESTED_ON_TARGET_HOST",
