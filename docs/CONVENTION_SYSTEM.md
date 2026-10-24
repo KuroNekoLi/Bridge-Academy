@@ -1,5 +1,7 @@
 # Convention System — initial design contract
 
+> 2026-10-24 update: The user approved three first-class target bidding systems — **2/1 Game Force, SAYC, Precision Club** — and eventual custom agreements. The definitive *delivery plan* is [Three-System AI Master Plan](product/THREE_SYSTEM_BIDDING_AI_MASTER_PLAN.md), with actual first-step evidence in [M1 Spike](research/BEN_MULTI_SYSTEM_M1_SPIKE.md). This initial contract and B3.2 display-only implementation remain valid boundaries; neither constitutes verified BEN three-system behavior.
+
 **Status:** proposed design, not proof BEN supports arbitrary bidding profiles.
 
 ## Separate three layers
