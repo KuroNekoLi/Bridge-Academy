@@ -21,7 +21,7 @@ M1.2 的 `GET /` 只驗證服務宣告。M1.3 會在**實際 BEN `gameapi.py`** 
 - 程式：[scripts/ben_multisystem_benchmark.py](../../scripts/ben_multisystem_benchmark.py)
 - 牌例：[16 個 single-seat 固定情境](../../scripts/fixtures/ben_multisystem_m13.json)
 - 契約測試：[scripts/test_ben_multisystem_benchmark.py](../../scripts/test_ben_multisystem_benchmark.py)
-- 與 M1.2 相同 pinned commit、Python 3.12／TensorFlow 2.21.0／Keras 3.15.1；此輪 BEN 設定為**NN-biased 快速研究模式**（BBA、PIMC、SuitC 停用，`eval_opening_bid=False`、`no_search_threshold=0.01`）。這不是 BEN 原廠完整比賽配置，品質數字不能對外宣稱等於完整版 BEN。
+- 與 M1.2 相同 pinned commit、Python 3.12／TensorFlow 2.21.0／Keras 3.15.1；此輪 BEN 設定為**NN-biased 快速研究模式**（BBA、PIMC、SuitC 停用，`eval_opening_bid=False`、`no_search_threshold=0.01`）。這不是 BEN 原廠完整比賽配置，品質數字不能對外宣稱等於完整版 BEN。第一輪 [CI #40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313) 亦已成功；報告以後續修正 RSS 採樣的 [#40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888) 為正式性能參考。
 
 執行（以已啟動在 loopback 8085 的同版 BEN 為前提）：
 
@@ -37,16 +37,16 @@ python scripts/ben_multisystem_benchmark.py \
 
 ## 3. CI evidence 和判定
 
-**EXECUTED / REAL BEN PASS**：GitHub Actions [#40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313) job `multi-system` completed/success。Pinned `ad8608af` 真正 `gameapi.py` 啟動，32/32 次真 `/bid` 成功，最低合法叫品預檢全部通過；BEN 對未知 `ourSystem` 回應 400（fail-closed）；3 個 2/1 forcing 規則沒有出現 PASS 違規。
+**EXECUTED / REAL BEN PASS**：最終版本 GitHub Actions [#40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888) job `multi-system` completed/success。Pinned `ad8608af` 真正 `gameapi.py` 啟動，32/32 次真 `/bid` 成功，最低合法叫品預檢全部通過；BEN 對未知 `ourSystem` 回應 400（fail-closed）；3 個 2/1 forcing 規則沒有出現 PASS 違規。
 - 16 組情境中有 **1 組不同**：`2over1_opener` 的 `1S–P–2H–P`，`21GF→4H`，`SAYC→3H`。此為觀察值，不是任一叫品已被專家證明最優。
-- 21GF 16 次：p50 **36.7 ms**、p95 **774.4 ms**、最大 **774.4 ms**。
-- SAYC 16 次：p50 **39.8 ms**、p95 **730.8 ms**、最大 **730.8 ms**。
+- 21GF 16 次：p50 **26.3 ms**、p95 **532.6 ms**、最大 **774.4 ms**。
+- SAYC 16 次：p50 **27.7 ms**、p95 **514.1 ms**、最大 **730.8 ms**。
 - 基礎測試是 Python 獨立語法／叫牌升序預檢，**未透過 Dart Bridge Core 執行每一個提案**。Fixture 有既定先前叫牌，但未建立配對的完整四手隱藏分配，也非專家審核 golden set。
 - 第三方模型/原生授權仍未核准；NN-biased 輕量設定不代表完整 BEN Production 模式。
 
 | 項目 | 要求 | 狀態 |
 |---|---|---|
-| 固定版本真實 BEN | PASS（[CI #40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313)） | PASS（[CI #40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313)） |
+| 固定版本真實 BEN | PASS（[CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888)） | PASS（[CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888)） |
 | 32 次 `/bid` | PASS（32/32，16 × 2，無非法回應） | PASS（32/32，16 × 2，無非法回應） |
 | 錯誤制度拒絕 | PASS（未知 ourSystem 400） | PASS（未知 ourSystem 400） |
 | 2/1 迫叫限制 | PASS（3 個指定情境零 PASS 違反） | PASS（3 個指定情境零 PASS 違反） |
