@@ -1,0 +1,99 @@
+name: M3.3 Isolated BBA Precision Bid Provider
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packages/bridge_precision_adapter/**"
+      - "scripts/precision_m33_*"
+      - ".github/workflows/precision-m33-provider.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  precision-provider:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      BEN_COMMIT: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+      PYTHONUNBUFFERED: "1"
+      TF_CPP_MIN_LOG_LEVEL: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+          path: third_party_ben_m33
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout: |
+            src
+            BBA
+            bin
+            requirements.txt
+            LICENSE
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben_m33/requirements.txt
+      - name: Dart pure Domain adapter checks
+        working-directory: packages/bridge_precision_adapter
+        run: |
+          dart pub get
+          dart analyze --fatal-infos
+          dart test --reporter expanded
+      - name: Python pure schema/privacy checks (no BBA native load)
+        run: |
+          python -m py_compile scripts/precision_m33_sidecar.py scripts/precision_m33_http_smoke.py scripts/test_precision_m33_sidecar.py
+          python -m unittest discover -s scripts -p 'test_precision_m33_sidecar.py' -v
+      - name: Exact BEN revision and native dependencies
+        run: |
+          test "$(git -C third_party_ben_m33 rev-parse HEAD)" = "$BEN_COMMIT"
+          sudo apt-get update -qq
+          sudo apt-get install -y libicu74 libboost-thread-dev
+          python -m pip install -r third_party_ben_m33/requirements.txt
+      - name: Start isolated research-only native EPBot service
+        run: |
+          python scripts/precision_m33_sidecar.py \
+            --ben-root third_party_ben_m33 \
+            --port 18088 --research-only \
+            > "$RUNNER_TEMP/precision-m33-private.log" 2>&1 &
+          echo "BBA_PID=$!" >> "$GITHUB_ENV"
+          python - <<'PY'
+          import json,time,urllib.request
+          for _ in range(60):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:18088/health",timeout=2) as response:
+                      status=json.load(response)
+                  if status.get("status")=="research_ready":
+                      print("M3_3_EPBOT_NATIVE_READY")
+                      break
+              except Exception:
+                  time.sleep(1)
+          else:
+              raise SystemExit("native EPBot did not pass runtime readiness")
+          PY
+      - name: Actual EPBot 8 fixtures x 2 opponent convention cards
+        timeout-minutes: 8
+        run: |
+          python scripts/precision_m33_http_smoke.py --port 18088
+      - name: Actual Dart -> private POST -> native BBA -> Bridge Core bid
+        working-directory: packages/bridge_precision_adapter
+        env:
+          PRECISION_NATIVE_ORIGIN: http://127.0.0.1:18088/
+        timeout-minutes: 5
+        run: dart test test/native_precision_live_test.dart --reporter expanded
+      - name: Scope and release guard
+        if: always()
+        run: |
+          echo "M3.3: Native proposal only. Precision not in ConventionCatalog, Gateway, Flutter."
+          echo "Opposition is interpreted by EPBot's BEN-21GF/BEN-SAYC .bbsa; existing BEN has no Precision opponent neural reader."
+          echo "Private request bodies and raw native logs are NOT uploaded."
