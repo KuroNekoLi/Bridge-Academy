@@ -1,5 +1,9 @@
 # Convention System — initial design contract
 
+> **Implementation update 2026-10-24:** M2.1 immutable GameSystems + M2.2–M2.5 verified explicit 21GF/SAYC runtime routing and Flutter opt-in choice have been implemented in Bridge Academy. See [M2 integration acceptance](research/M2_2_TO_M2_5_IMPLEMENTATION_ACCEPTANCE.md). Legacy display-only BA-NATURAL-NT convention previews remain separate and do NOT drive BEN or imply expert-approved rule semantics. Precision and arbitrary user agreements still unsupported.
+
+
+
 > 2026-10-24 update: The user approved three first-class target bidding systems — **2/1 Game Force, SAYC, Precision Club** — and eventual custom agreements. The definitive *delivery plan* is [Three-System AI Master Plan](product/THREE_SYSTEM_BIDDING_AI_MASTER_PLAN.md), with actual first-step evidence in [M1 Spike](research/BEN_MULTI_SYSTEM_M1_SPIKE.md). This initial contract and B3.2 display-only implementation remain valid boundaries; neither constitutes verified BEN three-system behavior.
 
 **Status:** proposed design, not proof BEN supports arbitrary bidding profiles.
