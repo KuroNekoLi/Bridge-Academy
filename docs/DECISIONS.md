@@ -1,5 +1,21 @@
 # Architecture and Product Decision Log
 
+## ADR-034 — Precision 合作制度推論導入出牌；真 BBA `find_info`，保留神經牌力 NO-GO（2026-10-24）
+
+**M3.6 SCOPED TECHNICAL PASS / COMPETITIVE CARDPLAY NOT YET VALIDATED.**
+
+固定 BEN `ad8608af6e6bfe095863023f344f3cb2cbafec3d` 內的 BBA `BBABotBid.find_info(auction)` 能在**當前 actor 原始 13 張手牌＋公開 auction、兩邊固定 .bbsa 卡**的資訊邊界下推估 N/E/S/W 四家 C/D/H/S 花色長度；但固定原生 BBA interface 無正式 `choose_card` API，BEN NN 也沒有 Precision opponent reader。因此不實作虛假的 `BEN:PRECISION` 或 DDS 偷看四手牌出牌。
+
+Bridge Academy 的研究版改為 `BbaResearchTablePolicy` 在 `Phase.play` 呼叫 `/v1/precision/auction-inference`；sidecar pin source / Meckwell card / EPBot .so，僅回傳完整 schema 和每座位 4 花色 **0..13 預測值（非真實手牌）**，不回傳任何對手實際私牌。Policy 僅以 `PlayerView.legalCards` 中合法牌按 `己方剩餘花色張數*2 + 搭檔預估張數*3 - 敵方預估張數合計` 探索性排序，同分保留低點；不憑 native 模型直接改 GameState。推論失敗、schema 或 SHA 不匹配回錯誤，不回退到 `DeterministicTrainingBot`、錯誤 BEN model 或所有牌可見的 DDS。
+
+**真實技術證據**：[CI #40105701070](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40105701070) 實際讀取原生 BBA 的 4 種 NS/EW 合約叫牌推論，拒絕非完成 auction／額外私牌，4 組 Precision 對 21GF/SAYC 的固定公開牌局各完成 52 unique cards／13 tricks，出牌不再是舊 deterministic：最終 NS score 由前階段的 -100 改為 +130（**不能據此推論牌力提升**，固定單一 PBN、沒有公平對照）。Dart unit 使用相同合法牌 + 不同搭檔預估花色證明會選不同合法出牌；惡意估值 fail-closed。正式測量式 native inference 次數以後續 CI 記錄為準。
+
+**非目標**：沒有真正的 Precision-aware BEN NN play model，沒有 single-dummy 機率抽樣訓練、訊號判讀、專家防禦牌例、同種子大樣本 MP/IMP 勝率、4GB VPS/併發驗收。因此 **產品 ranked/正式發布繼續 NO-GO**。僅保留 Gateway `M34_RESEARCH_ENABLED=true`、Flutter `BA_M34_RESEARCH_PRECISION=true` 的雙重 opt-in。BBA 商業託管、修改與再散布權已由使用者確認，正式散布文件/notice 留在 Release audit。
+
+[M3.6 工作和證據](research/M3_6_PRECISION_CONVENTION_AWARE_CARDPLAY.md) · [M3-F17 教學](learning/features/M3_F17_PRECISION_CONVENTION_INFERRED_CARDPLAY.md)。
+
+
+
 ## ADR-033 — M3.4 混合制度研究牌局與 M3.5 真原生效能評估（2026-10-24）
 
 **M3.4 SCOPED ENGINEERING PASS / M3.5 PERFORMANCE RESEARCH PASS; RELEASE NO-GO.** Bridge Academy 採用 `BA-PRECISION-MECKWELL/r1` 搭配 SAYC 或 2/1。由於 pinned BEN 神經模型沒有 Precision opponent reader，本次選擇**整桌 BBA 原生約定卡協作叫牌**，絕不讓 BEN 靜默把人工強 1♣ 理解為天然梅花。`BbaResearchTablePolicy` 是 private PlayerView → BBA proposal adapter，出牌使用**明確標示非競賽級的 DeterministicTrainingBot**。其目的是證實安全 Gateway、immutable GameSystems、52 張合法牌與 13 墩計分，而非證明競技強度。
