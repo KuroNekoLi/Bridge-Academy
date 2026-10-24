@@ -476,6 +476,17 @@ class AppCopy {
       'Demo uses a test bot (NOT BEN), with fixed or shuffled deals.'],
     'liveNotice': ['真 BEN 模式需要可連線的 BEN API，手牌只送往受信任服務。',
       'Live BEN mode requires a reachable, trusted BEN API.'],
+    'gatewayConventionNotice': [
+      '開局前選擇南北／東西搭檔制度；每局開始後固定，精準制尚未開放。',
+      'Choose NS/EW bidding systems before starting; profiles remain fixed. Precision is not available yet.',
+    ],
+    'gatewaySystemLegacy': ['現有 BEN（未確認制度）', 'Existing BEN (system unverified)'],
+    'gatewaySystem21GF': ['2/1 進局迫叫', '2/1 Game Force'],
+    'gatewaySystemSAYC': ['SAYC 標準黃卡', 'SAYC Standard American'],
+    'gatewayActiveSystems': [
+      '本局已固定制度與版本；目前牌局中不可更改。',
+      'The system and revision are pinned for this game.',
+    ],
     'gatewayNotice': [
       '伺服器牌桌模式：牌局與 AI 決策由可信任的 Gateway 管理，不會使用本機示範 Bot。此模式目前僅供明確設定的開發環境。',
       'Server-owned Gateway table: the server controls the deal and AI. No Demo fallback. Only for explicitly configured development environments.',
