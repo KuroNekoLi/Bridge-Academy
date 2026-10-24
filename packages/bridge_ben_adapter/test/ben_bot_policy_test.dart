@@ -1,5 +1,6 @@
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
 import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_conventions/bridge_conventions.dart';
 import 'package:test/test.dart';
 
 class RecordingTransport implements BenTransport {
@@ -25,6 +26,86 @@ GameState noTrumpGame() {
 }
 
 void main() {
+  group('M2.2 seat-scoped BID/LEAD/PLAY system routing', () {
+    final mixed = GameSystems(
+      northSouth: ConventionCatalog.twoOverOne,
+      eastWest: ConventionCatalog.sayc,
+    );
+
+    test('north bids in 21GF versus EW SAYC without leaking other cards', () async {
+      final transport = RecordingTransport({'bid': 'PASS'});
+      await BenBotPolicy(transport, gameSystems: mixed).choose(
+        PlayerView.forSeat(
+          GameState.start(Deal.suitPerSeat(), Seat.north, Vulnerability.none),
+          Seat.north));
+      expect(transport.route, '/bid');
+      expect(transport.query!['ourSystem'], '21GF');
+      expect(transport.query!['theirSystem'], 'SAYC');
+      expect(transport.query!.keys, isNot(contains('deal')));
+      expect(transport.query!.keys, isNot(contains('dummy')));
+    });
+
+    test('east BID swaps our and opponent systems', () async {
+      final transport = RecordingTransport({'bid': 'PASS'});
+      await BenBotPolicy(transport, gameSystems: mixed).choose(
+        PlayerView.forSeat(
+          GameState.start(Deal.suitPerSeat(), Seat.east, Vulnerability.none),
+          Seat.east));
+      expect(transport.query!['ourSystem'], 'SAYC');
+      expect(transport.query!['theirSystem'], '21GF');
+    });
+
+    test('south/north partner parity is not turn-index inference', () async {
+      var game = GameState.start(
+          Deal.suitPerSeat(), Seat.north, Vulnerability.none);
+      game = BridgeGame.apply(game, const CallAction(Seat.north, Pass()));
+      game = BridgeGame.apply(game, const CallAction(Seat.east, Pass()));
+      final transport = RecordingTransport({'bid': 'PASS'});
+      await BenBotPolicy(transport, gameSystems: mixed).choose(
+          PlayerView.forSeat(game, Seat.south));
+      expect(transport.query!['ourSystem'], '21GF');
+      expect(transport.query!['theirSystem'], 'SAYC');
+    });
+
+    test('opening lead retains the correct partnership system', () async {
+      final game = noTrumpGame();
+      final transport = RecordingTransport({'card': 'D2'});
+      await BenBotPolicy(transport, gameSystems: mixed).choose(
+          PlayerView.forSeat(game, Seat.east));
+      expect(transport.route, '/lead');
+      expect(transport.query!['ourSystem'], 'SAYC');
+      expect(transport.query!['theirSystem'], '21GF');
+      expect(transport.query, isNot(contains('dummy')));
+    });
+
+    test('legacy game stays free of system query fields', () async {
+      final transport = RecordingTransport({'bid': 'PASS'});
+      await BenBotPolicy(transport,
+          gameSystems: GameSystems.legacyUnverified()).choose(
+        PlayerView.forSeat(
+          GameState.start(Deal.suitPerSeat(), Seat.north, Vulnerability.none),
+          Seat.north));
+      expect(transport.query, isNot(contains('ourSystem')));
+      expect(transport.query, isNot(contains('theirSystem')));
+    });
+
+    test('mixed verified and legacy profiles fail closed', () async {
+      final bad = GameSystems(
+        northSouth: ConventionCatalog.twoOverOne,
+        eastWest: ConventionCatalog.legacyUnverified,
+      );
+      final transport = RecordingTransport({'bid': 'PASS'});
+      await expectLater(
+        BenBotPolicy(transport, gameSystems: bad).choose(
+          PlayerView.forSeat(
+            GameState.start(Deal.suitPerSeat(), Seat.north, Vulnerability.none),
+            Seat.north)),
+        throwsA(isA<BenApiException>()),
+      );
+      expect(transport.route, isNull);
+    });
+  });
+
   group('M2-F03: BEN wire contract (RECORDED FAKE, not real BEN)', () {
     test('/bid gets own original hand, dealer, absolute vulnerability and ctx',
         () async {
