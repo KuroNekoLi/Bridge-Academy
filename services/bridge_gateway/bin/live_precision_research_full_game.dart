@@ -68,14 +68,14 @@ void verifyFinal(Map<String, dynamic> view) {
   }
 }
 
-Future<void> playOne(bool swap) async {
+Future<void> playOne(bool swap, PartnershipSystem opponent) async {
   final native = BbaPrecisionLoopbackTransport(
       origin: Uri.parse('http://127.0.0.1:18088/'));
   final systems = GameSystems(
-      northSouth: swap ? ConventionCatalog.sayc :
+      northSouth: swap ? opponent :
           ConventionCatalog.precisionMeckwell,
       eastWest: swap ? ConventionCatalog.precisionMeckwell :
-          ConventionCatalog.sayc,
+          opponent,
   );
   final gateway = BridgeGatewayService(
       backend: const UnavailableDecisionBackend(),
@@ -181,8 +181,13 @@ Future<void> playOne(bool swap) async {
 
 Future<void> main() async {
   try {
-    await playOne(false);
-    await playOne(true);
+    for (final opponent in [
+      ConventionCatalog.sayc,
+      ConventionCatalog.twoOverOne,
+    ]) {
+      await playOne(false, opponent);
+      await playOne(true, opponent);
+    }
   } catch (_) {
     // Never print a raw exception, private hand, token or native traceback.
     stderr.writeln('M34_NATIVE_RESEARCH_GAME_FAILED');
