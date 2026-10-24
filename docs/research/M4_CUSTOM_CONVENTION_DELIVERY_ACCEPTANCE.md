@@ -20,6 +20,22 @@
 
 **保存≠支援。** 修改 `1NT=13–15` 或 `2♣=NATURAL` 沒有重訓 BEN，也沒把 BBA `.bbsa` 改成正式可辨識的 engine artifact。即使以 SHA 計算出同一份檔案完整性，也沒有給它 runtime execution 權限。哪天要開放可玩自訂卡，必須新增**server-owned allowlisted engine evidence**，每組已授權卡的 model/commit/CC digest、正式叫牌測試及適當恢復與隔離測試，才能從 `ENGINE_UNVERIFIED` 升級。使用者／JSON 不可以自行宣告 `SUPPORTED`。
 
+## 已執行的 M4.1–M4.2 驗收（GitHub Actions）
+
+**2026-10-24 [CI #40108357113](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40108357113) `completed/success`：**
+
+| 項目 | 結果 |
+| --- | --- |
+| `packages/bridge_conventions` `dart analyze --fatal-infos` | No issues found |
+| Dart Domain all: M2/M3 regression + M4 custom drafts／archive | **20/20 PASS** |
+| Flutter `flutter analyze --no-pub` | No issues found |
+| Flutter editor `flutter test test/m4_custom_convention_draft_test.dart` | **2/2 PASS** |
+| M4 UI save, reload, locale, remove, engine-unverified warning | PASS（memory storage injected into Widget；真 SharedPreferences on device NOT RUN） |
+| 修改後的約定在 BEN/BBA 中實際執行 | **NOT SUPPORTED / NO-GO** |
+| 新約定 100+ expert golden、正式 VPS、裝置 QA | **NOT RUN** |
+
+**判決：M4.1／M4.2 的本機功能 ENGINEERING_PASS；M4 整體尚未全部完成。**
+
 ## 已知保留與安全
 
 - SharedPreferences 是一般本機偏好，不是 encrypted ACID database、跨裝置雲同步或防惡意使用者竄改的簽章。發現 hash mismatch 會**拒絕自動覆蓋**，舊資料不被靜默丟棄。
