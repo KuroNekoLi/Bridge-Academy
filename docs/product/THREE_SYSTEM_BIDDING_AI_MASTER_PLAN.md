@@ -139,6 +139,10 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M4.1～M4.5 最新工程驗收（2026-10-25）：** [Flutter 本機草稿](../../apps/bridge_academy_flutter/lib/src/conventions/custom_draft_page.dart) 已具備有限規則編輯、SHA256 鏈結版本、引擎證據不足警示、公開叫牌 user-authored meaning 預覽，以及 fast-forward only 剪貼簿備份/匯入。真實 [M4 CI #40137806806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40137806806) Domain 25/25、Flutter 4/4 和 analyzer PASS，完整詳見 [M4 Scope Acceptance](../research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md)。**這僅是本機草稿產品／工程能力，不代表真 BEN/BBA 支援修改後的約定。** 要進入可玩自訂制度仍需明確引擎能力白名單、適用版本 artifact SHA、對手 reader、expert goldens 與正式發布測試。
+
+
+
 **M3.4／M3.5 最新進度（2026-10-24）**：已建立可選編譯、伺服器顯式允許的 Precision **研究版**：全桌採真 BBA/EPBot 按 `Meckwell.bbsa`／`BEN-SAYC.bbsa`／`BEN-21GF.bbsa` 協作叫牌，固定 `GameSystems` 版本，不讓 BEN NN 假裝有 Precision opponent reader。固定公開 PBN 的雙方向 Precision/SAYC 52 張牌技術性整局 PASS；出牌使用合法訓練策略，非競賽 AI。原生 1000 次固定種子開叫評估全部成功、P95=12.96ms，這不是 1000 場實戰。詳細見 [M3.4 驗收](../research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md)、[M3.5 性能](../research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md)、[CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596)。**產品的 AI 品質與正式 4GB VPS/裝置驗收依然 NO-GO**。
 
 
