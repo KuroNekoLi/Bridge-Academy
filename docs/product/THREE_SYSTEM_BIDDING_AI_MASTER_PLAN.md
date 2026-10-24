@@ -137,6 +137,10 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M2.1 狀態（2026-10-24）：** 已新增純 Dart `bridge_conventions`：南北／東西各自不可變的 `PartnershipSystem`、`GameSystems`、allowlisted revision 與 SHA-256 fingerprint；可信任 Gateway 建局綁定、encrypted checkpoint 恢復、舊版 legacy migration、未知版本拒絕。為避免使用者誤認 AI 已切換制度，M2.2 真實 BEN routing 前已選 `21GF/SAYC` 的遊戲動作先以 `503 system_router_unavailable` fail closed；正常舊遊戲不受影響。詳見 [M2.1 驗收](../research/M2_1_GAME_SYSTEMS_ACCEPTANCE.md)。**真正 BEN routing、UI 和競賽仍未完成**。
+
+
+
 **M1.3/M1.4 最新研究進度（2026-10-24）**：
 - **M1.3 — SCOPED VERIFIED**：Pinned `ad8608af` 真實 BEN，16 個未專家審核的 auction contexts × 2 制度 = **32/32 次 /bid**，無基本非法叫品，三個 2/1 forcing 測試無 PASS 違規，1 組叫品不同；資料與限制見 [M1.3 真模型驗收](../research/BEN_MULTI_SYSTEM_M1_3_ACCEPTANCE.md) ／ [CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888)。
 - **M1.4 — SCOPED VERIFIED**：同版 BEN 單 Worker concurrency 1/2/4、小樣本雙 Worker、p50/p95/p99 與實際 PID RSS 已驗證；觀測單 Worker 約 1.01 GiB、雙 Worker 合計約 1.95 GiB，詳見 [M1.4 容量研究](../research/BEN_MULTI_SYSTEM_M1_4_CAPACITY.md)。**不是目標 4GB VPS 壓測，也不是完整預設 BEN**。
