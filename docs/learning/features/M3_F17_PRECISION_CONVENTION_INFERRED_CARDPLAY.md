@@ -70,6 +70,10 @@ dart run bin/live_precision_research_full_game.dart
 
 這份驗證**只有真正的制度解讀＋確定合法的 heuristic**。沒有證明神經牌力、實際 Precision 弱點克制、MP/IMP 大樣本勝率，亦尚未部署 VPS。
 
+### 延伸查證：真實強梅花的關鍵侷限
+
+[CI #40106500046](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40106500046) 新增 `1C-P-1D-P-1N-P-3N-P-P-P` 完成叫牌測試，6/6 Native `find_info` 請求成功。但在固定例中，交換哪一方使用 Precision 後 **16 個花色 `probable_length` 預測全部不變**。因此能證實 API 連動與合法牌策略受估值影響，**不能**只憑這個結果說「BBA 已在這副牌上展示人工強 1♣ 的語義區辨」。這也說明需要看 HCP/meaning/alert 或多組 expert golden，而不是以 Mock 和接口成功率代替制度正確性。
+
 ## 練習與自我檢驗
 
 **思考題（1 題）：** 如果原生 BBA 說「搭檔可能有 6 張紅心」，但 Bridge Core 只允許你跟黑桃，你的 AI 可以出紅心嗎？為什麼？
