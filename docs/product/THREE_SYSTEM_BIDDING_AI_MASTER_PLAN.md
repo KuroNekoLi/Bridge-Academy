@@ -174,6 +174,8 @@ Runtime 至少提供：
 | **M1 上游 BEN 多制度可行性** | 版本釘選、systems.conf 審核工具、GET / live capabilities probe、可重現單元測試、真模型評估方案 | 21GF、SAYC 靜態 capability 及（啟動真 BEN 後）API 實測分別報告，未跑要 NOT RUN | 靜態設定可用≠真模型可用 |
 | **M2 兩制度整合** | Gateway/Adapter server-authoritative NS/EW profile、模型切換、Flutter 制度選擇、恢復 migration | 真 BEN 兩制度實測、雙搭檔隔離、合法及隱私 regression | UI 切換≠模型真的切換 |
 | **M3 Precision 原型** | Precision 約定文件、BBA PoC、license review、未來替換介面 | 真實 1C 系列/競叫完整測試；混用 BEN 下推測正確性評估 | 沒有授權≠可以發行；合法叫牌≠策略正確 |
+**M4.1/M4.2 自訂約定草稿（2026-10-24，獨立工程交付）**：由固定 SAYC/21GF 複製有限自訂 Convention Card，包含不可變 revision/前版 SHA256／rule collision/schema validation，以及雙語 Flutter 本機編輯、SharedPreferences 保存歷史；`CustomConventionDraft.isPlayableCustomSystem=false`，所有改動標 `ENGINE_UNVERIFIED`，絕不進入 Gateway/正式 AI。詳見 [M4 草稿驗收](../research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md)、[ADR-035](../DECISIONS.md)、[M4 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/m4-custom-convention-drafts.yml)。**M3 的產品級發行門檻仍未完成；M4 真正 AI 可執行的自訂約定、專家 Golden Cases 和受控能力授權亦未完成，不能宣稱 M4 全部完成。**
+
 | **M4 自訂約定** | 以既有制度複製、有限規則編輯、conflict detection、revision/hash | 所有可儲存並標 `SUPPORTED` 的約定有引擎證據 | 更改 bbsa≠神經網路重訓 |
 | **M5 AI 教練** | 候選叫品、雙語解釋、證據來源、賽後制度差異 | 叫品/含義/策略分層、UNKNOWN、隱藏資訊測試 | LLM 解釋≠當時 AI 真實推理 |
 | **M6 機器人競賽** | 制度專屬賽、固定 BoardSet、可比較 MP/IMP、排名 | Immutable server board、同種 scoring/bot/version、反作弊/去重 | 單桌 duplicate score≠MP/IMP |
