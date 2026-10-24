@@ -1,5 +1,15 @@
 # Architecture and Product Decision Log
 
+## ADR-036 — M4.3～M4.5：自訂約定可預覽、可移轉，但不可偽裝 AI 支援（2026-10-25）
+
+**DRAFT TOOLS IMPLEMENTED；PLAYABLE CUSTOM AI MODEL STILL NO-GO.** 玩家可從固定 SAYC/2/1 草稿編輯有限規則、檢視公開叫牌的「作者定義」與明確的 `engineEvidenceRequired`，並把已驗證的 revision chain 複製到剪貼簿，另一裝置必須確認才能 fast-forward 匯入。對現有版本較舊、base 不符、同一 revision 分岔、任意 JSON 欄位或 hash 篡改皆失敗且不覆蓋。此資料僅為本機個人草稿，並非密碼學簽章、雲同步或正式引擎憑證。
+
+新 `CustomConventionReviewer` 永不提供玩家可控制的 `SUPPORTED` 欄位。`CustomAuctionPreview` 的 `USER_DRAFT` 意義只來自使用者修改，對未設定的叫品回報「未驗證／未知」，不得作為原生 BEN/BBA 真正會出的叫品。原有 `ConventionCatalog`、`GameSystems`、Gateway 的服務端制度版本及 Precision 研究旗標都不因本地編輯而改變。
+
+此階段交付：[M4 domain reviewer](packages/bridge_conventions/lib/src/custom_convention_review.dart) · [Flutter editor](../apps/bridge_academy_flutter/lib/src/conventions/custom_draft_page.dart) · [M4 驗收](research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md) · [M4-F03](learning/features/M4_F03_CUSTOM_ENGINE_CAPABILITY_REVIEW.md) / [F04](learning/features/M4_F04_PUBLIC_AUCTION_MEANING_PREVIEW.md) / [F05](learning/features/M4_F05_CUSTOM_DRAFT_BACKUP_IMPORT.md)。
+
+正式可玩自訂卡仍須引擎逐規則測試/權限核對、雙方 convention reader、100+ goldens、部署和裝置 QA。**不要為了把 M4 標成完成而虛構模型訓練或修改生產 Gateway**。
+
 ## ADR-035 — M4 自訂約定分為「本機草稿」與「已驗證可執行制度」（2026-10-24）
 
 **APPROVED IMPLEMENTATION BOUNDARY / M4.1–M4.2 DRAFT SCOPE; M4 EXECUTABLE ENGINE NO-GO.**
