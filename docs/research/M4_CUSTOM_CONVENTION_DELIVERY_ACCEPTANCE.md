@@ -18,6 +18,8 @@
 
 [GitHub Actions #40139400430](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139400430) **completed/success**：完整 Domain **30/30 PASS**、Flutter Editor Widget **6/6 PASS**，Dart/Flutter Analyze 無問題。[Gateway CI #40139293120](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139293120) **completed/success**：Gateway **49/49 PASS**、分析通過，包括真 HTTP 注入拒絕。已將 M4.7 Gateway guard 另納入 [M4 專用 CI](../../.github/workflows/m4-custom-convention-drafts.yml)，以該 workflow 最新結果作最終簽核。
 
+**M4 專用整合 CI 最終驗收**：[GitHub Actions #40139553945](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139553945) `completed/success`，執行 Dart Domain **30/30**、Flutter Editor **6/6**、Gateway 真 HTTP 安全測試 **2/2**；三者分析（含 `--fatal-infos`）均無問題。使用 Flutter Linux Runner（非 Android/iOS 裝置），沒有呼叫真 BEN/BBA 去套用玩家編輯的約定。**這次 CI 是 M4.6/4.7 的整合驗收，不等於 M4 可玩自訂 AI 通過。**
+
 ### 未解除的關卡
 
 **M4 的本機自訂與審查工程可往下一階段推進，但自訂制度尚未真正在 BEN/BBA 中執行。** 真正可玩需要：可信 operator-side pinned artifact/model evidence、雙方約定讀取與 Alert、100+ 經專家審查的 Golden Cases、真 AI 整局與回復驗證、正式授權及部署／裝置 QA（原先暫緩）。使用者匯出一份 checklist **不等於**這些條件已滿足。
