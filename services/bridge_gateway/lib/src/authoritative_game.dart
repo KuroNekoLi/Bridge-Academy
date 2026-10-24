@@ -102,6 +102,13 @@ class AuthoritativeGame {
     Map<String, dynamic> body, {
     required bool advanceBots,
   }) async {
+    // M2.1 pins model identities only. Until M2.2 proves that the active
+    // worker actually honors both partnership selections, NEVER let a pinned
+    // game silently run with the legacy/default BEN bidding model.
+    if (!_gameSystems.northSouth.isLegacyUnverified ||
+        !_gameSystems.eastWest.isLegacyUnverified) {
+      throw const GatewayFailure(503, 'system_router_unavailable');
+    }
     const requiredBase = {'version', 'request_id', 'expected_version'};
     final expectedFields = advanceBots
         ? requiredBase
