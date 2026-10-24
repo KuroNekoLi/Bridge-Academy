@@ -31,7 +31,7 @@ Flutter research opt-in → Gateway allowlist & capability
 
 ## 驗證與實際證據
 
-`cd services/bridge_gateway && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded`，隔離 CI 47/47 PASS；另 `dart run bin/live_precision_research_full_game.dart` 對調兩次 NS/EW，各 13 墩、52 unique cards、NS -100，且 repeated request_id 冪等。證據：[CI #40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596)。
+`cd services/bridge_gateway && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded`，隔離 CI 47/47 PASS；另 `dart run bin/live_precision_research_full_game.dart` 在 [最新 CI #40103865733](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40103865733) 運行 Precision/SAYC 與 Precision/21GF 各自互換 NS/EW 共四局，每局 13 墩、52 unique cards、NS -100，且 repeated request_id 冪等；研究版 Flutter Widget 與版本核對亦通過。證據：[CI #40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596)。
 
 Flutter 常規版本完全不顯示 Precision。需要 `--dart-define=BA_M34_RESEARCH_PRECISION=true`，而 Gateway 也需要 `M34_RESEARCH_ENABLED=true` 加上 local sidecar origin 才能建立這種研究局；未跑完公開服務 TLS、專家 Goldens 或 VPS QA。
 
