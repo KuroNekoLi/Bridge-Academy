@@ -12,6 +12,8 @@ M4.2 `CustomConventionArchive` 驗證版本相連，Flutter app bar 提供雙語
 
 M4.3～M4.5 想要真的「自訂系統可玩」需獨立引擎證據：真 BEN/BBA convention compatibility、每個已授權版本的 artifact SHA、雙方對手 reader、golden forcing/competition/alerts、可恢復 AI 路由、專家簽核／公平性、非授權卡拒絕以及正式部署驗收。使用者直接編輯 UI **不是**這個證據。
 
+**完成的工程證據**：[M4 專用 CI #40108357113](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40108357113) SUCCESS：Dart Convention Domain 20/20、Flutter editor Widget 2/2、兩者 analyzer 皆無 issue，沒有裝置測試、原生 AI 改卡或正式部署。
+
 [驗收與待辦](research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md) · [M4-F01](learning/features/M4_F01_CUSTOM_CONVENTION_DRAFT_DOMAIN.md) · [M4-F02](learning/features/M4_F02_CUSTOM_CONVENTION_EDITOR.md) · [CI Workflow](../.github/workflows/m4-custom-convention-drafts.yml)。不開 Android emulator 或 iOS/Android device QA，遵守既定 owner hold。
 
 ## ADR-034 — Precision 合作制度推論導入出牌；真 BBA `find_info`，保留神經牌力 NO-GO（2026-10-24）
