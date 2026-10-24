@@ -1,5 +1,6 @@
 /// M3 Precision design evidence. Not a selectable ConventionCatalog profile.
 ///
+/// Product V1 pins the tested native EPBot card, not a playable BEN model.
 /// Meckwell Lite and the upstream EPBot Meckwell card are NOT interchangeable:
 /// the reference card (2026-01-05) lists 1NT 13-16 whereas the pinned upstream
 /// BEN/BBA Meckwell.bbsa selects 13-15. Further artificial responses, opening
@@ -48,6 +49,16 @@ final class PrecisionResearchCandidate {
 }
 
 abstract final class PrecisionResearchCatalog {
+  /// Agreed product specification identity, not a runtime registration.
+  static const String selectedProductProfileId = 'BA-PRECISION-MECKWELL';
+  static const int selectedProductRevision = 1;
+  static const String selectedProductName = 'BBA Meckwell Precision V1';
+  static const String selectedCardSha256 =
+      '5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc';
+
+  /// Reported by project owner (2026-10-24); permitted scope not reviewed.
+  static const bool bbaPermissionReportedByOwner = true;
+  static const bool bbaPermissionScopeVerified = false;
   static const String benPinnedRevision =
       'ad8608af6e6bfe095863023f344f3cb2cbafec3d';
 
@@ -79,6 +90,10 @@ abstract final class PrecisionResearchCatalog {
     licenseApproved: false,
     supportedByPlayableBenNeuralModel: false,
   );
+
+  /// Sole authoritative product V1 variant; other variant is comparison only.
+  static const selectedV1 = upstreamBbaMeckwell;
+  static const bool variantSelected = true;
 
   static const candidates = <PrecisionResearchCandidate>[
     meckwellLiteReference,
