@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:bridge_conventions/bridge_conventions.dart';
+import 'package:bridge_precision_adapter/bridge_precision_adapter.dart';
 
 import 'authoritative_game.dart';
 import 'encrypted_session_store.dart';
@@ -92,7 +93,11 @@ class BridgeGatewayService {
     BoardDefinition? trainingBoard,
     GameSystems? gameSystems,
     EncryptedSessionStore? checkpointStore,
-  })  : _checkpointStore = checkpointStore,
+    BbaTableBidTransport? precisionResearch,
+    bool enablePrecisionResearch = false,
+  })  : _precisionResearch = precisionResearch,
+        _enablePrecisionResearch = enablePrecisionResearch,
+        _checkpointStore = checkpointStore,
         _backend = backend ?? const UnavailableDecisionBackend(),
         _dealFactory = dealFactory ?? Deal.shuffled,
         _trainingBoard = trainingBoard,
@@ -109,6 +114,8 @@ class BridgeGatewayService {
     }
   }
 
+  final BbaTableBidTransport? _precisionResearch;
+  final bool _enablePrecisionResearch;
   final GatewayDecisionBackend _backend;
   final GatewayConfig _config;
   final DateTime Function() _clock;
@@ -152,6 +159,7 @@ class BridgeGatewayService {
         final game = AuthoritativeGame.restore(
           archive: Map<String, dynamic>.from(archive['game'] as Map),
           backend: _backend,
+          precisionResearch: _enablePrecisionResearch ? _precisionResearch : null,
         );
         final session = _Session(expiry, game);
         session.used = archive['used'] as int? ?? 0;
@@ -309,11 +317,21 @@ class BridgeGatewayService {
       }
       chosenSystems = GameSystems(northSouth: ns, eastWest: ew);
     }
-    if (!chosenSystems.northSouth.isLegacyUnverified ||
+    if (BbaResearchTablePolicy.isSupported(chosenSystems)) {
+      if (!_enablePrecisionResearch || _precisionResearch == null) {
+        throw const GatewayFailure(503, 'research_precision_disabled');
+      }
+      if (!await _precisionResearch.researchReady()) {
+        throw const GatewayFailure(503, 'research_precision_unavailable');
+      }
+    } else if (chosenSystems.northSouth.engineId == 'BBA' ||
+        chosenSystems.eastWest.engineId == 'BBA') {
+      // Double-Precision or unavailable native configurations are not legal.
+      throw const GatewayFailure(400, 'unsupported_system');
+    } else if (!chosenSystems.northSouth.isLegacyUnverified ||
         !chosenSystems.eastWest.isLegacyUnverified) {
       final available = _backend is SystemAwareDecisionBackend &&
-          await _backend
-              .supportsGameSystems(chosenSystems);
+          await _backend.supportsGameSystems(chosenSystems);
       if (!available) {
         throw const GatewayFailure(503, 'system_router_unavailable');
       }
@@ -338,7 +356,8 @@ class BridgeGatewayService {
     final game = AuthoritativeGame(
         deal: _dealFactory(), backend: _backend,
         trainingBoard: _trainingBoard,
-        gameSystems: chosenSystems);
+        gameSystems: chosenSystems,
+        precisionResearch: _enablePrecisionResearch ? _precisionResearch : null);
     final session = _Session(now.add(_config.sessionTtl), game);
     game.setCheckpoint(() => _persistSession(digest, session));
     _sessions[digest] = session;
