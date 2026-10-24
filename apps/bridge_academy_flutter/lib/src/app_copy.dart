@@ -484,6 +484,10 @@ class AppCopy {
       '研究環境：BBA 負責整桌叫牌並推估花色，出牌使用約定感知啟發式策略，尚未驗證競賽牌力。',
       'Research only: native BBA interprets both auctions and estimates suit lengths; heuristic cardplay is not a competitive AI.',
     ],
+    'm4PreviewTitle': ['草稿叫牌含義預覽', 'Draft auction meaning preview'],
+    'm4PreviewUnknown': ['目前草稿未定義此叫牌；不知道 AI 將如何理解。', 'This draft does not define the call; AI interpretation is unknown.'],
+    'm4PreviewUnverified': ['僅顯示使用者編輯的含義，非 BEN／BBA 叫牌證據。', 'User-authored meaning only, not BEN/BBA evidence.'],
+    'm4EvidenceMissing': ['引擎證據不足：自訂項目不可用於正式對局。', 'No engine evidence: customized rules cannot be played.'],
     'm4Title': ['自訂叫牌約定草稿', 'Custom Convention Drafts'],
     'm4Open': ['自訂約定', 'Custom conventions'],
     'm4Warning': [
