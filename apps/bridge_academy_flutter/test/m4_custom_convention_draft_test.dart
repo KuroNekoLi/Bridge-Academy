@@ -28,6 +28,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('m4_release_warning')), findsOneWidget);
     expect(find.byKey(const Key('m4_save')), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('m4_save')));
     await tester.tap(find.byKey(const Key('m4_save')));
     await tester.pumpAndSettle();
     final revision2 = store.saved['BA-SAYC']!.latest!;
@@ -58,10 +59,12 @@ void main() {
           isEnglish: true, storage: store),
     ));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('m4_save')));
     await tester.tap(find.byKey(const Key('m4_save')));
     await tester.pumpAndSettle();
 
     final two = store.saved['BA-SAYC']!.latest!;
+    await tester.ensureVisible(find.byKey(const Key('m4_remove')));
     await tester.tap(find.byKey(const Key('m4_remove')));
     await tester.pumpAndSettle();
     final three = store.saved['BA-SAYC']!.latest!;
@@ -83,6 +86,7 @@ void main() {
     expect(find.byKey(const Key('m4_preview_meaning')), findsOneWidget);
     expect(find.textContaining('interpretation is unknown'), findsOneWidget);
 
+    await tester.ensureVisible(find.byKey(const Key('m4_save')));
     await tester.ensureVisible(find.byKey(const Key('m4_save')));
     await tester.tap(find.byKey(const Key('m4_save')));
     await tester.pumpAndSettle();
