@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bridge_conventions/bridge_conventions.dart';
 import 'package:bridge_gateway/bridge_gateway.dart';
 import 'package:test/test.dart';
 
