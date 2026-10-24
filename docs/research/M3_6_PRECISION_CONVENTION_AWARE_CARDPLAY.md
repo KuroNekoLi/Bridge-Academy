@@ -69,6 +69,14 @@ Native `find_info` 以當前 actor 的**原始 13 張自己的手牌**、dealer�
 
 每場的 `nativeAuctionInferenceRequests:52` 是**真實 sidecar 往返次數**，非靜態 mock。因為同一副固定公開牌例，四種配置各得 NS +130，不足以斷言「AI 打得更好」；這是一個隱私、合法性、資料流與策略變化的技術證據，不是橋牌競技評分。
 
+## 人工強 1♣ 的真實語義驗證：新增發現
+
+後續 [CI #40106500046](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40106500046) **SUCCESS**，不只重跑前述所有資料流／四局 208 native inferences，也在 Native EPBot 中直接輸入已完成的 `1♣–Pass–1♦–Pass–1NT–Pass–3NT–Pass–Pass–Pass` 公開叫牌，分別從 Precision/SAYC 兩種搭檔配置解讀（原生 context 2/2 HTTP 200、完整輸出結構有效）。總計 Native 單次推論 smoke **6/6 PASS**、不完整 auction／額外隱藏 Deal **2/2 HTTP 400**。
+
+**重要負面發現：** 在這一組固定牌型／固定人工 1♣ 叫牌中，測得兩種系統配置的 `probable_length` **16 個預估花色長度均無差異（crossProfileEstimateDifferences=0）**。這不是證明 BBA 不懂人工強梅花，而是嚴格證明**僅看 probable_length 這項訊號尚無法驗證對強 1♣ 語義的區辨力**。因此**不能**把「真 BBA `find_info` 已串接」升格宣稱為「精準制強梅花競賽防禦已可正確推論」。
+
+後續需以 `find_info` 的 HCP 範圍、min/max 花色約束、bid meaning/Alert 與專家標注 golden auctions 逐步檢查真正的人工強 1♣ 語義，並以配對牌局測試是否能提升合法單明手出牌。正式模型／競賽 Release **仍 NO-GO**。
+
 ## 工作範圍與正式發行
 
 - 原生側車：[scripts/precision_m33_sidecar.py](../../scripts/precision_m33_sidecar.py)
