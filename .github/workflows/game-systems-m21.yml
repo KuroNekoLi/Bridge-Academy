@@ -1,0 +1,39 @@
+name: M2.1 Immutable GameSystems and Gateway Checkpoints
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packages/bridge_conventions/**"
+      - "services/bridge_gateway/**"
+      - ".github/workflows/game-systems-m21.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  game-systems:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Resolve, analyze and test convention domain
+        working-directory: packages/bridge_conventions
+        run: |
+          dart pub get
+          dart analyze --fatal-infos
+          dart test --reporter expanded
+      - name: Gateway integration, static analysis and regression tests
+        working-directory: services/bridge_gateway
+        run: |
+          dart pub get
+          dart analyze --fatal-infos
+          dart test --reporter expanded
+      - name: Scope reminder
+        run: |
+          echo "M2.1 = metadata + immutable game pin + encrypted restore; BEN system routing NOT RUN"
+          echo "No Android emulator/device workflow dispatched; no production deployment."
