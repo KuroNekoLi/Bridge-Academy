@@ -7,10 +7,11 @@ final class _Record implements BbaTableBidTransport {
   @override
   Future<bool> researchReady() async => true;
   Map<String, Object>? last;
+  Map<String, Object?>? inferenceOverride;
   @override
   Future<Map<String, Object?>> auctionInference(Map<String, Object> payload) async {
     last = payload;
-    return {
+    return inferenceOverride ?? {
       'provider': 'BBA_NATIVE_EPBOT',
       'profileId': PrecisionResearchCatalog.selectedProductProfileId,
       'revision': 1,
@@ -75,6 +76,53 @@ void main() {
         throwsA(isA<PrecisionProviderException>()));
     expect(transport.last, isNull);
   });
+
+
+  test('convention estimates change real legal-card preference, not simply '
+      'first legal card', () async {
+    const fixture = 'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
+        'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8';
+    final state = GameState.justDeclareStart(
+      Deal.fromPbn(fixture), Seat.north, Vulnerability.none,
+      const Contract(level: 3, strain: Strain.notrump,
+          declarer: Seat.north, doubling: Doubling.none),
+    );
+    final v = PlayerView.forSeat(state, Seat.east);
+    final fake = _Record();
+    final policy = BbaResearchTablePolicy(fake, GameSystems(
+        northSouth: ConventionCatalog.precisionMeckwell,
+        eastWest: ConventionCatalog.sayc));
+    Map<String, Object?> response(Map<String, Map<String, int>> estimates) => {
+      'provider': 'BBA_NATIVE_EPBOT',
+      'profileId': PrecisionResearchCatalog.selectedProductProfileId,
+      'revision': 1,
+      'cardSha256': PrecisionResearchCatalog.selectedCardSha256,
+      'source': 'BBA_AUCTION_ESTIMATE', 'suitEstimates': estimates,
+    };
+    final basic = {
+      for (final seat in const ['N','E','S','W'])
+        seat: {'C': 0, 'D': 0, 'H': 0, 'S': 0},
+    };
+    fake.inferenceOverride = response({
+      ...basic, 'W': {'C': 0, 'D': 0, 'H': 13, 'S': 0},
+    });
+    final hearts = (await policy.choose(v) as CardAction).card;
+    expect(hearts.suit, Suit.hearts);
+    expect(v.legalCards, contains(hearts));
+    fake.inferenceOverride = response({
+      ...basic, 'W': {'C': 13, 'D': 0, 'H': 0, 'S': 0},
+    });
+    final clubs = (await policy.choose(v) as CardAction).card;
+    expect(clubs.suit, Suit.clubs);
+    expect(clubs, isNot(hearts));
+
+    fake.inferenceOverride = response({
+      ...basic, 'W': {'C': 200, 'D': 0, 'H': 0, 'S': 0},
+    });
+    await expectLater(policy.choose(v),
+        throwsA(isA<PrecisionProviderException>()));
+  });
+
 
   test('experimental routing never silently changes non-Precision games', () {
     expect(BbaResearchTablePolicy.isSupported(GameSystems(
