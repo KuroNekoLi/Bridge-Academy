@@ -1,6 +1,6 @@
 # Bridge Academy — M1.2 隔離新版 BEN、模型權重清冊與真實 Capabilities
 
-> Status：**RUNNING / ACCEPTANCE PENDING**（以 CI 真實結果更新；禁止將 GitHub push 或靜態稽核等同於服務驗收）。  
+> Status：**SCOPED VERIFIED / REAL BEN GET / PASS**（CI #40075250217；真實 /bid 尚未執行，授權／正式部署仍為阻擋條件）。  
 > Date：2026-10-24 · Track：Three-System Bidding AI / M1.2。  
 > 這是研究環境，不是部署到 OVHcloud VPS，也不是替換 Bridge Academy 正式 BEN Worker。
 
@@ -73,15 +73,22 @@ python scripts/ben_system_probe.py \
 
 CI：[BEN M1.2 Isolated Live Runtime and Artifact Inventory](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/ben-m12-isolated-runtime.yml)
 
-**待確認：** 檢查最新 workflow run job 的 `completed/success`、`ben-m12-inventory.json`、`ben-m12-runtime.json`，並記錄 startup seconds、RSS、capabilities 的實際值。沒有輸出可核對前 **不能宣稱 M1.2 全部完成**。
+**EXECUTED / SCOPED PASS**：2026-10-24 [GitHub Actions #40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217) 的 `isolated-ben` job 已 `completed/success`：
+- Git checkout 精確為 `ad8608af6e6bfe095863023f344f3cb2cbafec3d`；模型、BBA 卡片、Native BBA/PIMC/DDS、LICENSE、requirements 都經 SHA-256 inventory／artifact existence 驗證。
+- `scripts/test_ben_m12_inventory.py` **8/8 PASS** + `test_ben_system_probe.py` **12/12 PASS**（合成測試與 Mock HTTP；與真正啟動 BEN 分開）。
+- Python **3.12.15**、TensorFlow **2.21.0**、Keras **3.15.1**、NumPy **2.0.2**。
+- 實際執行 `gameapi.py` 並取得非 Mock 的 `GET /`：`playsSystems = [21GF-GIB,21GF,SAYC]`；`readsSystems` 還有其他唯讀對手模型；`--systems-conf --check-artifacts --url` 同時檢查 **PASS**。
+- 真 BEN startup elapsed **9.03 秒**；`rssAtPollingPeakKiB=899920`，約 **879 MiB**。這是修正為 Python 實際 PID 後的觀測 RSS，並非全時段精準尖峰或壓力測試。
+- BBA/PIMC/SuitC 在此 smoke config 禁用；結果不代表正式引擎預設強度，也不代表 4GB VPS 可承受正式併發。不得將 `GET /` 視為真實制度出價 `/bid` 測試。
+- 實際機器可重現的部分 checksum 已永久記錄於 [Pinned Assets](BEN_M12_PINNED_ASSETS.md)；GitHub Actions artifact 存有更完整的 35 檔 manifest（短期保留）。License `redistributionApproved=false`，不得部署為正式發行物。
 
 | 驗收 | 狀態 |
 |---|---|
-| 新 BEN SHA 固定與稀疏隔離 checkout | 待 CI |
-| 模型／權重／原生庫檔案 SHA-256 | 待 CI |
-| 單元測試 | 待 CI |
-| 真的啟動 BEN 並讀 GET / | 待 CI |
-| Python / TF / Keras、記憶體紀錄 | 待 CI |
+| 新 BEN SHA 固定與稀疏隔離 checkout | PASS（CI #40075250217） |
+| 模型／權重／原生庫檔案 SHA-256 | PASS（35 檔 inventory；license 未核准） |
+| 單元測試 | PASS（8+12=20 tests） |
+| 真的啟動 BEN 並讀 GET / | PASS（plays 21GF / SAYC；不是實際叫牌） |
+| Python / TF / Keras、記憶體紀錄 | PASS（3.12.15 / 2.21.0 / 3.15.1，RSS 899920 KiB） |
 | 真實 `21GF/SAYC` `/bid` | **NOT RUN（M1.3）** |
 | Precision | **NOT RUN（M3）** |
 | 商用授權／正式部署／4GB 容量合格 | **BLOCKED / NOT REVIEWED** |
