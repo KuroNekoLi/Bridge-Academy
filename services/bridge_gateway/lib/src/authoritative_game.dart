@@ -1,5 +1,6 @@
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
 import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_conventions/bridge_conventions.dart';
 
 import 'gateway_service.dart';
 
@@ -10,7 +11,9 @@ class AuthoritativeGame {
     required Deal deal,
     required GatewayDecisionBackend backend,
     BoardDefinition? trainingBoard,
-  }) : _coordinator = SinglePlayerCoordinator(
+    GameSystems? gameSystems,
+  }) : _gameSystems = gameSystems ?? GameSystems.legacyUnverified(),
+       _coordinator = SinglePlayerCoordinator(
           deal: deal,
           dealer: trainingBoard?.dealer ?? Seat.north,
           vulnerability: trainingBoard?.vulnerability ?? Vulnerability.none,
@@ -18,18 +21,24 @@ class AuthoritativeGame {
           bot: BenBotPolicy(_PrivateBackendTransport(backend)),
         );
 
-  AuthoritativeGame._restored(this._coordinator);
+  AuthoritativeGame._restored(this._coordinator, this._gameSystems);
 
   factory AuthoritativeGame.restore({
     required Map<String, dynamic> archive,
     required GatewayDecisionBackend backend,
   }) {
+    // Older encrypted checkpoints had no system metadata. Explicitly mark
+    // them unverified rather than assuming a new 2/1 or SAYC contract.
+    final systems = archive.containsKey('gameSystems')
+        ? GameSystems.fromTrustedJson(archive['gameSystems'])
+        : GameSystems.legacyUnverified();
     final game = AuthoritativeGame._restored(
       SinglePlayerCoordinator.restore(
         trustedStorageArchive: archive['transcript'] as Map<String, dynamic>,
         humanSeat: Seat.north,
         bot: BenBotPolicy(_PrivateBackendTransport(backend)),
       ),
+      systems,
     );
     final entries = archive['replies'] as Map<String, dynamic>? ?? {};
     for (final entry in entries.entries) {
@@ -48,6 +57,10 @@ class AuthoritativeGame {
   }
 
   final SinglePlayerCoordinator _coordinator;
+  final GameSystems _gameSystems;
+
+  /// Trusted server-only metadata. Never obtained from a client action.
+  GameSystems get gameSystems => _gameSystems;
   final Map<String, (String, Map<String, Object?>)> _replies = {};
   Map<String, dynamic>? _pending;
   Future<void> Function()? _checkpoint;
@@ -60,6 +73,7 @@ class AuthoritativeGame {
 
   Map<String, Object?> trustedCheckpoint() => {
         'transcript': _coordinator.snapshotForTrustedStorage(),
+        'gameSystems': _gameSystems.toJson(),
         'replies': {
           for (final entry in _replies.entries)
             entry.key: {
