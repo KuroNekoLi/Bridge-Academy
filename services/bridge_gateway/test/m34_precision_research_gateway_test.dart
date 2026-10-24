@@ -15,7 +15,7 @@ final class _NativeResearchStub implements BbaTableBidTransport {
 
   @override
   Future<Map<String, Object?>> auctionInference(Map<String, Object> payload) async {
-    requests.add(payload);
+    // Record only auction-bid requests in the original M3.4 routing assertions.
     return {
       'provider': 'BBA_NATIVE_EPBOT',
       'profileId': PrecisionResearchCatalog.selectedProductProfileId,
