@@ -1,5 +1,14 @@
 # Architecture and Product Decision Log
 
+## ADR-026 — 三制度 AI 與逐步開放自訂約定（2026-10-24）
+
+**ACCEPTED PRODUCT SCOPE / ENGINEERING DIRECTION, NOT MODEL RELEASE APPROVAL.** 首批產品制度為 **2/1 Game Force、SAYC、Precision Club**；玩家未來可複製基本制度並修改經支援的約定。必須同時保證 AI 依制度做決策、解釋叫品及更新搭檔／對手的牌型與牌力估計，而不只是 UI 顯示。
+
+技術優先順序：原生 BEN `21GF/SAYC` 證據優先 → 另做 Precision BBA 隔離 PoC，若權利或品質不符合要求則改採自有規則器／專用模型 → verified-only 自訂約定 → 教練／競賽。**Meckwell Lite Precision 是推薦研究候選，非使用者批准的唯一精準制版本；所有具爭議的點力範圍及競叫細節仍需專家審核。**
+
+完整規格：[三制度正式主計畫](product/THREE_SYSTEM_BIDDING_AI_MASTER_PLAN.md)。M1.1 scope / CI：[BEN 多制度技術 Spike](research/BEN_MULTI_SYSTEM_M1_SPIKE.md)。既有 M2/B3、B6、A3.5/device hold、production release gates 保留；BEN 模型宣告 `playsSystems` 不等於 AI 真實叫牌通過，BBA 未明確授權不得視為可正式發行。
+
+
 Each item has status and rationale. Proposed choices are not approved simply because they appear here.
 
 ## ADR-025 — Product delivery split and device acceptance freeze (2026-10-15)
