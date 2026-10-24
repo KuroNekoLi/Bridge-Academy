@@ -14,6 +14,7 @@ import math
 import os
 import re
 import statistics
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -302,37 +303,58 @@ def run_m14(url: str, fixtures: list[dict], *, pid: int | None = None,
             secondary_url: str | None = None, secondary_pid: int | None = None,
             timeout: float = 65., rounds: int = 1) -> dict:
     verify_capabilities(url)
-    first = fixtures[:4] * rounds
+    # Same BEN commits and model settings; the varied eight-fixture batch
+    # contains openings and first responses. This is not a steady-state load test.
+    first = fixtures[:8] * rounds
     perf: dict = {}
-    for level in (1, 2, 4):
-        before = read_rss(pid) if pid else None
-        result, duration = run_batch(url, first, level, timeout)
-        perf[f"singleWorker_c{level}"] = {
-            **measure(result), "elapsedSec": round(duration, 2),
-            "throughputReqPerSec": round(len(result) / max(duration, 0.001), 3),
-            "rssBeforeKiB": before, "rssAfterKiB": read_rss(pid) if pid else None,
-        }
+    # Sample the actual worker PIDs throughout the benchmark, not the shell PID.
+    # These are polling maxima (not guaranteed true instantaneous VM peaks).
+    samples: list[dict] = []
+    stop = threading.Event()
+    def record_rss() -> None:
+        while not stop.is_set():
+            samples.append({"primary": read_rss(pid) if pid else 0,
+                            "secondary": read_rss(secondary_pid) if secondary_pid else 0})
+            stop.wait(0.1)
+    monitor = threading.Thread(target=record_rss, daemon=True)
+    monitor.start()
     secondary = None
-    if secondary_url:
-        verify_capabilities(secondary_url)
-        half = first[: max(2, len(first) // 2)]
-        started = time.perf_counter()
-        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-            a = executor.submit(run_batch, url, half, 1, timeout)
-            b = executor.submit(run_batch, secondary_url, half, 1, timeout)
-            first_result, _ = a.result(timeout=timeout * len(half) + 10)
-            second_result, _ = b.result(timeout=timeout * len(half) + 10)
-        elapsed = time.perf_counter() - started
-        secondary = {"requests": len(first_result) + len(second_result),
-                     "elapsedSec": round(elapsed, 2),
-                     "throughputReqPerSec": round((len(first_result) + len(second_result))/max(elapsed,.001),3),
-                     "primaryRssKiB": read_rss(pid) if pid else None,
-                     "secondaryRssKiB": read_rss(secondary_pid) if secondary_pid else None,
-                     "combinedRssKiB": sum([read_rss(p) for p in (pid, secondary_pid) if p]),
-                     "independentWorkers": True}
+    try:
+        for level in (1, 2, 4):
+            before = read_rss(pid) if pid else None
+            result, duration = run_batch(url, first, level, timeout)
+            perf[f"singleWorker_c{level}"] = {
+                **measure(result), "elapsedSec": round(duration, 2),
+                "throughputReqPerSec": round(len(result) / max(duration, 0.001), 3),
+                "rssBeforeKiB": before, "rssAfterKiB": read_rss(pid) if pid else None,
+            }
+        if secondary_url:
+            verify_capabilities(secondary_url)
+            half = first[: max(2, len(first) // 2)]
+            started = time.perf_counter()
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                a = executor.submit(run_batch, url, half, 1, timeout)
+                b = executor.submit(run_batch, secondary_url, half, 1, timeout)
+                first_result, _ = a.result(timeout=timeout * len(half) + 10)
+                second_result, _ = b.result(timeout=timeout * len(half) + 10)
+            elapsed = time.perf_counter() - started
+            secondary = {"requests": len(first_result) + len(second_result),
+                         "elapsedSec": round(elapsed, 2),
+                         "throughputReqPerSec": round((len(first_result) + len(second_result))/max(elapsed,.001),3),
+                         "primaryRssKiB": read_rss(pid) if pid else None,
+                         "secondaryRssKiB": read_rss(secondary_pid) if secondary_pid else None,
+                         "combinedRssKiB": sum([read_rss(p) for p in (pid, secondary_pid) if p]),
+                         "independentWorkers": True}
+    finally:
+        stop.set()
+        monitor.join(timeout=2)
+    peaks = {"primaryPeakKiB": max((s["primary"] for s in samples), default=None),
+             "secondaryPeakKiB": max((s["secondary"] for s in samples), default=None),
+             "combinedPeakKiB": max((s["primary"] + s["secondary"] for s in samples), default=None),
+             "rssSamples": len(samples)}
     return {"status":"PASS", "scope":"BEN_ISOLATED_CI_CAPACITY_SAMPLE_NOT_VPS_PRODUCTION",
             "sampleFixtureCount": len(fixtures), "perBatchRequestCount": len(first),
-            "stats": perf, "twoProcess": secondary,
+            "stats": perf, "twoProcess": secondary, "observedRss": peaks,
             "targetVps4gb": "NOT_TESTED_ON_TARGET_HOST",
             "productionRecommendation": "NO_GO_UNTIL_TARGET_CAPACITY_SECURITY_AND_LICENSE_REVIEW",
             "licenseApproved": False}
