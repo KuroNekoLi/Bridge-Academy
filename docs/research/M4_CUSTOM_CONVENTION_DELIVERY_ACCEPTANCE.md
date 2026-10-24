@@ -4,6 +4,24 @@
 > **M3 research/engineering = SCOPED PASS, M3 production/AI strength = NO-GO.**  
 > **M4.1–M4.2 editable draft = IMPLEMENTED / scoped CI evidence；M4 complete playable custom-system = NO-GO.**
 
+## M4.6～M4.7 增量驗收（2026-10-25）
+
+**SCOPED ENGINEERING PASS（自訂卡審查與安全功能）；Playable Custom AI = NO-GO。**
+
+- **M4.6 版本差異檢視**：新增 [CustomConventionHistory](../../packages/bridge_conventions/lib/src/custom_convention_history.dart) 對同一份已驗證 archive 的任意舊版與最新版，計算有限 rule-slot **新增／修改／移除**，顯示 before/after、公開 auction 與 revision SHA。Flutter 編輯器可挑選較舊版本觀看差異。Diff 只表示**使用者的草稿設定**，不代表 AI 真正的行為差異；跨 base／未知／逆序版號會拒絕。
+- **M4.7 專家與引擎證據交接**：新增 [CustomConventionReviewPlan](../../packages/bridge_conventions/lib/src/custom_convention_review_plan.dart)，為每個修改的 slot 列出六種待測：一般、競叫、已 Pass、迫叫／邀請、Alert／揭露、對手理解；輸出綁定 base/draft fingerprint 與 revision。這是**審查待辦**，所有情境皆為 `NOT_REVIEWED`、`NOT_RUN`。100 個專家 Golden 只是**正式目標**，目前測得案例數仍 **0**；`engineCertified=false`、`eligibleForProduction=false`。
+- **真正的 Gateway 准入測試**：新增 [M4.7 HTTP 守門測試](../../services/bridge_gateway/test/m47_custom_draft_routing_guard_test.dart)。直接向真 Gateway 提交 `local_sayc`、`local_21gf`、偽造 `SUPPORTED`、`customDraft`、雜湊與 revision；都必須 HTTP 400，並且不能發出 access token。既有 2/1、SAYC、Precision 研究模式及 Bridge Core 沒有更動。
+- **Flutter UX**：新增版本比較清單、明確的「此非引擎行為差異」警語、雙語專家待審清單與 Clipboard 匯出，不包含私牌、Deal、Token；沒有可將自訂卡套用到正式對局的按鈕。
+- **工程教學**：[M4-F06](../learning/features/M4_F06_CUSTOM_CONVENTION_REVISION_DIFF.md)、[M4-F07](../learning/features/M4_F07_EXPERT_REVIEW_AND_ROUTING_GUARD.md) 已收錄 [Learning Index](../learning/INDEX.md)。
+
+### 實際 CI
+
+[GitHub Actions #40139400430](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139400430) **completed/success**：完整 Domain **30/30 PASS**、Flutter Editor Widget **6/6 PASS**，Dart/Flutter Analyze 無問題。[Gateway CI #40139293120](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139293120) **completed/success**：Gateway **49/49 PASS**、分析通過，包括真 HTTP 注入拒絕。已將 M4.7 Gateway guard 另納入 [M4 專用 CI](../../.github/workflows/m4-custom-convention-drafts.yml)，以該 workflow 最新結果作最終簽核。
+
+### 未解除的關卡
+
+**M4 的本機自訂與審查工程可往下一階段推進，但自訂制度尚未真正在 BEN/BBA 中執行。** 真正可玩需要：可信 operator-side pinned artifact/model evidence、雙方約定讀取與 Alert、100+ 經專家審查的 Golden Cases、真 AI 整局與回復驗證、正式授權及部署／裝置 QA（原先暫緩）。使用者匯出一份 checklist **不等於**這些條件已滿足。
+
 ## M4 在本分支到底是什麼？
 
 產品三制度路線 M1→M6 定義的 M4 是 **Custom Convention Card**；不是歷史 `docs/ROADMAP.md` 中另一套「M4 Multiplayer」里程碑。這一階段可與 M3 競賽牌力驗證並行，但不可把研究成功當成已核准的 AI 模型，或修改正式 Gateway 的 `GameSystems`。
