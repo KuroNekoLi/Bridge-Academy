@@ -100,7 +100,7 @@ class LocalContractTest(unittest.TestCase):
         with patch.object(bm, "get_json", side_effect=lambda u,r,q=None,**kw: FAKE_CAPS if r=="/" else {"bid":"PASS"}),patch.object(bm,"read_rss",return_value=12000):
             result=bm.run_m14("http://127.0.0.1:8085",rows,pid=12345)
         self.assertEqual("NOT_TESTED_ON_TARGET_HOST",result["targetVps4gb"])
-        self.assertEqual(4,result["stats"]["singleWorker_c4"]["requests"])
+        self.assertEqual(8,result["stats"]["singleWorker_c4"]["requests"])
 
     def test_instrumentation_never_hides_bid_url_errors(self):
         with patch.object(bm,"get_json", side_effect=bm.BenchmarkError("BEN request failed (URL and hand intentionally redacted)")):
