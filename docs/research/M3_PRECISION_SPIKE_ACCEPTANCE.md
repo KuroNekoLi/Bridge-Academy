@@ -1,5 +1,7 @@
 # Bridge Academy — M3 Precision Club 原型研究與驗收
 
+> **2026-10-24 後續決策**：第三套正式約定已選定 [BBA Meckwell Precision V1](../conventions/PRECISION_BBA_MECKWELL_V1.md)，ID `BA-PRECISION-MECKWELL/r1`，1NT 13–15；Meckwell Lite 13–16 僅供比較。使用者表示已取得 BBA 使用授權，但授權範圍尚未審核。以下原始研究中的「變體未決／尚未取得授權」屬當時歷史狀態，請以本補充及 ADR-031 為準；完整 Gateway、Flutter Precision 及 Production 仍未驗收。
+
 > Date：2026-10-24  
 > 工程狀態：**M3-A（隔離 BBA/EPBot 原型）SCOPED VERIFIED**；正式 Precision 註冊／玩家選項 **BLOCKED**。  
 > 真模型 CI：[M3 Precision Native Research #40092078930](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40092078930)，completed/success。  
