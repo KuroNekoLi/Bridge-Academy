@@ -1,5 +1,9 @@
 # Bridge Academy
 
+> **M3.3 (2026-10-24):** Implemented an [isolated BBA Meckwell Precision V1 bid provider](packages/bridge_precision_adapter/lib/src/precision_bidding_provider.dart) and [native loopback sidecar](scripts/precision_m33_sidecar.py). [Engineering evidence](docs/research/M3_3_PRECISION_PROVIDER_ACCEPTANCE.md); owner confirms BBA commercial hosting/modification/redistribution rights. **Precision is not yet selectable in Gateway/Flutter** until M3.4 full-game compatibility is proven.
+
+
+
 **Precision V1（2026-10-24）**：第三套制度的唯一規格已選定 [BBA Meckwell Precision V1（1NT 13–15）](docs/conventions/PRECISION_BBA_MECKWELL_V1.md)，固定上游 Meckwell.bbsa 與 SHA。專案擁有人已告知取得 BBA 授權，但具體商業託管／再散布範圍待核對；正式 Gateway/Flutter Precision 尚未開放。
 A contract bridge platform: start with a single human playing alongside three AI players, then expand to teaching, online tables and duplicate tournaments.
 
