@@ -37,7 +37,7 @@ void main() {
     expect(() => plan.tasks.clear(), throwsUnsupportedError);
   });
 
-  test('M4.7 all five? six scenarios use bounded public auction prefixes',
+  test('M4.7 six scenarios use bounded public auction prefixes',
       () {
     final edited = CustomConventionDraft.create(
         id: 'my_21gf', label: 'My 2/1',
