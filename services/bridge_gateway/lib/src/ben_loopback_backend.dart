@@ -3,18 +3,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'gateway_service.dart';
+import 'package:bridge_conventions/bridge_conventions.dart';
 
 /// Trusted development-only upstream adapter to the pinned BEN gameapi.
 ///
 /// BEN uses GET query parameters containing a robot's own private hand.
 /// Therefore the origin MUST be an IP-literal loopback endpoint. Never print,
 /// cache, redirect, forward, or expose the constructed URI to the caller.
-class BenLoopbackBackend implements GatewayDecisionBackend {
+class BenLoopbackBackend implements SystemAwareDecisionBackend {
   BenLoopbackBackend({
     required Uri origin,
     Duration timeout = const Duration(seconds: 25),
     int maxResponseBytes = 32768,
     HttpClient? client,
+    this.pinnedBenRevision,
   })  : _origin = origin,
         _timeout = timeout,
         _maxResponseBytes = maxResponseBytes,
@@ -40,12 +42,53 @@ class BenLoopbackBackend implements GatewayDecisionBackend {
     _client.maxConnectionsPerHost = 1;
   }
 
+  /// Operator-verified deployed BEN source revision; GET / does not attest weights.
+  final String? pinnedBenRevision;
   final Uri _origin;
   final Duration _timeout;
   final int _maxResponseBytes;
   final HttpClient _client;
 
+
   void close() => _client.close(force: true);
+
+  @override
+  Future<bool> supportsGameSystems(GameSystems systems) async {
+    if (systems.northSouth.isLegacyUnverified &&
+        systems.eastWest.isLegacyUnverified) return true;
+    if (pinnedBenRevision == null ||
+        pinnedBenRevision != systems.northSouth.modelRevision ||
+        pinnedBenRevision != systems.eastWest.modelRevision ||
+        systems.northSouth.engineId != 'BEN' ||
+        systems.eastWest.engineId != 'BEN') return false;
+    try {
+      final request = await _client.getUrl(_origin).timeout(_timeout);
+      request.followRedirects = false;
+      request.headers.set(HttpHeaders.acceptHeader, 'application/json');
+      final response = await request.close().timeout(_timeout);
+      if (response.statusCode != 200 || response.isRedirect) return false;
+      final chunks = <int>[];
+      await for (final chunk in response.timeout(_timeout)) {
+        if (chunks.length + chunk.length > _maxResponseBytes) return false;
+        chunks.addAll(chunk);
+      }
+      final data = jsonDecode(utf8.decode(chunks));
+      if (data is! Map<String, dynamic>) return false;
+      final plays = data['playsSystems'];
+      final reads = data['readsSystems'];
+      if (plays is! List || reads is! List ||
+          plays.any((e) => e is! String) ||
+          reads.any((e) => e is! String)) return false;
+      return <String>{...plays.cast<String>()}.containsAll({
+        systems.northSouth.modelId, systems.eastWest.modelId,
+      }) && <String>{...reads.cast<String>()}.containsAll({
+        systems.northSouth.modelId, systems.eastWest.modelId,
+      });
+    } catch (_) {
+      return false;
+    }
+  }
+
 
   @override
   Future<Map<String, Object?>> decide(
@@ -56,11 +99,18 @@ class BenLoopbackBackend implements GatewayDecisionBackend {
 
     // No hidden Deal, headers, identity or arbitrary query keys.
     const base = {'hand', 'seat', 'dealer', 'vul', 'ctx'};
+    const system = {'ourSystem', 'theirSystem'};
     const play = {'dummy', 'played'};
     if (!allowedFields.keys.toSet().containsAll(base) ||
-        !(route == 'play' ? base.union(play) : base)
-            .containsAll(allowedFields.keys) ||
+        !(route == 'play' ? base.union(play).union(system) :
+            base.union(system)).containsAll(allowedFields.keys) ||
         (route == 'play' && !allowedFields.keys.toSet().containsAll(play))) {
+      throw const GatewayFailure(400, 'invalid_request');
+    }
+    if (allowedFields.keys.toSet().intersection(system).isNotEmpty &&
+        (!allowedFields.keys.toSet().containsAll(system) ||
+         !const {'21GF', 'SAYC'}.contains(allowedFields['ourSystem']) ||
+         !const {'21GF', 'SAYC'}.contains(allowedFields['theirSystem']))) {
       throw const GatewayFailure(400, 'invalid_request');
     }
     final target = _origin.replace(
