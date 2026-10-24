@@ -3,7 +3,7 @@
 - Feature ID：**M3-F05**（三制度產品線的 M2.1；舊 M2-F01～F52 編號不重新使用）
 - Milestone：**Multi-System M2.1**
 - 類型：純 Dart Domain／可信任 Gateway／加密恢復相容性
-- 工程狀態：**IMPLEMENTED；CI 結果以 GitHub Actions 為準**
+- 工程狀態：**SCOPED VERIFIED：Dart 分析零問題；Domain 5/5、Gateway 40/40；M2.2 routing NOT RUN**
 - 學習狀態：**DELIVERED**（尚無使用者練習／精熟證據）
 - 原始碼：[GameSystems](../../../packages/bridge_conventions/lib/src/game_systems.dart)、[AuthoritativeGame](../../../services/bridge_gateway/lib/src/authoritative_game.dart)、[BridgeGatewayService](../../../services/bridge_gateway/lib/src/gateway_service.dart)
 - 驗收與測試：[Domain tests](../../../packages/bridge_conventions/test/game_systems_test.dart)、[Checkpoint tests](../../../services/bridge_gateway/test/game_systems_checkpoint_test.dart)、[CI](../../../.github/workflows/game-systems-m21.yml)、[M2.1 接受條件](../../research/M2_1_GAME_SYSTEMS_ACCEPTANCE.md)
@@ -74,7 +74,7 @@ cd ../../services/bridge_gateway
 dart pub get && dart analyze --fatal-infos && dart test
 ```
 
-GitHub Actions：[M2.1 GameSystems CI](../../../.github/workflows/game-systems-m21.yml)，會跑 Domain 單元測試和全部 Gateway regression；實際通過與否請以工作流程記錄為準，未完成前不能宣稱 PASS。
+GitHub Actions：[M2.1 GameSystems CI #40077642876](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40077642876) 實際 **completed/success**，兩個 Dart package analyze 零 issues，Domain **5/5**、Gateway **40/40**；原 Gateway CI [#40077642900](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40077642900) 亦已通過。這不是實際多制度 BEN /bid 驗收。
 
 重要斷言：
 - NS/EW 互換會造成不同 fingerprint，序列化前後完全一致。
