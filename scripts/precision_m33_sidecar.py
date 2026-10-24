@@ -29,6 +29,7 @@ REVISION = 1
 PROVIDER = "BBA_NATIVE_EPBOT"
 BID_ROUTE = "/v1/precision/bid"
 TABLE_ROUTE = "/v1/precision/table-bid"
+INFERENCE_ROUTE = "/v1/precision/auction-inference"
 HEALTH_ROUTE = "/health"
 NATIVE_SHA256 = "c35d00b7aacdb5fe7bd4a5aeb1f5cdacef9856f9fc7b4ff4048368b6827777b4"
 OPPONENT_CARDS = {"21GF": "BBA/CC/BEN-21GF.bbsa",
@@ -179,6 +180,58 @@ class NativePrecisionEngine:
         }
 
 
+    def auction_inference(self, body: object) -> dict:
+        """Only convention-derived suit distributions; never raw native state.
+
+        BBA's find_info interprets the auction under *both* exact partnership
+        cards. It receives the acting player's own hand and public history,
+        never a 52-card deal or unrevealed dummy.
+        """
+        req, auction = validate_table_request(body)
+        seat = SEATS.index(req["seat"])
+        dealer = SEATS.index(req["dealer"])
+        own = req["northSouth"] if seat % 2 == 0 else req["eastWest"]
+        theirs = req["eastWest"] if seat % 2 == 0 else req["northSouth"]
+        def card(system):
+            return self.precision_cc if system == PROFILE_ID else self.opponent_cards[
+                "21GF" if system == "BA-21GF" else "SAYC"
+            ]
+        vul = req["vul"]
+        bot = self._builder(
+            str(card(own)), str(card(theirs)), seat, req["hand"],
+            (vul in ("NS", "Both"), vul in ("EW", "Both")),
+            dealer, False, False,
+        )
+        native = bot.find_info(auction)
+        if not isinstance(native, dict):
+            raise PrecisionProtocolError("invalid_native_inference")
+        estimates = {}
+        for i, position in enumerate(SEATS):
+            record = native.get(i)
+            if not isinstance(record, dict):
+                raise PrecisionProtocolError("invalid_native_inference")
+            suits = {}
+            for suit in "CDHS":
+                item = record.get(suit)
+                if not isinstance(item, dict):
+                    raise PrecisionProtocolError("invalid_native_inference")
+                try:
+                    probable = int(item["probable_length"])
+                except (TypeError, ValueError, KeyError):
+                    raise PrecisionProtocolError("invalid_native_inference") from None
+                if not (0 <= probable <= 13):
+                    raise PrecisionProtocolError("invalid_native_inference")
+                suits[suit] = probable
+            estimates[position] = suits
+        return {
+            "provider": PROVIDER,
+            "profileId": PROFILE_ID,
+            "revision": REVISION,
+            "cardSha256": PINNED_SELECTED_CARD_SHA256,
+            "source": "BBA_AUCTION_ESTIMATE",
+            "suitEstimates": estimates,
+        }
+
     def table_bid(self, body: object) -> dict:
         # BOTH partnerships use BBA's consistent convention-card reader.
         req,auction=validate_table_request(body)
@@ -204,7 +257,7 @@ class NativePrecisionEngine:
         }
 
 
-def handler_factory(decider: Callable[[object], dict], table_decider=None):
+def handler_factory(decider: Callable[[object], dict], table_decider=None, inference_decider=None):
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
         def log_message(self, *args):
@@ -232,7 +285,7 @@ def handler_factory(decider: Callable[[object], dict], table_decider=None):
             })
 
         def do_POST(self):
-            if self.path not in (BID_ROUTE, TABLE_ROUTE) or self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+            if self.path not in (BID_ROUTE, TABLE_ROUTE, INFERENCE_ROUTE) or self.headers.get("Content-Type", "").split(";")[0] != "application/json":
                 self.respond(404, {"error": "invalid_route"})
                 return
             length = self.headers.get("Content-Length")
@@ -242,7 +295,11 @@ def handler_factory(decider: Callable[[object], dict], table_decider=None):
             try:
                 raw = self.rfile.read(int(length))
                 payload = json.loads(raw)
-                if self.path == TABLE_ROUTE:
+                if self.path == INFERENCE_ROUTE:
+                    if inference_decider is None:
+                        raise PrecisionProtocolError('inference_not_configured')
+                    result = inference_decider(payload)
+                elif self.path == TABLE_ROUTE:
                     if table_decider is None:
                         raise PrecisionProtocolError('table_not_configured')
                     result = table_decider(payload)
@@ -277,7 +334,7 @@ def main() -> int:
     try:
         engine = NativePrecisionEngine(args.ben_root)
         server = LocalResearchServer(("127.0.0.1", args.port),
-                                     handler_factory(engine.decide, engine.table_bid))
+                                     handler_factory(engine.decide, engine.table_bid, engine.auction_inference))
     except (OSError, ResearchError, ImportError):
         print("M3.3 native worker initialization failed (redacted)",
               file=sys.stderr)
