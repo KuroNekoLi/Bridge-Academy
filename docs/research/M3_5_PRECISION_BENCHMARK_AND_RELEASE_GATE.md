@@ -4,6 +4,8 @@
 > Source evidence：[GitHub Actions #40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596)  
 > 與 M3.4 固定完整牌局區分：**1,000 次開叫 ≠ 1,000 場完整橋牌對局**。
 
+> **M3.6 現況補充**：真實 BBA 叫牌解讀已接入 Gateway 的**研究用啟發式出牌**，CI [#40105927916](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40105927916) 四局實測共 208 次 `find_info`。這使「完全沒有約定推論」不再成立，但**還沒有學得的 Precision-aware neural cardplayer、同種子 MP/IMP 評估或 1000 場完整隨機牌局**，故 Release NO-GO 不變。舊表所列 P50/P95 僅測 native **叫牌 API**，不得當作 native `find_info` 每次 latency。
+
 ## 1. 實測對象
 
 - 固定原生 BBA `libEPBot.so`、BEN commit `ad8608af6e6bfe095863023f344f3cb2cbafec3d`、BBA Meckwell Precision V1 `Meckwell.bbsa` 雜湊；單機 isolated Ubuntu 24.04 GitHub Actions Runner。
