@@ -1,6 +1,6 @@
 # Bridge Academy — M1.4：BEN 單／雙 Worker 效能與 4GB VPS 部署判斷
 
-> 2026-10-24 · **PENDING CI**（不是正式 VPS 已跑過測試）。  
+> 2026-10-24 · **SCOPED VERIFIED**（CI 單／雙 Worker 實測成功；非目標 4GB VPS、非完整正式模式）。  
 > 基準：BEN `ad8608af6e6bfe095863023f344f3cb2cbafec3d`；Python 3.12、TensorFlow 2.21.0、Keras 3.15.1；隔離 Ubuntu 24.04 GitHub Actions Runner。  
 > 主計畫：[三制度 AI](../product/THREE_SYSTEM_BIDDING_AI_MASTER_PLAN.md)。
 
@@ -32,7 +32,7 @@ python scripts/ben_multisystem_benchmark.py \
 
 ## 3. 4GB VPS 的工程決策準則
 
-**目前裁決：對正式多制度上線暫定 NO-GO**，直到在真實目標主機進行受控壓測與 license/security release gate。這是明確不批准 production deployment，**不代表 4GB VPS 已經被實測證明不足**。
+**正式裁決：對正式多制度上線維持 NO-GO**，直到在真實目標主機進行受控壓測與 license/security release gate。這是明確不批准 production deployment，**不代表 4GB VPS 已經被實測證明不足**。
 
 建議（目標門檻，尚非實測）：
 1. Docker Memory Limit / cgroup 限制，單程序及雙 Worker 配置加上資料庫、Gateway、reverse proxy、OS 的 RAM 合計，保留至少 25–30% 安全餘裕，避免 OOM killer 影響同機 MySQL 等服務。
@@ -43,7 +43,22 @@ python scripts/ben_multisystem_benchmark.py \
 
 ## 4. 真實效能證據
 
-**PENDING**：GitHub Actions 完成後須填入 Run ID、測量結果（單/雙 Worker、p95、throughput、RSS峰值）、對照與風險。若任何情境 timeout、非法回應、HTTP error，必須保持 FAIL，不得以單元/Mock PASS 替代。
+**EXECUTED / PASS**：[GitHub Actions #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888) （實際 BEN／Python 3.12.15，TensorFlow 2.21.0、Keras 3.15.1，固定 commit `ad8608af`），單 Worker 在 `concurrency=1/2/4` 的每組均完成 **16 個真實 BEN /bid**，雙 Worker 共完成 **16 個**請求。沒有 HTTP error / 非法結果；工作流程最終 `completed/success`，且含 PID polling RSS 採樣。另先前 [CI #40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313) 在舊版只測每組 8 次，也已通過，以下採較完整之新版測量。
+
+| 單 Worker 並行度 | 請求 | p50 | p95 | p99 | 完成時間 | 吞吐量 |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | 16 | 26.0 ms | 89.2 ms | 89.2 ms | 0.56 s | 28.584 req/s |
+| 2 | 16 | 35.3 ms | 98.2 ms | 98.2 ms | 0.42 s | 38.286 req/s |
+| 4 | 16 | 78.7 ms | 126.1 ms | 126.1 ms | 0.38 s | 42.333 req/s |
+
+**RSS 實測（Linux `/proc/<BEN_PID>/status`，每 0.1 秒 polling；採樣 28 次）**：
+- 主 BEN Process 觀測峰值：`1,059,016 KiB`（約 **1.01 GiB**）。
+- 第二 BEN Process 觀測峰值：`981,420 KiB`（約 **0.94 GiB**）。
+- 兩 Worker 合計觀測峰值：`2,040,048 KiB`（約 **1.95 GiB**）。
+- 雙 Worker 結束時合併 RSS：`2,041,508 KiB`（採樣間隔之外可能比觀測峰值稍高，這兩個指標不能混作精確 peak）。
+- 雙 Worker 16 次請求，完成時間 **1.36 秒**，吞吐量 **11.754 req/s**；這個對比受到測試順序、冷/熱模型、兩程序共享 CPU 以及 request scheduling 影響，不構成精確性能排名。
+
+**重要侷限**：單 Worker 只跑 NN-biased BEN 配置下的 16 筆短時請求，未測完整 BBA/PIMC/Full DD/長期負載，也未測實際 2 vCPU／4GB OVHcloud 主機。所謂 `NO-GO` 是**尚未經核准的風險阻擋**，不是否定 4GB 一定跑不動。
 
 ## 5. 結論範圍
 
