@@ -1,5 +1,9 @@
 # Architecture and Product Decision Log
 
+## ADR-027 — M1 Feasibility Scoped GO / Production NO-GO（2026-10-24）
+
+**ACCEPTED TECHNICAL DECISION, NOT DEPLOYMENT APPROVAL.** M1.1 靜態能力、M1.2 真 BEN GET /、M1.3 兩制度實際 /bid A/B（32/32）、M1.4 GitHub Runner 單／雙 Worker 容量抽樣皆為 scoped PASS。強制保持真模型／Mock／模型配置／人類專審／目標主機實測的證據界線。推薦 M2 先採**單 BEN Worker 多模型 + 有界請求併行**、Server-owned profile ID/hash/version；Precision 另開 BBA 授權與語義 Spike。**4GB OVH VPS 正式多制度服務維持 NO-GO**，直到本機容量、完整版模擬、長時壓力、授權/權重、Gateway production 安全、裝置 QA 等 gate 通過。[M1.3 Evidence](research/BEN_MULTI_SYSTEM_M1_3_ACCEPTANCE.md) · [M1.4 Benchmark](research/BEN_MULTI_SYSTEM_M1_4_CAPACITY.md) · [CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888)。
+
 ## ADR-026 — 三制度 AI 與逐步開放自訂約定（2026-10-24）
 
 **ACCEPTED PRODUCT SCOPE / ENGINEERING DIRECTION, NOT MODEL RELEASE APPROVAL.** 首批產品制度為 **2/1 Game Force、SAYC、Precision Club**；玩家未來可複製基本制度並修改經支援的約定。必須同時保證 AI 依制度做決策、解釋叫品及更新搭檔／對手的牌型與牌力估計，而不只是 UI 顯示。
