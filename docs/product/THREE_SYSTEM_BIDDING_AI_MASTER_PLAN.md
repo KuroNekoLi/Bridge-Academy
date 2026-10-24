@@ -137,6 +137,10 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M3 Precision 技術研究最新結果（2026-10-24）**：已完成首個隔離 native BBA/EPBot Spike（[報告](../research/M3_PRECISION_SPIKE_ACCEPTANCE.md)、[CI #40092096757](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40092096757)），8 次真原生開叫測試、4 個 1♣ 強開叫候選皆符合研究預期；**BBA Meckwell 上游卡 1NT 13–15 與公開 Meckwell Lite v1.13.0 13–16 不同**。新 [PrecisionResearchCatalog](../../packages/bridge_conventions/lib/src/precision_research.dart) 僅為候選規格，因版本/授權/完整叫牌語義未核准，**不能註冊為 BA-PRECISION，不能在 Flutter/Gateway 選擇**。M3 要從此候選原型延續到 Production 必須先完成書面授權、唯一的 Meckwell 版本／完整約定卡與 100+ expert golden fixtures、真 BBA mixed partner 整局和伺服器分離路由，現階段保持 release NO-GO。
+
+
+
 **M2.2～M2.5 工程完成（2026-10-24，SCOPED PASS）**：Adapter 對 N/S vs E/W 正確傳送 21GF/SAYC；Gateway 使用 operator-pinned BEN commit + 真實 GET / abilities + server allowlisted GameSystems；Flutter 新局前可分別選 N/S、E/W 制度並驗證回傳 fingerprint。實際真 BEN 在同一固定 Deal 的兩種互換配置分別完整完成 13 墩／52 張牌／有效計分、每局 56 次 BEN requests；真實證據：[CI #40087851963](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40087851963) · [綜合驗收](../research/M2_2_TO_M2_5_IMPLEMENTATION_ACCEPTANCE.md) · [整局驗收](../research/M2_5_REAL_BEN_MULTISYSTEM_ACCEPTANCE.md)。現有 Legacy/Flutter Demo 邊界保留。**這不等於完整叫牌制度專家核可、裝置 QA 或 Production GO。** Precision／自訂制度待 M3。
 
 
