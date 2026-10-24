@@ -90,6 +90,25 @@ void main() {
       expect(resaved['gameSystems'], GameSystems.legacyUnverified().toJson());
     });
 
+    test('pinned system cannot silently use default BEN before M2.2', () async {
+      final pinned = approved();
+      final g = game(systems: pinned);
+      final original = g.view();
+      await expectLater(
+        g.execute({
+          'version': 1,
+          'request_id': 'm21_router_guard_01',
+          'expected_version': 0,
+          'action': {'kind': 'bid', 'call': 'PASS'},
+        }, advanceBots: false),
+        throwsA(isA<GatewayFailure>()
+            .having((e) => e.status, 'status', 503)
+            .having((e) => e.code, 'code', 'system_router_unavailable')),
+      );
+      expect(g.view(), original);
+      expect(checkpoint(g)['gameSystems'], pinned.toJson());
+    });
+
     test('new session default never falsely claims 2/1/SAYC', () {
       final defaultGame = game();
       expect(defaultGame.gameSystems, GameSystems.legacyUnverified());
