@@ -53,6 +53,10 @@ Status: **BLOCKED / NOT IMPLEMENTED**
 Exit: both mixed NS/EW configurations, real full 52-card/13-trick test per configuration, error/timeout/restart/replay and model version consistency.
 
 ## M3.5 — Benchmark / production go-no-go
+
+**M3.6 Research Update (2026-10-24):** Native BBA `find_info` successfully wired into server-owned legal-card heuristic; [scoped four complete games & 208 real inference calls](M3_6_PRECISION_CONVENTION_AWARE_CARDPLAY.md). The artificial strong 1♣ probe passes the native schema, but 16 `probable_length` estimates did not distinguish swapped profiles in that specific fixed example (zero differences). Next release gates must cover original meaning/HCP/alert, expert goldens and fair-play cardplay skill. **Do not claim a Precision-trained neural cardplayer exists.**
+
+
 Status: **NOT RUN / RELEASE NO-GO**
 
 - Real distribution: 1000 seeded games, auction/convention agreement rates, BBA native availability, error and illegal proposal rate, MP/IMP fairness with common card, reports with revision-specific data.
