@@ -6,7 +6,12 @@ import 'precision_bidding_provider.dart';
 
 /// Research-only native EPBot sidecar transport. Never send private hands in
 /// a URL, proxy, log or redirect. Gateway integration remains gated for M3.4.
-final class BbaPrecisionLoopbackTransport implements PrecisionBidTransport {
+abstract interface class BbaTableBidTransport {
+  Future<Map<String, Object?>> tableBid(Map<String, Object> payload);
+}
+
+final class BbaPrecisionLoopbackTransport
+    implements PrecisionBidTransport, BbaTableBidTransport {
   BbaPrecisionLoopbackTransport({
     required Uri origin,
     Duration timeout = const Duration(seconds: 20),
@@ -39,12 +44,23 @@ final class BbaPrecisionLoopbackTransport implements PrecisionBidTransport {
   void close() => _client.close(force: true);
 
   @override
-  Future<Map<String, Object?>> bid(Map<String, Object> payload) async {
-    // Include only values built from PlayerView by the provider.
-    const fields = {
-      'version', 'profileId', 'revision', 'cardSha256', 'opponentModel',
-      'seat', 'dealer', 'vul', 'ctx', 'hand',
-    };
+  Future<Map<String, Object?>> bid(Map<String, Object> payload) =>
+      _send('/v1/precision/bid', payload, const {
+        'version', 'profileId', 'revision', 'cardSha256', 'opponentModel',
+        'seat', 'dealer', 'vul', 'ctx', 'hand',
+      });
+
+  @override
+  Future<Map<String, Object?>> tableBid(Map<String, Object> payload) =>
+      _send('/v1/precision/table-bid', payload, const {
+        'version', 'profileId', 'revision', 'cardSha256',
+        'northSouth', 'eastWest', 'seat', 'dealer', 'vul', 'ctx', 'hand',
+      });
+
+  Future<Map<String, Object?>> _send(
+      String path, Map<String, Object> payload, Set<String> fields) async {
+    // Strict route-controlled schema, never untrusted caller-selected URL.
+    // No arbitrary extra headers or body fields.
     if (payload.keys.toSet().difference(fields).isNotEmpty ||
         payload.length != fields.length) {
       throw const PrecisionProviderException('unexpected_request_schema');
@@ -55,7 +71,7 @@ final class BbaPrecisionLoopbackTransport implements PrecisionBidTransport {
     }
     try {
       final request = await _client
-          .postUrl(_origin.resolve('/v1/precision/bid'))
+          .postUrl(_origin.resolve(path))
           .timeout(_timeout);
       request.followRedirects = false;
       request.headers.contentType = ContentType.json;
