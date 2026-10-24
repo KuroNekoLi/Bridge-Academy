@@ -1,5 +1,19 @@
 # Architecture and Product Decision Log
 
+## ADR-033 — M3.4 混合制度研究牌局與 M3.5 真原生效能評估（2026-10-24）
+
+**M3.4 SCOPED ENGINEERING PASS / M3.5 PERFORMANCE RESEARCH PASS; RELEASE NO-GO.** Bridge Academy 採用 `BA-PRECISION-MECKWELL/r1` 搭配 SAYC 或 2/1。由於 pinned BEN 神經模型沒有 Precision opponent reader，本次選擇**整桌 BBA 原生約定卡協作叫牌**，絕不讓 BEN 靜默把人工強 1♣ 理解為天然梅花。`BbaResearchTablePolicy` 是 private PlayerView → BBA proposal adapter，出牌使用**明確標示非競賽級的 DeterministicTrainingBot**。其目的是證實安全 Gateway、immutable GameSystems、52 張合法牌與 13 墩計分，而非證明競技強度。
+
+Gateway 的 Precision 必須顯式 `M34_RESEARCH_ENABLED=true` 且原生 worker pinned ready；Flutter 必須用 `--dart-define=BA_M34_RESEARCH_PRECISION=true` 編譯研究版才提供選項。一般正式建置不顯示 Precision；使用者看見雙語研究／非競賽提示。系統不可在局中變更、未知版本拒絕、不能 fallback Demo 或 BEN 21GF-GIB。
+
+**執行證據**：[M3.4/M3.5 CI #40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596)：雙方向 Precision/SAYC 真原生 BBA 完成兩局 52 cards/13 tricks；Gateway 47/47 tests、Domain/Adapter 10/10。M3.5 在 GitHub Ubuntu runner 以固定種子測 **1000 個 native bid requests（NS/EW 各 500）**，1000 成功／0 失敗、P50 9.46ms、P95 12.96ms、RSS 79,220 KiB。**這不是 1000 場完整橋牌對局，亦不是 4GB VPS SLA 或橋牌專家叫牌正確性。**
+
+使用者已確認 BBA 商業託管、修改及再散布權利，正式授權文件和第三方 notices 應私下歸檔。尚未滿足 100+ expert golden auctions、具 Precision 解讀的真 AI cardplay、1,000 randomized full deals、同種子 MP/IMP 公平性、併發/VPS/TLS/裝置 QA，**PRODUCTION/RANKED 仍 NO-GO**。
+
+[完整 M3.4 驗收](research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md) · [M3.5 效能／Release Gate](research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md) · [M3.4/5 CI Workflow](../.github/workflows/precision-m34-m35-research.yml)。後續新增的 2/1 對 Precision 雙向真局與 Flutter 研究 Widget 驗收以各自最新 CI 為準，不得使用前述 PASS 冒充尚未執行的測試。
+
+
+
 ## ADR-032 — M3.3 採隔離 EPBot PrecisionBiddingProvider，而非偽裝成 BEN Neural（2026-10-24）
 
 **IMPLEMENTED / AUCTION-PROPOSAL SCOPE / NOT FULL-GAME READY.**
