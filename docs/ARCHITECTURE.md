@@ -1,5 +1,30 @@
 # Architecture v0.1 — boundaries first
 
+## M3.3 — BBA Meckwell Precision native Provider (2026-10-24)
+
+**Real native auction-proposal integration scoped PASS / M3.4 full-game pending.**
+
+```text
+Server-authorized private GameState
+      └── seat-filtered PlayerView (one actor hand + public auction)
+            └── bridge_precision_adapter.BbaPrecisionBiddingProvider
+                  ├── validates actor/NS-EW Precision side/opponent type
+                  ├── pins BA-PRECISION-MECKWELL/r1 and .bbsa SHA
+                  └── BbaPrecisionLoopbackTransport
+                       └── POST 127.0.0.1:18088/v1/precision/bid
+                            └── Python precision_m33_sidecar.py
+                                ├── pinned source, card and native .so SHA
+                                ├── own Meckwell/ opponent BEN-21GF or BEN-SAYC card
+                                └── ctypes -> native EPBot -> bid proposal
+      └── CallAction proposal -> BridgeGame.apply (only Core mutates state)
+```
+
+The Python worker only handles **auction calls** and launches in `--research-only` mode. No BBA/EPBot native library is shipped in first-party source, no live Gateway/Flutter Precision selection is enabled, and no production VPS modifications were made. The owner explicitly reports BBA rights for commercial hosting, modification and redistribution; the precise grant document and binary/third-party notices require a separate controlled release record.
+
+Trust boundaries: PlayerView never supplies hidden hands; POST body on literal loopback (GET query / logs forbidden), redirects and proxies disabled, 2048/4096-byte request/response limits, errors scrubbed, native source+card+binary pinned; HTTP is not a public authenticated endpoint. Bot proposals still go through Bridge Core legality. The native BBA `BEN-21GF`/`BEN-SAYC` cards enable **EPBot's** reading of opponent auctions only; BEN neural itself has no Precision opponent reader in pinned `systems.conf`. Hence mixed BEN/Precision bidding, lead/play, 52-card complete game, persistence and scale are M3.4/M3.5 and must remain fail-closed.
+
+**Evidence:** [M3.3 CI #40095599137](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095599137), 18 genuine EPBot HTTP bid proposals plus one Dart→EPBot→Bridge Core call; [M3.3 acceptance](research/M3_3_PRECISION_PROVIDER_ACCEPTANCE.md) and [ADR-032](DECISIONS.md).
+
 ## A4.1 optional secure Gateway Client boundary (2026-10-16)
 
 ```text
