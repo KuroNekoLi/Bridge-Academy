@@ -30,7 +30,7 @@ python scripts/precision_m35_evaluate.py \
   --output /tmp/m35-report.json
 ```
 
-GitHub Actions [#40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596) 真 BBA 結果：1000/1000 成功；NS/EW 各 500；P50 9.46ms、P95 12.96ms、max 51.64ms；VmRSS/VmHWM 79,220 KiB。這些數字只適用於指定 CI，`fullBridgeDeals=0`、expert 叫牌正確性與目標 VPS 測試未執行。
+GitHub Actions [#40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596) 真 BBA 結果：1000/1000 成功；NS/EW 各 500；P50 9.46ms、P95 12.96ms、max 51.64ms；VmRSS/VmHWM 79,220 KiB。最新重跑 [#40103865733](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40103865733) 仍為 1000/1000，P50=7.05ms、P95=10.03ms、max=43.59ms、VmRSS/HWM=79,816 KiB；以兩次 CI 差異說明延遲有測量波動。這些數字只適用於指定 CI，benchmark `fullBridgeDeals=0`、expert 叫牌正確性與目標 VPS 測試未執行；另有四場獨立固定 PBN 研究全局。
 
 ## 練習與自我檢驗
 
