@@ -11,6 +11,7 @@ on:
       - "apps/bridge_academy_flutter/test/m34_precision_research_test.dart"
       - "scripts/precision_m33_sidecar.py"
       - "scripts/test_precision_m34_table.py"
+      - "scripts/precision_m36_native_inference_smoke.py"
       - "scripts/precision_m35_evaluate.py"
       - ".github/workflows/precision-m34-m35-research.yml"
   workflow_dispatch:
@@ -91,6 +92,10 @@ jobs:
               except Exception: time.sleep(1)
           else: raise SystemExit("native startup failed")
           PY
+      - name: M3.6 genuine native completed-auction convention inference
+        timeout-minutes: 3
+        run: |
+          python scripts/precision_m36_native_inference_smoke.py
       - name: Genuine BBA tabletop 1000-case latency and error evaluation
         timeout-minutes: 12
         run: |
