@@ -49,6 +49,10 @@ flutter test test/m4_custom_convention_draft_test.dart
 
 Widget tests 使用注入式 memory store，測試 save/reopen、zh-TW/en 文字與 `ENGINE_UNVERIFIED`，測試再編輯／移除的版本連結。正式 SharedPreferences 在 Android/iOS 實機重啟下的 fsync/rollback **NOT RUN**，原先的裝置 QA 暫緩政策維持。
 
+### 已執行的 CI
+
+**[CI #40108357113](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40108357113) PASS**：`flutter analyze --no-pub` No issues，指定兩個 Flutter Widget tests **2/2 PASS**（儲存重開、中文/英文、revision chain、移除以及 `ENGINE_UNVERIFIED`）；同一 CI 的 Dart Domain 20/20。真 SharedPreferences 物理裝置 process restart 與 UI 裝置 QA 維持 NOT RUN。
+
 ## 練習與自我檢驗
 
 **思考題（1 題）：** 當你重新開啟 App 看到本機草稿 `revision=3`，為什麼這不能直接出現在遊戲的「可玩搭檔制度」清單？
