@@ -128,6 +128,21 @@ class _CustomConventionDraftPageState
     }
   }
 
+  Future<void> _copyExpertReviewPlan() async {
+    final draft = _archive.latest;
+    if (_loading || draft == null || draft.rules.isEmpty) return;
+    try {
+      final packet = CustomConventionReviewPlan.forDraft(draft);
+      await Clipboard.setData(
+          ClipboardData(text: jsonEncode(packet.toJson())));
+      if (!mounted) return;
+      setState(() => _notice = 'm4ReviewCopied');
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _notice = 'm4ExportFailed');
+    }
+  }
+
   Future<void> _import() async {
     if (_loading || _error != null) return;
     setState(() {
@@ -215,6 +230,8 @@ class _CustomConventionDraftPageState
         : CustomConventionHistory.compare(
             _archive, fromRevision: fromRevision,
             toRevision: draft.revision);
+    final reviewPlan = draft == null || draft.rules.isEmpty
+        ? null : CustomConventionReviewPlan.forDraft(draft);
     final preview = draft == null ? null : CustomConventionReviewer.preview(
       draft, CustomRuleCatalog.publicAuctions[_slot]!);
     return Scaffold(
@@ -380,6 +397,24 @@ class _CustomConventionDraftPageState
                 ),
               ],
             ),
+            if (reviewPlan != null) ...[
+              const Divider(),
+              Text(copy.t('m4ReviewTitle'),
+                  key: const Key('m4_review_heading')),
+              Text(
+                '${copy.t('m4ReviewTasks')}: ${reviewPlan.tasks.length} · '
+                '${copy.t('m4ReviewTarget')}: ${reviewPlan.targetExpertGoldenCases}',
+                key: const Key('m4_review_count'),
+              ),
+              Text(copy.t('m4ReviewWarning'),
+                  key: const Key('m4_review_guard')),
+              OutlinedButton.icon(
+                key: const Key('m4_review_export'),
+                onPressed: _loading ? null : _copyExpertReviewPlan,
+                icon: const Icon(Icons.fact_check_outlined),
+                label: Text(copy.t('m4ReviewCopy')),
+              ),
+            ],
             if (_notice != null)
               Text(copy.t(_notice!), key: const Key('m4_import_notice')),
             Text(copy.t('m4LocalOnly')),
