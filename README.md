@@ -1,5 +1,9 @@
 # Bridge Academy
 
+> **M4 自訂約定草稿**：SAYC／2/1 可在 Flutter 頁面編輯少量受控約定、保存不可變版本及本機歷史；完成保存**不會**改變任何 AI 制度。已修改的卡永遠明確標示 `ENGINE_UNVERIFIED`，不可在真實 Gateway 使用。[M4 驗收範圍與待辦](docs/research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md)。M3 Precision 研究階段技術 PASS，但產品級牌力與部署仍 NO-GO。
+
+
+
 > **M3.6 Precision 卡牌出牌研究（2026-10-24）**：已讓原生 BBA `find_info` 讀取 Meckwell V1／SAYC／2/1 約定，推估每座位花色長度，協助研究版 AI 從 **Bridge Core 合法牌**中選擇；不再固定第一張。真原生 [CI #40105701070](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40105701070) 已完成四種混合配置的固定牌局（52 張／13 墩）。[技術報告](docs/research/M3_6_PRECISION_CONVENTION_AWARE_CARDPLAY.md)／[工程教學](docs/learning/features/M3_F17_PRECISION_CONVENTION_INFERRED_CARDPLAY.md)。**這不是競賽級 Precision 神經牌力，正式發布仍未核准。**
 
 
