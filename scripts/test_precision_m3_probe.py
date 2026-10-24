@@ -79,10 +79,19 @@ class PrecisionContractTest(unittest.TestCase):
                           "1NT opening range 13-15 = 1\n"
                           "1NT opening range 14-16 = 0\n"
                           "1NT opening range 15-17 = 0\n")
-            with patch.object(p,"check_ben_source"):
-                import argparse
-                result=p.execute(argparse.Namespace(
-                    ben_root=root, fixtures=FIXTURES, live=False))
+            import argparse
+            case_args=argparse.Namespace(
+                ben_root=root, fixtures=FIXTURES, live=False)
+            # Synthetic card is not the real pinned file: deliberately emulate
+            # the expected digest ONLY inside this test's isolated context.
+            reference=p.summarize_candidate(root)["cardSha256"]
+            with patch.object(p, "check_ben_source"), patch.object(
+                    p, "PINNED_SELECTED_CARD_SHA256", reference):
+                result=p.execute(case_args)
+            # Unmodified official pin must reject synthetic/modified cards.
+            with patch.object(p, "check_ben_source"), self.assertRaises(
+                    p.ResearchError):
+                p.execute(case_args)
             self.assertFalse(result["nativeRan"])
             self.assertFalse(result["releaseApproved"])
             self.assertEqual(result["status"],"RESEARCH_ONLY")
