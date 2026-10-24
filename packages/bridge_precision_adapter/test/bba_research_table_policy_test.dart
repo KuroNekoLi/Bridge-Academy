@@ -8,6 +8,22 @@ final class _Record implements BbaTableBidTransport {
   Future<bool> researchReady() async => true;
   Map<String, Object>? last;
   @override
+  Future<Map<String, Object?>> auctionInference(Map<String, Object> payload) async {
+    last = payload;
+    return {
+      'provider': 'BBA_NATIVE_EPBOT',
+      'profileId': PrecisionResearchCatalog.selectedProductProfileId,
+      'revision': 1,
+      'cardSha256': PrecisionResearchCatalog.selectedCardSha256,
+      'source': 'BBA_AUCTION_ESTIMATE',
+      'suitEstimates': {
+        for (final seat in const ['N', 'E', 'S', 'W'])
+          seat: {'C': 1, 'D': 2, 'H': 3, 'S': 4},
+      },
+    };
+  }
+
+  @override
   Future<Map<String, Object?>> tableBid(Map<String, Object> payload) async {
     last = payload;
     return {
@@ -66,4 +82,27 @@ void main() {
       eastWest: ConventionCatalog.sayc,
     )), false);
   });
+  test('real convention estimate is required for play, and only legal cards '
+      'may be proposed', () async {
+    final systems = GameSystems(
+        northSouth: ConventionCatalog.precisionMeckwell,
+        eastWest: ConventionCatalog.sayc);
+    final engine = _Record();
+    final policy = BbaResearchTablePolicy(engine, systems);
+    final state = GameState.justDeclareStart(
+      Deal.suitPerSeat(), Seat.north, Vulnerability.none,
+      const Contract(level: 3, strain: Strain.notrump,
+          declarer: Seat.north, doubling: Doubling.none),
+    );
+    final lead = PlayerView.forSeat(state, state.actorToPlay!);
+    expect(lead.phase, Phase.play);
+    final proposal = await policy.choose(lead);
+    expect(proposal, isA<CardAction>());
+    expect(lead.legalCards, contains((proposal as CardAction).card));
+    expect(engine.last!['seat'], lead.viewer.letter);
+    expect(engine.last!.keys, isNot(contains('deal')));
+    expect(engine.last!.keys, isNot(contains('dummy')));
+    expect(engine.last!.keys, isNot(contains('hands')));
+  });
+
 }
