@@ -1,5 +1,9 @@
 # Bridge Academy
 
+> **M3.4/M3.5 (2026-10-24):** [Precision/SAYC true native BBA Gateway research](docs/research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md) & [1000 opening-bid performance evaluation](docs/research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md) scoped PASS. Experimental only: BBA interprets both sides of the auction; the full bridge game uses explicitly noncompetitive legal cardplay. It is NOT a production Precision-aware BEN robot, and requires explicit private Gateway/Flutter opt-in. Target-VPS, expert goldens, actual match quality and device QA remain release blockers.
+
+
+
 > **M3.3 (2026-10-24):** Implemented an [isolated BBA Meckwell Precision V1 bid provider](packages/bridge_precision_adapter/lib/src/precision_bidding_provider.dart) and [native loopback sidecar](scripts/precision_m33_sidecar.py). [Engineering evidence](docs/research/M3_3_PRECISION_PROVIDER_ACCEPTANCE.md); owner confirms BBA commercial hosting/modification/redistribution rights. **Precision is not yet selectable in Gateway/Flutter** until M3.4 full-game compatibility is proven.
 
 
