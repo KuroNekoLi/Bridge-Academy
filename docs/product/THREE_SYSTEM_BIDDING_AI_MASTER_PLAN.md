@@ -139,6 +139,8 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M4.6／M4.7 進展（2026-10-25）**：已有不可變歷史[前後修改差異](../../packages/bridge_conventions/lib/src/custom_convention_history.dart)、Flutter 比較 UI、[專家審查待辦包](../../packages/bridge_conventions/lib/src/custom_convention_review_plan.dart)（每個修改項目 6 個 scenario，全部待審）、[實際 Gateway HTTP 准入拒絕測試](../../services/bridge_gateway/test/m47_custom_draft_routing_guard_test.dart)。[M4 CI #40139400430](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139400430) Domain 30/30、Flutter 6/6；[Gateway CI #40139293120](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139293120) 49/49。**功能是安全的本機草稿／專家審查工具，不是已獲 AI 引擎支援的「真正可玩自訂制度」。** 100+ expert Goldens、雙向 reader、原生 artifact 驗證及 production release 一律 NO-GO。[詳細驗收](../research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md)。
+
 **M4.1～M4.5 最新工程驗收（2026-10-25）：** [Flutter 本機草稿](../../apps/bridge_academy_flutter/lib/src/conventions/custom_draft_page.dart) 已具備有限規則編輯、SHA256 鏈結版本、引擎證據不足警示、公開叫牌 user-authored meaning 預覽，以及 fast-forward only 剪貼簿備份/匯入。真實 [M4 CI #40137806806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40137806806) Domain 25/25、Flutter 4/4 和 analyzer PASS，完整詳見 [M4 Scope Acceptance](../research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md)。**這僅是本機草稿產品／工程能力，不代表真 BEN/BBA 支援修改後的約定。** 要進入可玩自訂制度仍需明確引擎能力白名單、適用版本 artifact SHA、對手 reader、expert goldens 與正式發布測試。
 
 
