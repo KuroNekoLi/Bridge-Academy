@@ -1,5 +1,7 @@
 # Bridge Academy
 
+> **M4.3～M4.5（2026-10-25）**：自訂卡新增 [引擎支援審核](packages/bridge_conventions/lib/src/custom_convention_review.dart)、[公開叫牌草稿含義預覽](apps/bridge_academy_flutter/lib/src/conventions/custom_draft_page.dart) 與需確認、只接受 fast-forward 的剪貼簿備份／匯入。[M4 CI #40137806806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40137806806) Dart Domain 25/25、Flutter Widget 4/4、analyzer PASS。所有已編輯的自訂卡 **ENGINE_UNVERIFIED**，不能進入 AI 對局；真正的可玩引擎相容性、專家測試、雲同步仍 NO-GO。
+ 
 > **M4 自訂約定草稿**：SAYC／2/1 可在 Flutter 頁面編輯少量受控約定、保存不可變版本及本機歷史；完成保存**不會**改變任何 AI 制度。已修改的卡永遠明確標示 `ENGINE_UNVERIFIED`，不可在真實 Gateway 使用。[M4 驗收範圍與待辦](docs/research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md)。M3 Precision 研究階段技術 PASS，但產品級牌力與部署仍 NO-GO。
 
 
