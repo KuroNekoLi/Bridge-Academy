@@ -74,6 +74,7 @@ abstract final class PrecisionResearchCatalog {
     strongOneClubMeaning: 'EPBot Precision / card requires full semantic review',
     runtimeBackend: 'ISOLATED_BBA_ONLY',
     nativeSystemType: 3,
+    backendValidated: false,
     expertApproved: false,
     licenseApproved: false,
     supportedByPlayableBenNeuralModel: false,
