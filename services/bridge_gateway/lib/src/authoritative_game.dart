@@ -112,7 +112,7 @@ class AuthoritativeGame {
     if (!_gameSystems.northSouth.isLegacyUnverified ||
         !_gameSystems.eastWest.isLegacyUnverified) {
       final supported = _backend is SystemAwareDecisionBackend &&
-          await (_backend as SystemAwareDecisionBackend)
+          await _backend
               .supportsGameSystems(_gameSystems);
       if (!supported) {
         throw const GatewayFailure(503, 'system_router_unavailable');
