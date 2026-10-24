@@ -42,6 +42,20 @@ class PrecisionContractTest(unittest.TestCase):
             self.assertFalse(result["licenseApproved"])
             self.assertFalse(result["playableBENPrecision"])
 
+    def test_upstream_padding_may_repeat_without_overriding_real_rules(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"card.bbsa"
+            path.write_text("System type = 3\n"
+                            "1NT opening range 13-15 = 1\n"
+                            "Not defined = 0\nNot defined = 0\n")
+            typ,rules,_=p.read_cc(path)
+            self.assertEqual(typ,3)
+            self.assertEqual(rules,{"1NT opening range 13-15":1})
+            path.write_text(path.read_text()+
+                            "1NT opening range 13-15 = 0\n")
+            with self.assertRaises(p.ResearchError):
+                p.read_cc(path)
+
     def test_wrong_native_system_type_fails_closed(self):
         with tempfile.TemporaryDirectory() as temp:
             path=Path(temp)/p.PRECISION_CC
