@@ -1,3 +1,5 @@
+import 'custom_convention_draft.dart';
+
 /// Explicit restore rule. Never silently replace a locally edited history.
 enum CustomArchiveRestore {
   identical,
@@ -34,7 +36,6 @@ abstract final class CustomArchiveImport {
   }
 }
 
-import 'custom_convention_draft.dart';
 
 /// Untrusted local archive of consecutive immutable *draft* snapshots.
 ///
