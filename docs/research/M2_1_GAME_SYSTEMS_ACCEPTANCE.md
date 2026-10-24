@@ -1,7 +1,7 @@
 # Bridge Academy — M2.1 GameSystems 不可變版本驗收
 
 > 日期：2026-10-24。功能：Multi-System M2.1 / M3-F05 教學。
-> 工程狀態：IMPLEMENTED；最終驗收以包含 fail-closed guard 的 CI 為準。
+> 工程狀態：**SCOPED VERIFIED / ENGINEERING_PASS**（GitHub Actions #40077642876）；不代表 BEN 系統切換或 Production 放行。
 > 範圍只涵蓋純 Dart 制度版本、Server-owned metadata、加密 checkpoint 與既有回歸；**不包含** BEN 真正依新制度叫牌、Precision、Flutter 選單、Production 上線。
 
 ## 需求與正式邊界
@@ -37,7 +37,7 @@ CI：[M2.1 Scoped CI](../../.github/workflows/game-systems-m21.yml) + [Bridge Ga
     cd ../../services/bridge_gateway
     dart pub get && dart analyze --fatal-infos && dart test --reporter expanded
 
-首次在 CI [#40077396984](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40077396984) 看到**5/5 Domain、39/39 Gateway** 加上雙 package analyze 零 issues；這是加入最後一道 routing fail-closed 防線**以前**的結果，最終結果須另外核對最新 CI。
+**最終實際執行證據：** [M2.1 Scoped CI #40077642876](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40077642876) 成功（completed/success），包含新的 `system_router_unavailable` 防降級測試。Dart analyze 零問題、Convention Domain **5/5 PASS**、Gateway 全套 **40/40 PASS**。既有 [Gateway CI #40077642900](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40077642900) 亦 completed/success；[Feature Learning Gate #40077642871](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40077642871) 完成且通過。這些是單元、HTTP 與 Mock Backend 的**限定工程驗收**，不是新制度的真實 BEN /bid 性能測試。
 
 **NOT RUN / 尚未核准**：M2.2 `ourSystem/theirSystem`、M2.3 Session 制度選擇、M2.4 Flutter UI、M2.5 真 BEN 完整對局、Precision／任意自訂制度、機器人排名賽、Production 4GB VPS、第三方模型權利及 Android/iOS device QA（使用者目前明令暫緩）。
 
