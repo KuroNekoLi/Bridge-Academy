@@ -1,5 +1,7 @@
 # Convention System — initial design contract
 
+> **2026-10-24 Precision decision:** Third system is the immutable [BBA Meckwell Precision V1](conventions/PRECISION_BBA_MECKWELL_V1.md), profile `BA-PRECISION-MECKWELL/r1`, 1NT 13–15. Owner reports BBA permission obtained; the exact grant scope awaits review. This specifies the *future agreement*, not an already-playable BEN neural model or Gateway/Flutter availability. Meckwell Lite 13–16 is reference-only.
+
 > **Implementation update 2026-10-24:** M2.1 immutable GameSystems + M2.2–M2.5 verified explicit 21GF/SAYC runtime routing and Flutter opt-in choice have been implemented in Bridge Academy. See [M2 integration acceptance](research/M2_2_TO_M2_5_IMPLEMENTATION_ACCEPTANCE.md). Legacy display-only BA-NATURAL-NT convention previews remain separate and do NOT drive BEN or imply expert-approved rule semantics. Precision and arbitrary user agreements still unsupported.
 
 
