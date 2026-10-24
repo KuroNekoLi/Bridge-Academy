@@ -14,6 +14,22 @@ final class _NativeResearchStub implements BbaTableBidTransport {
   Future<bool> researchReady() async => ready;
 
   @override
+  Future<Map<String, Object?>> auctionInference(Map<String, Object> payload) async {
+    requests.add(payload);
+    return {
+      'provider': 'BBA_NATIVE_EPBOT',
+      'profileId': PrecisionResearchCatalog.selectedProductProfileId,
+      'revision': 1,
+      'cardSha256': PrecisionResearchCatalog.selectedCardSha256,
+      'source': 'BBA_AUCTION_ESTIMATE',
+      'suitEstimates': {
+        for (final seat in const ['N', 'E', 'S', 'W'])
+          seat: {'C': 1, 'D': 2, 'H': 3, 'S': 4},
+      },
+    };
+  }
+
+  @override
   Future<Map<String, Object?>> tableBid(Map<String, Object> fields) async {
     requests.add(fields);
     return {
