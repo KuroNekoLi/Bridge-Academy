@@ -8,6 +8,7 @@
 
 | Feature | 概念 | 教學 | 真實實作／測試 | 學習狀態 |
 | --- | --- | --- | --- | --- |
+| M3-F01 | BEN 多制度 Capability、mock vs real、plays/read 分離與 Fail Closed | [M3-F01 — 多制度探針](features/M3_F01_BEN_SYSTEM_CAPABILITY.md) | [Probe](../../scripts/ben_system_probe.py) · [Tests](../../scripts/test_ben_system_probe.py) · [CI #40074082688](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40074082688)（靜態+Mock；真 BEN NOT RUN） | DELIVERED |
 | M1-F01 | 四家 Pass Out、Reducer 與事件完整性 | [M1-F01 — Pass Out](features/M1_F01_PASS_OUT.md) | [game.dart](../../packages/bridge_core/lib/src/game.dart) · [auction_test.dart](../../packages/bridge_core/test/auction_test.dart) · [M1 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38672191891) | DELIVERED |
 | M2-F01 | PlayerView、私有手牌的信任邊界 | [M2-F01 — PlayerView](features/M2_F01_PLAYER_VIEW.md) | [player_view.dart](../../packages/bridge_core/lib/src/player_view.dart) · [測試](../../packages/bridge_core/test/player_view_test.dart) · [驗收](../m2/M2_FOUNDATION_REPORT.md) | DELIVERED |
 | M2-F02 | 本地 Game Coordinator、樂觀並行控制 | [M2-F02 — Coordinator](features/M2_F02_LOCAL_COORDINATOR.md) | [coordinator](../../packages/bridge_core/lib/src/single_player_coordinator.dart) · [測試](../../packages/bridge_core/test/single_player_coordinator_test.dart) · [驗收](../m2/M2_FOUNDATION_REPORT.md) | DELIVERED |
