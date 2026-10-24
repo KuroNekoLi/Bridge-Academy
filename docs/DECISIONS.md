@@ -8,6 +8,8 @@
 
 此階段交付：[M4 domain reviewer](packages/bridge_conventions/lib/src/custom_convention_review.dart) · [Flutter editor](../apps/bridge_academy_flutter/lib/src/conventions/custom_draft_page.dart) · [M4 驗收](research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md) · [M4-F03](learning/features/M4_F03_CUSTOM_ENGINE_CAPABILITY_REVIEW.md) / [F04](learning/features/M4_F04_PUBLIC_AUCTION_MEANING_PREVIEW.md) / [F05](learning/features/M4_F05_CUSTOM_DRAFT_BACKUP_IMPORT.md)。
 
+**實測驗收（2026-10-25）**：[M4 CI #40137806806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40137806806) completed/success；`bridge_conventions` Domain **25/25**、Flutter 本機草稿 Editor **4/4**，兩者 analyzer PASS，皆不包含任意自訂卡真 BEN/BBA 推論。此結論僅授權 **M4.1～M4.5 草稿工具 scope**，不解禁模型或正式發布。
+
 正式可玩自訂卡仍須引擎逐規則測試/權限核對、雙方 convention reader、100+ goldens、部署和裝置 QA。**不要為了把 M4 標成完成而虛構模型訓練或修改生產 Gateway**。
 
 ## ADR-035 — M4 自訂約定分為「本機草稿」與「已驗證可執行制度」（2026-10-24）
