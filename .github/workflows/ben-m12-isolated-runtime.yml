@@ -1,0 +1,168 @@
+name: BEN M1.2 Isolated Live Runtime and Artifact Inventory
+
+# New candidate BEN version only. NEVER overwrites the existing fixed BEN
+# 72653ec CI, Gateway or any production deployment.
+on:
+  push:
+    branches: [master]
+    paths:
+      - "scripts/ben_m12_inventory.py"
+      - "scripts/test_ben_m12_inventory.py"
+      - ".github/workflows/ben-m12-isolated-runtime.yml"
+      - "docs/research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-ben:
+    name: Pinned BEN 0.9 candidate - artifact SHA and real GET root
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      BEN_COMMIT: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+      PYTHONUNBUFFERED: "1"
+      TF_CPP_MIN_LOG_LEVEL: "2"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+          path: third_party_ben_m12
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            src
+            models
+            BBA
+            bin
+            requirements.txt
+            LICENSE
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben_m12/requirements.txt
+      - name: Unit tests and pinned checkout verification (no BEN ML yet)
+        run: |
+          test "$(git -C third_party_ben_m12 rev-parse HEAD)" = "$BEN_COMMIT"
+          python -m unittest discover -s scripts -p 'test_ben_m12_inventory.py' -v
+          python -m unittest discover -s scripts -p 'test_ben_system_probe.py' -v
+      - name: Record declared models and dependency SHA256 (not a license grant)
+        run: |
+          python scripts/ben_m12_inventory.py \
+            --ben-root third_party_ben_m12 \
+            --commit "$BEN_COMMIT" \
+            --out "$RUNNER_TEMP/ben-m12-inventory.json"
+          python scripts/ben_system_probe.py \
+            --systems-conf third_party_ben_m12/src/config/systems.conf \
+            --check-artifacts
+      - name: Install isolated BEN native runtime dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libboost-thread-dev libicu74
+          python -m pip install -r third_party_ben_m12/requirements.txt
+          python - <<'PY'
+          import sys, tensorflow, keras, numpy
+          print("M12_RUNTIME_VERSIONS", sys.version.split()[0],
+                tensorflow.__version__, keras.__version__, numpy.__version__)
+          PY
+      - name: Generate isolated, non-BBA, reduced-workload config
+        run: |
+          python - <<'PY'
+          import configparser
+          from pathlib import Path
+          origin=Path("third_party_ben_m12/src/config/default_api.conf")
+          config=configparser.ConfigParser(interpolation=None)
+          assert config.read(origin), "BEN source config missing"
+          disabled={
+            "models": ("use_bba", "consult_bba", "use_bba_rollout", "use_bba_to_count_aces"),
+            "pimc": ("pimc_use_declaring", "pimc_use_defending", "pimc_use_discarding"),
+            "cardplay": ("use_suitc",),
+          }
+          for section, keys in disabled.items():
+              for key in keys:
+                  assert config.has_option(section,key), f"Upstream config drift {section}.{key}"
+                  config.set(section,key,"False")
+          # These are startup diagnostics, not actual bidding-model evaluation.
+          path=origin.with_name("ci_m12_isolated.conf")
+          with path.open("w",encoding="utf-8") as out: config.write(out)
+          print("M12_ISOLATED_SETTINGS_READY; BBA/PIMC/SuitC disabled for smoke only")
+          PY
+      - name: Boot genuine BEN and verify live runtime capabilities and memory
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          (
+            cd third_party_ben_m12/src
+            python gameapi.py \
+              --config config/ci_m12_isolated.conf \
+              --host 127.0.0.1 \
+              --allowed-hosts 127.0.0.1,localhost \
+              --record false --verbose false \
+              > "$RUNNER_TEMP/ben-m12-internal.log" 2>&1
+          ) &
+          BEN_PID=$!
+          trap 'kill "$BEN_PID" 2>/dev/null || true' EXIT
+          export BEN_PID
+          python - <<'PY'
+          import json,os,subprocess,time,urllib.request
+          pid=int(os.environ["BEN_PID"])
+          path=os.path.join(os.environ["RUNNER_TEMP"],"ben-m12-runtime.json")
+          deadline=time.monotonic()+600
+          first=time.monotonic()
+          peak_rss=0
+          while time.monotonic()<deadline:
+              if subprocess.run(["kill","-0",str(pid)],capture_output=True).returncode:
+                  raise SystemExit("BEN M1.2 runtime process exited before readiness")
+              try:
+                  with open(f"/proc/{pid}/status") as f:
+                      for line in f:
+                          if line.startswith("VmRSS:"):
+                              peak_rss=max(peak_rss,int(line.split()[1]))
+                              break
+              except FileNotFoundError:
+                  raise SystemExit("BEN M1.2 runtime process disappeared")
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8085/", timeout=3) as resp:
+                      body=json.load(resp)
+                  if body.get("playsSystems"):
+                      report={
+                          "scope":"M1_2_LIVE_API_CAPABILITIES_NOT_REAL_BIDDING",
+                          "upstreamCommit":os.environ["BEN_COMMIT"],
+                          "status":"LIVE_HTTP_RESPONDED",
+                          "startupElapsedSec":round(time.monotonic()-first,2),
+                          "rssAtPollingPeakKiB":peak_rss,
+                          "playsSystems":body["playsSystems"],
+                          "readsSystems":body["readsSystems"],
+                          "realBidAcceptance":"NOT_RUN",
+                          "licenseApproval":"NOT_GRANTED",
+                      }
+                      with open(path,"w") as dest: json.dump(report,dest,indent=2)
+                      print("M12_GENUINE_BEN_HTTP_READY",report["startupElapsedSec"],
+                            "peakRSSKiB",peak_rss)
+                      break
+              except Exception:
+                  time.sleep(3)
+          else:
+              raise SystemExit("M1.2 actual BEN startup timed out (not verified)")
+          PY
+          python scripts/ben_system_probe.py \
+            --systems-conf third_party_ben_m12/src/config/systems.conf \
+            --check-artifacts \
+            --url http://127.0.0.1:8085/ \
+            --require 21GF,SAYC
+          echo "M1.2_SCOPE=REAL_BEN_GET_ROOT_ONLY; real bid NOT RUN; no license approval"
+      - name: Publish non-secret M1.2 evidence (success or failure)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m12-pinned-ben-audit-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ben-m12-inventory.json
+            ${{ runner.temp }}/ben-m12-runtime.json
+          if-no-files-found: ignore
+          retention-days: 7
