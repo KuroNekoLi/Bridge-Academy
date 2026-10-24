@@ -43,6 +43,7 @@ void main() {
       ben = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       ben.listen((request) async {
         final route = request.uri.path;
+        request.response.headers.contentType = ContentType.json;
         if (route == '/') {
           request.response.write(jsonEncode({
             'playsSystems': capabilities ? ['21GF', 'SAYC'] : ['21GF'],
@@ -54,7 +55,6 @@ void main() {
           request.response.write(jsonEncode(
               route == '/bid' ? {'bid': 'PASS'} : {'card': 'D2'}));
         }
-        request.response.headers.contentType = ContentType.json;
         await request.response.close();
       });
       backend = BenLoopbackBackend(
