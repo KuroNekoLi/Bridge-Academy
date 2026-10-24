@@ -4,6 +4,8 @@ import 'package:bridge_precision_adapter/bridge_precision_adapter.dart';
 import 'package:test/test.dart';
 
 final class _Record implements BbaTableBidTransport {
+  @override
+  Future<bool> researchReady() async => true;
   Map<String, Object>? last;
   @override
   Future<Map<String, Object?>> tableBid(Map<String, Object> payload) async {
