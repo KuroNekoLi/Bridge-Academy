@@ -56,7 +56,7 @@ class PrecisionProtocolError(Exception):
     pass
 
 
-def parse_auction(ctx: str) -> list[str]:
+def parse_auction(ctx: str, *, allow_terminal=False) -> list[str]:
     if not isinstance(ctx, str) or len(ctx) > 240:
         raise PrecisionProtocolError("invalid_auction")
     if not ctx:
@@ -67,9 +67,9 @@ def parse_auction(ctx: str) -> list[str]:
     # Never request a bidder after a terminal auction. The Bridge Core
     # remains the authoritative source of actual legality and turn validity.
     normalized = ["PASS" if c == "P" else c for c in calls]
-    if normalized[-4:] == ["PASS"] * 4:
+    if not allow_terminal and normalized[-4:] == ["PASS"] * 4:
         raise PrecisionProtocolError("terminal_auction")
-    if (len(normalized) >= 4 and normalized[-3:] == ["PASS"] * 3 and
+    if (not allow_terminal and len(normalized) >= 4 and normalized[-3:] == ["PASS"] * 3 and
             any(re.fullmatch(r"[1-7][CDHSN]", v) for v in normalized)):
         raise PrecisionProtocolError("terminal_auction")
     return normalized
@@ -102,7 +102,7 @@ def validate_request(body: object) -> tuple[dict, list[str]]:
     return body, auction
 
 
-def validate_table_request(body: object) -> tuple[dict, list[str]]:
+def validate_table_request(body: object, *, inference=False) -> tuple[dict, list[str]]:
     if not isinstance(body, dict) or set(body) != TABLE_FIELDS:
         raise PrecisionProtocolError("invalid_table_schema")
     if (type(body["version"]) is not int or body["version"] != 1 or
@@ -124,8 +124,13 @@ def validate_table_request(body: object) -> tuple[dict, list[str]]:
         parse_hand(body["hand"])
     except ResearchError:
         raise PrecisionProtocolError("invalid_hand") from None
-    auction=parse_auction(body["ctx"])
-    if body["seat"] != SEATS[(SEATS.index(body["dealer"]) + len(auction)) % 4]:
+    auction=parse_auction(body["ctx"], allow_terminal=inference)
+    if inference:
+        # A cardplay turn is not a bidding turn; verify contract is terminal.
+        if (len(auction) < 4 or auction[-3:] != ["PASS"] * 3 or
+                not any(b[0].isdigit() for b in auction)):
+            raise PrecisionProtocolError("not_completed_contract")
+    elif body["seat"] != SEATS[(SEATS.index(body["dealer"]) + len(auction)) % 4]:
         raise PrecisionProtocolError("actor_turn_mismatch")
     return body,auction
 
@@ -187,7 +192,7 @@ class NativePrecisionEngine:
         cards. It receives the acting player's own hand and public history,
         never a 52-card deal or unrevealed dummy.
         """
-        req, auction = validate_table_request(body)
+        req, auction = validate_table_request(body, inference=True)
         seat = SEATS.index(req["seat"])
         dealer = SEATS.index(req["dealer"])
         own = req["northSouth"] if seat % 2 == 0 else req["eastWest"]
