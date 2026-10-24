@@ -10,7 +10,6 @@ import argparse
 import json
 import math
 import random
-import statistics
 import time
 from pathlib import Path
 import urllib.request
@@ -44,7 +43,21 @@ def percentile(a,p):
     a=sorted(a)
     return a[max(0,math.ceil(len(a)*p)-1)]
 
-def benchmark(port,cases):
+def process_memory(pid):
+    if pid is None:
+        return {"available": False}
+    try:
+        status=Path(f"/proc/{pid}/status").read_text()
+        data={}
+        for line in status.splitlines():
+            if line.startswith(("VmRSS:", "VmHWM:", "VmSize:")):
+                key,value=line.split(":",1)
+                data[key+"KiB"]=int(value.strip().split()[0])
+        return data if data else {"available":False}
+    except (OSError, ValueError):
+        return {"available":False}
+
+def benchmark(port,cases,pid=None):
     times=[]
     outputs={}
     failures=0
@@ -85,6 +98,7 @@ def benchmark(port,cases):
                      "max":round(max(times),2)},
         "bySeatConfiguration":by_pair,
         "bidHistogram":outputs,
+        "nativeWorkerMemory":process_memory(pid),
     }
 
 def main():
@@ -92,10 +106,11 @@ def main():
     parser.add_argument("--port",type=int,default=18088)
     parser.add_argument("--cases",type=int,default=40)
     parser.add_argument("--output",type=Path,required=True)
+    parser.add_argument("--pid",type=int)
     args=parser.parse_args()
     if args.cases<1 or args.cases>1000:
         raise SystemExit("number of cases must be 1..1000")
-    result=benchmark(args.port,args.cases)
+    result=benchmark(args.port,args.cases,args.pid)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("M35_RESEARCH_AUCTION_BASELINE",json.dumps({
