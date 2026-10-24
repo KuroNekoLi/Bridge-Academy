@@ -23,6 +23,12 @@ Status: **SCOPED VERIFIED / REAL NATIVE 8 CASES**
 Exit for **complete system semantics** still requires 1C forcing continuation, natural positive/negative, 1NT range, doubles, competitive interference, opening leads/play; system-by-system expert review, alert consistency and license.
 
 ## M3.3 — Engine replaceability and gameplay contract
+
+**2026-10-24 update: M3.3 AUCTION-PROVIDER IMPLEMENTED, scoped native CI ACCEPTANCE.** Isolated `bridge_precision_adapter` has an immutable, seat-aware `BbaPrecisionBiddingProvider` and strictly private loopback POST; `scripts/precision_m33_sidecar.py` loads pinned EPBot after source/native/card SHA checks, understands opposing 21GF/SAYC via distinct BBA `.bbsa`, and only returns auction proposals. [M3.3 acceptance](M3_3_PRECISION_PROVIDER_ACCEPTANCE.md), [real EPBot CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/precision-m33-provider.yml). **Not whole-game routed yet**; BEN cannot read native Precision opponent model through its current `systems.conf`. M3.4 requires explicit mixed-engine policy and 52-card game validation.
+
+**Owner permission update**: project owner explicitly confirmed BBA **commercial hosting, modification and redistribution** authorization. Record permission as granted by owner; underlying grant/version/notice review is separate administrative evidence and does not prevent isolated engineering.
+
+
 Status: **RESEARCH-ONLY TYPE IN PLACE / INTEGRATION BLOCKED**
 
 - [PrecisionResearchCatalog](../../packages/bridge_conventions/lib/src/precision_research.dart) models separate source profiles and backend/license/expert approval. It cannot be selected by ConventionCatalog or Flutter.
