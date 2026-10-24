@@ -32,6 +32,21 @@ flutter test test/m4_custom_convention_draft_test.dart --reporter expanded
 
 **剩餘 M4 Product NO-GO：** 任意可執行自訂規則需要已簽核的 native BBA/自有 rule engine 能力 manifest、引擎 hash、完整兩家搭檔的 forcing/competitive/alert Golden、版本恢復與相容性測試；多張自訂卡管理、可信雲同步和正式發行審查仍未完成。
 
+## 最新 M4.3～M4.5 CI 證據（2026-10-25）
+
+[GitHub Actions #40137806806](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40137806806) **completed/success**（Ubuntu 24.04，Dart／Flutter stable，未使用 Android/iOS 模擬器或實機）。該 workflow 執行：
+
+| 範圍 | 實際結果 |
+| --- | --- |
+| `packages/bridge_conventions` analyzer | **No issues found** |
+| 所有 Domain tests（包含 immutable GameSystems、M3 compatibility、M4 rule/revision/review/import） | **25/25 PASS** |
+| `apps/bridge_academy_flutter` analyzer | **No issues found** |
+| M4 Flutter Editor tests（含語義預覽、Clipboard fast-forward/衝突、安全確認） | **4/4 PASS** |
+| 修改過的約定真 BEN/BBA 叫牌執行 | **NOT RUN／UNSUPPORTED** |
+| 100+ 專家 Golden、正式多卡雲同步、主機與裝置 QA | **NOT RUN** |
+
+**工程結論：** M4.1／4.2 本機草稿與 M4.3／4.4／4.5 的 evidence guard／預覽／可攜版本備份 **SCOPED ENGINEERING PASS**。M4 任意可玩自訂系統**仍 NO-GO**，不可將草稿變成 `GameSystems`／`ConventionCatalog` 的新模型。
+
 ## 已實作
 
 | 子階段 | 程式及使用者效果 | 證據／限制 |
