@@ -21,7 +21,7 @@
 | NS=BA-PRECISION-MECKWELL, EW=BA-SAYC | SCOPED PASS | 原生 BBA 雙方卡 | 52 unique cards、13 墩、NS -100，Bridge Core |
 | NS=BA-SAYC, EW=BA-PRECISION-MECKWELL | SCOPED PASS | 原生 BBA 雙方卡 | 52 unique cards、13 墩、NS -100，Bridge Core |
 
-兩局固定公開測試 PBN，auction=6、不同 profile fingerprints；Gateway 只回傳 North 的 filtered PlayerView、不包含全牌或私密手牌，HTTP request_id 重送亦不再套用同一動作。**不要將固定一副牌成功推論為大樣本競技 AI 勝率。**
+**最終擴增回歸（2026-10-24）：[CI #40103865733](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40103865733) ALL PASS。** 除前述 Precision／SAYC 兩方向外，又完成 **NS=Precision/EW=21GF** 及 **NS=21GF/EW=Precision**，因此同一固定公開測試 PBN 共 **4 種配置、4 局完整 52 張／13 墩**，每局 auction=6、NS -100、其制度 fingerprint 不同且重播請求冪等。Flutter 研究旗標 Widget 測試也已在此 run 成功（完整真 BBA 端到端 Flutter UI 操作仍未執行）。Gateway 只回傳 North 的 filtered PlayerView、不包含全牌或私密手牌。**不要將固定一副牌成功推論為大樣本競技 AI 勝率。**
 
 精確驗收指令：
 
