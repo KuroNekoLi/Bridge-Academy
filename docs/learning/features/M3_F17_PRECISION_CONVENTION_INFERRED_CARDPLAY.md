@@ -64,6 +64,12 @@ dart run bin/live_precision_research_full_game.dart
 
 上次原生研究驗證成功的先例：[M3.4/M3.5 #40103865733](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40103865733)，但那輪仍是**舊的 deterministic 出牌策略**，不可將它作為新 inference 的執行證據。以後續 [M3.6 工作流程](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/precision-m34-m35-research.yml) 的實際跑完狀態為準。
 
+### 真實執行結果補充（2026-10-24）
+
+**M3.6 native [CI #40105927916](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40105927916) completed SUCCESS**：Dart Domain **10/10**、Adapter **12/12**、Gateway **47/47**、Python schema **5/5**；真 BBA `find_info` 單獨 4/4 成功、無效呼叫 2/2 拒絕。四種 Precision/SAYC/21GF NS/EW 配置，各完整 52 張／13 墩，每局真 native `auctionInference` **52 次**，總計 **208 次 BBA 原生推論往返**，不是 Mock。Native 開叫另有 1,000/1,000 種子呼叫成功（與 208 次出牌推論屬**不同的測試**）。
+
+這份驗證**只有真正的制度解讀＋確定合法的 heuristic**。沒有證明神經牌力、實際 Precision 弱點克制、MP/IMP 大樣本勝率，亦尚未部署 VPS。
+
 ## 練習與自我檢驗
 
 **思考題（1 題）：** 如果原生 BBA 說「搭檔可能有 6 張紅心」，但 Bridge Core 只允許你跟黑桃，你的 AI 可以出紅心嗎？為什麼？
