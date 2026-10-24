@@ -10,6 +10,7 @@ A contract bridge platform: start with a single human playing alongside three AI
 - [Competitor benchmark — 新睿 / BBO / BBO Trainer](docs/product/COMPETITOR_BENCHMARK.md) — official-source comparisons and non-copying boundary.
 - [**2/1 / SAYC / Precision 三制度 AI 完整開發計畫**](docs/product/THREE_SYSTEM_BIDDING_AI_MASTER_PLAN.md) — 分層設計、自訂約定、M1–M6 交付、測試與授權門檻。
 - [BEN 多制度 M1 能力探針與 CI 紀錄](docs/research/BEN_MULTI_SYSTEM_M1_SPIKE.md) — M1.1 靜態/Mock 已通過；M1.2 真 BEN 啟動與 GET / 已通過；真模型多制度 /bid 尚未驗證。
+- [M1.3 真 BEN 2/1／SAYC A/B 驗收](docs/research/BEN_MULTI_SYSTEM_M1_3_ACCEPTANCE.md) · [M1.4 單／雙 Worker 容量研究](docs/research/BEN_MULTI_SYSTEM_M1_4_CAPACITY.md) — Scoped CI PASS；**不是正式 4GB VPS 或產品上線核准**。
 - [M1.2 真 BEN 隔離啟動驗收](docs/research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md) · [Pinned 模型/Native SHA256](docs/research/BEN_M12_PINNED_ASSETS.md) — 研究環境，不代表正式部署或權重授權核准。
 - [Bridge Academy PRD v1](docs/product/BRIDGE_ACADEMY_PRD_V1.md) — product vision, functional requirements, player journeys, release acceptance.
 - [Product Delivery Roadmap](docs/product/PRODUCT_DELIVERY_ROADMAP.md) — Phase A single-player MVP → B training → C analysis → D async duplicate → E live multiplayer.
