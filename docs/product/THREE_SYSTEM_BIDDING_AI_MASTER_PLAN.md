@@ -139,6 +139,10 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M3.4／M3.5 最新進度（2026-10-24）**：已建立可選編譯、伺服器顯式允許的 Precision **研究版**：全桌採真 BBA/EPBot 按 `Meckwell.bbsa`／`BEN-SAYC.bbsa`／`BEN-21GF.bbsa` 協作叫牌，固定 `GameSystems` 版本，不讓 BEN NN 假裝有 Precision opponent reader。固定公開 PBN 的雙方向 Precision/SAYC 52 張牌技術性整局 PASS；出牌使用合法訓練策略，非競賽 AI。原生 1000 次固定種子開叫評估全部成功、P95=12.96ms，這不是 1000 場實戰。詳細見 [M3.4 驗收](../research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md)、[M3.5 性能](../research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md)、[CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596)。**產品的 AI 品質與正式 4GB VPS/裝置驗收依然 NO-GO**。
+
+
+
 **M3.3 引擎原型進度（2026-10-24）**：[PrecisionBiddingProvider](../../packages/bridge_precision_adapter/lib/src/precision_bidding_provider.dart) 與[安全 EPBot sidecar](../../scripts/precision_m33_sidecar.py) 已實作。真原生獨立 [M3.3 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/precision-m33-provider.yml) 檢查每次載入唯一 V1/Meckwell 13–15 卡與 native binary SHA、僅 POST 私牌、依 NS/EW 和敵方 21GF/SAYC 約定卡出價，並由 Dart Bridge Core 核對合法 CallAction。**使用者已確認 BBA 許可涵蓋商業託管、修改及再散布**，但仍須將授權原文和元件、notice 私下歸檔。此階段不修改 BEN 的 `systems.conf` 或假稱它可以解釋 Precision，也不修改 Gateway／Flutter 正式選項。M3.4 真實 mixed-engine 溝通、完整 52 張牌對局及 M3.5 品質／VPS 仍是獨立門檻。
 
 
