@@ -1,0 +1,133 @@
+[
+  {
+    "id": "open_major_spade",
+    "hand": "AQ976.KJ8.T97.Q5",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "",
+    "ctx": ""
+  },
+  {
+    "id": "open_major_heart",
+    "hand": "87.KQJ765.A9.QJ2",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "NS",
+    "ctx": ""
+  },
+  {
+    "id": "open_balanced_17",
+    "hand": "AQT3.KJ7.AT9.K82",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "Both",
+    "ctx": ""
+  },
+  {
+    "id": "open_minor",
+    "hand": "AQ87.J53.AT52.K9",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "EW",
+    "ctx": ""
+  },
+  {
+    "id": "respond_to_1s",
+    "hand": "KQJ7.AT98.J65.A7",
+    "seat": "S",
+    "dealer": "N",
+    "vul": "",
+    "ctx": "1S--"
+  },
+  {
+    "id": "respond_to_1h",
+    "hand": "KQ6.AT4.J986.A53",
+    "seat": "S",
+    "dealer": "N",
+    "vul": "NS",
+    "ctx": "1H--"
+  },
+  {
+    "id": "respond_to_1n",
+    "hand": "J9754.KQJ7.8.T92",
+    "seat": "S",
+    "dealer": "N",
+    "vul": "",
+    "ctx": "1N--"
+  },
+  {
+    "id": "respond_to_1d",
+    "hand": "KQT76.QJ93.AT.Q2",
+    "seat": "S",
+    "dealer": "N",
+    "vul": "EW",
+    "ctx": "1D--"
+  },
+  {
+    "id": "2over1_opener",
+    "hand": "AQ976.KJ8.T97.Q5",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "",
+    "ctx": "1S--2H--",
+    "check": "2over1_opener"
+  },
+  {
+    "id": "2over1_responder",
+    "hand": "87.KQJ765.A9.QJ2",
+    "seat": "S",
+    "dealer": "N",
+    "vul": "NS",
+    "ctx": "1S--2H--2S--",
+    "check": "2over1_responder"
+  },
+  {
+    "id": "forcing_nt_opener",
+    "hand": "87.KQJ765.A9.QJ2",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "",
+    "ctx": "1H--1N--",
+    "check": "forcing_nt_opener"
+  },
+  {
+    "id": "stayman_rebid",
+    "hand": "AQT3.KJ7.AT9.K82",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "Both",
+    "ctx": "1N--2C--"
+  },
+  {
+    "id": "transfer_rebid",
+    "hand": "AQT3.KJ7.AT9.K82",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "",
+    "ctx": "1N--2D--"
+  },
+  {
+    "id": "opponent_overcall",
+    "hand": "KQJ7.AT98.J65.A7",
+    "seat": "S",
+    "dealer": "N",
+    "vul": "EW",
+    "ctx": "1S2C"
+  },
+  {
+    "id": "minor_new_suit_rebid",
+    "hand": "AQ87.J53.AT52.K9",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "NS",
+    "ctx": "1D--1H--"
+  },
+  {
+    "id": "responder_transfer_spades",
+    "hand": "AQT3.KJ7.AT9.K82",
+    "seat": "N",
+    "dealer": "N",
+    "vul": "Both",
+    "ctx": "1N--2H--"
+  }
+]
