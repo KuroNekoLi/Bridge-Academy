@@ -5,8 +5,8 @@ import 'package:bridge_core/bridge_core.dart';
 import 'package:bridge_gateway/bridge_gateway.dart';
 import 'package:bridge_precision_adapter/bridge_precision_adapter.dart';
 
-/// Genuine BBA native auction / deterministic legal-card technical E2E.
-/// A completed game here is NOT proof of a full-strength Precision bot.
+/// Genuine BBA native auction AND convention-informed legal cardplay E2E.
+/// Heuristic does not establish a competitive-strength Precision player.
 const fixture = 'N:AJ5.KQ7.A982.K76 32.9843.J73.Q943 '
     'QT6.AJ6.KT6.JT52 K9874.T52.Q54.A8';
 
@@ -68,9 +68,36 @@ void verifyFinal(Map<String, dynamic> view) {
   }
 }
 
+/// Only counters are retained; no private card or native inference is logged.
+final class _InstrumentedNative implements BbaTableBidTransport {
+  _InstrumentedNative(this.native);
+  final BbaPrecisionLoopbackTransport native;
+  int bidCalls = 0;
+  int inferenceCalls = 0;
+
+  @override
+  Future<bool> researchReady() => native.researchReady();
+
+  @override
+  Future<Map<String, Object?>> tableBid(Map<String, Object> payload) async {
+    final result = await native.tableBid(payload);
+    bidCalls++;
+    return result;
+  }
+
+  @override
+  Future<Map<String, Object?>> auctionInference(
+      Map<String, Object> payload) async {
+    final result = await native.auctionInference(payload);
+    inferenceCalls++;
+    return result;
+  }
+}
+
 Future<void> playOne(bool swap, PartnershipSystem opponent) async {
   final native = BbaPrecisionLoopbackTransport(
       origin: Uri.parse('http://127.0.0.1:18088/'));
+  final instrumented = _InstrumentedNative(native);
   final systems = GameSystems(
       northSouth: swap ? opponent :
           ConventionCatalog.precisionMeckwell,
@@ -79,7 +106,7 @@ Future<void> playOne(bool swap, PartnershipSystem opponent) async {
   );
   final gateway = BridgeGatewayService(
       backend: const UnavailableDecisionBackend(),
-      precisionResearch: native,
+      precisionResearch: instrumented,
       enablePrecisionResearch: true,
       gameSystems: systems,
       dealFactory: () => Deal.fromPbn(fixture),
@@ -148,6 +175,9 @@ Future<void> playOne(bool swap, PartnershipSystem opponent) async {
       }
     }
     verifyFinal(view);
+    if (instrumented.bidCalls < 3 || instrumented.inferenceCalls < 1) {
+      throw StateError('Real convention interpretations were not used');
+    }
     final version = view['version'];
     final repeated = await post(
         port, '/v1/games/action', firstPayload!, bearer: bearer);
@@ -159,12 +189,16 @@ Future<void> playOne(bool swap, PartnershipSystem opponent) async {
     watch.stop();
     stdout.writeln(jsonEncode({
       'status': 'SCOPED_PASS',
-      'type': 'M34_NATIVE_BBA_AUCTION_DETERMINISTIC_CARDPLAY',
+      'type': 'M36_NATIVE_BBA_CONVENTION_AWARE_HEURISTIC_CARDPLAY',
       'ns': systems.northSouth.profileId,
       'ew': systems.eastWest.profileId,
       'profileFingerprint': systems.fingerprint,
       'nativeBbaAuction': true,
       'realBenCardplay': false,
+      'trainedPrecisionNeuralCardplay': false,
+      'genuineBbaAuctionInference': true,
+      'nativeBidRequests': instrumented.bidCalls,
+      'nativeAuctionInferenceRequests': instrumented.inferenceCalls,
       'competitiveStrengthValidated': false,
       'expertSemanticsValidated': false,
       'tricks': 13, 'uniqueCards': 52,
