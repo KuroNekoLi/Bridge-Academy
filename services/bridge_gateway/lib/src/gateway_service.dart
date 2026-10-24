@@ -312,7 +312,7 @@ class BridgeGatewayService {
     if (!chosenSystems.northSouth.isLegacyUnverified ||
         !chosenSystems.eastWest.isLegacyUnverified) {
       final available = _backend is SystemAwareDecisionBackend &&
-          await (_backend as SystemAwareDecisionBackend)
+          await _backend
               .supportsGameSystems(chosenSystems);
       if (!available) {
         throw const GatewayFailure(503, 'system_router_unavailable');
