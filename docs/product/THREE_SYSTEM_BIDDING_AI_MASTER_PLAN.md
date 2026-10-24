@@ -139,6 +139,10 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M3.3 引擎原型進度（2026-10-24）**：[PrecisionBiddingProvider](../../packages/bridge_precision_adapter/lib/src/precision_bidding_provider.dart) 與[安全 EPBot sidecar](../../scripts/precision_m33_sidecar.py) 已實作。真原生獨立 [M3.3 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/precision-m33-provider.yml) 檢查每次載入唯一 V1/Meckwell 13–15 卡與 native binary SHA、僅 POST 私牌、依 NS/EW 和敵方 21GF/SAYC 約定卡出價，並由 Dart Bridge Core 核對合法 CallAction。**使用者已確認 BBA 許可涵蓋商業託管、修改及再散布**，但仍須將授權原文和元件、notice 私下歸檔。此階段不修改 BEN 的 `systems.conf` 或假稱它可以解釋 Precision，也不修改 Gateway／Flutter 正式選項。M3.4 真實 mixed-engine 溝通、完整 52 張牌對局及 M3.5 品質／VPS 仍是獨立門檻。
+
+
+
 **M3 Precision 技術研究最新結果（2026-10-24）**：已完成首個隔離 native BBA/EPBot Spike（[報告](../research/M3_PRECISION_SPIKE_ACCEPTANCE.md)、[CI #40092096757](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40092096757)），8 次真原生開叫測試、4 個 1♣ 強開叫候選皆符合研究預期；**BBA Meckwell 上游卡 1NT 13–15 與公開 Meckwell Lite v1.13.0 13–16 不同**。新 [PrecisionResearchCatalog](../../packages/bridge_conventions/lib/src/precision_research.dart) 僅為候選規格，因版本/授權/完整叫牌語義未核准，**不能註冊為 BA-PRECISION，不能在 Flutter/Gateway 選擇**。M3 要從此候選原型延續到 Production 必須先完成書面授權、唯一的 Meckwell 版本／完整約定卡與 100+ expert golden fixtures、真 BBA mixed partner 整局和伺服器分離路由，現階段保持 release NO-GO。
 
 
