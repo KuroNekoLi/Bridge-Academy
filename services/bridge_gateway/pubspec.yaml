@@ -5,6 +5,8 @@ publish_to: none
 environment:
   sdk: '>=3.8.0 <4.0.0'
 dependencies:
+  bridge_conventions:
+    path: ../../packages/bridge_conventions
   bridge_core:
     path: ../../packages/bridge_core
   bridge_ben_adapter:
