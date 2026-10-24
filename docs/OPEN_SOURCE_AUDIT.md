@@ -10,6 +10,23 @@
 | bridge-engine — https://github.com/kduffie/bridge-engine | TypeScript game-engine reference | MIT identified; robot strength does not replace BEN | Reference only |
 | eBridge — https://github.com/ebridge/bridge-web | multiuser architecture reference | Not independently audited | Reference only |
 
+## M3.3 BBA rights confirmation — owner statement (2026-10-24)
+
+The Bridge Academy owner explicitly confirmed: **BBA usage permission includes commercial hosting, modification and redistribution**. The previous status "permission obtained; usage scope unknown" is therefore **superseded for these three categories** and should not be presented as if the user had not obtained permission.
+
+| Use | Owner statement | Independently verified grant / source artefact |
+| --- | --- | --- |
+| Use BBA | GRANTED (reported by owner) | Exact agreement not provided in repo |
+| Commercial hosted API / SaaS | GRANTED (reported by owner) | Document not independently reviewed |
+| Modify BBA / EPBot | GRANTED (reported by owner) | Document not independently reviewed |
+| Redistribute BBA / EPBot | GRANTED (reported by owner) | Document not independently reviewed |
+| Grant covers this exact native binary and third-party assets | NOT DOCUMENTED IN REPO | Verify in release review |
+| Model weights, transitive licenses, attribution, terms/expiry | NOT DOCUMENTED IN REPO | Separate dependency audit |
+
+The product direction can proceed with **native BBA Provider engineering** without asking the owner to re-confirm these rights. This update is a faithful record of user-provided authorization, not a representation that the assistant inspected the contract or that all unrelated production gates were met. Do not upload private correspondence to a public repository.
+
+M3.3 implementation uses a pinned native EPBot only in disposable CI, with provenance checks. Confirm all redistribution manifests, binary ownership, terms and required notices **before constructing a distributable production container/image**.
+
 ## Updated BBA permission status — owner statement (2026-10-24)
 
 **Permission received (user-reported): YES.** The Bridge Academy owner explicitly stated "我已經取得BBA使用授權" on 2026-10-24. Treat the former blanket "not obtained" statement as outdated. Current status is **OWNER_REPORTED_GRANTED / SCOPE_UNVERIFIED**, not "no permission" and not a fully reviewed legal release approval.
