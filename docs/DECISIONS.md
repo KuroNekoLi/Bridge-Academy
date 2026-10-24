@@ -1,5 +1,19 @@
 # Architecture and Product Decision Log
 
+## ADR-030 — Precision M3 隔離 BBA／EPBot Spike 與正式制度釋出封鎖（2026-10-24）
+
+**APPROVED FOR RESEARCH; PRECISION PLAYABILITY/PRODUCTION NO-GO.**
+
+Bridge Academy 在 BEN 釘選 commit `ad8608af6e6bfe095863023f344f3cb2cbafec3d` 中確認 `BBA/CC/Meckwell.bbsa` 的 `System type = 3`，並以實際 native EPBot 在 Ubuntu 24.04 Python 3.12 隔離 CI 執行 **8 組 Precision 開叫情境**：4 個高牌點強 1♣ 候選全部回 1♣，研究工程驗收 `SCOPED PASS`（[CI #40092096757](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40092096757)）。這不是 BEN 可玩的 Precision neural 模型；不得宣稱 8 組牌例已驗證完整競賽叫牌品質。
+
+**規格不相容：** 實際 BBA Meckwell 卡選擇 1NT `13–15`，Meckwell Lite v1.13.0 (2026-01-05) 公開參考文件採 `13–16`。先不決定哪套是本產品正式 Precision，建立獨立 research-only `PrecisionResearchCatalog` 保留來源、native type、backend/expert/license gates；**不加入 `ConventionCatalog`、Gateway `ourSystem` 或 Flutter 選單**，現有 M2 的 21GF/SAYC 完全維持。
+
+**授權封鎖：** BBA 上游沒有明確 license，未取得商業／hosted／再散布、約定卡及原生庫明確使用權前，只在 disposable CI 以既存 pinned upstream 研究，不能 copy native binary 到 repo、手機或正式 VPS。下一步須先選定精準制 variant＋取得權利，再審定是 BBA、規則器或新 neural model，完成 1♣ 回應、競叫、專家 golden fixture 及 full game 驗證。
+
+[研究報告](research/M3_PRECISION_SPIKE_ACCEPTANCE.md) · [授權稽核](OPEN_SOURCE_AUDIT.md) · [M3 原生 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40092096757)。此決策不變更 Bridge Core 或 QA hold。
+
+
+
 ## ADR-029 — 2/1／SAYC M2.2～M2.5 對局制度切換已通過限定驗收（2026-10-24）
 
 **SCOPED ENGINEERING PASS / PRODUCTION NO-GO.** M2.2 的 BEN request-scoped 21GF/SAYC 由 PlayerView.viewer.isNS 推出 ourSystem/theirSystem，lead/play 亦帶正確搭檔配置，不改 Bridge Core。M2.3 的 Gateway 只接收 allowlisted NS/EW profile IDs，要求 operator pin upstream Git SHA、真實 BEN GET / plays/reads capabilities；失敗 503，絕不隱形降級。M2.4 Flutter 以兩個雙語選單讓用戶新局前選擇 NS/EW，且回核伺服器生成的 fingerprint。M2.5 真 BEN pinned candidate ad8608af 在隔離 runner 測試兩種互換制度配置，各完成 13 墩、52 unique cards、分數及冪等回放（[CI #40087851963](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40087851963)）。
