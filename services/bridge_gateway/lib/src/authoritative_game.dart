@@ -1,6 +1,7 @@
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:bridge_conventions/bridge_conventions.dart';
+import 'package:bridge_precision_adapter/bridge_precision_adapter.dart';
 
 import 'gateway_service.dart';
 
@@ -12,6 +13,7 @@ class AuthoritativeGame {
     required GatewayDecisionBackend backend,
     BoardDefinition? trainingBoard,
     GameSystems? gameSystems,
+    BbaTableBidTransport? precisionResearch,
   }) : _backend = backend,
        _gameSystems = gameSystems ?? GameSystems.legacyUnverified(),
        _coordinator = SinglePlayerCoordinator(
@@ -19,8 +21,9 @@ class AuthoritativeGame {
           dealer: trainingBoard?.dealer ?? Seat.north,
           vulnerability: trainingBoard?.vulnerability ?? Vulnerability.none,
           humanSeat: Seat.north,
-          bot: BenBotPolicy(_PrivateBackendTransport(backend),
-              gameSystems: gameSystems),
+          bot: _botForSystems(backend,
+              gameSystems ?? GameSystems.legacyUnverified(),
+              precisionResearch),
         );
 
   AuthoritativeGame._restored(this._coordinator, this._gameSystems, this._backend);
@@ -28,6 +31,7 @@ class AuthoritativeGame {
   factory AuthoritativeGame.restore({
     required Map<String, dynamic> archive,
     required GatewayDecisionBackend backend,
+    BbaTableBidTransport? precisionResearch,
   }) {
     // Older encrypted checkpoints had no system metadata. Explicitly mark
     // them unverified rather than assuming a new 2/1 or SAYC contract.
@@ -38,8 +42,7 @@ class AuthoritativeGame {
       SinglePlayerCoordinator.restore(
         trustedStorageArchive: archive['transcript'] as Map<String, dynamic>,
         humanSeat: Seat.north,
-        bot: BenBotPolicy(_PrivateBackendTransport(backend),
-            gameSystems: systems),
+        bot: _botForSystems(backend, systems, precisionResearch),
       ),
       systems,
       backend,
@@ -61,6 +64,19 @@ class AuthoritativeGame {
   }
 
   final SinglePlayerCoordinator _coordinator;
+  static BotPolicy _botForSystems(
+      GatewayDecisionBackend backend, GameSystems systems,
+      BbaTableBidTransport? research) {
+    if (BbaResearchTablePolicy.isSupported(systems)) {
+      if (research == null) {
+        throw const GatewayFailure(503, 'research_precision_disabled');
+      }
+      return BbaResearchTablePolicy(research, systems);
+    }
+    return BenBotPolicy(_PrivateBackendTransport(backend),
+        gameSystems: systems);
+  }
+
   final GatewayDecisionBackend _backend;
   final GameSystems _gameSystems;
 
@@ -109,11 +125,13 @@ class AuthoritativeGame {
   }) async {
     // Validate the CURRENT worker before each request, also after restart.
     // No fallback to a default BEN model after pinned-session restoration.
-    if (!_gameSystems.northSouth.isLegacyUnverified ||
+    if (BbaResearchTablePolicy.isSupported(_gameSystems)) {
+      // Research profile never falls back to incompatible BEN neural.
+      // The gateway itself validates sidecar readiness before action.
+    } else if (!_gameSystems.northSouth.isLegacyUnverified ||
         !_gameSystems.eastWest.isLegacyUnverified) {
       final supported = _backend is SystemAwareDecisionBackend &&
-          await _backend
-              .supportsGameSystems(_gameSystems);
+          await _backend.supportsGameSystems(_gameSystems);
       if (!supported) {
         throw const GatewayFailure(503, 'system_router_unavailable');
       }
