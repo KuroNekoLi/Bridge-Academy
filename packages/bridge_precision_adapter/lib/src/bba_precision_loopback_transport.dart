@@ -7,6 +7,7 @@ import 'precision_bidding_provider.dart';
 /// Research-only native EPBot sidecar transport. Never send private hands in
 /// a URL, proxy, log or redirect. Gateway integration remains gated for M3.4.
 abstract interface class BbaTableBidTransport {
+  Future<bool> researchReady();
   Future<Map<String, Object?>> tableBid(Map<String, Object> payload);
 }
 
@@ -42,6 +43,31 @@ final class BbaPrecisionLoopbackTransport
   final Duration _timeout;
   final HttpClient _client;
   void close() => _client.close(force: true);
+
+  @override
+  Future<bool> researchReady() async {
+    try {
+      final req = await _client.getUrl(_origin.resolve('/health')).timeout(_timeout);
+      req.followRedirects = false;
+      final response = await req.close().timeout(_timeout);
+      if (response.statusCode != 200 || response.isRedirect) return false;
+      final bytes = <int>[];
+      await for (final chunk in response.timeout(_timeout)) {
+        if (bytes.length + chunk.length > 1024) return false;
+        bytes.addAll(chunk);
+      }
+      final obj = jsonDecode(utf8.decode(bytes));
+      return obj is Map &&
+          obj['status'] == 'research_ready' &&
+          obj['profileId'] == 'BA-PRECISION-MECKWELL' &&
+          obj['revision'] == 1 &&
+          obj['cardSha256'] ==
+              '5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc' &&
+          obj['sourceCommit'] == 'ad8608af6e6bfe095863023f344f3cb2cbafec3d';
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   Future<Map<String, Object?>> bid(Map<String, Object> payload) =>
