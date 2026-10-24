@@ -1,5 +1,15 @@
 # Architecture v0.1 — boundaries first
 
+## M3.6 — 真原生 BBA 約定推論接入 Bridge Core 合法出牌
+
+最新研究流程為：`BbaResearchTablePolicy.choose(PlayerView)` 取得當前座位合法可打 `legalCards` → 私有 `/v1/precision/auction-inference` → BBA `BBABotBid.find_info` 依同一固定 Meckwell/SAYC/21GF 約定卡**推估每座位花色長度** → Dart 先嚴格驗證 16 項長度、來源及 pinned SHA，再以簡單且可測試的搭檔支持分數對 **只有 legalCards** 排序 → `CardAction` proposal → `BridgeGame.apply` 審核。終局評分仍完全由 Core 決定。
+
+推估花色長度≠揭露隱藏手牌；不能傳全 52 張牌、只在完成合約 auction 後才允許 inference，不能將 BBA 解讀當作已學會卡牌防守的 NN。任何 native 不可用直接 fail-closed，不能 fallback 到 Demo/第一張牌/BEN 未經支援的 Precision 系統。現有研究旗標仍封鎖一般玩家選單。
+
+[研究報告](research/M3_6_PRECISION_CONVENTION_AWARE_CARDPLAY.md) · [原生 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40105701070)。四個固定 PBN 研究局完成是**技術驗收**；4GB VPS、專家 Goldens 和 competitively rated bot 仍未驗收。
+
+
+
 ## M3.4–M3.5：受控原生 BBA mixed-table 實驗，並非競賽級 Hybrid BEN（2026-10-24）
 
 ```text
