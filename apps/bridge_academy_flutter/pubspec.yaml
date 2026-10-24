@@ -9,6 +9,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  bridge_conventions:
+    path: ../../packages/bridge_conventions
   bridge_core:
     path: ../../packages/bridge_core
   bridge_dds_adapter:
