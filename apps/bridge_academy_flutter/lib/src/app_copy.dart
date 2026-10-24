@@ -481,7 +481,7 @@ class AppCopy {
       'Choose NS/EW bidding systems before starting; profiles remain fixed. Precision is not available yet.',
     ],
     'gatewayConventionResearchNotice': [
-      '研究環境：BBA 負責整桌叫牌，出牌使用合法測試策略，尚未驗證機器人牌力。',
+      '研究環境：BBA 負責整桌叫牌並推估花色，出牌使用約定感知啟發式策略，尚未驗證競賽牌力。',
       'Research only: native BBA bids for both partnerships; cardplay uses a legal test strategy, not a competitive AI.',
     ],
     'gatewaySystemLegacy': ['現有 BEN（未確認制度）', 'Existing BEN (system unverified)'],
