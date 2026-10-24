@@ -78,7 +78,7 @@ class TableResearchTest(unittest.TestCase):
       "SAYC":Path("/vendor/BEN-SAYC.bbsa"),
     }
     engine._builder=FakeBot
-    req=dict(BASE,seat="E",ctx="1C")
+    req=dict(BASE,seat="E",ctx="1C-P-1D-P-3N-P-P-P")
     result=engine.auction_inference(req)
     self.assertEqual(result["source"],"BBA_AUCTION_ESTIMATE")
     self.assertEqual(result["suitEstimates"]["E"]["S"],2)
@@ -101,7 +101,7 @@ class TableResearchTest(unittest.TestCase):
                            "SAYC":Path("/vendor/BEN-SAYC.bbsa")}
     engine._builder=FakeBot
     with self.assertRaises(PrecisionProtocolError):
-      engine.auction_inference(BASE)
+      engine.auction_inference(dict(BASE,ctx="1C-P-1D-P-3N-P-P-P"))
 
 
 if __name__=="__main__":
