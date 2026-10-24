@@ -61,5 +61,48 @@ class TableResearchTest(unittest.TestCase):
     self.assertEqual(calls[0][0],"/vendor/Meckwell.bbsa")
     self.assertEqual(calls[0][1],"/vendor/BEN-21GF.bbsa")
 
+  def test_native_convention_inference_returns_only_bounded_suits(self):
+    calls=[]
+    class FakeBot:
+      def __init__(self,*args):
+        calls.append(args)
+      def find_info(self,history):
+        return {seat:{
+          suit: {"probable_length":str(1+seat)}
+          for suit in "CDHS"
+        } for seat in range(4)}
+    engine=object.__new__(NativePrecisionEngine)
+    engine.precision_cc=Path("/vendor/Meckwell.bbsa")
+    engine.opponent_cards={
+      "21GF":Path("/vendor/BEN-21GF.bbsa"),
+      "SAYC":Path("/vendor/BEN-SAYC.bbsa"),
+    }
+    engine._builder=FakeBot
+    req=dict(BASE,seat="E",ctx="1C")
+    result=engine.auction_inference(req)
+    self.assertEqual(result["source"],"BBA_AUCTION_ESTIMATE")
+    self.assertEqual(result["suitEstimates"]["E"]["S"],2)
+    self.assertEqual(calls[0][0],"/vendor/BEN-SAYC.bbsa")
+    self.assertEqual(calls[0][1],"/vendor/Meckwell.bbsa")
+    self.assertNotIn("hand",result)
+    self.assertNotIn("ctx",result)
+
+  def test_inference_rejects_bad_native_estimates(self):
+    class FakeBot:
+      def __init__(self,*args): pass
+      def find_info(self,history):
+        return {seat:{
+          suit:{"probable_length":"-500" if seat==2 else "4"}
+          for suit in "CDHS"
+        } for seat in range(4)}
+    engine=object.__new__(NativePrecisionEngine)
+    engine.precision_cc=Path("/vendor/Meckwell.bbsa")
+    engine.opponent_cards={"21GF":Path("/vendor/BEN-21GF.bbsa"),
+                           "SAYC":Path("/vendor/BEN-SAYC.bbsa")}
+    engine._builder=FakeBot
+    with self.assertRaises(PrecisionProtocolError):
+      engine.auction_inference(BASE)
+
+
 if __name__=="__main__":
   unittest.main()
