@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:bridge_conventions/bridge_conventions.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
@@ -30,6 +33,8 @@ class _CustomConventionDraftPageState
       CustomRuleSlot.oneNotrumpOpening]!.first;
   bool _loading = true;
   String? _error;
+  String? _notice;
+  int _loadGeneration = 0;
 
   AppCopy get copy => AppCopy(widget.isEnglish);
 
@@ -40,19 +45,21 @@ class _CustomConventionDraftPageState
   }
 
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
+    final baseId = _base.profileId;
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      final archive = await _storage.load(_base.profileId);
-      if (!mounted) return;
+      final archive = await _storage.load(baseId);
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _archive = archive;
         _loading = false;
       });
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         // A corrupted saved card is not overwritten without disclosure.
         _loading = false;
@@ -101,6 +108,80 @@ class _CustomConventionDraftPageState
         _loading = false;
         _error = 'm4SaveFailed';
       });
+    }
+  }
+
+  /// Explicit clipboard export contains rule intentions and hashes, no deal
+  /// or credential. This is NOT a signed/certified engine manifest.
+  Future<void> _export() async {
+    if (_loading || _archive.latest == null) return;
+    try {
+      await Clipboard.setData(ClipboardData(text: jsonEncode(_archive.toJson())));
+      if (!mounted) return;
+      setState(() => _notice = 'm4ExportDone');
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _notice = 'm4ExportFailed');
+    }
+  }
+
+  Future<void> _import() async {
+    if (_loading || _error != null) return;
+    setState(() {
+      _loading = true;
+      _notice = null;
+    });
+    try {
+      final clipboard = await Clipboard.getData('text/plain');
+      final raw = clipboard?.text;
+      if (raw == null || raw.isEmpty || raw.length > 131072) {
+        throw const FormatException('Invalid import size');
+      }
+      final incoming = CustomConventionArchive.fromJson(jsonDecode(raw));
+      final mode = CustomArchiveImport.compare(
+          local: _archive, incoming: incoming,
+          expectedBase: _base.profileId);
+      if (!mounted) return;
+      if (mode == CustomArchiveRestore.divergent) {
+        setState(() => _notice = 'm4ImportConflict');
+        return;
+      }
+      if (mode == CustomArchiveRestore.identical) {
+        setState(() => _notice = 'm4ImportSame');
+        return;
+      }
+      final accepted = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(copy.t('m4ImportTitle')),
+          content: Text('${copy.t('m4ImportConfirm')} '
+              '${copy.t('m4Revision')}: ${incoming.latest!.revision}'),
+          actions: [
+            TextButton(
+              key: const Key('m4_import_cancel'),
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(copy.t('m4Cancel')),
+            ),
+            FilledButton(
+              key: const Key('m4_import_confirm'),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(copy.t('m4Confirm')),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || accepted != true) return;
+      await _storage.save(_base.profileId, incoming);
+      if (!mounted) return;
+      setState(() {
+        _archive = incoming;
+        _notice = 'm4ImportDone';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _notice = 'm4ImportInvalid');
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -221,6 +302,26 @@ class _CustomConventionDraftPageState
                     child: Text(copy.t('m4Remove'))),
               ],
             ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              children: [
+                OutlinedButton.icon(
+                  key: const Key('m4_export'),
+                  onPressed: _loading || draft == null ? null : _export,
+                  icon: const Icon(Icons.copy_outlined),
+                  label: Text(copy.t('m4Export')),
+                ),
+                OutlinedButton.icon(
+                  key: const Key('m4_import'),
+                  onPressed: _loading || _error != null ? null : _import,
+                  icon: const Icon(Icons.input_outlined),
+                  label: Text(copy.t('m4Import')),
+                ),
+              ],
+            ),
+            if (_notice != null)
+              Text(copy.t(_notice!), key: const Key('m4_import_notice')),
             Text(copy.t('m4LocalOnly')),
           ],
         ),
