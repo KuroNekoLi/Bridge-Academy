@@ -159,4 +159,41 @@ void main() {
         .latest!.fingerprint, next.fingerprint);
   });
 
+  testWidgets('M4.6 version history clearly shows changed auction meaning '
+      'without claiming engine support', (tester) async {
+    final base = CustomConventionDraft.create(
+      id: 'local_sayc', label: 'My SAYC',
+      base: ConventionCatalog.sayc,
+    );
+    final two = base.withRule(CustomConventionRule(
+      CustomRuleSlot.twoClubsOverOneNotrump, 'STAYMAN'));
+    final three = two.withRule(CustomConventionRule(
+      CustomRuleSlot.twoClubsOverOneNotrump, 'NATURAL'));
+    final four = three.withRule(CustomConventionRule(
+      CustomRuleSlot.oneNotrumpOpening, '13_15'));
+    final store = _MemoryStore()
+      ..saved['BA-SAYC'] = CustomConventionArchive.empty()
+          .append(base).append(two).append(three).append(four);
+    await tester.pumpWidget(MaterialApp(
+      home: CustomConventionDraftPage(isEnglish: true, storage: store),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m4_diff_heading')), findsOneWidget);
+    expect(find.byKey(const Key('m4_diff_disclaimer')), findsOneWidget);
+    expect(find.textContaining('not verified BEN or BBA'), findsOneWidget);
+    expect(find.byKey(const Key('m4_diff_oneNotrumpOpening')), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('m4_compare_from')));
+    await tester.tap(find.byKey(const Key('m4_compare_from')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Draft revision: 2').last);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m4_diff_twoClubsOverOneNotrump')),
+        findsOneWidget);
+    final a = CustomConventionHistory.compare(store.saved['BA-SAYC']!,
+        fromRevision: 2, toRevision: 4);
+    expect(a.changes.map((c) => c.kind), contains(CustomRuleChangeKind.changed));
+    expect(a.isEngineValidated, false);
+    expect(store.saved['BA-SAYC']!.latest!.isPlayableCustomSystem, false);
+  });
+
 }
