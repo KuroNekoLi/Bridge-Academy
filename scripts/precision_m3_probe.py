@@ -17,6 +17,9 @@ from pathlib import Path
 
 PINNED_BEN = "ad8608af6e6bfe095863023f344f3cb2cbafec3d"
 PRECISION_CC = "BBA/CC/Meckwell.bbsa"
+PINNED_SELECTED_CARD_SHA256 = (
+    "5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc"
+)
 SAYC_CC = "BBA/CC/BEN-SAYC.bbsa"
 SCHEMA = "M3_PRECISION_ISOLATED_RESEARCH_V1"
 RANKS = "AKQJT98765432"
@@ -167,6 +170,9 @@ def execute(args: argparse.Namespace) -> dict:
     root = args.ben_root.resolve()
     check_ben_source(root)
     card = summarize_candidate(root)
+    # A fixed name/range is insufficient: card options can change silently.
+    if card["cardSha256"] != PINNED_SELECTED_CARD_SHA256:
+        raise ResearchError("Selected Precision V1 convention card SHA mismatch")
     cases = load_cases(args.fixtures)
     output = {
         "schema": SCHEMA, "benCommit": PINNED_BEN,
