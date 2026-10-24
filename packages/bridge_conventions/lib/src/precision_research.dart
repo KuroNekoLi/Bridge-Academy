@@ -58,6 +58,12 @@ abstract final class PrecisionResearchCatalog {
 
   /// Reported by project owner (2026-10-24); permitted scope not reviewed.
   static const bool bbaPermissionReportedByOwner = true;
+  /// Owner's explicit 2026-10-24 assurance covering these usage modes.
+  /// The underlying grant document is not stored in this repository.
+  static const bool commercialHostingPermissionReported = true;
+  static const bool modificationPermissionReported = true;
+  static const bool redistributionPermissionReported = true;
+  /// Separate documentary review and dependency/release acceptance.
   static const bool bbaPermissionScopeVerified = false;
   static const String benPinnedRevision =
       'ad8608af6e6bfe095863023f344f3cb2cbafec3d';
