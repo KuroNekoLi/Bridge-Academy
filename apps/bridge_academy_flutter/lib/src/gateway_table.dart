@@ -71,6 +71,10 @@ class _GatewayTableState extends State<GatewayTable> {
                           DropdownMenuItem(
                             value: 'BA-SAYC',
                             child: Text('${entry.$1} · ${copy.t('gatewaySystemSAYC')}')),
+                          if (_precisionResearch)
+                            DropdownMenuItem(
+                              value: 'BA-PRECISION-MECKWELL',
+                              child: Text('${entry.$1} · ${copy.t('gatewaySystemPrecisionResearch')}')),
                         ],
                       ),
                   ],
