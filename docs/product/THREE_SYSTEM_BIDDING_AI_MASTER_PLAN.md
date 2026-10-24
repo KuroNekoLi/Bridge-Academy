@@ -137,6 +137,13 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M1.3/M1.4 最新研究進度（2026-10-24）**：
+- **M1.3 — SCOPED VERIFIED**：Pinned `ad8608af` 真實 BEN，16 個未專家審核的 auction contexts × 2 制度 = **32/32 次 /bid**，無基本非法叫品，三個 2/1 forcing 測試無 PASS 違規，1 組叫品不同；資料與限制見 [M1.3 真模型驗收](../research/BEN_MULTI_SYSTEM_M1_3_ACCEPTANCE.md) ／ [CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888)。
+- **M1.4 — SCOPED VERIFIED**：同版 BEN 單 Worker concurrency 1/2/4、小樣本雙 Worker、p50/p95/p99 與實際 PID RSS 已驗證；觀測單 Worker 約 1.01 GiB、雙 Worker 合計約 1.95 GiB，詳見 [M1.4 容量研究](../research/BEN_MULTI_SYSTEM_M1_4_CAPACITY.md)。**不是目標 4GB VPS 壓測，也不是完整預設 BEN**。
+- **M1 feasibility scoped research 已完成四步**；但 100+ 專家 golden auction cases、Bridge Core end-to-end、正式賽事／完整版模型、4GB VPS 與授權／安全／裝置 release gate 均未通過。部署裁決維持 **NO-GO**。下一步是 M2 server-owned `GameSystems` 與真 BEN Adapter/Flutter 切換，不可將 M1 視為正式產品 GO。
+
+
+
 **M1 狀態（2026-10-24）**：M1.1 靜態能力探針 SCOPED VERIFIED；M1.2 隔離新 BEN 真實啟動／SHA256／GET / SCOPED VERIFIED（[CI #40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217)、[驗收](../research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md)）；**M1.3 真實 2/1/SAYC 叫牌和 M1.4 RAM/部署決策仍未完成**。不可把兩個子階段的 PASS 等同 M1 整體 GO。
 
 
