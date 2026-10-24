@@ -1,5 +1,17 @@
 # Architecture and Product Decision Log
 
+## ADR-035 — M4.6/4.7 歷史差異與專家證據交接，不讓自訂約定繞過正式引擎（2026-10-25）
+
+**M4 CUSTOM CONVENTION REVIEW WORKFLOW: SCOPED ENGINEERING PASS；CUSTOM AI EXECUTION: NO-GO。** 延續既有 M4.1～M4.5 的私人草稿及 SHA256 版本鏈，加入 `CustomConventionHistory.compare(archive, fromRevision, toRevision)`，只對已驗證的相同 archive 計算 rule slot 增／改／刪與公開 auction。這是使用者設定差異，不能據以聲稱 BEN/BBA 行為變了。
+
+`CustomConventionReviewPlan.forDraft(draft)` 產生 six-scenario-per-edit 的待審清單及版本指紋（一般、競叫、passed hand、forcing/invitation、Alert、opponent reader），全部固定 `NOT_REVIEWED`／`NOT_RUN`、engineCertified=false。100 個 expert golden 是待達成**目標**，不是 AI 支援證據或模型授權。Flutter 只允許 Clipboard 複製待審 JSON，不含任何手牌，沒有「啟用為 AI」的按鈕。
+
+正式 Gateway 不信任 `customDraft`、`fingerprint`、`runtimeSupport=SUPPORTED` 等用戶聲明。真 HTTP Session 注入測試要求不認可本機 ID、不發行 access token；不修改 `ConventionCatalog`、`GameSystems` 與既有正式 21GF/SAYC 或 Precision 研究實作。
+
+**證據**：[M4 Domain/Flutter CI #40139400430](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139400430) 30/30 + 6/6、[Gateway HTTP CI #40139293120](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139293120) 49/49。仍缺 signed/trusted operator artifact mapping、足量 expert golden、真 native 自訂卡 bid/play、授權及 VPS/裝置 Release gates。[M4 驗收](research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md)／[M4-F06](learning/features/M4_F06_CUSTOM_CONVENTION_REVISION_DIFF.md)／[M4-F07](learning/features/M4_F07_EXPERT_REVIEW_AND_ROUTING_GUARD.md)。
+
+
+
 ## ADR-036 — M4.3～M4.5：自訂約定可預覽、可移轉，但不可偽裝 AI 支援（2026-10-25）
 
 **DRAFT TOOLS IMPLEMENTED；PLAYABLE CUSTOM AI MODEL STILL NO-GO.** 玩家可從固定 SAYC/2/1 草稿編輯有限規則、檢視公開叫牌的「作者定義」與明確的 `engineEvidenceRequired`，並把已驗證的 revision chain 複製到剪貼簿，另一裝置必須確認才能 fast-forward 匯入。對現有版本較舊、base 不符、同一 revision 分岔、任意 JSON 欄位或 hash 篡改皆失敗且不覆蓋。此資料僅為本機個人草稿，並非密碼學簽章、雲同步或正式引擎憑證。
