@@ -480,6 +480,10 @@ class AppCopy {
       '開局前選擇南北／東西搭檔制度；每局開始後固定，精準制尚未開放。',
       'Choose NS/EW bidding systems before starting; profiles remain fixed. Precision is not available yet.',
     ],
+    'gatewayConventionResearchNotice': [
+      '研究環境：BBA 負責整桌叫牌，出牌使用合法測試策略，尚未驗證機器人牌力。',
+      'Research only: native BBA bids for both partnerships; cardplay uses a legal test strategy, not a competitive AI.',
+    ],
     'gatewaySystemLegacy': ['現有 BEN（未確認制度）', 'Existing BEN (system unverified)'],
     'gatewaySystem21GF': ['2/1 進局迫叫', '2/1 Game Force'],
     'gatewaySystemSAYC': ['SAYC 標準黃卡', 'SAYC Standard American'],
