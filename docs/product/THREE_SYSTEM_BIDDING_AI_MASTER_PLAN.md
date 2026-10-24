@@ -137,6 +137,10 @@ Runtime 至少提供：
 
 ## 7. M1–M6 交付路線與停損點
 
+**M2.2～M2.5 工程完成（2026-10-24，SCOPED PASS）**：Adapter 對 N/S vs E/W 正確傳送 21GF/SAYC；Gateway 使用 operator-pinned BEN commit + 真實 GET / abilities + server allowlisted GameSystems；Flutter 新局前可分別選 N/S、E/W 制度並驗證回傳 fingerprint。實際真 BEN 在同一固定 Deal 的兩種互換配置分別完整完成 13 墩／52 張牌／有效計分、每局 56 次 BEN requests；真實證據：[CI #40087851963](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40087851963) · [綜合驗收](../research/M2_2_TO_M2_5_IMPLEMENTATION_ACCEPTANCE.md) · [整局驗收](../research/M2_5_REAL_BEN_MULTISYSTEM_ACCEPTANCE.md)。現有 Legacy/Flutter Demo 邊界保留。**這不等於完整叫牌制度專家核可、裝置 QA 或 Production GO。** Precision／自訂制度待 M3。
+
+
+
 **M2.1 狀態（2026-10-24）：** 已新增純 Dart `bridge_conventions`：南北／東西各自不可變的 `PartnershipSystem`、`GameSystems`、allowlisted revision 與 SHA-256 fingerprint；可信任 Gateway 建局綁定、encrypted checkpoint 恢復、舊版 legacy migration、未知版本拒絕。為避免使用者誤認 AI 已切換制度，M2.2 真實 BEN routing 前已選 `21GF/SAYC` 的遊戲動作先以 `503 system_router_unavailable` fail closed；正常舊遊戲不受影響。詳見 [M2.1 驗收](../research/M2_1_GAME_SYSTEMS_ACCEPTANCE.md)。**真正 BEN routing、UI 和競賽仍未完成**。
 
 
