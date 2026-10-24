@@ -32,6 +32,7 @@ class _CustomConventionDraftPageState
   String _choice = CustomRuleCatalog.choices[
       CustomRuleSlot.oneNotrumpOpening]!.first;
   bool _loading = true;
+  bool _confirmingImport = false;
   String? _error;
   String? _notice;
   int _loadGeneration = 0;
@@ -150,6 +151,7 @@ class _CustomConventionDraftPageState
         setState(() => _notice = 'm4ImportSame');
         return;
       }
+      setState(() => _confirmingImport = true);
       final accepted = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -170,7 +172,9 @@ class _CustomConventionDraftPageState
           ],
         ),
       );
-      if (!mounted || accepted != true) return;
+      if (!mounted) return;
+      setState(() => _confirmingImport = false);
+      if (accepted != true) return;
       await _storage.save(_base.profileId, incoming);
       if (!mounted) return;
       setState(() {
@@ -181,7 +185,10 @@ class _CustomConventionDraftPageState
       if (!mounted) return;
       setState(() => _notice = 'm4ImportInvalid');
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() {
+        _loading = false;
+        _confirmingImport = false;
+      });
     }
   }
 
@@ -219,7 +226,7 @@ class _CustomConventionDraftPageState
                     child: Text(copy.t('gatewaySystem21GF'))),
               ],
             ),
-            if (_loading) const LinearProgressIndicator(
+            if (_loading && !_confirmingImport) const LinearProgressIndicator(
                 key: Key('m4_busy')),
             if (_error != null)
               Text(copy.t(_error!), key: const Key('m4_error')),
