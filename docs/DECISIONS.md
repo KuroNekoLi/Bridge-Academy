@@ -1,5 +1,15 @@
 # Architecture and Product Decision Log
 
+## ADR-031 — Precision 單一正式約定版本：BBA Meckwell Precision V1（2026-10-24）
+
+**CONVENTION SPEC SELECTED; PLAYER RUNTIME NOT APPROVED.** 第三套制度正式選定 BBA Meckwell Precision V1（1NT 13–15），產品 ID `BA-PRECISION-MECKWELL/r1`。唯一版本資料來源是 BEN commit `ad8608af6e6bfe095863023f344f3cb2cbafec3d` 的 `BBA/CC/Meckwell.bbsa`，SHA-256 `5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc`，BBA type 3。與 Meckwell Lite v1.13.0 的 1NT 13–16 **非同一制度**。變更來源卡的規則或 hash 需要新增 revision，不能靜默覆寫歷史牌局。
+
+**授權紀錄**：使用者於 2026-10-24 明確表示已取得 BBA 使用授權，標記 `OWNER_REPORTED_GRANTED`。尚未收到授權文字及涵蓋元件／hosted/commercial/redistribution 等範圍，標記 `SCOPE_UNVERIFIED`；不能由此推論所有用途已批准。授權原文可保留私有，不應隨意提交 GitHub。
+
+**驗收限制**：此前 native BBA 8 個開叫情境中 4 個強 1♣ 預期均回 1♣，僅為 isolated probe，不是全套橋牌規則與正式 Gateway/BEN 混合出牌驗收。選定制度 **不等於**在 ConventionCatalog 注册可玩的 Precision；M3.3 Provider、專家 goldens、M3.4 Gateway/Flutter、部署仍 NO-GO。這份 ADR 取代 ADR-030 中關於制度變體待決的部分，其他工程阻擋維持。
+
+[正式 V1 SoT](conventions/PRECISION_BBA_MECKWELL_V1.md) · [研究驗收](research/M3_PRECISION_SPIKE_ACCEPTANCE.md) · [開源／授權](OPEN_SOURCE_AUDIT.md)。
+
 ## ADR-030 — Precision M3 隔離 BBA／EPBot Spike 與正式制度釋出封鎖（2026-10-24）
 
 **APPROVED FOR RESEARCH; PRECISION PLAYABILITY/PRODUCTION NO-GO.**
