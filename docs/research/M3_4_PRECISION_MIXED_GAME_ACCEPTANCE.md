@@ -3,6 +3,8 @@
 > 2026-10-24 · **EXPERIMENTAL INTEGRATION: SCOPED ENGINEERING PASS** · **NOT COMPETITIVE / NOT PRODUCTION**  
 > CI：[M3.4/M3.5 #40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596) · [唯一制度 V1](../conventions/PRECISION_BBA_MECKWELL_V1.md)
 
+> **後續 M3.6 更新（2026-10-24）**：本文件的 `DeterministicTrainingBot` 描述保留 M3.4 當時的歷史驗收。最新程式已改為**真正原生 BBA `find_info` 約定解讀＋有界合法牌啟發式策略**。[M3.6 驗收](M3_6_PRECISION_CONVENTION_AWARE_CARDPLAY.md) 以真 EPBot CI #40105927916 證實四局共 208 次 native convention inference；該策略仍不是可證實的競賽級神經出牌 AI。
+
 ## 1. 實際完成的功能
 
 - 在 `ConventionCatalog` 建立 **BBA Meckwell Precision V1** 不可變 profile `BA-PRECISION-MECKWELL/r1`，固定上游 `Meckwell.bbsa` SHA-256；**未加入正式 candidateProfiles**。
