@@ -196,4 +196,46 @@ void main() {
     expect(store.saved['BA-SAYC']!.latest!.isPlayableCustomSystem, false);
   });
 
+  testWidgets('M4.7 expert checklist copy never emits hand or AI approval',
+      (tester) async {
+    String? clipboard;
+    final messenger = TestDefaultBinaryMessengerBinding.instance
+        .defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.getData') return {'text': clipboard};
+      if (call.method == 'Clipboard.setData') {
+        clipboard = (call.arguments as Map)['text'] as String?;
+      }
+      return null;
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(
+        SystemChannels.platform, null));
+
+    final initial = CustomConventionDraft.create(
+      id: 'local_sayc', label: 'My SAYC', base: ConventionCatalog.sayc,
+    );
+    final edited = initial.withRule(CustomConventionRule(
+      CustomRuleSlot.twoClubsOverOneNotrump, 'NATURAL',
+    ));
+    final store = _MemoryStore()..saved['BA-SAYC'] =
+        CustomConventionArchive.empty().append(initial).append(edited);
+    await tester.pumpWidget(MaterialApp(
+      home: CustomConventionDraftPage(isEnglish: true, storage: store),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m4_review_guard')), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('m4_review_export')));
+    await tester.tap(find.byKey(const Key('m4_review_export')));
+    await tester.pumpAndSettle();
+    final packet = jsonDecode(clipboard!) as Map<String, dynamic>;
+    expect(packet['draftFingerprint'], edited.fingerprint);
+    expect(packet['engineCertified'], false);
+    expect(packet['verifiedCases'], 0);
+    expect(packet['requestedExpertGoldenCases'], 100);
+    expect(packet['tasks'], hasLength(6));
+    expect(clipboard, isNot(contains('privateHand')));
+    expect(clipboard, isNot(contains('dealPbn')));
+    expect(store.saved['BA-SAYC']!.latest!.isPlayableCustomSystem, false);
+  });
+
 }
