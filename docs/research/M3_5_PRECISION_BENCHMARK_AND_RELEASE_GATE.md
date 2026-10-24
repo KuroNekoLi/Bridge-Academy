@@ -28,7 +28,9 @@
 | 完整牌局數（本 benchmark） | **0**（M3.4 另外完成兩場） |
 | 多人併發／實際 2vCPU、4GB VPS | **NOT RUN** |
 
-此數據只代表 GitHub CI 環境及當時 worker，不能據以聲稱有 77 MiB 的正式多模型部署足夠；完整 BEN TensorFlow、MySQL、API、原生庫載入、容器及 CPU 同時消耗需要另外量測。
+**最新重跑驗收**：[CI #40103865733](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40103865733) **1000/1000、0 failures，P50=7.05 ms、P95=10.03 ms、max=43.59 ms、VmRSS/VmHWM=79,816 KiB**。原表的數字是前一次 CI #40102968596 的有效量測，兩者皆標註 CI runner、單工、固定種子（不同 run 存在延遲波動）。同一最新 run 中，NS/EW 對調的 Precision/SAYC 與 Precision/21GF 共 **4 場**固定牌局完成 52 張牌與 13 墩（研究合法策略出牌，非競賽 AI），Flutter 研究選單 Widget CI 也通過。
+
+此數據只代表 GitHub CI 環境及當時 worker，不能據以聲稱有 77–78 MiB 的正式多模型部署足夠；完整 BEN TensorFlow、MySQL、API、原生庫載入、容器及 CPU 同時消耗需要另外量測。
 
 ## 3. 測試驗證層級
 
