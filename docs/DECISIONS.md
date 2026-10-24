@@ -1,5 +1,14 @@
 # Architecture and Product Decision Log
 
+## ADR-028 — M2.1 GameSystems 雙搭檔不可變版本釘選（2026-10-24）
+
+**ACCEPTED ENGINEERING DIRECTION / NOT SYSTEM SWITCH GO.** 使用獨立純 Dart `bridge_conventions` 的 `PartnershipSystem`、`GameSystems` 封裝南北與東西的 profile ID、revision、BEN model ID/upstream commit 及 deterministic SHA-256 指紋。僅接受 allowlisted `LEGACY_UNVERIFIED/r1`、`BA-21GF/r1`、`BA-SAYC/r1`；Precision 和任意自訂約定暫不開放。由可信任 Gateway 建局時指定並寫入既有 encrypted checkpoint；重啟還原必須保持同一組版本。舊 checkpoint 未含欄位時設為 `LEGACY_UNVERIFIED`，有欄位而遭竄改／未註冊則 fail closed。
+
+**重要安全門檻：** M2.2 尚未完成真正 BEN `ourSystem/theirSystem` 路由，因此任何釘選為新 21GF/SAYC 的遊戲在 Action/Advance 阶段回 503 `system_router_unavailable`；不得默默繼續用舊 BEN/GIB 並顯示新制度已生效。現有 LEGACY_UNVERIFIED 對局保留既有行為。此狀態為 scoped M2.1，不代表正式部署或 Dart Bridge Core 玩法改變。
+
+[實作與驗收](research/M2_1_GAME_SYSTEMS_ACCEPTANCE.md) · [教學](learning/features/M3_F05_GAME_SYSTEMS_VERSION_PIN.md) · [M2.1 CI](../.github/workflows/game-systems-m21.yml)。下一步 M2.2 真模型路由與模型權重相容性驗證。
+
+
 ## ADR-027 — M1 Feasibility Scoped GO / Production NO-GO（2026-10-24）
 
 **ACCEPTED TECHNICAL DECISION, NOT DEPLOYMENT APPROVAL.** M1.1 靜態能力、M1.2 真 BEN GET /、M1.3 兩制度實際 /bid A/B（32/32）、M1.4 GitHub Runner 單／雙 Worker 容量抽樣皆為 scoped PASS。強制保持真模型／Mock／模型配置／人類專審／目標主機實測的證據界線。推薦 M2 先採**單 BEN Worker 多模型 + 有界請求併行**、Server-owned profile ID/hash/version；Precision 另開 BBA 授權與語義 Spike。**4GB OVH VPS 正式多制度服務維持 NO-GO**，直到本機容量、完整版模擬、長時壓力、授權/權重、Gateway production 安全、裝置 QA 等 gate 通過。[M1.3 Evidence](research/BEN_MULTI_SYSTEM_M1_3_ACCEPTANCE.md) · [M1.4 Benchmark](research/BEN_MULTI_SYSTEM_M1_4_CAPACITY.md) · [CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888)。
