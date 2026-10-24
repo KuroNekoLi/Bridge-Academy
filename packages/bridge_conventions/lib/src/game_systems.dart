@@ -117,8 +117,18 @@ abstract final class ConventionCatalog {
     'BA-SAYC', 1, 'BEN', 'SAYC', benCandidateRevision,
   );
 
+  /// M3.4 experimental identity. Registry pin does NOT mean a playable
+  /// neural model; Gateway checks explicit research-only runtime permission.
+  static final PartnershipSystem precisionMeckwell = PartnershipSystem._known(
+    'BA-PRECISION-MECKWELL',
+    1,
+    'BBA',
+    'MECKWELL',
+    '5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc',
+  );
+
   static final Map<String, PartnershipSystem> _known = Map.unmodifiable({
-    for (final profile in [legacyUnverified, twoOverOne, sayc])
+    for (final profile in [legacyUnverified, twoOverOne, sayc, precisionMeckwell])
       '${profile.profileId}/${profile.revision}': profile,
   });
 
@@ -129,6 +139,10 @@ abstract final class ConventionCatalog {
   /// claim a production BEN Worker has matching model weights loaded.
   static List<PartnershipSystem> get candidateProfiles =>
       List.unmodifiable([twoOverOne, sayc]);
+
+  /// Experimental only: not part of production advertised candidates.
+  static List<PartnershipSystem> get researchProfiles =>
+      List.unmodifiable([twoOverOne, sayc, precisionMeckwell]);
 }
 
 /// One game has TWO fixed partnerships, not one mutable user preference.
