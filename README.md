@@ -1,5 +1,9 @@
 # Bridge Academy
 
+> **M3.6 Precision 卡牌出牌研究（2026-10-24）**：已讓原生 BBA `find_info` 讀取 Meckwell V1／SAYC／2/1 約定，推估每座位花色長度，協助研究版 AI 從 **Bridge Core 合法牌**中選擇；不再固定第一張。真原生 [CI #40105701070](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40105701070) 已完成四種混合配置的固定牌局（52 張／13 墩）。[技術報告](docs/research/M3_6_PRECISION_CONVENTION_AWARE_CARDPLAY.md)／[工程教學](docs/learning/features/M3_F17_PRECISION_CONVENTION_INFERRED_CARDPLAY.md)。**這不是競賽級 Precision 神經牌力，正式發布仍未核准。**
+
+
+
 > **M3.4/M3.5 (2026-10-24):** [Precision/SAYC true native BBA Gateway research](docs/research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md) & [1000 opening-bid performance evaluation](docs/research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md) scoped PASS. Experimental only: BBA interprets both sides of the auction; the full bridge game uses explicitly noncompetitive legal cardplay. It is NOT a production Precision-aware BEN robot, and requires explicit private Gateway/Flutter opt-in. Target-VPS, expert goldens, actual match quality and device QA remain release blockers.
 
 
