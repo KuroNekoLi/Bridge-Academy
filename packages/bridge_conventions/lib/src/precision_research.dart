@@ -12,6 +12,7 @@ final class PrecisionResearchCandidate {
     required this.strongOneClubMeaning,
     required this.runtimeBackend,
     required this.nativeSystemType,
+    required this.backendValidated,
     required this.expertApproved,
     required this.licenseApproved,
     required this.supportedByPlayableBenNeuralModel,
@@ -23,12 +24,13 @@ final class PrecisionResearchCandidate {
   final String strongOneClubMeaning;
   final String runtimeBackend;
   final int nativeSystemType;
+  final bool backendValidated;
   final bool expertApproved;
   final bool licenseApproved;
   final bool supportedByPlayableBenNeuralModel;
 
   bool get readyForCatalog =>
-      expertApproved && licenseApproved && supportedByPlayableBenNeuralModel;
+      expertApproved && licenseApproved && backendValidated;
 
   Map<String, Object> toReport() => {
     'researchId': researchId,
@@ -37,6 +39,7 @@ final class PrecisionResearchCandidate {
     'strongOneClubMeaning': strongOneClubMeaning,
     'runtimeBackend': runtimeBackend,
     'nativeSystemType': nativeSystemType,
+    'backendValidated': backendValidated,
     'expertApproved': expertApproved,
     'licenseApproved': licenseApproved,
     'supportedByPlayableBenNeuralModel': supportedByPlayableBenNeuralModel,
@@ -57,6 +60,7 @@ abstract final class PrecisionResearchCatalog {
     strongOneClubMeaning: '17+ balanced or 16+ unbalanced (exceptions noted)',
     runtimeBackend: 'DOCUMENTATION_ONLY',
     nativeSystemType: 3,
+    backendValidated: false,
     expertApproved: false,
     licenseApproved: false,
     supportedByPlayableBenNeuralModel: false,
