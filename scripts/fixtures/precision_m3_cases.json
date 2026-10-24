@@ -1,0 +1,42 @@
+[
+  {
+    "id": "strong_balanced_24",
+    "hand": "AKQ3.KQ4.AJ3.KQ7",
+    "expectStrongClub": true
+  },
+  {
+    "id": "strong_spades_19",
+    "hand": "AQJ76.KQ7.AK5.76",
+    "expectStrongClub": true
+  },
+  {
+    "id": "strong_spades_19b",
+    "hand": "AKQJ9.AT8.KQ4.54",
+    "expectStrongClub": true
+  },
+  {
+    "id": "strong_balanced_22",
+    "hand": "KQJ3.AK8.AQ7.K93",
+    "expectStrongClub": true
+  },
+  {
+    "id": "weak_minor_6",
+    "hand": "T987.765.KQ43.J2",
+    "expectStrongClub": false
+  },
+  {
+    "id": "balanced_13",
+    "hand": "KQ43.A72.K83.JT6",
+    "expectStrongClub": false
+  },
+  {
+    "id": "balanced_16",
+    "hand": "AK43.Q72.A73.KT6",
+    "expectStrongClub": false
+  },
+  {
+    "id": "balanced_15",
+    "hand": "AJ43.KQ2.A73.JT6",
+    "expectStrongClub": false
+  }
+]
