@@ -2,6 +2,8 @@
 
 **Product addendum (2026-10-24)**: Owner approved **2/1 Game Force / SAYC / Precision Club** as the initial configurable robot bidding systems, then verified custom agreements; see [Three-System AI Master Plan](THREE_SYSTEM_BIDDING_AI_MASTER_PLAN.md). This is a cross-phase convention-engine track **M1–M6**, not a replacement for Phase A delivery or an authorization to bypass device QA, production/licensing, or ranked duplicate release gates. M1.1 static+Mock capabilities CI is scoped verified, real BEN multisytem decisions remain NOT RUN; see [M1 Spike](../research/BEN_MULTI_SYSTEM_M1_SPIKE.md).
 
+**M1.2 addendum (2026-10-24):** [Pinned candidate BEN 0.9 SHA256 + genuine GET / acceptance](../research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md) scoped VERIFIED: 20 tests, real 21GF/SAYC capability, CI [#40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217), observed 899920 KiB process RSS. This is NOT actual /bid semantics, 4GB capacity proof, redistribution approval, or production deployment. M1.3/M1.4 remain OPEN.
+
 **Baseline:** 2026-10-15 · **Goal:** complete BBO/新睿-inspired *playable bridge product*, not a collection of green CI badges.  
 **References:** [PRD v1](BRIDGE_ACADEMY_PRD_V1.md), [benchmark](COMPETITOR_BENCHMARK.md), ../ROADMAP.md (historic engineering ledger).
 
