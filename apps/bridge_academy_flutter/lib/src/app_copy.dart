@@ -500,6 +500,15 @@ class AppCopy {
     'm4PreviewUnknown': ['目前草稿未定義此叫牌；不知道 AI 將如何理解。', 'This draft does not define the call; AI interpretation is unknown.'],
     'm4PreviewUnverified': ['僅顯示使用者編輯的含義，非 BEN／BBA 叫牌證據。', 'User-authored meaning only, not BEN/BBA evidence.'],
     'm4EvidenceMissing': ['引擎證據不足：自訂項目不可用於正式對局。', 'No engine evidence: customized rules cannot be played.'],
+    'm4ReviewTitle': ['專家驗證待辦', 'Expert validation checklist'],
+    'm4ReviewTasks': ['待審情境數', 'Review scenarios'],
+    'm4ReviewTarget': ['專家金標目標', 'Expert golden target'],
+    'm4ReviewWarning': [
+      '這只是待審清單：0 項引擎測試、0 項專家簽核；不能當成可執行自訂 AI 的證據。',
+      'This is only a review request: 0 engine tests and 0 expert approvals, not playable AI evidence.',
+    ],
+    'm4ReviewCopy': ['複製待審清單', 'Copy review checklist'],
+    'm4ReviewCopied': ['已複製待審清單（不含手牌）', 'Copied review checklist (no cards)'],
     'm4DiffHeading': [
       '版本修改紀錄', 'Revision change history',
     ],
