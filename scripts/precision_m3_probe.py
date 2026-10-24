@@ -39,8 +39,16 @@ def read_cc(path: Path) -> tuple[int, dict[str, int], str]:
         if " = " not in line:
             raise ResearchError("Malformed upstream convention card")
         name, value = line.split(" = ", 1)
-        if not value.strip().isdigit() or name in rules:
-            raise ResearchError("Malformed or duplicate upstream rule")
+        if not value.strip().isdigit():
+            raise ResearchError("Malformed upstream rule")
+        # BEN's .bbsa CC files contain many intentional repeated
+        # "Not defined = 0" padding rows. They are NOT convention keys.
+        if name == "Not defined":
+            if value.strip() != "0":
+                raise ResearchError("Unexpected convention padding")
+            continue
+        if name in rules:
+            raise ResearchError("Duplicate defined upstream rule")
         rules[name] = int(value)
     typ = rules.pop("System type", None)
     if not isinstance(typ, int):
