@@ -21,6 +21,8 @@ class GatewayTable extends StatefulWidget {
 class _GatewayTableState extends State<GatewayTable> {
   int _level = 1;
   Strain _strain = Strain.notrump;
+  String _ns = 'LEGACY';
+  String _ew = 'LEGACY';
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +41,48 @@ class _GatewayTableState extends State<GatewayTable> {
                 Text(copy.t('gatewayNotice'),
                     key: const Key('gateway_mode_notice')),
                 const SizedBox(height: 8),
+                Text(copy.t('gatewayConventionNotice'),
+                    key: const Key('gateway_system_notice')),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: [
+                    for (final entry in [
+                      ('NS', _ns, (String? v) => setState(() => _ns = v!)),
+                      ('EW', _ew, (String? v) => setState(() => _ew = v!)),
+                    ])
+                      DropdownButton<String>(
+                        key: Key('gateway_system_${entry.$1.toLowerCase()}'),
+                        value: entry.$2,
+                        onChanged: session.busy || (session.started && !session.finished)
+                            ? null : entry.$3,
+                        items: [
+                          DropdownMenuItem(
+                            value: 'LEGACY',
+                            child: Text('${entry.$1} · ${copy.t('gatewaySystemLegacy')}')),
+                          DropdownMenuItem(
+                            value: 'BA-21GF',
+                            child: Text('${entry.$1} · ${copy.t('gatewaySystem21GF')}')),
+                          DropdownMenuItem(
+                            value: 'BA-SAYC',
+                            child: Text('${entry.$1} · ${copy.t('gatewaySystemSAYC')}')),
+                        ],
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 10,
                   runSpacing: 8,
                   children: [
                     FilledButton.icon(
                       key: const Key('gateway_start'),
-                      onPressed: session.busy
-                          ? null : session.startNewGame,
+                      onPressed: session.busy || (session.started && !session.finished) ||
+                              ((_ns == 'LEGACY') != (_ew == 'LEGACY'))
+                          ? null : () => session.startNewGame(
+                              northSouth: _ns == 'LEGACY' ? null : _ns,
+                              eastWest: _ew == 'LEGACY' ? null : _ew),
                       icon: const Icon(Icons.cloud_outlined),
                       label: Text(copy.t('gatewayNewSession')),
                     ),
@@ -59,6 +95,9 @@ class _GatewayTableState extends State<GatewayTable> {
                     ),
                   ],
                 ),
+                if (session.gameSystems != null)
+                  Text(copy.t('gatewayActiveSystems'),
+                      key: const Key('gateway_systems_locked')),
                 if (session.busy) ...[
                   const LinearProgressIndicator(
                       key: Key('gateway_pending_progress')),
