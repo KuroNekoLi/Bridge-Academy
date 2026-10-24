@@ -1,5 +1,6 @@
 """Contract-level tests; isolated true-BEN CI is a separate evidence gate."""
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -94,6 +95,12 @@ class LocalContractTest(unittest.TestCase):
                 "readsSystems":["SAYC"],"defaults":{}}):
             with self.assertRaises(bm.BenchmarkError):
                 bm.verify_capabilities("http://127.0.0.1:8085")
+
+    def test_cpu_times_read_actual_linux_process_without_hand(self):
+        clock = bm.read_cpu_seconds(os.getpid())
+        self.assertIsNotNone(clock)
+        self.assertGreaterEqual(clock, 0.)
+        self.assertIsNone(bm.read_cpu_seconds(999999999))
 
     def test_m14_mock_only_does_not_prove_vps(self):
         rows=bm.fixtures_from_json(FIXTURES)
