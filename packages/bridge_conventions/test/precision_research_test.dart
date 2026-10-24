@@ -1,7 +1,7 @@
 import 'package:bridge_conventions/bridge_conventions.dart';
 import 'package:test/test.dart';
 
-import '../lib/src/precision_research.dart';
+import 'package:bridge_conventions/src/precision_research.dart';
 
 void main() {
   group('M3 Precision research is NOT a playable bidding system', () {
