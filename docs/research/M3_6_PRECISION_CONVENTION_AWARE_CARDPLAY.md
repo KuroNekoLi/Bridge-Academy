@@ -49,6 +49,26 @@ Native `find_info` 以當前 actor 的**原始 13 張自己的手牌**、dealer�
 | 競賽品質、真正 Precision-aware 神經模型、防守訊號、100+ expert goldens | 外部專家／後續可用模型 | **NOT VALIDATED** |
 | 2 vCPU／4GB 正式 VPS + Redis/MySQL + concurrent load | 目標部署實測 | **NOT RUN** |
 
+## 最終真實執行證據（2026-10-24）
+
+[GitHub Actions #40105927916](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40105927916) **SUCCESS**，固定 BEN commit `ad8608af`、原生 `Meckwell.bbsa` SHA 及 `libEPBot.so` 的 Linux CI：
+
+| 已實際執行的驗證 | 結果 |
+| --- | --- |
+| Dart Convention Domain / Precision Adapter / Gateway tests | **10/10、12/12、47/47**，analyze PASS |
+| Native Python schema／sidecar policy unit tests | **5/5 PASS** |
+| 真 EPBot `find_info` 單獨整合請求 | **4/4 PASS** |
+| 未完成叫牌／額外隱藏 Deal 拒絕 | **2/2 HTTP 400** |
+| Precision NS vs SAYC EW | **52 native inference calls、4 native bid calls、52 unique cards、13 tricks** |
+| SAYC NS vs Precision EW | **52 native inference calls、4 native bid calls、52 unique cards、13 tricks** |
+| Precision NS vs 21GF EW | **52 native inference calls、4 native bid calls、52 unique cards、13 tricks** |
+| 21GF NS vs Precision EW | **52 native inference calls、4 native bid calls、52 unique cards、13 tricks** |
+| 真原生 BBA 推論總次數（四場） | **208 次，皆通過** |
+| 原生開叫跑分（本輪 M3.5 並行回歸） | **1,000/1,000 successful，P95 13.39 ms；這是叫牌 API，不是出牌 latency** |
+| 真正在 CI 同種子雙方策略比較、1000 完整局、VPS、神經牌力 | **NOT RUN；正式 Release NO-GO** |
+
+每場的 `nativeAuctionInferenceRequests:52` 是**真實 sidecar 往返次數**，非靜態 mock。因為同一副固定公開牌例，四種配置各得 NS +130，不足以斷言「AI 打得更好」；這是一個隱私、合法性、資料流與策略變化的技術證據，不是橋牌競技評分。
+
 ## 工作範圍與正式發行
 
 - 原生側車：[scripts/precision_m33_sidecar.py](../../scripts/precision_m33_sidecar.py)
