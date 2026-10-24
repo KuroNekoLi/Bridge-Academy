@@ -32,6 +32,22 @@ void main() {
           .map((profile) => profile.modelId), ['21GF', 'SAYC']);
     });
 
+    test('single selected V1 is pinned to the native Meckwell card', () {
+      expect(PrecisionResearchCatalog.selectedProductProfileId,
+          'BA-PRECISION-MECKWELL');
+      expect(PrecisionResearchCatalog.selectedProductRevision, 1);
+      expect(PrecisionResearchCatalog.selectedProductName,
+          'BBA Meckwell Precision V1');
+      expect(PrecisionResearchCatalog.selectedV1,
+          same(PrecisionResearchCatalog.upstreamBbaMeckwell));
+      expect(PrecisionResearchCatalog.selectedCardSha256,
+          '5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc');
+      expect(PrecisionResearchCatalog.bbaPermissionReportedByOwner, isTrue);
+      expect(PrecisionResearchCatalog.bbaPermissionScopeVerified, isFalse);
+      expect(PrecisionResearchCatalog.selectedV1.readyForCatalog, isFalse);
+      expect(ConventionCatalog.resolve('BA-PRECISION-MECKWELL', 1), isNull);
+    });
+
     test('report contains explicit unapproved source conditions', () {
       final report =
           PrecisionResearchCatalog.upstreamBbaMeckwell.toReport();
