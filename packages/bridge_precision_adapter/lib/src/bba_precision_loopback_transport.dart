@@ -9,6 +9,7 @@ import 'precision_bidding_provider.dart';
 abstract interface class BbaTableBidTransport {
   Future<bool> researchReady();
   Future<Map<String, Object?>> tableBid(Map<String, Object> payload);
+  Future<Map<String, Object?>> auctionInference(Map<String, Object> payload);
 }
 
 final class BbaPrecisionLoopbackTransport
@@ -79,6 +80,13 @@ final class BbaPrecisionLoopbackTransport
   @override
   Future<Map<String, Object?>> tableBid(Map<String, Object> payload) =>
       _send('/v1/precision/table-bid', payload, const {
+        'version', 'profileId', 'revision', 'cardSha256',
+        'northSouth', 'eastWest', 'seat', 'dealer', 'vul', 'ctx', 'hand',
+      });
+
+  @override
+  Future<Map<String, Object?>> auctionInference(Map<String, Object> payload) =>
+      _send('/v1/precision/auction-inference', payload, const {
         'version', 'profileId', 'revision', 'cardSha256',
         'northSouth', 'eastWest', 'seat', 'dealer', 'vul', 'ctx', 'hand',
       });
