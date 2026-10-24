@@ -1,0 +1,16 @@
+name: bridge_precision_adapter
+description: Isolated, auction-only BBA Meckwell Precision V1 proposal adapter
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  bridge_core:
+    path: ../bridge_core
+  bridge_conventions:
+    path: ../bridge_conventions
+  bridge_ben_adapter:
+    path: ../bridge_ben_adapter
+dev_dependencies:
+  test: ^1.25.0
+  lints: ^6.1.0
