@@ -39,6 +39,10 @@ Status: **SCOPED VERIFIED: NATIVE AUCTION PROVIDER / FULL-GAME INTEGRATION PENDI
 M3.3 provider exit: **SCOPED VERIFIED** ([real CI #40095599137](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095599137): 18 true EPBot HTTP proposals including 2 auction-continuation contexts + Dart-to-Core bid). Expert-reviewed 100+ golden fixtures, full NS/EW game matrix and full player-facing release remain M3.4/M3.5 gates.
 
 ## M3.4 — Real Gateway / Flutter opt-in
+
+**2026-10-24 SCOPED PASS (research-only):** Server-owned Gateway has opt-in `enablePrecisionResearch=false` by default, pinned BBA native readiness, immutable NS/EW versions, both-party real BBA card interpretation, formal private PlayerView protection and no BEN fallback. Flutter Precision option only appears when `BA_M34_RESEARCH_PRECISION=true` is compiled and shows noncompetitive play disclosure. [M3.4 acceptance](M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md), [CI #40102968596](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40102968596) 2 completed 13-trick/52-card native-auction/deterministic-cardplay games; 2/1 variants and opt-in widget validations use later latest CI where available. **Full competitive robot play remains blocked.**
+
+
 Status: **BLOCKED / NOT IMPLEMENTED**
 
 - After provider/full-game acceptance, register new `BA-PRECISION-MECKWELL/<revision>` in the *server* allowlist with backend ID/version and model/artifact fingerprint.
