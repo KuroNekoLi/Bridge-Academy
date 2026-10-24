@@ -17,7 +17,10 @@ Future<void> main() async {
   BenLoopbackBackend? benBackend;
   if (upstream != null && upstream.isNotEmpty) {
     try {
-      benBackend = BenLoopbackBackend(origin: Uri.parse(upstream));
+      benBackend = BenLoopbackBackend(
+        origin: Uri.parse(upstream),
+        pinnedBenRevision: Platform.environment['BEN_PINNED_COMMIT'],
+      );
     } catch (_) {
       stderr.writeln('BEN_INTERNAL_ORIGIN must be a loopback HTTP origin');
       exitCode = 64;
