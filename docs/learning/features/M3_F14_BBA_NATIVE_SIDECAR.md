@@ -47,7 +47,7 @@ python scripts/precision_m33_sidecar.py --ben-root third_party_ben_m33 \
 python scripts/precision_m33_http_smoke.py --port 18088
 ```
 
-[CI #40095274359](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095274359)：**Python 5/5 tests**，真原生 service 啟動、16/16（8 fixtures × 2 opponent model）HTTP 出價，8/8 強 1♣ 候選皆符合，3 個明確無效 schema 被 400 拒絕。該工作流程還驗證 Dart 到 native 再到 Core 的一次完整 CallAction。
+[CI #40095274359](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095274359)：**Python 5/5 tests**，真原生 service 啟動、16/16（8 fixtures × 2 opponent model）HTTP 出價，8/8 強 1♣ 候選皆符合；另測得 2/2 實際 1♣ 應叫／開叫者續叫上下文回傳格式合法，因此總真 EPBot HTTP 請求為 18/18。3 個明確無效 schema 被 400 拒絕。該工作流程還驗證 Dart 到 native 再到 Core 的一次完整 CallAction。
 
 此結果是**真 EPBot 開叫**，但不是 52 張牌／13 墩完整局，也不是對專家級強梅花續叫、敵方競叫或 BBA 授權原文的檢驗。
 
