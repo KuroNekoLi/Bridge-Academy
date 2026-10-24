@@ -53,6 +53,10 @@ python scripts/ben_multisystem_benchmark.py \
 | 完整叫牌制度專家簽核 | 100+ curated golden fixtures | NOT RUN／後續 |
 | Bridge Core 逐動作 end-to-end | 真制度決策由 server Core 依法驗證 | NOT RUN／後續 M2 |
 
+### 最新程式碼再驗證（2026-10-24）
+
+CPU 採樣功能及其單元測試合併後，在 [CI #40076846012](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076846012) 重新執行整個真 BEN workflow：**completed/success**，M1.3 再次 **32/32 /bid、0 強制 PASS 違規、1 組不同叫牌（同為 `2over1_opener`）**；21GF 的 p50/p95 為 **33.5/731.1 ms**，SAYC 為 **35.4/693.8 ms**。這與先前成功 run 的差異反映執行環境與測量變動，小樣本不能推定長期 p95 SLO。最終腳本測試與流程皆以此 run 的 commit `56e8b16e` 為最新證據。
+
 ## 4. 原始技術限制與下一階段
 
 即使本文件得到 `SCOPED VERIFIED`，仍只能聲稱 **「真 BEN 在 16 組未專審情境中能依要求呼叫兩套模型並回傳合法叫牌」**。尚不能宣稱每個後續叫牌都遵守 2/1/SAYC 或可正式為使用者切換；Gateway/Flutter 制度綁定是 M2，Precision 是 M3。
