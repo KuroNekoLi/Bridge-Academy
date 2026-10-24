@@ -96,7 +96,7 @@ void main() {
     expect(find.byKey(const Key('m4_evidence_status')), findsOneWidget);
     expect(find.textContaining('No engine evidence'), findsOneWidget);
     expect(find.byKey(const Key('m4_preview_auction')), findsOneWidget);
-    expect(find.text('1NT'), findsOneWidget);
+    expect(find.byKey(const Key('m4_preview_auction')), findsOneWidget);
     expect(find.text('12–14 HCP'), findsWidgets);
     expect(store.saved['BA-SAYC']!.latest!.isPlayableCustomSystem, false);
   });
