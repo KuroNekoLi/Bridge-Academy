@@ -1,5 +1,7 @@
 # BEN Multi-System M1 Spike — 實作、執行與驗收紀錄
 
+> **2026-10-24 final M1 feasibility note:** M1.3 real 2/1 vs SAYC `/bid` A/B **SCOPED VERIFIED** ([16 × 2 requests](BEN_MULTI_SYSTEM_M1_3_ACCEPTANCE.md)); M1.4 isolated single/dual-worker CPU/RSS/latency study **SCOPED VERIFIED** ([capacity evidence](BEN_MULTI_SYSTEM_M1_4_CAPACITY.md)); [CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888) success. **Production NO-GO**: expert golden cases/Bridge Core e2e and actual 4GB VPS/load/license remain unverified. Previous future to-dos below are retained as historical plan.
+
 > **2026-10-24 progress addendum:** M1.1 Capability 靜態/Mock 已通過；**M1.2 pinned BEN 實際啟動與 GET / 已 SCOPED VERIFIED**（[CI #40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217)、[M1.2 驗收](BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md)、[實際模型 SHA](BEN_M12_PINNED_ASSETS.md)）。以下 M1.2 工作清單為實作前規劃歷史；M1.3 /bid、M1.4 並行/部署仍未執行。
 
 
