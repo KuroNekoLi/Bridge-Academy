@@ -3,10 +3,10 @@
 - Feature ID：M3-F02
 - Milestone：三制度 AI / M1.2
 - 類型：AI 整合／GitHub Actions／供應鏈追蹤
-- 工程狀態：**IMPLEMENTED / CI ACCEPTANCE PENDING**（以 [M1.2 實測報告](../../research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md) 更新為準）
+- 工程狀態：**SCOPED VERIFIED**（真實 BEN GET / 啟動與模型清冊通過；制度 /bid 與授權 NOT VERIFIED）
 - 學習狀態：**DELIVERED**
 - 原始碼：[inventory script](../../../scripts/ben_m12_inventory.py)、[unit tests](../../../scripts/test_ben_m12_inventory.py)、[isolated BEN CI](../../../.github/workflows/ben-m12-isolated-runtime.yml)
-- 驗收與測試：Ubuntu 24.04 Python 3.12、固定 BEN `ad8608af...`；[CI Workflow](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/ben-m12-isolated-runtime.yml)。Runtime 結果以最新 CI 明列，非本文件事先聲稱。
+- 驗收與測試：Ubuntu 24.04 Python 3.12、固定 BEN `ad8608af...`；[CI Workflow](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/ben-m12-isolated-runtime.yml)。[CI #40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217) 實際完成：8/8 inventory 測試、12/12 capability 測試、固定 BEN 真服務 GET / PASS；RSS 899920 KiB（約 879 MiB）、啟動 9.03 秒。
 
 ## 功能目的與實際情境
 
@@ -54,7 +54,7 @@ python scripts/ben_system_probe.py \
 
 最後一條需先完成真 BEN 隔離啟動。沒有真服務時必須失敗；即使有 `GET /`，**真 BEN 21GF/SAYC `/bid` 仍是 NOT RUN**，不可標成 AI 策略驗收通過。
 
-證據：[M1.2 Acceptance](../../research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md)。CI 會產生只包含 digest/模型名稱/時間/RSS 的短期 JSON 工件，但不會上傳第三方權重或包含手牌的原始伺服器 log。
+證據：[M1.2 Acceptance](../../research/BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md)；[Pinned SHA256](../../research/BEN_M12_PINNED_ASSETS.md)。GitHub Actions [#40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217) 已通過 scoped 真實啟動；CI 會產生只包含 digest/模型名稱/時間/RSS 的短期 JSON 工件，但不會上傳第三方權重或包含手牌的原始伺服器 log。
 
 ## 練習與自我檢驗
 
