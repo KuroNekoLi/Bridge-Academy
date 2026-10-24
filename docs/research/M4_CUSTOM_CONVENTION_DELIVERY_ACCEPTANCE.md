@@ -8,6 +8,30 @@
 
 產品三制度路線 M1→M6 定義的 M4 是 **Custom Convention Card**；不是歷史 `docs/ROADMAP.md` 中另一套「M4 Multiplayer」里程碑。這一階段可與 M3 競賽牌力驗證並行，但不可把研究成功當成已核准的 AI 模型，或修改正式 Gateway 的 `GameSystems`。
 
+## M4.3～M4.5 工程擴充（2026-10-25）
+
+**工程碼已提交；最新 CI 必須另依已完成的 GitHub Actions 簽核。** 此階段重點是讓玩家知道自訂約定代表的意思、確認它是否真的受到 AI 引擎支援，以及安全地轉移自己的草稿歷史。**沒有訓練 BEN 模型，沒有提供受支援的任意自訂 BBA 卡，也沒有解除正式對局封鎖。**
+
+| 階段 | 交付內容 | 不可混淆的限制 |
+| --- | --- | --- |
+| M4.3：能力審核 | [CustomConventionReviewer](../../packages/bridge_conventions/lib/src/custom_convention_review.dart)；對每項規則顯示 `USER_DRAFT:<slot>`、公開叫牌、`engineEvidenceRequired`；未更動 base 為 `unchangedBase` | `canUseAsAiSystem=false`，沒有正向憑證就不可說「BEN 支援」；不能讓玩家輸入 `SUPPORTED` 繞過 |
+| M4.4：語義預覽 | `preview(draft, publicAuction)` 正規化有限 call；回傳 user-draft meaning／base-unverified／no-rule；[Flutter](../../apps/bridge_academy_flutter/lib/src/conventions/custom_draft_page.dart) 顯示雙語語義和證據不足提醒 | 不推測未知叫品、不查看隱藏手牌、不代表真 AI 在叫牌當下的理解 |
+| M4.5：本機安全搬移 | [CustomArchiveImport](../../packages/bridge_conventions/lib/src/custom_convention_archive.dart) 支援驗證歷史後 `identical/fastForward/divergent`；Flutter Clipboard 明確匯出、受限 128 KiB 匯入、人類按確認才寫入 | 不能倒退覆蓋本機版本、不能跨 base/分岔匯入；沒有帳號同步、雲端歷史或惡意本機攻擊防護 |
+
+可重現驗證：
+
+```bash
+cd packages/bridge_conventions
+dart pub get && dart analyze --fatal-infos && dart test --reporter expanded
+cd ../../apps/bridge_academy_flutter
+flutter pub get && flutter analyze --no-pub
+flutter test test/m4_custom_convention_draft_test.dart --reporter expanded
+```
+
+測試含未支援約定不得進入 `ConventionCatalog`、公開叫牌只顯示作者明訂語義、未覆寫為 `UNKNOWN`、異常 JSON/hash/conflict 失敗、剪貼簿匯入明確確認及拒絕分岔、離線匯出回讀。固定 `GameSystems` 及既有 BEN／BBA 正式路由完全不變；Android/iOS 裝置 QA 未經使用者授權不啟動。
+
+**剩餘 M4 Product NO-GO：** 任意可執行自訂規則需要已簽核的 native BBA/自有 rule engine 能力 manifest、引擎 hash、完整兩家搭檔的 forcing/competitive/alert Golden、版本恢復與相容性測試；多張自訂卡管理、可信雲同步和正式發行審查仍未完成。
+
 ## 已實作
 
 | 子階段 | 程式及使用者效果 | 證據／限制 |
