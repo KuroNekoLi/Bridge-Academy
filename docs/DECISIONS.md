@@ -12,6 +12,8 @@ Bridge Academy 的研究版改為 `BbaResearchTablePolicy` 在 `Phase.play` 呼�
 
 **非目標**：沒有真正的 Precision-aware BEN NN play model，沒有 single-dummy 機率抽樣訓練、訊號判讀、專家防禦牌例、同種子大樣本 MP/IMP 勝率、4GB VPS/併發驗收。因此 **產品 ranked/正式發布繼續 NO-GO**。僅保留 Gateway `M34_RESEARCH_ENABLED=true`、Flutter `BA_M34_RESEARCH_PRECISION=true` 的雙重 opt-in。BBA 商業託管、修改與再散布權已由使用者確認，正式散布文件/notice 留在 Release audit。
 
+**語義限制新增證據（2026-10-24）**：[CI #40106500046](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40106500046) 真 BBA 6/6 推論 schema PASS，其中 2 次是完成的人工強 1♣ 叫牌。然而同一牌例中兩種配對設定的 16 個 `probable_length` 值全相同（差異 0）；這意味著尚不能用此訊號證明強梅花語義區辨力。HCP 範圍、Alert/meaning、花色 min/max 與 expert golden 仍必須另行驗證。不可聲稱完成競賽級 Precision NN cardplay。
+
 [M3.6 工作和證據](research/M3_6_PRECISION_CONVENTION_AWARE_CARDPLAY.md) · [M3-F17 教學](learning/features/M3_F17_PRECISION_CONVENTION_INFERRED_CARDPLAY.md)。
 
 
