@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:bridge_gateway/bridge_gateway.dart';
+import 'package:bridge_precision_adapter/bridge_precision_adapter.dart';
 
 Future<void> main() async {
   final port = int.tryParse(Platform.environment['GATEWAY_PORT'] ?? '8086');
@@ -27,6 +28,32 @@ Future<void> main() async {
       return;
     }
   }
+  // M3.4 deliberately requires TWO explicit operator-controlled switches.
+  // This is local research gameplay only; cardplay uses deterministic test AI.
+  final enablePrecision =
+      Platform.environment['M34_RESEARCH_ENABLED'] == 'true';
+  final precisionOrigin = Platform.environment['M34_RESEARCH_BBA_ORIGIN'];
+  BbaPrecisionLoopbackTransport? researchWorker;
+  if (enablePrecision) {
+    if (precisionOrigin == null || precisionOrigin.isEmpty) {
+      stderr.writeln('M34_RESEARCH_BBA_ORIGIN required for research opt-in');
+      exitCode = 64;
+      return;
+    }
+    try {
+      researchWorker = BbaPrecisionLoopbackTransport(
+          origin: Uri.parse(precisionOrigin));
+    } catch (_) {
+      stderr.writeln('M34_RESEARCH_BBA_ORIGIN must be literal loopback HTTP');
+      exitCode = 64;
+      return;
+    }
+  } else if (precisionOrigin != null && precisionOrigin.isNotEmpty) {
+    stderr.writeln('Set M34_RESEARCH_ENABLED=true explicitly to use BBA');
+    exitCode = 64;
+    return;
+  }
+
   // Pinned BEN may take longer than local HTTP mocks; the outbound backend
   // still has a stricter 120s timeout, and the gateway returns no fake action.
   final checkpointDir = Platform.environment['GATEWAY_CHECKPOINT_DIR'];
@@ -90,6 +117,8 @@ Future<void> main() async {
   final gateway = BridgeGatewayService(
     checkpointStore: store,
     backend: benBackend,
+    enablePrecisionResearch: enablePrecision,
+    precisionResearch: researchWorker,
     config: GatewayConfig(
       allowedBrowserOrigins: allowedOrigins,
       decisionLimit: devQuota,
@@ -114,4 +143,5 @@ Future<void> main() async {
   ]);
   await gateway.close();
   benBackend?.close();
+  researchWorker?.close();
 }
