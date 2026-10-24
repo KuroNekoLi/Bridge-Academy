@@ -10,6 +10,21 @@
 | bridge-engine — https://github.com/kduffie/bridge-engine | TypeScript game-engine reference | MIT identified; robot strength does not replace BEN | Reference only |
 | eBridge — https://github.com/ebridge/bridge-web | multiuser architecture reference | Not independently audited | Reference only |
 
+## Updated BBA permission status — owner statement (2026-10-24)
+
+**Permission received (user-reported): YES.** The Bridge Academy owner explicitly stated "我已經取得BBA使用授權" on 2026-10-24. Treat the former blanket "not obtained" statement as outdated. Current status is **OWNER_REPORTED_GRANTED / SCOPE_UNVERIFIED**, not "no permission" and not a fully reviewed legal release approval.
+
+**Selected convention variant**: [BBA Meckwell Precision V1](conventions/PRECISION_BBA_MECKWELL_V1.md), 1NT **13–15**, pinned BEN source and exact .bbsa SHA. Do not mix with Meckwell Lite 13–16.
+
+For an auditable GO decision, review these permission details privately (without disclosing private correspondence in GitHub):
+- Rightsholder / licensor identity and grant recipient; dates, duration, geography.
+- Whether permission covers **native EPBot binaries**, `Meckwell.bbsa`, BBA application, associated dependencies, source edits, and notices.
+- Whether **hosted API/SaaS and commercial gameplay** are permitted, and what attribution/limits are required.
+- Whether redistributing copies (server image, mobile, binaries, model training or convention card) is permitted; do not assume permission for one mode grants all.
+- Renewal, revocation, support/version upgrades, or terms that require specific original files.
+
+Until the scoped grant is reviewed, **external release/redistribution approval remains pending**. Internal research and definition of immutable V1 continue, without copying unreviewed binaries into this first-party repo. This update records the user's factual assertion rather than independently verifying the underlying agreement.
+
 ## M3 Precision BBA／EPBot research-only audit (2026-10-24)
 
 **Decision: INVESTIGATE FOR RESEARCH / BLOCK PRODUCTION & REDISTRIBUTION.**
