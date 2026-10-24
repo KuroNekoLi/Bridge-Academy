@@ -42,6 +42,31 @@ def run(port):
             assert set(values)==set("CDHS")
             assert all(type(v)==int and 0<=v<=13 for v in values.values())
         assert "hand" not in obj and "deal" not in obj
+    # Preserve the same public/artificial strong-1C auction, but change which
+    # partnership's BBA card interprets it. This tests genuine convention
+    # inference path beyond the earlier natural 3NT opening fixture.
+    strong_club="1C-P-1D-P-1N-P-3N-P-P-P"
+    compared=[]
+    for ns,ew in (
+        (PROFILE_ID,"BA-SAYC"),
+        ("BA-SAYC",PROFILE_ID),
+    ):
+        bid={**request,"northSouth":ns,"eastWest":ew,
+             "seat":"E","hand":"32.9843.J73.Q943",
+             "ctx":strong_club}
+        status,res=post(bid,port)
+        if status!=200:
+            raise RuntimeError("Native strong-club auction inference failed")
+        assert res["source"]=="BBA_AUCTION_ESTIMATE"
+        assert set(res["suitEstimates"])==set("NESW")
+        for values in res["suitEstimates"].values():
+            assert set(values)==set("CDHS")
+            assert all(type(v)==int and 0<=v<=13 for v in values.values())
+        compared.append(res["suitEstimates"])
+    differing_suit_entries=sum(
+        compared[0][seat][suit]!=compared[1][seat][suit]
+        for seat in "NESW" for suit in "CDHS"
+    )
     invalid={**request,"ctx":"3N-P-P"}
     status,obj=post(invalid,port)
     assert status==400 and obj=={"error":"invalid_request"}
@@ -49,7 +74,9 @@ def run(port):
     status,obj=post(invalid,port)
     assert status==400 and obj=={"error":"invalid_request"}
     print("M36_NATIVE_BBA_CONVENTION_INFERENCE_PASS",
-          json.dumps({"realNativeCases":len(examples),
+          json.dumps({"realNativeCases":len(examples)+len(compared),
+                      "strongClubCompletedAuctionContexts":len(compared),
+                      "crossProfileEstimateDifferences":differing_suit_entries,
                       "rejectedMalformed":2,
                       "ownerPrivateHandOnly":True,
                       "fullGameStrengthValidated":False}))
