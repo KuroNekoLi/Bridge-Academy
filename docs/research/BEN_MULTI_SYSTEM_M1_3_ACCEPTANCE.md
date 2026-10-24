@@ -1,6 +1,6 @@
 # Bridge Academy — M1.3：真 BEN 2/1 Game Force／SAYC 叫牌 A/B 驗收
 
-> 2026-10-24 · **PENDING CI**（測試執行中的狀態。只在取得真 BEN artifact 後填入實測結果）。  
+> 2026-10-24 · **SCOPED VERIFIED** — 真 BEN 16 組 × 2 制度共 32 次 /bid 全部成功、0 個已檢查 forcing 違規；未達完整專家簽核／全套制度驗收。  
 > 範圍：固定 BEN `ad8608af6e6bfe095863023f344f3cb2cbafec3d`；`ourSystem=21GF` 與 `ourSystem=SAYC`。  
 > 文件權威：[三制度主計畫](../product/THREE_SYSTEM_BIDDING_AI_MASTER_PLAN.md) · [M1.2 原生執行驗收](BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md)。
 
@@ -37,14 +37,19 @@ python scripts/ben_multisystem_benchmark.py \
 
 ## 3. CI evidence 和判定
 
-**PENDING**：待 GitHub workflow 真實完成，再填 run ID、真模型成功比數、平均差異、forcing 違規、每模型延遲等測得數字。
+**EXECUTED / REAL BEN PASS**：GitHub Actions [#40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313) job `multi-system` completed/success。Pinned `ad8608af` 真正 `gameapi.py` 啟動，32/32 次真 `/bid` 成功，最低合法叫品預檢全部通過；BEN 對未知 `ourSystem` 回應 400（fail-closed）；3 個 2/1 forcing 規則沒有出現 PASS 違規。
+- 16 組情境中有 **1 組不同**：`2over1_opener` 的 `1S–P–2H–P`，`21GF→4H`，`SAYC→3H`。此為觀察值，不是任一叫品已被專家證明最優。
+- 21GF 16 次：p50 **36.7 ms**、p95 **774.4 ms**、最大 **774.4 ms**。
+- SAYC 16 次：p50 **39.8 ms**、p95 **730.8 ms**、最大 **730.8 ms**。
+- 基礎測試是 Python 獨立語法／叫牌升序預檢，**未透過 Dart Bridge Core 執行每一個提案**。Fixture 有既定先前叫牌，但未建立配對的完整四手隱藏分配，也非專家審核 golden set。
+- 第三方模型/原生授權仍未核准；NN-biased 輕量設定不代表完整 BEN Production 模式。
 
 | 項目 | 要求 | 狀態 |
 |---|---|---|
-| 固定版本真實 BEN | 非 mock、URL 127.0.0.1、`GET /` 能力宣告真實 | PENDING |
-| 32 次 `/bid` | 16 fixtures × 2 系統，所有回應合法、無 error | PENDING |
-| 錯誤制度拒絕 | 未知 `ourSystem` 必須 400 | PENDING |
-| 2/1 迫叫限制 | 3 個核心 forcing 情境不可 PASS | PENDING |
+| 固定版本真實 BEN | PASS（[CI #40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313)） | PASS（[CI #40076117313](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076117313)） |
+| 32 次 `/bid` | PASS（32/32，16 × 2，無非法回應） | PASS（32/32，16 × 2，無非法回應） |
+| 錯誤制度拒絕 | PASS（未知 ourSystem 400） | PASS（未知 ourSystem 400） |
+| 2/1 迫叫限制 | PASS（3 個指定情境零 PASS 違反） | PASS（3 個指定情境零 PASS 違反） |
 | 完整叫牌制度專家簽核 | 100+ curated golden fixtures | NOT RUN／後續 |
 | Bridge Core 逐動作 end-to-end | 真制度決策由 server Core 依法驗證 | NOT RUN／後續 M2 |
 
