@@ -1,0 +1,98 @@
+name: M3 Precision BBA Native Research - NOT Release Approved
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "scripts/precision_m3_probe.py"
+      - "scripts/test_precision_m3_probe.py"
+      - "scripts/fixtures/precision_m3_cases.json"
+      - ".github/workflows/precision-m3-research.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  precision-isolated-research:
+    name: Pinned native EPBot precision system type 3 research
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      BEN_COMMIT: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+      TF_CPP_MIN_LOG_LEVEL: "2"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+          path: third_party_ben_m3
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            src
+            BBA
+            bin
+            models
+            requirements.txt
+            LICENSE
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben_m3/requirements.txt
+      - name: M3 pure contract tests, no native binaries loaded
+        run: |
+          python -m py_compile scripts/precision_m3_probe.py scripts/test_precision_m3_probe.py
+          python -m unittest discover -s scripts -p 'test_precision_m3_probe.py' -v
+      - name: Pinned upstream source and convention card audit
+        run: |
+          test "$(git -C third_party_ben_m3 rev-parse HEAD)" = "$BEN_COMMIT"
+          python scripts/precision_m3_probe.py \
+            --ben-root third_party_ben_m3 \
+            --output "$RUNNER_TEMP/precision-m3-audit.json"
+      - name: Isolated dependencies for BBA native experiment
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libicu74 libboost-thread-dev
+          python -m pip install -r third_party_ben_m3/requirements.txt
+      - name: Execute native EPBot Precision opening-bid experiment
+        timeout-minutes: 12
+        run: |
+          python scripts/precision_m3_probe.py --live \
+            --ben-root third_party_ben_m3 \
+            --output "$RUNNER_TEMP/precision-m3-native.json"
+      - name: Release safety gate - must remain unapproved
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          before=json.loads((root/"precision-m3-audit.json").read_text())
+          after=json.loads((root/"precision-m3-native.json").read_text())
+          assert before["candidate"]["cardMatchesReference"] is False
+          assert before["candidate"]["oneNtCard"] == "13-15"
+          assert before["candidate"]["referenceMeckwellLite20260105"] == "13-16"
+          assert after["candidate"]["systemType"] == 3
+          assert after["nativeRan"] is True
+          assert after["experiment"]["cases"] >= 8
+          assert after["candidate"]["licenseApproved"] is False
+          assert after["releaseApproved"] is False
+          print("PRECISION_BBA_RESEARCH_ONLY_PASS_NOT_DEPLOYMENT_APPROVED")
+          print("NATIVE_CASE_COUNT",after["experiment"]["cases"])
+          print("STRONG_CLUB_DISCREPANCIES",
+                len(after["experiment"]["strongClubDiscrepancies"]))
+          PY
+      - name: Upload sanitized-only analysis (never binaries/hand URLs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: precision-m3-research-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/precision-m3-audit.json
+            ${{ runner.temp }}/precision-m3-native.json
+          if-no-files-found: ignore
+          retention-days: 14
