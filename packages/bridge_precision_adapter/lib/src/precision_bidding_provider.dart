@@ -1,5 +1,5 @@
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
-import 'package:bridge_conventions/src/precision_research.dart';
+import 'package:bridge_conventions/bridge_conventions.dart';
 import 'package:bridge_core/bridge_core.dart';
 
 /// Typed transport: only a proposed auction call can cross this boundary.
