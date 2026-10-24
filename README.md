@@ -1,5 +1,6 @@
 # Bridge Academy
 
+**Precision V1（2026-10-24）**：第三套制度的唯一規格已選定 [BBA Meckwell Precision V1（1NT 13–15）](docs/conventions/PRECISION_BBA_MECKWELL_V1.md)，固定上游 Meckwell.bbsa 與 SHA。專案擁有人已告知取得 BBA 授權，但具體商業託管／再散布範圍待核對；正式 Gateway/Flutter Precision 尚未開放。
 A contract bridge platform: start with a single human playing alongside three AI players, then expand to teaching, online tables and duplicate tournaments.
 
 **State (2026-10-15):** Bridge Core 47/47 tests passed; M2 has a functional Flutter table, Android emulator and Chrome integration, pinned real-BEN fixed-board tests, random local deals and current-completed-game replay. **Consumer-ready single-player MVP is NOT released**: dealer/vulnerability board cycle, durable resume/history, production BEN delivery, device QA and deployment/licensing remain open. See the product release gates below. This repository is private. The phrase "open-source" in the initial description is a product aspiration, not a statement that this repository or its third-party dependencies have been released under a chosen license.
