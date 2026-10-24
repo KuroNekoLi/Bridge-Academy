@@ -60,6 +60,26 @@ python scripts/precision_m33_http_smoke.py --port 18088
 cd packages/bridge_precision_adapter && PRECISION_NATIVE_ORIGIN=http://127.0.0.1:18088/ dart test test/native_precision_live_test.dart
 ```
 
+## 已執行的最終 M3.3 範圍驗收（2026-10-24）
+
+**EXECUTED / SCOPED ENGINEERING PASS** — [GitHub Actions #40095599137](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095599137) `completed/success`（pinned BEN `ad8608af`、Ubuntu 24.04、Python 3.12、Dart stable）。
+
+| 驗證 | 結果 |
+| --- | --- |
+| `bridge_precision_adapter` Dart analyze | No issues found |
+| Dart Adapter & loopback tests | 7/7 PASS |
+| Python sidecar unit/schema/security tests | 5/5 PASS |
+| Native `libEPBot.so` startup & all pinned source+card+native SHA | PASS |
+| 原生 HTTP 開叫，8 hands × 21GF/SAYC opponent cards | 16/16 PASS |
+| 實際強梅花候選 4 hands × 2 opponent cards | 8/8 選 1♣ |
+| 實際 `1♣–P` 應叫／`1♣–P–1♦–P` 開叫者續叫上下文 | 2/2 完成，有合法格式出價；尚未專家審核語義 |
+| 未知對手卡／錯誤卡 SHA／多餘 Deal 欄位 | 3/3 遭 HTTP 400 拒絕 |
+| Dart `PlayerView → POST → real EPBot → BridgeGame.apply` | 1/1 PASS（獨立實驗） |
+| 整局 52 張、13 墩、真 BEN 對 Precision 理解 | NOT RUN：M3.4 |
+| 正式外部服務／4GB VPS 與 Native license 包裝 | NOT RUN：後續 Release Gate |
+
+M2 的不可變制度與 Gateway 回歸測試仍通過 [CI #40095426196](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095426196)，Dart Domain 10/10、Gateway 44/44（該測試不表示 M3.3 可在正式 Gateway 選用）。這次只修改 Provider 與研究服務，不觸發 Android/iOS 實機或模擬器工作流程。
+
 ## M3.3 完成條件
 
 1. Domain/Catalog：單一 V1 `BA-PRECISION-MECKWELL/r1`、13–15、來源 SHA 不變；BBA 商用／託管／修改／散布權由 owner 報告已取得。
