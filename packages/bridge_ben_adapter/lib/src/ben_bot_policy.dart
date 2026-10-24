@@ -1,11 +1,13 @@
 import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_conventions/bridge_conventions.dart';
 import 'ben_transport.dart';
 
 /// Stateless BEN robot. Takes a filtered PlayerView, never GameState or Deal.
 /// The coordinator validates the resulting proposal with BridgeGame.apply.
 class BenBotPolicy implements BotPolicy {
-  const BenBotPolicy(this.transport);
+  const BenBotPolicy(this.transport, {this.gameSystems});
   final BenTransport transport;
+  final GameSystems? gameSystems;
 
   @override
   Future<GameAction> choose(PlayerView view) async {
@@ -19,6 +21,21 @@ class BenBotPolicy implements BotPolicy {
       'vul': BenProtocol.vulnerability(view.vulnerability),
       'ctx': BenProtocol.auction(view.auction),
     };
+    // BEN supports request-scoped partnership systems on bid, lead and play.
+    // Never silently mix pinned and legacy opponents.
+    final systems = gameSystems;
+    if (systems != null &&
+        (!systems.northSouth.isLegacyUnverified ||
+         !systems.eastWest.isLegacyUnverified)) {
+      final ours = systems.forPartnership(northSouthSeat: view.viewer.isNS);
+      final theirs = systems.forPartnership(northSouthSeat: !view.viewer.isNS);
+      if (ours.isLegacyUnverified || theirs.isLegacyUnverified ||
+          ours.engineId != 'BEN' || theirs.engineId != 'BEN') {
+        throw const BenApiException('system', 'Unverified mixed partnership systems');
+      }
+      query['ourSystem'] = ours.modelId;
+      query['theirSystem'] = theirs.modelId;
+    }
     if (view.phase == Phase.auction) {
       final response = await transport.get('/bid', query);
       return CallAction(view.viewer, BenProtocol.parseCall(response['bid']));
