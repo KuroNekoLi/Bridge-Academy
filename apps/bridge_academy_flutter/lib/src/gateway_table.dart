@@ -45,7 +45,9 @@ class _GatewayTableState extends State<GatewayTable> {
                 Text(copy.t('gatewayNotice'),
                     key: const Key('gateway_mode_notice')),
                 const SizedBox(height: 8),
-                Text(copy.t('gatewayConventionNotice'),
+                Text(copy.t(_precisionResearch ?
+                    'gatewayConventionResearchNotice' :
+                    'gatewayConventionNotice'),
                     key: const Key('gateway_system_notice')),
                 const SizedBox(height: 8),
                 Wrap(
