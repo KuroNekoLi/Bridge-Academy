@@ -1,0 +1,119 @@
+name: M2.5 Genuine BEN 2/1 SAYC Gateway Full-Game E2E
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "services/bridge_gateway/bin/live_gateway_multisystem_full_game.dart"
+      - ".github/workflows/ben-m2-multisystem-real.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  live-multisystem:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      BEN_COMMIT: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+      PYTHONUNBUFFERED: "1"
+      TF_CPP_MIN_LOG_LEVEL: "2"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+          path: third_party_ben_m2
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            src
+            models
+            BBA
+            bin
+            requirements.txt
+            LICENSE
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben_m2/requirements.txt
+      - name: Pin reviewed BEN source and install isolated dependencies
+        run: |
+          test "$(git -C third_party_ben_m2 rev-parse HEAD)" = "$BEN_COMMIT"
+          sudo apt-get update -qq
+          sudo apt-get install -y libboost-thread-dev libicu74
+          python -m pip install -r third_party_ben_m2/requirements.txt
+      - name: Make test-only neural-focused config
+        run: |
+          python - <<'PY'
+          import configparser
+          from pathlib import Path
+          path=Path("third_party_ben_m2/src/config/default_api.conf")
+          c=configparser.ConfigParser(interpolation=None)
+          assert c.read(path)
+          for section,keys in {
+            "models": ("use_bba","consult_bba","use_bba_rollout","use_bba_to_count_aces"),
+            "pimc": ("pimc_use_declaring","pimc_use_defending","pimc_use_discarding"),
+            "cardplay": ("use_suitc",),
+          }.items():
+              for key in keys:
+                  assert c.has_option(section,key)
+                  c.set(section,key,"False")
+          # bounded workload for CI only; not production BEN defaults
+          for key,val in {
+            "sample_hands_play":"40",
+            "sample_hands_auction":"40",
+            "sample_hands_opening_lead":"40",
+            "sample_boards_for_play":"1000",
+            "sample_boards_for_auction":"3000",
+          }.items():
+              if c.has_option("sampling",key):
+                  c.set("sampling",key,val)
+          with path.with_name("ci_m2_systems.conf").open("w") as f: c.write(f)
+          print("PINNED_BEN_M2_CI_CONFIG_READY")
+          PY
+      - name: Start real BEN on loopback (logs never uploaded)
+        run: |
+          (
+            cd third_party_ben_m2/src
+            exec python gameapi.py --config config/ci_m2_systems.conf \
+              --host 127.0.0.1 --allowed-hosts 127.0.0.1,localhost \
+              --record false --verbose false \
+              > "$RUNNER_TEMP/ben-m2-private.log" 2>&1
+          ) &
+          echo "BEN_PID=$!" >> "$GITHUB_ENV"
+          python - <<'PY'
+          import json,time,urllib.request
+          for _ in range(180):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8085/",timeout=3) as res:
+                      info=json.load(res)
+                  if {"21GF","SAYC"}.issubset(set(info.get("playsSystems",[]))):
+                      print("REAL_BEN_M2_PLAYABLE_MODELS_READY")
+                      break
+              except Exception: time.sleep(2)
+          else: raise SystemExit("BEN multi-system worker failed readiness")
+          PY
+      - name: Real Gateway NS 2/1, EW SAYC complete 52-card game
+        working-directory: services/bridge_gateway
+        timeout-minutes: 23
+        run: |
+          dart pub get
+          dart run bin/live_gateway_multisystem_full_game.dart
+      - name: Real Gateway NS SAYC, EW 2/1 complete 52-card game
+        working-directory: services/bridge_gateway
+        timeout-minutes: 23
+        env:
+          M2_SWAP_SYSTEMS: "true"
+        run: dart run bin/live_gateway_multisystem_full_game.dart
+      - name: No private BEN logs published
+        if: always()
+        run: |
+          echo "M2.5 scope: real BEN and Bridge Core full-game E2E, not expert bidding approval"
+          echo "All private BEN URLs, hands and raw logs stay in disposable runner"
