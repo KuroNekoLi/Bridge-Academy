@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   isolated-ben:
-    name: Pinned BEN 0.9 candidate - artifact SHA and real GET root
+    name: Pinned BEN - artifact SHA, real GET root and process RSS
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     env:
@@ -98,7 +98,7 @@ jobs:
           set -euo pipefail
           (
             cd third_party_ben_m12/src
-            python gameapi.py \
+            exec python gameapi.py \
               --config config/ci_m12_isolated.conf \
               --host 127.0.0.1 \
               --allowed-hosts 127.0.0.1,localhost \
