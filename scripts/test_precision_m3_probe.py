@@ -20,7 +20,7 @@ class PrecisionContractTest(unittest.TestCase):
                             for c in cases if c["expectStrongClub"]))
 
     def test_bad_hand_refused(self):
-        for value in ["AKQ.KQ.AJ.KQ", "AKQ3.KQ4.AJ3.KQ3", "AXQ3.KQ4.AJ3.KQ7"]:
+        for value in ["AKQ.KQ.AJ.KQ", "AKQ3.KQ4.AJ3.KQQ", "AXQ3.KQ4.AJ3.KQ7"]:
             with self.subTest(value=value), self.assertRaises(p.ResearchError):
                 p.parse_hand(value)
 
