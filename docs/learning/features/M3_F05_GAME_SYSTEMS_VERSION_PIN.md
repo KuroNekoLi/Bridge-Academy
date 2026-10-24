@@ -1,6 +1,6 @@
 # M3-F05｜M2.1：讓 GameSystems 與制度版本跟著牌局固定
 
-- Feature ID：**M3-F05**（三制度產品線的 M2.1；舊 M2-F01～F52 編號不重新使用）
+- Feature ID：M3-F05（三制度產品線的 M2.1；舊 M2-F01～F52 編號不重新使用）
 - Milestone：**Multi-System M2.1**
 - 類型：純 Dart Domain／可信任 Gateway／加密恢復相容性
 - 工程狀態：**SCOPED VERIFIED：Dart 分析零問題；Domain 5/5、Gateway 40/40；M2.2 routing NOT RUN**
