@@ -1,5 +1,13 @@
 # Architecture and Product Decision Log
 
+## ADR-029 — 2/1／SAYC M2.2～M2.5 對局制度切換已通過限定驗收（2026-10-24）
+
+**SCOPED ENGINEERING PASS / PRODUCTION NO-GO.** M2.2 的 BEN request-scoped 21GF/SAYC 由 PlayerView.viewer.isNS 推出 ourSystem/theirSystem，lead/play 亦帶正確搭檔配置，不改 Bridge Core。M2.3 的 Gateway 只接收 allowlisted NS/EW profile IDs，要求 operator pin upstream Git SHA、真實 BEN GET / plays/reads capabilities；失敗 503，絕不隱形降級。M2.4 Flutter 以兩個雙語選單讓用戶新局前選擇 NS/EW，且回核伺服器生成的 fingerprint。M2.5 真 BEN pinned candidate ad8608af 在隔離 runner 測試兩種互換制度配置，各完成 13 墩、52 unique cards、分數及冪等回放（[CI #40087851963](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40087851963)）。
+
+**保留的硬門檻**：沒有專家 100+ 黃金制度牌例、真人遊玩比較、完整版 BEN 品質檢查、權重/native binary 授權、4GB VPS 正式壓測、TLS/部署與暫緩的 Android/iOS 裝置 QA，故不得宣稱正式可上線。Precision／自訂制度先 M3 授權和語義研究。紀錄：[M2 整合驗收](research/M2_2_TO_M2_5_IMPLEMENTATION_ACCEPTANCE.md) · [M2.5 真模型](research/M2_5_REAL_BEN_MULTISYSTEM_ACCEPTANCE.md)。
+
+
+
 ## ADR-028 — M2.1 GameSystems 雙搭檔不可變版本釘選（2026-10-24）
 
 **ACCEPTED ENGINEERING DIRECTION / NOT SYSTEM SWITCH GO.** 使用獨立純 Dart `bridge_conventions` 的 `PartnershipSystem`、`GameSystems` 封裝南北與東西的 profile ID、revision、BEN model ID/upstream commit 及 deterministic SHA-256 指紋。僅接受 allowlisted `LEGACY_UNVERIFIED/r1`、`BA-21GF/r1`、`BA-SAYC/r1`；Precision 和任意自訂約定暫不開放。由可信任 Gateway 建局時指定並寫入既有 encrypted checkpoint；重啟還原必須保持同一組版本。舊 checkpoint 未含欄位時設為 `LEGACY_UNVERIFIED`，有欄位而遭竄改／未註冊則 fail closed。
