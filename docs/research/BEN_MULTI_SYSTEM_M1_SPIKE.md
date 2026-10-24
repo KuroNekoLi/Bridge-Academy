@@ -1,5 +1,8 @@
 # BEN Multi-System M1 Spike — 實作、執行與驗收紀錄
 
+> **2026-10-24 progress addendum:** M1.1 Capability 靜態/Mock 已通過；**M1.2 pinned BEN 實際啟動與 GET / 已 SCOPED VERIFIED**（[CI #40075250217](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40075250217)、[M1.2 驗收](BEN_MULTI_SYSTEM_M1_2_ACCEPTANCE.md)、[實際模型 SHA](BEN_M12_PINNED_ASSETS.md)）。以下 M1.2 工作清單為實作前規劃歷史；M1.3 /bid、M1.4 並行/部署仍未執行。
+
+
 > Feature ID：**M3-F01**（與現有 M2 功能編號區隔）；Milestone：Multi-System M1.1  
 > Date：2026-10-24  
 > Scope：**靜態系統宣告與本機唯讀能力 API 檢查**；不是 BEN 神經網路推論驗收。  
