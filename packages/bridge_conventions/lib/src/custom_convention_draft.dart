@@ -232,7 +232,7 @@ final class CustomConventionDraft {
   static void _verifyIdentity(String id, String label) {
     if (!RegExp(r'^[a-zA-Z0-9_-]{3,40}$').hasMatch(id) ||
         label.trim() != label || label.isEmpty ||
-        label.runes.length > 48 || label.contains(RegExp(r'[\\x00-\\x1f]'))) {
+        label.runes.length > 48 || label.codeUnits.any((unit) => unit < 32)) {
       throw const FormatException('Invalid custom draft identity');
     }
   }
