@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bridge_core/bridge_core.dart';
+import 'package:bridge_conventions/bridge_conventions.dart';
 import 'package:flutter/foundation.dart';
 
 import 'gateway_http_api.dart';
@@ -20,6 +21,8 @@ class GatewayGameSession extends ChangeNotifier {
   _Pending? _pending;
   bool _busy = false;
   String? _error;
+  GameSystems? _gameSystems;
+  GameSystems? get gameSystems => _gameSystems;
   int _counter = 0;
 
   bool get busy => _busy;
@@ -71,14 +74,44 @@ class GatewayGameSession extends ChangeNotifier {
 
   /// Intentionally no silent auto-bootstrap: the user must start a NEW deal.
   /// Expired credentials cannot be resurrected by retrying a stale action.
-  Future<void> startNewGame() async {
+  Future<void> startNewGame({String? northSouth, String? eastWest}) async {
+    if ((northSouth == null) != (eastWest == null)) {
+      _error = 'gatewayInvalidConfig';
+      notifyListeners();
+      return;
+    }
+    if (northSouth != null &&
+        (ConventionCatalog.resolve(northSouth, 1) == null ||
+         ConventionCatalog.resolve(eastWest!, 1) == null ||
+         northSouth == 'LEGACY_UNVERIFIED' ||
+         eastWest == 'LEGACY_UNVERIFIED')) {
+      _error = 'gatewayInvalidConfig';
+      notifyListeners();
+      return;
+    }
     if (_busy) return;
     _busy = true;
     _error = null;
     notifyListeners();
     try {
-      final issued = await _api.post(
-          '/v1/sessions/anonymous', {'version': 1});
+      final expected = northSouth == null ? null : GameSystems(
+        northSouth: ConventionCatalog.resolve(northSouth, 1)!,
+        eastWest: ConventionCatalog.resolve(eastWest!, 1)!,
+      );
+      final issued = await _api.post('/v1/sessions/anonymous', {
+        'version': 1,
+        if (expected != null) 'game_systems': {
+          'northSouth': northSouth, 'eastWest': eastWest,
+        },
+      });
+      if (expected != null) {
+        final returned = GameSystems.fromTrustedJson(issued['game_systems']);
+        if (returned != expected) {
+          throw const FormatException('Server game system mismatches request');
+        }
+      } else if (issued.containsKey('game_systems')) {
+        throw const FormatException('Unexpected system contract');
+      }
       final token = issued['access_token'];
       final ttl = issued['expires_in'];
       if (issued['version'] != 1 ||
@@ -101,6 +134,7 @@ class GatewayGameSession extends ChangeNotifier {
       _bearer = token; // Memory-only, never saved to SharedPreferences.
       _expires = _clock().toUtc().add(Duration(seconds: ttl));
       _pending = null;
+      _gameSystems = expected;
     } catch (e) {
       _error = _mapError(e);
     } finally {
