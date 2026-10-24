@@ -10,7 +10,7 @@ Bridge Academy 第三種叫牌制度沿用已核准之 [BBA Meckwell Precision V
 
 **安全與非目標：** Bridge Core 仍是唯一合法性權威。此階段只處理 Precision 方的 `/bid` 出價，**不是全局 BotPolicy 出牌**，也不構成真 BEN 21GF/SAYC 對 Precision 的雙向理解。M3.4 前繼續禁止正式 `ConventionCatalog` 登錄、Gateway/Flutter 開局及 production release，避免中途默默切回不相容模型。M3.4 必須選擇並證明對手 reader 策略或如實標示「全桌 BBA 模式」，再用完整牌局／golden fixtures 驗收。
 
-**執行證據：** [M3.3 Scoped CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/precision-m33-provider.yml) · [研究驗收](research/M3_3_PRECISION_PROVIDER_ACCEPTANCE.md) · [工程學習 F13](learning/features/M3_F13_PRECISION_BIDDING_PROVIDER.md) / [F14](learning/features/M3_F14_BBA_NATIVE_SIDECAR.md)。真原生開叫首輪 16/16 + Dart→EPBot→Core 1/1 已通過；後續續叫上下文 CI 以最新 run 為準。
+**執行證據：** [M3.3 Scoped CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/precision-m33-provider.yml) · [研究驗收](research/M3_3_PRECISION_PROVIDER_ACCEPTANCE.md) · [工程學習 F13](learning/features/M3_F13_PRECISION_BIDDING_PROVIDER.md) / [F14](learning/features/M3_F14_BBA_NATIVE_SIDECAR.md)。真原生 16 次開叫 + 2 次人工強梅花續叫共 **18/18 PASS**，Dart→EPBot→Core **1/1 PASS**（[CI #40095599137](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40095599137)）。這是叫牌 Provider 的限定驗收，不是 M3.4 完整對局。
 
 ## ADR-031 — Precision 單一正式約定版本：BBA Meckwell Precision V1（2026-10-24）
 
