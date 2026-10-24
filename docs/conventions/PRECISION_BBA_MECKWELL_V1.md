@@ -1,6 +1,10 @@
 # Bridge Academy — BBA Meckwell Precision V1
 
 > **OFFICIAL SELECTED CONVENTION VARIANT / SPECIFICATION SOURCE OF TRUTH**
+
+> **M3.3 Update 2026-10-24:** Owner has specifically confirmed BBA rights include **commercial hosting, modification and redistribution** (user-reported; document review separately). [Native PrecisionBiddingProvider](../../packages/bridge_precision_adapter/lib/src/precision_bidding_provider.dart) and [isolated EPBot sidecar](../../scripts/precision_m33_sidecar.py) have been implemented with pinned source/native/card SHAs and scoped CI evidence. This is an auction-only Provider, **not** an approved M3.4 mixed-model Gateway/Flutter game.
+
+
 >
 > 決定日期：2026-10-24（Asia/Taipei）  
 > Product system ID：`BA-PRECISION-MECKWELL` · **Revision 1**  
