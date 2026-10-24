@@ -1,0 +1,183 @@
+name: BEN M1.3 Real A/B + M1.4 Isolated Capacity
+on:
+  push:
+    branches: [master]
+    paths:
+      - "scripts/ben_multisystem_benchmark.py"
+      - "scripts/test_ben_multisystem_benchmark.py"
+      - "scripts/fixtures/ben_multisystem_m13.json"
+      - ".github/workflows/ben-m13-m14.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  multi-system:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      BEN_COMMIT: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+      PYTHONUNBUFFERED: "1"
+      TF_CPP_MIN_LOG_LEVEL: "2"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+          path: third_party_ben_m13
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            src
+            models
+            BBA
+            bin
+            requirements.txt
+            LICENSE
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: third_party_ben_m13/requirements.txt
+      - name: Pure fixture and contract tests (no models)
+        run: |
+          test "$(git -C third_party_ben_m13 rev-parse HEAD)" = "$BEN_COMMIT"
+          python -m py_compile scripts/ben_multisystem_benchmark.py scripts/test_ben_multisystem_benchmark.py
+          python -m unittest discover -s scripts -p 'test_ben_multisystem_benchmark.py' -v
+      - name: Install isolated pinned BEN runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libboost-thread-dev libicu74
+          python -m pip install -r third_party_ben_m13/requirements.txt
+          python - <<'PY'
+          import sys, tensorflow, keras
+          print("BEN_AB_RUNTIME",sys.version.split()[0],tensorflow.__version__,keras.__version__)
+          PY
+      - name: Build isolated non-BBA lightweight benchmarking configuration
+        run: |
+          python - <<'PY'
+          import configparser
+          from pathlib import Path
+          config=configparser.ConfigParser(interpolation=None)
+          p=Path("third_party_ben_m13/src/config/default_api.conf")
+          assert config.read(p)
+          disabled={
+              "models": ("use_bba","consult_bba","use_bba_rollout","use_bba_to_count_aces"),
+              "pimc": ("pimc_use_declaring","pimc_use_defending","pimc_use_discarding"),
+              "cardplay": ("use_suitc",)
+          }
+          for section, keys in disabled.items():
+              for key in keys:
+                  assert config.has_option(section,key),f"config drift: {section}.{key}"
+                  config.set(section,key,"False")
+          assert config.has_option("bidding","no_search_threshold")
+          assert config.has_option("bidding","eval_opening_bid")
+          config.set("bidding","no_search_threshold","0.01")
+          config.set("bidding","eval_opening_bid","False")
+          with p.with_name("ci_m13_benchmark.conf").open("w") as o:
+              config.write(o)
+          print("BEN_AB_CONFIG=BEN Neural bidder priority; BBA/PIMC/SuitC disabled")
+          PY
+      - name: Start real BEN process A on private loopback
+        run: |
+          set -euo pipefail
+          (
+            cd third_party_ben_m13/src
+            exec python gameapi.py \
+              --config config/ci_m13_benchmark.conf --port 8085 \
+              --host 127.0.0.1 --allowed-hosts 127.0.0.1,localhost \
+              --record false --verbose false \
+              > "$RUNNER_TEMP/ben-m13-secret-local-only.log" 2>&1
+          ) &
+          echo "BEN_PRIMARY_PID=$!" >> "$GITHUB_ENV"
+          python - <<'PY'
+          import json,time,urllib.request
+          for i in range(100):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8085/",timeout=3) as response:
+                      b=json.load(response)
+                  if {"21GF","SAYC"}.issubset(set(b.get("playsSystems",[]))):
+                      print("GENUINE_BEN_READY_21GF_SAYC")
+                      break
+              except Exception: time.sleep(3)
+          else: raise SystemExit("real BEN M1.3 startup failed")
+          PY
+      - name: Execute 16-context real BEN 2/1 versus SAYC bidding
+        id: m13
+        continue-on-error: true
+        timeout-minutes: 23
+        run: |
+          python scripts/ben_multisystem_benchmark.py \
+            --mode m13 --url http://127.0.0.1:8085/ \
+            --pid "$BEN_PRIMARY_PID" \
+            --fixtures scripts/fixtures/ben_multisystem_m13.json \
+            --timeout 65 \
+            --output "$RUNNER_TEMP/ben-m13-real-ab.json"
+      - name: Start independent BEN process B (dual-process memory study)
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          (
+            cd third_party_ben_m13/src
+            exec python gameapi.py \
+              --config config/ci_m13_benchmark.conf --port 8087 \
+              --host 127.0.0.1 --allowed-hosts 127.0.0.1,localhost \
+              --record false --verbose false \
+              > "$RUNNER_TEMP/ben-m14-second-local-only.log" 2>&1
+          ) &
+          echo "BEN_SECONDARY_PID=$!" >> "$GITHUB_ENV"
+          python - <<'PY'
+          import json,time,urllib.request
+          for i in range(100):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8087/",timeout=3) as response:
+                      b=json.load(response)
+                  if {"21GF","SAYC"}.issubset(set(b.get("playsSystems",[]))):
+                      print("SECOND_INDEPENDENT_BEN_READY")
+                      break
+              except Exception: time.sleep(3)
+          else: raise SystemExit("second real BEN did not start")
+          PY
+      - name: Execute real BEN isolated latency and capacity benchmark
+        id: m14
+        continue-on-error: true
+        timeout-minutes: 18
+        run: |
+          python scripts/ben_multisystem_benchmark.py \
+            --mode m14 --url http://127.0.0.1:8085/ \
+            --pid "$BEN_PRIMARY_PID" \
+            --secondary-url http://127.0.0.1:8087/ \
+            --secondary-pid "$BEN_SECONDARY_PID" \
+            --fixtures scripts/fixtures/ben_multisystem_m13.json \
+            --rounds 2 --timeout 65 \
+            --output "$RUNNER_TEMP/ben-m14-capacity.json"
+      - name: Release gate preserves both research failures
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          for filename in ("ben-m13-real-ab.json","ben-m14-capacity.json"):
+              p=Path(os.environ["RUNNER_TEMP"])/filename
+              if not p.is_file():
+                  raise SystemExit(f"{filename}: missing evidence")
+              j=json.loads(p.read_text())
+              print(filename,j.get("status"),j.get("scope"))
+              if j.get("status")!="PASS":
+                  raise SystemExit(f"{filename}: acceptance not passed; inspect sanitized artifact")
+          print("M1.3_REAL_BEN_AB_AND_M1.4_CI_CAPACITY_SCOPED_PASS")
+          PY
+      - name: Publish redacted reproducible evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ben-m13-m14-results-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ben-m13-real-ab.json
+            ${{ runner.temp }}/ben-m14-capacity.json
+          if-no-files-found: ignore
+          retention-days: 14
