@@ -50,6 +50,8 @@ python scripts/ben_multisystem_benchmark.py --mode m14 \
 
 **EXECUTED / CI PASS**：[CI #40076200888](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076200888)；每個併發度 16 次真 `/bid`，雙 Worker 16 次，sampling 28 次。主程序觀測峰值 `1,059,016 KiB`、次程序 `981,420 KiB`、合併觀測峰值 `2,040,048 KiB`。
 
+**CPU 計時補充：** [實際 CI #40076825813](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076825813) 測得 Primary BEN 的 user+system CPU 時間 1.82 秒（測試期間約 65.4% 單核心），Secondary 1.34 秒（約 48.1% 單核心）。它是程序 CPU 時間，不是 OVHcloud 2 vCPU/4GB 主機使用率。請分別看待 CPU、RSS、服務延遲及其取樣區間。
+
 **限制**：使用 NN-biased BEN 配置，BBA/PIMC/SuitC 關閉，GitHub Runner 不是 2 vCPU／4GB OVH 主機；未測長時間、較高同時人數、全部獨立服務的 memory budget、正式安全與授權。故正式 VPS 仍為 **NO-GO（尚未核准）**，不是「已證明 4GB 必定不夠」。
 
 ## 練習與自我檢驗
