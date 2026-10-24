@@ -10,7 +10,7 @@ Gateway 的 Precision 必須顯式 `M34_RESEARCH_ENABLED=true` 且原生 worker 
 
 使用者已確認 BBA 商業託管、修改及再散布權利，正式授權文件和第三方 notices 應私下歸檔。尚未滿足 100+ expert golden auctions、具 Precision 解讀的真 AI cardplay、1,000 randomized full deals、同種子 MP/IMP 公平性、併發/VPS/TLS/裝置 QA，**PRODUCTION/RANKED 仍 NO-GO**。
 
-[完整 M3.4 驗收](research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md) · [M3.5 效能／Release Gate](research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md) · [M3.4/5 CI Workflow](../.github/workflows/precision-m34-m35-research.yml)。後續新增的 2/1 對 Precision 雙向真局與 Flutter 研究 Widget 驗收以各自最新 CI 為準，不得使用前述 PASS 冒充尚未執行的測試。
+[完整 M3.4 驗收](research/M3_4_PRECISION_MIXED_GAME_ACCEPTANCE.md) · [M3.5 效能／Release Gate](research/M3_5_PRECISION_BENCHMARK_AND_RELEASE_GATE.md) · [M3.4/5 CI Workflow](../.github/workflows/precision-m34-m35-research.yml)。**最新驗收追加（2026-10-24）**：[CI #40103865733](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40103865733) 完整通過 Flutter 研究旗標 Widget、Gateway 47/47、Python schema 3/3、1000/1000 native 開叫（P95 10.03ms），並將全局測試擴充為 **Precision 分別對 SAYC 和 21GF、南北／東西互換的 4 種配置，全部各 52 unique cards／13 tricks 完成**。以上仍是單一固定牌例與研究用合法策略出牌，不能聲稱正式 Precision 橋牌品質、4GB VPS 或 Production GO。
 
 
 
