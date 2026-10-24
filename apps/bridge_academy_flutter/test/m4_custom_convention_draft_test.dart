@@ -71,4 +71,27 @@ void main() {
     expect(three.runtimeSupport, 'UNCHANGED_BASE_ONLY');
     expect(store.saved['BA-SAYC']!.revisions, hasLength(3));
   });
+  testWidgets('M4.4 preview is author-only and does not advertise AI support',
+      (tester) async {
+    final store = _MemoryStore();
+    await tester.pumpWidget(MaterialApp(
+      home: CustomConventionDraftPage(isEnglish: true, storage: store),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m4_preview_disclaimer')), findsOneWidget);
+    expect(find.textContaining('not BEN/BBA evidence'), findsOneWidget);
+    expect(find.byKey(const Key('m4_preview_meaning')), findsOneWidget);
+    expect(find.textContaining('interpretation is unknown'), findsOneWidget);
+
+    await tester.ensureVisible(find.byKey(const Key('m4_save')));
+    await tester.tap(find.byKey(const Key('m4_save')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m4_evidence_status')), findsOneWidget);
+    expect(find.textContaining('No engine evidence'), findsOneWidget);
+    expect(find.byKey(const Key('m4_preview_auction')), findsOneWidget);
+    expect(find.text('1NT'), findsOneWidget);
+    expect(find.text('12–14 HCP'), findsWidgets);
+    expect(store.saved['BA-SAYC']!.latest!.isPlayableCustomSystem, false);
+  });
+
 }
