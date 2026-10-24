@@ -73,6 +73,21 @@ python scripts/ben_multisystem_benchmark.py \
 
 **對部署結論沒有改變：** 單 Worker 多制度較節省 RAM，正式 4GB VPS 在目標環境、完整配置、安全／授權審查前仍 NO-GO。
 
+### 最終程式碼驗證與不同 Runner 的抽樣差異
+
+在新增 CPU 讀取的單元測試後，最終 [CI #40076846012](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076846012) **completed/success**，再度跑完 16×2 真實多制度叫牌、單 Worker 1／2／4 並行、雙 Worker 及 CPU/RSS；此 run commit `56e8b16e0f0952c7c8631b0252083bf8022b0351` 為程式碼/測試最新驗收版本。
+
+| 最新 run 單 Worker 並行 | 請求數 | p50 | p95 | 吞吐 |
+|---|---:|---:|---:|---:|
+| c1 | 16 | 36.4 ms | 110.3 ms | 21.813 req/s |
+| c2 | 16 | 44.3 ms | 130.5 ms | 30.821 req/s |
+| c4 | 16 | 101.3 ms | 161.0 ms | 31.471 req/s |
+
+- 程序 CPU 使用時間：Primary **2.25 CPU-seconds**，測試窗口平均 **63.2% of one core**；Secondary **1.71 CPU-seconds**，**48.0% of one core**。
+- 兩 Python Process 的 `/proc` 輪詢峰值合計 **2,032,236 KiB**（約 1.94 GiB）；雙 Worker 結束時合計 RSS **2,035,164 KiB**。
+- 與先前通過的 #40076200888／#40076825813 數值不同，這是短時樣本加上 GitHub-hosted runner 的正常變動；不可用少數請求做精確系統容量推估，或宣稱單 Worker 在所有 BEN 配置皆優於雙 Worker。
+- **決策不變**：M1.4 在 CI 研究範圍 scoped PASS，Production 4GB VPS 保持 NO-GO，待目標主機真實壓測與授權／安全/長時間服務驗收。
+
 ## 5. 結論範圍
 
 CI Pass 僅能表示指定 GitHub-hosted Runner 上固定版本 **簡化 NN-biased BEN** 的小樣本性能測試成功；正式 4GB VPS 的容量核准、完整 BEN 參數、BBA 授權、真實手機、排行榜正式賽的公平與資安仍需後續 gate。性能研究不應改動 Bridge Core 的叫牌合法性、NS/EW 視角、實際出牌記錄。
