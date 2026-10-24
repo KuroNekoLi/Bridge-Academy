@@ -66,6 +66,7 @@ jobs:
       - name: Start pinned EPBot research worker
         run: |
           python scripts/precision_m33_sidecar.py --research-only --ben-root third_party_ben_m34 --port 18088 > "$RUNNER_TEMP/bba-m34-private.log" 2>&1 &
+          echo "BBA_RESEARCH_PID=$!" >> "$GITHUB_ENV"
           python - <<'PY'
           import json,time,urllib.request
           for _ in range(90):
@@ -77,9 +78,10 @@ jobs:
               except Exception: time.sleep(1)
           else: raise SystemExit("native startup failed")
           PY
-      - name: Genuine BBA tabletop auction experiment
+      - name: Genuine BBA tabletop 1000-case latency and error evaluation
+        timeout-minutes: 12
         run: |
-          python scripts/precision_m35_evaluate.py --port 18088 --cases 40 --output "$RUNNER_TEMP/m35-research.json"
+          python scripts/precision_m35_evaluate.py --port 18088 --cases 1000 --pid "$BBA_RESEARCH_PID" --output "$RUNNER_TEMP/m35-research.json"
       - name: Actual server-owned Gateway native research playthrough
         working-directory: services/bridge_gateway
         timeout-minutes: 15
