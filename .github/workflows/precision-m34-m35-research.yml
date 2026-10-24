@@ -108,4 +108,4 @@ jobs:
         if: always()
         run: |
           echo "NOT a trained mixed neural/BBA cardplayer: native BBA auction interpretation and bounded legal-card heuristic."
-          echo "No VPS, Android/iOS device, or 100+ expert audited golden fixtures tested."
+          echo "No trained Precision neural play, VPS, Android/iOS device, or 100+ expert golden fixtures tested."
