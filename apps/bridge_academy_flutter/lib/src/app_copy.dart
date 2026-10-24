@@ -500,6 +500,19 @@ class AppCopy {
     'm4PreviewUnknown': ['目前草稿未定義此叫牌；不知道 AI 將如何理解。', 'This draft does not define the call; AI interpretation is unknown.'],
     'm4PreviewUnverified': ['僅顯示使用者編輯的含義，非 BEN／BBA 叫牌證據。', 'User-authored meaning only, not BEN/BBA evidence.'],
     'm4EvidenceMissing': ['引擎證據不足：自訂項目不可用於正式對局。', 'No engine evidence: customized rules cannot be played.'],
+    'm4DiffHeading': [
+      '版本修改紀錄', 'Revision change history',
+    ],
+    'm4DiffBefore': ['修改前', 'Before'],
+    'm4DiffAfter': ['修改後', 'After'],
+    'm4DiffNone': ['未設定', 'Not set'],
+    'm4DiffNoChanges': [
+      '這兩個版本的約定設定相同。', 'These revisions have the same rule selections.',
+    ],
+    'm4DiffUnverified': [
+      '這是草稿設定差異，不代表 BEN 或 BBA 的 AI 行為差異。',
+      'Changes describe your draft, not verified BEN or BBA AI behavior.',
+    ],
     'm4Title': ['自訂叫牌約定草稿', 'Custom Convention Drafts'],
     'm4Open': ['自訂約定', 'Custom conventions'],
     'm4Warning': [
