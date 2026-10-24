@@ -1,0 +1,41 @@
+name: M4 Custom Convention Drafts — Domain and Flutter
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'packages/bridge_conventions/**'
+      - 'apps/bridge_academy_flutter/lib/src/conventions/custom_draft_page.dart'
+      - 'apps/bridge_academy_flutter/lib/src/conventions/custom_draft_store.dart'
+      - 'apps/bridge_academy_flutter/lib/src/bridge_app.dart'
+      - 'apps/bridge_academy_flutter/lib/src/app_copy.dart'
+      - 'apps/bridge_academy_flutter/test/m4_custom_convention_draft_test.dart'
+      - '.github/workflows/m4-custom-convention-drafts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  custom-draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: M4.1 pure Dart domain, conflict and history regression
+        working-directory: packages/bridge_conventions
+        run: |
+          dart pub get
+          dart analyze --fatal-infos
+          dart test --reporter expanded
+      - name: M4.2 local draft Flutter widgets (no device/emulator)
+        working-directory: apps/bridge_academy_flutter
+        run: |
+          flutter pub get
+          flutter analyze --no-pub
+          flutter test test/m4_custom_convention_draft_test.dart --reporter expanded
+      - name: Scope guard
+        run: |
+          echo "M4: ONLY LOCAL CUSTOM CONVENTION DRAFTS; no edited BEN/BBA system support."
+          echo "No runtime Gateway activation, mobile emulator, device QA or production approval."
