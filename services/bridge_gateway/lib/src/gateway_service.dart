@@ -19,6 +19,11 @@ abstract interface class GatewayDecisionBackend {
   );
 }
 
+/// Optional version-aware BEN contract. Stub backends do not satisfy it.
+abstract interface class SystemAwareDecisionBackend implements GatewayDecisionBackend {
+  Future<bool> supportsGameSystems(GameSystems systems);
+}
+
 /// Production-safe default: do NOT invent AI proposals or fall back to Demo.
 class UnavailableDecisionBackend implements GatewayDecisionBackend {
   const UnavailableDecisionBackend();
@@ -279,8 +284,39 @@ class BridgeGatewayService {
   }
 
   Future<void> _issueSession(HttpRequest request, Map<String, dynamic> body) async {
-    if (body.length != 1 || body['version'] != 1) {
+    // Accept only profile IDs. Revision and engine are trusted catalog data.
+    final keys = body.keys.toSet();
+    final requestedSystems = keys.contains('game_systems');
+    if (body['version'] != 1 ||
+        !(requestedSystems
+            ? keys.length == 2 && keys.containsAll({'version', 'game_systems'})
+            : keys.length == 1)) {
       throw const GatewayFailure(400, 'invalid_request');
+    }
+    var chosenSystems = _newGameSystems;
+    if (requestedSystems) {
+      final raw = body['game_systems'];
+      if (raw is! Map || raw.length != 2 ||
+          !raw.keys.toSet().containsAll({'northSouth', 'eastWest'}) ||
+          raw['northSouth'] is! String || raw['eastWest'] is! String) {
+        throw const GatewayFailure(400, 'invalid_request');
+      }
+      final ns = ConventionCatalog.resolve(raw['northSouth'] as String, 1);
+      final ew = ConventionCatalog.resolve(raw['eastWest'] as String, 1);
+      if (ns == null || ew == null ||
+          ns.isLegacyUnverified || ew.isLegacyUnverified) {
+        throw const GatewayFailure(400, 'unsupported_system');
+      }
+      chosenSystems = GameSystems(northSouth: ns, eastWest: ew);
+    }
+    if (!chosenSystems.northSouth.isLegacyUnverified ||
+        !chosenSystems.eastWest.isLegacyUnverified) {
+      final available = _backend is SystemAwareDecisionBackend &&
+          await (_backend as SystemAwareDecisionBackend)
+              .supportsGameSystems(chosenSystems);
+      if (!available) {
+        throw const GatewayFailure(503, 'system_router_unavailable');
+      }
     }
     final now = _clock().toUtc();
     await _expireOld(now);
@@ -302,7 +338,7 @@ class BridgeGatewayService {
     final game = AuthoritativeGame(
         deal: _dealFactory(), backend: _backend,
         trainingBoard: _trainingBoard,
-        gameSystems: _newGameSystems);
+        gameSystems: chosenSystems);
     final session = _Session(now.add(_config.sessionTtl), game);
     game.setCheckpoint(() => _persistSession(digest, session));
     _sessions[digest] = session;
@@ -319,7 +355,8 @@ class BridgeGatewayService {
       'access_token': token,
       'token_type': 'Bearer',
       'expires_in': _config.sessionTtl.inSeconds,
-      'scope': 'ai:decision'
+      'scope': 'ai:decision',
+      if (requestedSystems) 'game_systems': game.gameSystems.toJson(),
     });
   }
 
