@@ -48,6 +48,10 @@ dart test test/custom_convention_draft_test.dart --reporter expanded
 
 測試包含：序列化還原／篡改拒絕、revision link、不同 rule choice、無支援的卡不能進入 `ConventionCatalog`、衝突匯入拒絕、list 不可修改。真 AI 模型支援：**NOT IMPLEMENTED**；沒有用 Mock 宣稱可用。
 
+### 已執行的 CI
+
+**[CI #40108357113](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40108357113) PASS**，Ubuntu 24.04，`dart analyze --fatal-infos` No issues，所有 Convention Domain 回歸加新草稿／archive 測試 **20/20**。這只能證實資料模型與拒絕偽裝引擎支援，不證明 BEN/BBA 會遵照改動出價。
+
 ## 練習與自我檢驗
 
 **思考題（1 題）：** 為什麼將 1NT 點力從 15–17 改成 13–15 後，原本 BEN 的 `modelId=SAYC` 不能因此就宣稱已支援新草稿？
