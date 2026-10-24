@@ -35,6 +35,10 @@ class InventoryTest(unittest.TestCase):
         self.write("src/config/default_api.conf", "[models]\nname = test\n")
         self.write("requirements.txt", "tensorflow==2.21.0\n")
         self.write("bin/dds3-linux/dds3/_dds3.so", "test-native-only")
+        self.write("bin/BBA/linux/x64/libEPBot.so", "synthetic BBA only")
+        self.write("bin/BGA/linux/x64/BGADLL.so", "synthetic PIMC only")
+        self.write("bin/BGA/linux/x64/libdds.so", "synthetic legacy DDS only")
+        self.write("LICENSE", "synthetic source license only")
         for name in ("21", "21-info", "sayc", "sayc-info", "ro"):
             self.write(f"models/TF2models/{name}.keras", f"synthetic {name}")
         for name in ("21", "sayc", "ro"):
