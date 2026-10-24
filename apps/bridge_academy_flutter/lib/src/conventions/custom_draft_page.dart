@@ -108,6 +108,9 @@ class _CustomConventionDraftPageState
   Widget build(BuildContext context) {
     final draft = _archive.latest;
     final choices = CustomRuleCatalog.choices[_slot]!;
+    final report = draft == null ? null : CustomConventionReviewer.assess(draft);
+    final preview = draft == null ? null : CustomConventionReviewer.preview(
+      draft, CustomRuleCatalog.publicAuctions[_slot]!);
     return Scaffold(
       appBar: AppBar(title: Text(copy.t('m4Title'))),
       body: SingleChildScrollView(
@@ -186,6 +189,23 @@ class _CustomConventionDraftPageState
                       child: Text(copy.t('m4choice_$choice'))),
               ],
             ),
+            const SizedBox(height: 8),
+            Text(copy.t('m4PreviewTitle'),
+                key: const Key('m4_preview_heading')),
+            Text(CustomRuleCatalog.publicAuctions[_slot]!,
+                key: const Key('m4_preview_auction')),
+            Text(preview?.userSelectedMeaning == null
+                ? copy.t('m4PreviewUnknown')
+                : copy.t('m4choice_${preview!.userSelectedMeaning}'),
+                key: const Key('m4_preview_meaning')),
+            Text(copy.t('m4PreviewUnverified'),
+                key: const Key('m4_preview_disclaimer')),
+            if (report != null)
+              Text(copy.t(report.executionStatus ==
+                      CustomExecutionStatus.engineEvidenceRequired
+                  ? 'm4EvidenceMissing' : 'm4BaseOnly'),
+                  key: const Key('m4_evidence_status')),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 12,
               children: [
