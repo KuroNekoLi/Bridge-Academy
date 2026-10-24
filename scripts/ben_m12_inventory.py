@@ -98,6 +98,11 @@ def inspect(root: Path, commit: str) -> dict:
     extra_paths = [
         "requirements.txt", "src/config/default_api.conf",
         "bin/dds3-linux/dds3/_dds3.so",
+        "bin/BBA/linux/x64/libEPBot.so",  # Inventory only; BBA execution disabled.
+        "bin/BGA/linux/x64/BGADLL.so",  # Inventory only; PIMC execution disabled.
+        "bin/BGA/linux/x64/libdds.so",  # Inventory only; redistribution pending.
+        "LICENSE",  # Upstream source license, not a model/binary license grant.
+        "src/config/systems.conf",
     ]
     for relative in extra_paths:
         file = _safe_location(root, relative)
