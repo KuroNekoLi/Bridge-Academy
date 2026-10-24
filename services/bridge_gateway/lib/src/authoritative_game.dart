@@ -12,16 +12,18 @@ class AuthoritativeGame {
     required GatewayDecisionBackend backend,
     BoardDefinition? trainingBoard,
     GameSystems? gameSystems,
-  }) : _gameSystems = gameSystems ?? GameSystems.legacyUnverified(),
+  }) : _backend = backend,
+       _gameSystems = gameSystems ?? GameSystems.legacyUnverified(),
        _coordinator = SinglePlayerCoordinator(
           deal: deal,
           dealer: trainingBoard?.dealer ?? Seat.north,
           vulnerability: trainingBoard?.vulnerability ?? Vulnerability.none,
           humanSeat: Seat.north,
-          bot: BenBotPolicy(_PrivateBackendTransport(backend)),
+          bot: BenBotPolicy(_PrivateBackendTransport(backend),
+              gameSystems: gameSystems),
         );
 
-  AuthoritativeGame._restored(this._coordinator, this._gameSystems);
+  AuthoritativeGame._restored(this._coordinator, this._gameSystems, this._backend);
 
   factory AuthoritativeGame.restore({
     required Map<String, dynamic> archive,
@@ -36,9 +38,11 @@ class AuthoritativeGame {
       SinglePlayerCoordinator.restore(
         trustedStorageArchive: archive['transcript'] as Map<String, dynamic>,
         humanSeat: Seat.north,
-        bot: BenBotPolicy(_PrivateBackendTransport(backend)),
+        bot: BenBotPolicy(_PrivateBackendTransport(backend),
+            gameSystems: systems),
       ),
       systems,
+      backend,
     );
     final entries = archive['replies'] as Map<String, dynamic>? ?? {};
     for (final entry in entries.entries) {
@@ -57,6 +61,7 @@ class AuthoritativeGame {
   }
 
   final SinglePlayerCoordinator _coordinator;
+  final GatewayDecisionBackend _backend;
   final GameSystems _gameSystems;
 
   /// Trusted server-only metadata. Never obtained from a client action.
@@ -102,12 +107,16 @@ class AuthoritativeGame {
     Map<String, dynamic> body, {
     required bool advanceBots,
   }) async {
-    // M2.1 pins model identities only. Until M2.2 proves that the active
-    // worker actually honors both partnership selections, NEVER let a pinned
-    // game silently run with the legacy/default BEN bidding model.
+    // Validate the CURRENT worker before each request, also after restart.
+    // No fallback to a default BEN model after pinned-session restoration.
     if (!_gameSystems.northSouth.isLegacyUnverified ||
         !_gameSystems.eastWest.isLegacyUnverified) {
-      throw const GatewayFailure(503, 'system_router_unavailable');
+      final supported = _backend is SystemAwareDecisionBackend &&
+          await (_backend as SystemAwareDecisionBackend)
+              .supportsGameSystems(_gameSystems);
+      if (!supported) {
+        throw const GatewayFailure(503, 'system_router_unavailable');
+      }
     }
     const requiredBase = {'version', 'request_id', 'expected_version'};
     final expectedFields = advanceBots
