@@ -483,6 +483,10 @@ class AppCopy {
     'gatewaySystemLegacy': ['現有 BEN（未確認制度）', 'Existing BEN (system unverified)'],
     'gatewaySystem21GF': ['2/1 進局迫叫', '2/1 Game Force'],
     'gatewaySystemSAYC': ['SAYC 標準黃卡', 'SAYC Standard American'],
+    'gatewaySystemPrecisionResearch': [
+      'BBA Meckwell Precision V1（研究：出牌非競賽 AI）',
+      'BBA Meckwell Precision V1 (research: noncompetitive cardplay)',
+    ],
     'gatewayActiveSystems': [
       '本局已固定制度與版本；目前牌局中不可更改。',
       'The system and revision are pinned for this game.',
