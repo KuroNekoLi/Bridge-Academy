@@ -1,5 +1,7 @@
 # Bridge Academy — 2/1、SAYC、Precision 與可自訂制度的 AI 發展計畫
 
+> **Precision 最終 V1 變體決議（2026-10-24）**：產品選定 [BBA Meckwell Precision V1](../conventions/PRECISION_BBA_MECKWELL_V1.md)，`BA-PRECISION-MECKWELL/r1`，1NT **13–15 HCP**，以固定 BBA `Meckwell.bbsa` SHA 為權威。不得與外部 Meckwell Lite 13–16 規格混用。使用者已表示取得 BBA 使用授權，惟其商用／hosting／再散布範圍尚待核對。研究原生 EPBot 真實開叫已通過；玩家選單、全套規則與正式部署仍 NO-GO。本文下方較早期關於 Precision「未決、候選 Meckwell Lite」的敘述，以此決議和 ADR-031 為準。
+
 > Status: **APPROVED DIRECTION / IMPLEMENTATION PLAN**；非三制度已完成、非正式上線核准。  
 > Date: 2026-10-24 · Owner decision: 首批支援 **2/1 Game Force、SAYC、Precision Club**，並朝可自訂搭檔約定發展。  
 > Primary project: `KuroNekoLi/Bridge-Academy` / `master`。  
