@@ -60,6 +60,19 @@ python scripts/ben_multisystem_benchmark.py \
 
 **重要侷限**：單 Worker 只跑 NN-biased BEN 配置下的 16 筆短時請求，未測完整 BBA/PIMC/Full DD/長期負載，也未測實際 2 vCPU／4GB OVHcloud 主機。所謂 `NO-GO` 是**尚未經核准的風險阻擋**，不是否定 4GB 一定跑不動。
 
+### 附加 CPU 時間稽核（獨立 CI 執行）
+
+另在 [GitHub Actions #40076825813](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40076825813) 導入真正 Linux Python PID 的 `/proc/<pid>/stat` `utime+stime` 差值，這次 **job success**，同期也通過真 BEN M1.3／M1.4 調度驗收：
+
+| Python BEN Worker | 實測進程 CPU 時間 | 整個 Benchmark 期間，平均相對單核心 CPU |
+|---|---:|---:|
+| Primary | **1.82 CPU-seconds** | **65.4%** |
+| Secondary | **1.34 CPU-seconds** | **48.1%** |
+
+這是 **兩個 Worker 在完整 M1.4 benchmark 期間**的 process user+system CPU time，不是機器層級 CPU 使用率，也不是 2 vCPU OVH 主機的實測。每次冷啟／Python import、TensorFlow 預熱、I/O 和系統其他程序的 CPU 開銷可能不同。該次其餘真 BEN 結果仍 PASS；單/雙程序 RSS 約 1.01／1.95 GiB，具體 peak 與 p95 詳情可下載該 CI 的短期 JSON artifact。
+
+**對部署結論沒有改變：** 單 Worker 多制度較節省 RAM，正式 4GB VPS 在目標環境、完整配置、安全／授權審查前仍 NO-GO。
+
 ## 5. 結論範圍
 
 CI Pass 僅能表示指定 GitHub-hosted Runner 上固定版本 **簡化 NN-biased BEN** 的小樣本性能測試成功；正式 4GB VPS 的容量核准、完整 BEN 參數、BBA 授權、真實手機、排行榜正式賽的公平與資安仍需後續 gate。性能研究不應改動 Bridge Core 的叫牌合法性、NS/EW 視角、實際出牌記錄。
