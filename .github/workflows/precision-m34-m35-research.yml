@@ -1,0 +1,91 @@
+name: M3.4-M3.5 Experimental Precision Gateway and Evaluation
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packages/bridge_conventions/**"
+      - "packages/bridge_precision_adapter/**"
+      - "services/bridge_gateway/**"
+      - "scripts/precision_m33_sidecar.py"
+      - "scripts/test_precision_m34_table.py"
+      - "scripts/precision_m35_evaluate.py"
+      - ".github/workflows/precision-m34-m35-research.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      BEN_COMMIT: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+      PYTHONUNBUFFERED: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Domain regression and new native adapter
+        run: |
+          cd packages/bridge_conventions && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded
+          cd ../bridge_precision_adapter && dart pub get && dart analyze --fatal-infos && dart test --reporter expanded
+      - name: Gateway research and previous M2 regression
+        working-directory: services/bridge_gateway
+        run: |
+          dart pub get
+          dart analyze --fatal-infos
+          dart test --reporter expanded
+      - name: Mixed-table Python schema and mock-native validation
+        run: |
+          python -m py_compile scripts/precision_m33_sidecar.py
+          python -m unittest discover -s scripts -p 'test_precision_m34_table.py' -v
+      - uses: actions/checkout@v4
+        with:
+          repository: lorserker/ben
+          ref: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+          path: third_party_ben_m34
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout: |
+            src
+            BBA
+            bin
+            requirements.txt
+            LICENSE
+      - name: Install pinned EPBot runtime
+        run: |
+          test "$(git -C third_party_ben_m34 rev-parse HEAD)" = "$BEN_COMMIT"
+          sudo apt-get update -qq
+          sudo apt-get install -y libicu74 libboost-thread-dev
+          python -m pip install -r third_party_ben_m34/requirements.txt
+      - name: Start pinned EPBot research worker
+        run: |
+          python scripts/precision_m33_sidecar.py --research-only --ben-root third_party_ben_m34 --port 18088 > "$RUNNER_TEMP/bba-m34-private.log" 2>&1 &
+          python - <<'PY'
+          import json,time,urllib.request
+          for _ in range(90):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:18088/health", timeout=3) as r: d=json.load(r)
+                  if d.get("status")=="research_ready":
+                      print("M34_NATIVE_READY")
+                      break
+              except Exception: time.sleep(1)
+          else: raise SystemExit("native startup failed")
+          PY
+      - name: Genuine BBA tabletop auction experiment
+        run: |
+          python scripts/precision_m35_evaluate.py --port 18088 --cases 40 --output "$RUNNER_TEMP/m35-research.json"
+      - name: Actual server-owned Gateway native research playthrough
+        working-directory: services/bridge_gateway
+        timeout-minutes: 15
+        run: dart run bin/live_precision_research_full_game.dart
+      - name: Scope disclosure
+        if: always()
+        run: |
+          echo "NOT a competitive mixed neural/BBA game: native BBA auction, deterministic legal card play."
+          echo "No VPS, Android/iOS device, or 100+ expert audited golden fixtures tested."
