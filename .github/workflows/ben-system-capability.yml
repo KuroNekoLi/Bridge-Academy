@@ -1,0 +1,39 @@
+name: BEN Multi-System Capability M1 (Static and Mock Only)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "scripts/ben_system_probe.py"
+      - "scripts/test_ben_system_probe.py"
+      - "docs/research/BEN_MULTI_SYSTEM_M1_SPIKE.md"
+      - ".github/workflows/ben-system-capability.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and unit/HTTP contract tests (mock HTTP, NOT real BEN)
+        run: |
+          python -m py_compile scripts/ben_system_probe.py scripts/test_ben_system_probe.py
+          python -m unittest discover -s scripts -p 'test_ben_system_probe.py' -v
+      - name: Audit upstream pinned systems.conf metadata (NOT model inference)
+        env:
+          BEN_UPSTREAM_REV: ad8608af6e6bfe095863023f344f3cb2cbafec3d
+        run: |
+          curl --fail --silent --show-error --location --retry 3 \
+            --output "$RUNNER_TEMP/systems.conf" \
+            "https://raw.githubusercontent.com/lorserker/ben/$BEN_UPSTREAM_REV/src/config/systems.conf"
+          python scripts/ben_system_probe.py \
+            --systems-conf "$RUNNER_TEMP/systems.conf" \
+            --require 21GF,SAYC
+          echo "BEN_SYSTEM_M1_STATIC_ONLY_PASS; live BEN inference NOT RUN"
