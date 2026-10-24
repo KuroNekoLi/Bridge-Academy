@@ -43,6 +43,9 @@ void main() {
       expect(PrecisionResearchCatalog.selectedCardSha256,
           '5c2a6c8d84094a0a9efd2cefe98a93983185140e6bde81b2520086b8b27d9cbc');
       expect(PrecisionResearchCatalog.bbaPermissionReportedByOwner, isTrue);
+      expect(PrecisionResearchCatalog.commercialHostingPermissionReported, isTrue);
+      expect(PrecisionResearchCatalog.modificationPermissionReported, isTrue);
+      expect(PrecisionResearchCatalog.redistributionPermissionReported, isTrue);
       expect(PrecisionResearchCatalog.bbaPermissionScopeVerified, isFalse);
       expect(PrecisionResearchCatalog.selectedV1.readyForCatalog, isFalse);
       expect(ConventionCatalog.resolve('BA-PRECISION-MECKWELL', 1), isNull);
