@@ -1,3 +1,39 @@
+/// Explicit restore rule. Never silently replace a locally edited history.
+enum CustomArchiveRestore {
+  identical,
+  fastForward,
+  divergent,
+}
+
+abstract final class CustomArchiveImport {
+  static CustomArchiveRestore compare({
+    required CustomConventionArchive local,
+    required CustomConventionArchive incoming,
+    required String expectedBase,
+  }) {
+    final candidate = incoming.latest;
+    if (candidate == null || candidate.base.profileId != expectedBase) {
+      throw const FormatException('Missing or wrong custom convention base');
+    }
+    final current = local.latest;
+    if (current == null) return CustomArchiveRestore.fastForward;
+    if (current.base != candidate.base ||
+        current.id != candidate.id ||
+        current.label != candidate.label ||
+        incoming.revisions.length < local.revisions.length) {
+      return CustomArchiveRestore.divergent;
+    }
+    for (var i = 0; i < local.revisions.length; i++) {
+      if (local.revisions[i].fingerprint != incoming.revisions[i].fingerprint) {
+        return CustomArchiveRestore.divergent;
+      }
+    }
+    return local.revisions.length == incoming.revisions.length
+        ? CustomArchiveRestore.identical
+        : CustomArchiveRestore.fastForward;
+  }
+}
+
 import 'custom_convention_draft.dart';
 
 /// Untrusted local archive of consecutive immutable *draft* snapshots.
