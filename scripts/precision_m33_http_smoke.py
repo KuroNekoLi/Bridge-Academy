@@ -58,9 +58,28 @@ def main():
                 negative=dict(request,hand="AKQ3.KQ4.AJ3.KQ7",deal="SECRET")
                 status,result=post(origin,negative)
                 assert status==400 and "hand" not in json.dumps(result)
-    # 8 fixtures * two known opponent descriptions; no full 52-card gameplay.
+    # Also verify that the *actual native EPBot* accepts an artificial
+    # strong-club auction as context for responder and opening-side rebid.
+    # Only validate a legal-format proposal here; expert interpretation comes
+    # from M3.4 golden fixtures, not this single response.
+    import re
+    advanced=[
+        ("S", "1C-P", cases[1]["hand"], "SAYC"),
+        ("N", "1C-P-1D-P", cases[0]["hand"], "21GF"),
+    ]
+    for seat,ctx,hand,opponent in advanced:
+        body={
+            "version":1,"profileId":PROFILE_ID,"revision":REVISION,
+            "cardSha256":PINNED_SELECTED_CARD_SHA256,
+            "opponentModel":opponent,"seat":seat,"dealer":"N",
+            "vul":"","ctx":ctx,"hand":hand,
+        }
+        status,result=post(origin,body)
+        assert status==200,(seat,ctx,status)
+        assert re.fullmatch(r"(?:PASS|X|XX|[1-7][CDHSN])",result["bid"])
     print("M3_3_REAL_EPBOT_HTTP_PASS",
-          "requests",len(cases)*2,"strong1c",strong,
+          "requests",len(cases)*2+len(advanced),"strong1c",strong,
+          "auctionContinuations",len(advanced),
           "invalidSchemasRejected",3,"fullGameValidated",False)
 
 if __name__=="__main__":
