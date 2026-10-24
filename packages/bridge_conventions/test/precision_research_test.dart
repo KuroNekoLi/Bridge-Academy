@@ -47,7 +47,10 @@ void main() {
       expect(PrecisionResearchCatalog.redistributionPermissionReported, isTrue);
       expect(PrecisionResearchCatalog.bbaPermissionScopeVerified, isFalse);
       expect(PrecisionResearchCatalog.selectedV1.readyForCatalog, isFalse);
-      expect(ConventionCatalog.resolve('BA-PRECISION-MECKWELL', 1), isNull);
+      expect(ConventionCatalog.resolve('BA-PRECISION-MECKWELL', 1),
+          same(ConventionCatalog.precisionMeckwell));
+      expect(ConventionCatalog.candidateProfiles.contains(
+          ConventionCatalog.precisionMeckwell), isFalse);
     });
 
     test('report contains explicit unapproved source conditions', () {
