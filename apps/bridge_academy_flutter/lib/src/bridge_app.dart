@@ -14,6 +14,7 @@ import 'widgets/bridge_table_components.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bidding_convention_panel.dart';
 import 'conventions/convention_profile.dart';
+import 'conventions/custom_draft_page.dart';
 import 'widgets/bridge_table_toolbar.dart';
 import 'widgets/bridge_replay_panel.dart';
 import 'widgets/bridge_history_panel.dart';
@@ -140,6 +141,19 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
                   ),
                 ),
                 icon: const Icon(Icons.school_outlined),
+              ),
+            ),
+            Builder(
+              builder: (navigatorContext) => IconButton(
+                key: const Key('m4_open_custom_conventions'),
+                tooltip: copy.t('m4Open'),
+                onPressed: () => Navigator.of(navigatorContext).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => CustomConventionDraftPage(
+                        isEnglish: _isEnglish),
+                  ),
+                ),
+                icon: const Icon(Icons.edit_note_outlined),
               ),
             ),
             IconButton(
