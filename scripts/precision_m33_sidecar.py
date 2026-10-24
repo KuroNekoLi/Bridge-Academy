@@ -28,6 +28,7 @@ PROFILE_ID = "BA-PRECISION-MECKWELL"
 REVISION = 1
 PROVIDER = "BBA_NATIVE_EPBOT"
 BID_ROUTE = "/v1/precision/bid"
+TABLE_ROUTE = "/v1/precision/table-bid"
 HEALTH_ROUTE = "/health"
 NATIVE_SHA256 = "c35d00b7aacdb5fe7bd4a5aeb1f5cdacef9856f9fc7b4ff4048368b6827777b4"
 OPPONENT_CARDS = {"21GF": "BBA/CC/BEN-21GF.bbsa",
@@ -35,6 +36,15 @@ OPPONENT_CARDS = {"21GF": "BBA/CC/BEN-21GF.bbsa",
 EXPECTED_FIELDS = {
     "version", "profileId", "revision", "cardSha256", "opponentModel",
     "seat", "dealer", "vul", "ctx", "hand",
+}
+TABLE_FIELDS = {
+    "version", "profileId", "revision", "cardSha256",
+    "northSouth", "eastWest", "seat", "dealer", "vul", "ctx", "hand",
+}
+TABLE_PROFILES = {
+    "BA-PRECISION-MECKWELL": "BBA/CC/Meckwell.bbsa",
+    "BA-21GF": "BBA/CC/BEN-21GF.bbsa",
+    "BA-SAYC": "BBA/CC/BEN-SAYC.bbsa",
 }
 ALLOWED_CALL = re.compile(r"(?:P|X|XX|[1-7][CDHSN])")
 ALLOWED_OUTPUT = re.compile(r"(?:PASS|X|XX|[1-7][CDHSN])")
@@ -91,6 +101,34 @@ def validate_request(body: object) -> tuple[dict, list[str]]:
     return body, auction
 
 
+def validate_table_request(body: object) -> tuple[dict, list[str]]:
+    if not isinstance(body, dict) or set(body) != TABLE_FIELDS:
+        raise PrecisionProtocolError("invalid_table_schema")
+    if (type(body["version"]) is not int or body["version"] != 1 or
+            type(body["revision"]) is not int or body["revision"] != 1 or
+            body["profileId"] != PROFILE_ID or
+            body["cardSha256"] != PINNED_SELECTED_CARD_SHA256):
+        raise PrecisionProtocolError("invalid_table_version")
+    systems=(body["northSouth"], body["eastWest"])
+    if any(system not in TABLE_PROFILES for system in systems) or (
+            systems.count(PROFILE_ID) != 1):
+        raise PrecisionProtocolError("invalid_table_systems")
+    if body["seat"] not in SEATS or body["dealer"] not in SEATS:
+        raise PrecisionProtocolError("invalid_seat")
+    if body["vul"] not in ("", "NS", "EW", "Both"):
+        raise PrecisionProtocolError("invalid_vulnerability")
+    if not isinstance(body["hand"], str):
+        raise PrecisionProtocolError("invalid_hand")
+    try:
+        parse_hand(body["hand"])
+    except ResearchError:
+        raise PrecisionProtocolError("invalid_hand") from None
+    auction=parse_auction(body["ctx"])
+    if body["seat"] != SEATS[(SEATS.index(body["dealer"]) + len(auction)) % 4]:
+        raise PrecisionProtocolError("actor_turn_mismatch")
+    return body,auction
+
+
 def verify_vendor(ben_root: Path) -> tuple[Path, dict[str, Path]]:
     check_ben_source(ben_root)
     cc = summarize_candidate(ben_root)
@@ -141,7 +179,32 @@ class NativePrecisionEngine:
         }
 
 
-def handler_factory(decider: Callable[[object], dict]):
+    def table_bid(self, body: object) -> dict:
+        # BOTH partnerships use BBA's consistent convention-card reader.
+        req,auction=validate_table_request(body)
+        seat=SEATS.index(req["seat"])
+        dealer=SEATS.index(req["dealer"])
+        ns=seat%2==0
+        own=req["northSouth"] if ns else req["eastWest"]
+        opp=req["eastWest"] if ns else req["northSouth"]
+        def card(system):
+            return self.precision_cc if system==PROFILE_ID else self.opponent_cards[
+                "21GF" if system=="BA-21GF" else "SAYC"
+            ]
+        vul=req["vul"]
+        bot=self._builder(str(card(own)),str(card(opp)),seat,req["hand"],
+                          (vul in ("NS","Both"), vul in ("EW","Both")),
+                          dealer,False,False)
+        proposal=bot.bid(auction).bid
+        if not isinstance(proposal,str) or not ALLOWED_OUTPUT.fullmatch(proposal):
+            raise PrecisionProtocolError("invalid_native_bid")
+        return {
+            "bid":proposal,"provider":PROVIDER,"profileId":PROFILE_ID,
+            "revision":REVISION,"cardSha256":PINNED_SELECTED_CARD_SHA256,
+        }
+
+
+def handler_factory(decider: Callable[[object], dict], table_decider=None):
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
         def log_message(self, *args):
@@ -169,7 +232,7 @@ def handler_factory(decider: Callable[[object], dict]):
             })
 
         def do_POST(self):
-            if self.path != BID_ROUTE or self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+            if self.path not in (BID_ROUTE, TABLE_ROUTE) or self.headers.get("Content-Type", "").split(";")[0] != "application/json":
                 self.respond(404, {"error": "invalid_route"})
                 return
             length = self.headers.get("Content-Length")
@@ -179,7 +242,12 @@ def handler_factory(decider: Callable[[object], dict]):
             try:
                 raw = self.rfile.read(int(length))
                 payload = json.loads(raw)
-                result = decider(payload)
+                if self.path == TABLE_ROUTE:
+                    if table_decider is None:
+                        raise PrecisionProtocolError('table_not_configured')
+                    result = table_decider(payload)
+                else:
+                    result = decider(payload)
             except (UnicodeError, ValueError, PrecisionProtocolError):
                 self.respond(400, {"error": "invalid_request"})
                 return
@@ -209,7 +277,7 @@ def main() -> int:
     try:
         engine = NativePrecisionEngine(args.ben_root)
         server = LocalResearchServer(("127.0.0.1", args.port),
-                                     handler_factory(engine.decide))
+                                     handler_factory(engine.decide, engine.table_bid))
     except (OSError, ResearchError, ImportError):
         print("M3.3 native worker initialization failed (redacted)",
               file=sys.stderr)
