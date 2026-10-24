@@ -36,6 +36,7 @@ class _CustomConventionDraftPageState
   String? _error;
   String? _notice;
   int _loadGeneration = 0;
+  int? _compareFromRevision;
 
   AppCopy get copy => AppCopy(widget.isEnglish);
 
@@ -57,6 +58,7 @@ class _CustomConventionDraftPageState
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _archive = archive;
+        _compareFromRevision = null;
         _loading = false;
       });
     } catch (_) {
@@ -179,6 +181,7 @@ class _CustomConventionDraftPageState
       if (!mounted) return;
       setState(() {
         _archive = incoming;
+        _compareFromRevision = null;
         _notice = 'm4ImportDone';
       });
     } catch (_) {
@@ -199,6 +202,19 @@ class _CustomConventionDraftPageState
     final draft = _archive.latest;
     final choices = CustomRuleCatalog.choices[_slot]!;
     final report = draft == null ? null : CustomConventionReviewer.assess(draft);
+    final compareOptions = _archive.revisions
+        .where((revision) => draft != null && revision.revision < draft.revision)
+        .toList(growable: false);
+    final fromRevision = compareOptions.isEmpty
+        ? null
+        : compareOptions.any((r) => r.revision == _compareFromRevision)
+            ? _compareFromRevision
+            : compareOptions.last.revision;
+    final diff = draft == null || fromRevision == null
+        ? null
+        : CustomConventionHistory.compare(
+            _archive, fromRevision: fromRevision,
+            toRevision: draft.revision);
     final preview = draft == null ? null : CustomConventionReviewer.preview(
       draft, CustomRuleCatalog.publicAuctions[_slot]!);
     return Scaffold(
@@ -245,6 +261,41 @@ class _CustomConventionDraftPageState
                   key: Key('m4_existing_${rule.slot.name}'),
                   title: Text(copy.t('m4slot_${rule.slot.name}')),
                   subtitle: Text(copy.t('m4choice_${rule.choice}')),
+                ),
+            ],
+            if (diff != null) ...[
+              const Divider(),
+              Text(copy.t('m4DiffHeading'),
+                  key: const Key('m4_diff_heading')),
+              DropdownButton<int>(
+                key: const Key('m4_compare_from'),
+                value: fromRevision,
+                isExpanded: true,
+                onChanged: _loading || _error != null ? null :
+                    (value) => setState(() => _compareFromRevision = value),
+                items: [
+                  for (final historical in compareOptions)
+                    DropdownMenuItem(
+                      value: historical.revision,
+                      child: Text('${copy.t('m4Revision')}: ${historical.revision}'),
+                    ),
+                ],
+              ),
+              Text(copy.t('m4DiffUnverified'),
+                  key: const Key('m4_diff_disclaimer')),
+              if (diff.isUnchanged)
+                Text(copy.t('m4DiffNoChanges'),
+                    key: const Key('m4_diff_empty')),
+              for (final change in diff.changes)
+                ListTile(
+                  key: Key('m4_diff_${change.slot.name}'),
+                  title: Text(change.auction),
+                  subtitle: Text(
+                    '${copy.t('m4DiffBefore')}: '
+                    '${change.beforeChoice == null ? copy.t('m4DiffNone') : copy.t('m4choice_${change.beforeChoice}')}  →  '
+                    '${copy.t('m4DiffAfter')}: '
+                    '${change.afterChoice == null ? copy.t('m4DiffNone') : copy.t('m4choice_${change.afterChoice}')}',
+                  ),
                 ),
             ],
             const SizedBox(height: 12),
