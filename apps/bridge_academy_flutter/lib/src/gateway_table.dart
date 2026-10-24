@@ -23,6 +23,10 @@ class _GatewayTableState extends State<GatewayTable> {
   Strain _strain = Strain.notrump;
   String _ns = 'LEGACY';
   String _ew = 'LEGACY';
+  // This UI may only be compiled into a separately labeled research build.
+  // The server still independently requires an explicit opt-in + native pin.
+  static const _precisionResearch =
+      bool.fromEnvironment('BA_M34_RESEARCH_PRECISION', defaultValue: false);
 
   @override
   Widget build(BuildContext context) {
