@@ -185,10 +185,12 @@ class _CustomConventionDraftPageState
       if (!mounted) return;
       setState(() => _notice = 'm4ImportInvalid');
     } finally {
-      if (mounted) setState(() {
-        _loading = false;
-        _confirmingImport = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _confirmingImport = false;
+        });
+      }
     }
   }
 
