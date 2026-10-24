@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:bridge_academy_flutter/src/conventions/custom_draft_page.dart';
 import 'package:bridge_academy_flutter/src/conventions/custom_draft_store.dart';
 import 'package:bridge_conventions/bridge_conventions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final class _MemoryStore implements CustomDraftStorage {
@@ -96,6 +99,64 @@ void main() {
     expect(find.text('1NT'), findsOneWidget);
     expect(find.text('12–14 HCP'), findsWidgets);
     expect(store.saved['BA-SAYC']!.latest!.isPlayableCustomSystem, false);
+  });
+
+  testWidgets('M4.5 clipboard import requires explicit consent and '
+      'protects local divergent revisions', (tester) async {
+    String? clipboard;
+    final messenger = TestDefaultBinaryMessengerBinding.instance
+        .defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.getData') return {'text': clipboard};
+      if (call.method == 'Clipboard.setData') {
+        clipboard = (call.arguments as Map)['text'] as String?;
+      }
+      return null;
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(
+        SystemChannels.platform, null));
+
+    final base = CustomConventionDraft.create(
+        id: 'local_sayc', label: 'My SAYC',
+        base: ConventionCatalog.sayc);
+    final next = base.withRule(CustomConventionRule(
+        CustomRuleSlot.twoClubsOverOneNotrump, 'NATURAL'));
+    final local = CustomConventionArchive.empty().append(base);
+    final imported = local.append(next);
+    final store = _MemoryStore()..saved['BA-SAYC'] = local;
+    clipboard = jsonEncode(imported.toJson());
+
+    await tester.pumpWidget(MaterialApp(
+      home: CustomConventionDraftPage(isEnglish: true, storage: store),
+    ));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('m4_import')));
+    await tester.tap(find.byKey(const Key('m4_import')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m4_import_confirm')), findsOneWidget);
+    expect(store.saved['BA-SAYC']!.latest!.revision, 1);
+    await tester.tap(find.byKey(const Key('m4_import_confirm')));
+    await tester.pumpAndSettle();
+    expect(store.saved['BA-SAYC']!.latest!.fingerprint, next.fingerprint);
+    expect(store.saved['BA-SAYC']!.latest!.isPlayableCustomSystem, false);
+    expect(find.textContaining('AI engine support remains unverified'),
+        findsOneWidget);
+
+    // A divergent chain cannot overwrite the imported history.
+    final branched = local.append(base.withRule(CustomConventionRule(
+        CustomRuleSlot.oneNotrumpOpening, '13_15')));
+    clipboard = jsonEncode(branched.toJson());
+    await tester.ensureVisible(find.byKey(const Key('m4_import')));
+    await tester.tap(find.byKey(const Key('m4_import')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('older or divergent'), findsOneWidget);
+    expect(store.saved['BA-SAYC']!.latest!.fingerprint, next.fingerprint);
+
+    await tester.ensureVisible(find.byKey(const Key('m4_export')));
+    await tester.tap(find.byKey(const Key('m4_export')));
+    await tester.pumpAndSettle();
+    expect(CustomConventionArchive.fromJson(jsonDecode(clipboard!))
+        .latest!.fingerprint, next.fingerprint);
   });
 
 }
