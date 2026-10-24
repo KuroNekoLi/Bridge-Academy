@@ -1,5 +1,19 @@
 # Architecture and Product Decision Log
 
+## ADR-035 — M4 自訂約定分為「本機草稿」與「已驗證可執行制度」（2026-10-24）
+
+**APPROVED IMPLEMENTATION BOUNDARY / M4.1–M4.2 DRAFT SCOPE; M4 EXECUTABLE ENGINE NO-GO.**
+
+在三制度 M1→M6 路線中，M4 指自訂 Convention Card（舊版 `docs/ROADMAP.md` 的 M4=多人連線屬另一套歷史分期，不能混為一談）。M3 Precision 的工程研究已通過 native BBA、Gateway、四個 52-card 技術局，但**M3 產品級牌力／專家 Golden／VPS／裝置 QA 尚未完成**。本決策允許先實作完全獨立的 M4 草稿，不因未完成的 AI 品質驗收全面停滯；但**不宣告 M3 Product GO 或 M4 Playable GO**。
+
+M4.1 新增 `CustomConventionDraft`，只可複製固定 BEN 21GF/SAYC Base，且只能在 enum allowlist 編輯 1NT HCP、Stayman／自然 2♣、2♦／2♥ transfer/natural 的有限選項；JSON 白名單、每次修改 revision+1、SHA-256 順序正規化、前版 fingerprint、同個 slot 意義衝突阻擋。SHA 代表資料版本完整性，非 AI 支援證書／密碼簽章。
+
+M4.2 `CustomConventionArchive` 驗證版本相連，Flutter app bar 提供雙語本機編輯頁；`SharedPrefsCustomDraftStorage` 只保存可驗證草稿，不加密、不跨裝置、不宣稱具備伺服器一致性。錯誤存檔不得被靜默重設。無論怎麼改，`isPlayableCustomSystem=false`；任何規則不為原始 base 都是 `ENGINE_UNVERIFIED`。不得透過 JSON 的 `SUPPORTED` 宣稱繞過驗證，也不得進入 `ConventionCatalog`、`GameSystems`、BEN/BBA model 或比賽配置。**即便草稿沒改，`UNCHANGED_BASE_ONLY` 也只表示可以沿用原生 base profile，不產生新的 AI model。**
+
+M4.3～M4.5 想要真的「自訂系統可玩」需獨立引擎證據：真 BEN/BBA convention compatibility、每個已授權版本的 artifact SHA、雙方對手 reader、golden forcing/competition/alerts、可恢復 AI 路由、專家簽核／公平性、非授權卡拒絕以及正式部署驗收。使用者直接編輯 UI **不是**這個證據。
+
+[驗收與待辦](research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md) · [M4-F01](learning/features/M4_F01_CUSTOM_CONVENTION_DRAFT_DOMAIN.md) · [M4-F02](learning/features/M4_F02_CUSTOM_CONVENTION_EDITOR.md) · [CI Workflow](../.github/workflows/m4-custom-convention-drafts.yml)。不開 Android emulator 或 iOS/Android device QA，遵守既定 owner hold。
+
 ## ADR-034 — Precision 合作制度推論導入出牌；真 BBA `find_info`，保留神經牌力 NO-GO（2026-10-24）
 
 **M3.6 SCOPED TECHNICAL PASS / COMPETITIVE CARDPLAY NOT YET VALIDATED.**
