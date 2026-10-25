@@ -15,6 +15,7 @@ import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bidding_convention_panel.dart';
 import 'conventions/convention_profile.dart';
 import 'conventions/custom_draft_page.dart';
+import 'conventions/auction_coach_page.dart';
 import 'widgets/bridge_table_toolbar.dart';
 import 'widgets/bridge_replay_panel.dart';
 import 'widgets/bridge_history_panel.dart';
