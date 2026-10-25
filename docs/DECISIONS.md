@@ -1,5 +1,17 @@
 # Architecture and Product Decision Log
 
+## ADR-037 — M4 草稿工程結案、M5 證據優先 AI 教練啟動（2026-10-25）
+
+**M4.1–M4.7 DRAFT/REVIEW ENGINEERING COMPLETE; CUSTOM-AI EXECUTION NO-GO.** 自訂 SAYC/2/1 草稿已能編輯、版控 SHA、檢視 diff、版本檢驗、快進式匯入匯出、產生專家待審案例，並由真 Gateway HTTP 明確拒絕任何玩家自行宣稱 `SUPPORTED` 的自訂卡；[M4 scoped CI #40139553945](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139553945) 全套測試成功。因尚未有可信 BEN/BBA 客製 artifact、雙方 reader、100+ expert Goldens，**M4 不能標成「自訂 AI 可玩」**。准許平行開始獨立 M5 教練基礎功能，不解除 M3/M4 Release Gate。
+
+**M5.1 PublicAuctionCoach** 使用**公開叫牌** + 可信 GameSystems 指紋與 dealer 推導叫牌座位，沒有隱藏 `Deal`、沒有最佳叫品虛構，也不把 BEN/BBA 的輸出結果反推成它真正的私人推理。沒有經專家審核的叫品會標 `UNKNOWN`／`baseNotReviewed`。M5.2 的雙語 Flutter 教學頁可按使用者授意，讀本機 M4 南北方草稿，顯示 `USER_DRAFT`、`engineVerified=false`；即使兩邊同為 SAYC，也不能將南北私人約定強加在東西方。M5.3 在**已完成且經 Gateway 認證**的牌局提供按鈕，只帶 `dealer`、公開 `auction.call.code`、`session.gameSystems` 給教練，不帶手牌、Dummy、Token、完整 Deal、PBN。
+
+**M5 範圍與明確限制**：本輪交付真可操作的證據檢視/歷史檢視，不含 BEN/BBA 模型內部解釋、不含真候選替代叫品/勝率、不做 DDS 賽中偷看或排名賽輔助。Flutter/Domain 已用 Mock/本機 public fixture 驗證；正式 BEN 證據、專家黃金樣本、比較策略、device QA 與 production release **未執行／NO-GO**。M5.1–M5.3 可獨立完成 scoped engineering，不等於 M5 產品級完成。
+
+[工程驗收](research/M5_PUBLIC_AUCTION_COACH_ACCEPTANCE.md) · [F01](learning/features/M5_F01_PUBLIC_AUCTION_EVIDENCE_COACH.md) · [F02](learning/features/M5_F02_BILINGUAL_COACH_AND_LOCAL_INTENT.md) · [F03](learning/features/M5_F03_POSTGAME_PUBLIC_AUCTION_REVIEW.md) · [M5 CI](../.github/workflows/m5-coach.yml)。
+
+
+
 ## ADR-035 — M4.6/4.7 歷史差異與專家證據交接，不讓自訂約定繞過正式引擎（2026-10-25）
 
 **M4 CUSTOM CONVENTION REVIEW WORKFLOW: SCOPED ENGINEERING PASS；CUSTOM AI EXECUTION: NO-GO。** 延續既有 M4.1～M4.5 的私人草稿及 SHA256 版本鏈，加入 `CustomConventionHistory.compare(archive, fromRevision, toRevision)`，只對已驗證的相同 archive 計算 rule slot 增／改／刪與公開 auction。這是使用者設定差異，不能據以聲稱 BEN/BBA 行為變了。
