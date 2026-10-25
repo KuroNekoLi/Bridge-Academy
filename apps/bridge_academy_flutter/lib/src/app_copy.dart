@@ -524,6 +524,7 @@ class AppCopy {
     ],
     'm5CoachTitle': ['M5 橋牌叫牌教練', 'M5 Bidding Coach'],
     'm5CoachOpen': ['叫牌教練', 'Bidding coach'],
+    'm5ReviewFinished': ['檢視本局公開叫牌', 'Review this game’s public auction'],
     'm5CoachDisclaimer': [
       '僅依公開叫牌和指定制度展示可追溯資訊，不讀取隱藏手牌。未知約定保持 UNKNOWN；不是 BEN/BBA 的內部推理或最佳叫品。',
       'Public calls and versioned systems only; no hidden hands. Unknown meanings stay UNKNOWN, never claimed as BEN/BBA private reasoning or best bids.',
