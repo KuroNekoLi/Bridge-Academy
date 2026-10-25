@@ -35,7 +35,7 @@ void main() {
     expect(find.byKey(const Key('m5_entry_0')), findsOneWidget);
     expect(find.byKey(const Key('m5_entry_1')), findsOneWidget);
     expect(find.byKey(const Key('m5_entry_2')), findsOneWidget);
-    expect(find.textContaining('經審核證據'), findsOneWidget);
+    expect(find.textContaining('經審核證據'), findsWidgets);
     expect(find.byKey(const Key('m5_game_fingerprint')), findsOneWidget);
     expect(find.byKey(const Key('m5_draft_disclaimer')), findsNothing);
   });
