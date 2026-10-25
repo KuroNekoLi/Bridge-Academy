@@ -113,4 +113,26 @@ void main() {
     expect(find.byKey(const Key('m5_no_recommendations')), findsOneWidget);
   });
 
+  testWidgets('M5.3 historical legacy Gateway is displayed as unverified, '
+      'never silently relabeled SAYC', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: AuctionCoachPage(
+        isEnglish: true,
+        initialSystems: GameSystems.legacyUnverified(),
+        initialDealer: 'N',
+        initialCalls: const ['P', 'P', 'P', 'P'],
+      ),
+    ));
+    final ns = tester.widget<DropdownButton<PartnershipSystem>>(
+        find.byKey(const Key('m5_ns')));
+    expect(ns.value, ConventionCatalog.legacyUnverified);
+    await tester.ensureVisible(find.byKey(const Key('m5_explain')));
+    await tester.tap(find.byKey(const Key('m5_explain')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m5_entry_3')), findsOneWidget);
+    expect(find.textContaining('LEGACY_UNVERIFIED'), findsWidgets);
+    expect(find.byKey(const Key('m5_no_recommendations')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
 }
