@@ -82,4 +82,35 @@ void main() {
     expect(find.byKey(const Key('m5_error')), findsOneWidget);
     expect(find.byKey(const Key('m5_results')), findsNothing);
   });
+  testWidgets('M5.3 finished-game public snapshot retains dealer and '
+      'trusted NS/EW profile fingerprints', (tester) async {
+    final pinned = GameSystems(
+        northSouth: ConventionCatalog.sayc,
+        eastWest: ConventionCatalog.twoOverOne);
+    await tester.pumpWidget(MaterialApp(
+      home: AuctionCoachPage(
+        isEnglish: true,
+        initialSystems: pinned,
+        initialDealer: 'E',
+        initialCalls: const ['1NT', 'PASS', '2C', 'P'],
+      ),
+    ));
+    final input = tester.widget<TextField>(
+        find.byKey(const Key('m5_public_auction')));
+    expect(input.controller!.text, '1NT PASS 2C P');
+    final ns = tester.widget<DropdownButton<PartnershipSystem>>(
+        find.byKey(const Key('m5_ns')));
+    final ew = tester.widget<DropdownButton<PartnershipSystem>>(
+        find.byKey(const Key('m5_ew')));
+    expect(ns.value, ConventionCatalog.sayc);
+    expect(ew.value, ConventionCatalog.twoOverOne);
+    await tester.ensureVisible(find.byKey(const Key('m5_explain')));
+    await tester.tap(find.byKey(const Key('m5_explain')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('m5_entry_3')), findsOneWidget);
+    expect(find.byKey(const Key('m5_error')), findsNothing);
+    expect(find.byKey(const Key('m5_draft_disclaimer')), findsNothing);
+    expect(find.byKey(const Key('m5_no_recommendations')), findsOneWidget);
+  });
+
 }
