@@ -7,10 +7,23 @@ import 'custom_draft_store.dart';
 /// Evidence-aware M5 teaching sandbox: public calls only, not live robot
 /// reasoning, not recommended bids, no PlayerView/Deal/hand access.
 class AuctionCoachPage extends StatefulWidget {
-  const AuctionCoachPage({super.key, required this.isEnglish, this.storage});
+  const AuctionCoachPage({
+    super.key,
+    required this.isEnglish,
+    this.storage,
+    this.initialDealer,
+    this.initialCalls,
+    this.initialSystems,
+  });
 
   final bool isEnglish;
   final CustomDraftStorage? storage;
+
+  /// Constructed ONLY from a finished game's public PlayerView auction and
+  /// authenticated server-pinned GameSystems. Not from a full Deal/PBN.
+  final String? initialDealer;
+  final List<String>? initialCalls;
+  final GameSystems? initialSystems;
 
   @override
   State<AuctionCoachPage> createState() => _AuctionCoachPageState();
@@ -29,6 +42,21 @@ class _AuctionCoachPageState extends State<AuctionCoachPage> {
   String? _error;
 
   AppCopy get copy => AppCopy(widget.isEnglish);
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialSystems != null) {
+      _ns = widget.initialSystems!.northSouth;
+      _ew = widget.initialSystems!.eastWest;
+    }
+    if (widget.initialDealer != null) {
+      _dealer = widget.initialDealer!;
+    }
+    if (widget.initialCalls != null) {
+      _calls.text = widget.initialCalls!.join(' ');
+    }
+  }
 
   @override
   void dispose() {
