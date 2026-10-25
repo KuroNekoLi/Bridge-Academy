@@ -1,5 +1,9 @@
 # Bridge Academy
 
+> **2026-10-25 M4→M5**：M4 自訂約定**草稿／審查** scoped engineering 已完成，但實際可玩自訂 BEN/BBA AI 尚缺可執行版本與專家規則證據（release NO-GO）。M5 已實作 [公開叫牌證據教練](packages/bridge_conventions/lib/src/auction_coach.dart)、[雙語教學頁](apps/bridge_academy_flutter/lib/src/conventions/auction_coach_page.dart) 與 Gateway 賽後公開叫牌檢視。無真 AI 最佳叫品臆測、無隱藏手牌。詳見 [M5 Acceptance](docs/research/M5_PUBLIC_AUCTION_COACH_ACCEPTANCE.md) · [M5 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/m5-coach.yml)。
+
+
+
 > **M4.6–M4.7（2026-10-25）**：SAYC／2/1 自訂 Convention Card 草稿支援跨版本差異檢視、可複製的專家審查待辦包，以及真 Gateway HTTP 的偽造 `SUPPORTED`／自訂草稿准入拒絕。[M4 驗收](docs/research/M4_CUSTOM_CONVENTION_DELIVERY_ACCEPTANCE.md) · [Domain/Flutter CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139400430)。**仍不支援將改過的約定直接交給 BEN/BBA 實際叫牌；正式競賽/上線未核准。**
 
 
