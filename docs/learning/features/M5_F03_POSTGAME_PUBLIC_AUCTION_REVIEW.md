@@ -3,7 +3,7 @@
 - Feature ID：M5-F03
 - Milestone：M5.3 Postgame Public Auction Review
 - 類型：Flutter 牌局整合、資料最小化、Server-owned GameSystems
-- 工程狀態：IMPLEMENTED；正式驗收依最新 M5 與 Flutter CI
+- 工程狀態：SCOPED VERIFIED — [CI #40154923631](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40154923631) Coach/legacy snapshot Widget 5/5 PASS；真 Gateway 互動 E2E NOT RUN
 - 學習狀態：DELIVERED
 - 原始碼：[GatewayTable](../../../apps/bridge_academy_flutter/lib/src/gateway_table.dart) · [AuctionCoachPage](../../../apps/bridge_academy_flutter/lib/src/conventions/auction_coach_page.dart)
 - 驗收與測試：[Widget Test](../../../apps/bridge_academy_flutter/test/m5_auction_coach_test.dart) · [M5 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/m5-coach.yml)
