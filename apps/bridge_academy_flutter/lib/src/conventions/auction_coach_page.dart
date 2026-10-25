@@ -106,6 +106,9 @@ class _AuctionCoachPageState extends State<AuctionCoachPage> {
   @override
   Widget build(BuildContext context) {
     final profiles = [
+      // Historical Gateway sessions may be LEGACY_UNVERIFIED. Showing their
+      // actual pin is safer than forging a SAYC or 21GF provenance.
+      ConventionCatalog.legacyUnverified,
       ConventionCatalog.sayc, ConventionCatalog.twoOverOne,
       ConventionCatalog.precisionMeckwell,
     ];
@@ -223,6 +226,7 @@ class _AuctionCoachPageState extends State<AuctionCoachPage> {
   }
 
   String _profileKey(PartnershipSystem profile) {
+    if (profile.isLegacyUnverified) return 'gatewaySystemLegacy';
     if (profile == ConventionCatalog.sayc) return 'gatewaySystemSAYC';
     if (profile == ConventionCatalog.twoOverOne) return 'gatewaySystem21GF';
     return 'gatewaySystemPrecisionResearch';
