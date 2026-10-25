@@ -522,6 +522,42 @@ class AppCopy {
       '這是草稿設定差異，不代表 BEN 或 BBA 的 AI 行為差異。',
       'Changes describe your draft, not verified BEN or BBA AI behavior.',
     ],
+    'm5CoachTitle': ['M5 橋牌叫牌教練', 'M5 Bidding Coach'],
+    'm5CoachOpen': ['叫牌教練', 'Bidding coach'],
+    'm5CoachDisclaimer': [
+      '僅依公開叫牌和指定制度展示可追溯資訊，不讀取隱藏手牌。未知約定保持 UNKNOWN；不是 BEN/BBA 的內部推理或最佳叫品。',
+      'Public calls and versioned systems only; no hidden hands. Unknown meanings stay UNKNOWN, never claimed as BEN/BBA private reasoning or best bids.',
+    ],
+    'm5NorthSouth': ['南北方制度（教學示範）', 'North–South system (sandbox)'],
+    'm5EastWest': ['東西方制度（教學示範）', 'East–West system (sandbox)'],
+    'm5Dealer': ['首先叫牌的座位', 'Dealer seat'],
+    'm5Auction': ['公開叫牌（依時間先後）', 'Public calls (chronological)'],
+    'm5AuctionExample': ['例如：1NT P 2C P', 'e.g. 1NT P 2C P'],
+    'm5DraftToggle': ['對照本機南北方自訂草稿', 'Compare local North–South draft'],
+    'm5DraftDisclaimer': [
+      '草稿僅代表使用者自訂意圖，絕不證明 AI 引擎有遵守。',
+      'Draft represents author intent only, never proof that AI follows it.',
+    ],
+    'm5Explain': ['檢視公開叫牌', 'Review public auction'],
+    'm5Results': ['叫牌紀錄與來源狀態', 'Call transcript and evidence'],
+    'm5NoRecommendations': [
+      '沒有經驗證的最佳叫品或候選建議；所有解析僅是規格／意圖摘要。',
+      'No verified best bid or candidate calls; this is a source/intent audit only.',
+    ],
+    'm5InvalidAuction': [
+      '叫牌格式或本機草稿無法驗證；沒有產生臆測解釋。',
+      'Invalid auction or local draft; no speculative explanation generated.',
+    ],
+    'm5DraftOnly': [
+      '僅使用者草稿意圖（引擎未驗證）',
+      'User-draft intent only (engine unverified)',
+    ],
+    'm5BaseUnreviewed': [
+      '基礎制度可能有約定，但此處未提供經審核證據',
+      'Base may have an agreement; reviewed evidence is unavailable',
+    ],
+    'm5Unknown': ['UNKNOWN：未經證實的叫牌含義', 'UNKNOWN: no verified meaning'],
+    'm5AuthorMeaning': ['使用者設定', 'Author-specified meaning'],
     'm4Title': ['自訂叫牌約定草稿', 'Custom Convention Drafts'],
     'm4Open': ['自訂約定', 'Custom conventions'],
     'm4Warning': [
