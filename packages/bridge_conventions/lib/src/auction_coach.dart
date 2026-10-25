@@ -69,16 +69,18 @@ abstract final class PublicAuctionCoach {
     required List<String> calls,
     required GameSystems systems,
     CustomConventionDraft? draft,
+    bool? draftNorthSouth,
   }) {
     if (dealer.length != 1 || !_seats.contains(dealer) ||
         calls.length > 64) {
       throw const FormatException('Invalid public auction');
     }
-    if (draft != null &&
-        (draft.rules.isEmpty ||
-            (draft.base != systems.northSouth &&
-                draft.base != systems.eastWest) ||
-            !draft.canSave)) {
+    if ((draft == null && draftNorthSouth != null) ||
+        (draft != null &&
+            (draftNorthSouth == null || draft.rules.isEmpty ||
+             draft.base != systems.forPartnership(
+                 northSouthSeat: draftNorthSouth) ||
+             !draft.canSave))) {
       throw const FormatException('Custom draft does not match a base system');
     }
     final normalized = <String>[];
@@ -87,9 +89,8 @@ abstract final class PublicAuctionCoach {
           .hasMatch(call)) {
         throw const FormatException('Invalid public call syntax');
       }
-      normalized.add(call == 'PASS'
-          ? 'P'
-          : call.endsWith('NT') ? call : call);
+      normalized.add(call == 'PASS' ? 'P' :
+          call.length == 2 && call.endsWith('N') ? '${call[0]}NT' : call);
     }
     final output = <CoachAuctionEntry>[];
     final start = _seats.indexOf(dealer);
@@ -102,7 +103,8 @@ abstract final class PublicAuctionCoach {
       // peer-reviewed convention meaning in this engine-independent layer.
       String? selectedMeaning;
       String? ruleId;
-      if (draft != null && profile == draft.base) {
+      if (draft != null && (seatIndex.isEven == draftNorthSouth) &&
+          profile == draft.base) {
         final matches = draft.rules.where((r) =>
             CustomRuleCatalog.publicAuctions[r.slot] == prefix);
         if (matches.length == 1) {
