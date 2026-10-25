@@ -157,6 +157,18 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
                 icon: const Icon(Icons.edit_note_outlined),
               ),
             ),
+            Builder(
+              builder: (navigatorContext) => IconButton(
+                key: const Key('m5_open_coach'),
+                tooltip: copy.t('m5CoachOpen'),
+                onPressed: () => Navigator.of(navigatorContext).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => AuctionCoachPage(isEnglish: _isEnglish),
+                  ),
+                ),
+                icon: const Icon(Icons.psychology_alt_outlined),
+              ),
+            ),
             IconButton(
               key: const Key('toggle_locale'),
               tooltip: copy.t('language'),
