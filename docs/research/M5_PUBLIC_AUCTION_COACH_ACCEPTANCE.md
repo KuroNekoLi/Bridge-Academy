@@ -1,8 +1,24 @@
 # M5.1–M5.2 — 依來源解釋公開叫牌：限定範圍工程驗收
 
-> 2026-10-25（Asia/Taipei） · **實作已提交；CI 狀態依最新 run 確認** · 不代表 M5 AI Coach 已全面完成。
+> 2026-10-25（Asia/Taipei） · **SCOPED ENGINEERING PASS（CI #40154923631）** · 不代表 M5 AI Coach 已全面完成。
 >
 > 交付判定：公開叫牌 Domain Review／雙語 Flutter 教學沙盒；真實 BEN/BBA 策略解釋、候選叫品評估及賽後專家差異仍 **NO-GO**。
+
+## M5.1～M5.3 具體執行證據（2026-10-25）
+
+**SCOPED ENGINEERING PASS** — [GitHub Actions #40154923631](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40154923631) `completed/success`，Ubuntu 24.04、Flutter stable（非 Android/iOS 真機或 emulator）。
+
+| 工作 | 實際結果 |
+| --- | --- |
+| Dart `bridge_conventions` 所有單元測試、含 M2/M3/M4 與 M5.1 source pins/UNKNOWN | **36/36 PASS** |
+| Dart analyzer `--fatal-infos` | No issues found |
+| Flutter analyzer `--no-pub` | No issues found |
+| Flutter M5 Widget（雙語／本機草稿／惡意內容／finished-game snapshot／LEGACY） | **5/5 PASS** |
+| Feature Learning Gate | [#40154923670](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40154923670) success |
+| 真 BEN／BBA 候選決策、專家級語義 Golden、模型私有推理 | **NOT RUN／尚無憑據** |
+| 真 Gateway 完局後手機點擊 E2E、VPS 與裝置 QA | **NOT RUN** |
+
+重點回歸：完成的歷史 Gateway 若使用 `LEGACY_UNVERIFIED`，Coach UI 會保留這個真實 ID 並維持未驗證狀態，**不能**為了下拉選單顯示就冒充 `BA-SAYC`。
 
 ## 這一步能做什麼？
 
