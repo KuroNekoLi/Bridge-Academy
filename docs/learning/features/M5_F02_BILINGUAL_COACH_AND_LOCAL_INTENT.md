@@ -3,7 +3,7 @@
 - Feature ID：M5-F02
 - Milestone：M5.2 Flutter Coach Sandbox
 - 類型：Flutter 表單、私有本機 Draft Repository、Domain DTO、UNKNOWN UX
-- 工程狀態：IMPLEMENTED；實際 PASS 依最新 M5 CI 紀錄
+- 工程狀態：SCOPED VERIFIED — [CI #40154923631](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40154923631) Flutter Coach Widget 5/5 PASS、analyzer PASS
 - 學習狀態：DELIVERED
 - 原始碼：[auction_coach_page.dart](../../../apps/bridge_academy_flutter/lib/src/conventions/auction_coach_page.dart) · [App entry](../../../apps/bridge_academy_flutter/lib/src/bridge_app.dart)
 - 驗收與測試：[Widget tests](../../../apps/bridge_academy_flutter/test/m5_auction_coach_test.dart) · [Domain tests](../../../packages/bridge_conventions/test/auction_coach_test.dart) · [M5 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/m5-coach.yml)
