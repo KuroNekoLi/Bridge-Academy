@@ -5,3 +5,4 @@ export 'src/custom_convention_archive.dart';
 export 'src/custom_convention_review.dart';
 export 'src/custom_convention_history.dart';
 export 'src/custom_convention_review_plan.dart';
+export 'src/auction_coach.dart';
