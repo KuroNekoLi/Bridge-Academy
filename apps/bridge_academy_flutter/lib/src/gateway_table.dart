@@ -2,6 +2,7 @@ import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:flutter/material.dart';
 
 import 'app_copy.dart';
+import 'conventions/auction_coach_page.dart';
 import 'gateway_game_session.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bridge_table_components.dart';
@@ -173,6 +174,31 @@ class _GatewayTableState extends State<GatewayTable> {
                       copy: copy,
                       actionsPaused: session.actionsPaused,
                       onPlayCard: session.submitCard,
+                    ),
+                  if (session.finished && session.gameSystems != null)
+                    Builder(
+                      builder: (navigatorContext) => OutlinedButton.icon(
+                        key: const Key('m5_finished_auction_review'),
+                        icon: const Icon(Icons.fact_check_outlined),
+                        label: Text(copy.t('m5ReviewFinished')),
+                        onPressed: () {
+                          // Strict public projection: no Deal, own hand, dummy,
+                          // private token or BEN request is passed to Coach.
+                          final calls = [
+                            for (final entry in view.auction) entry.call.code,
+                          ];
+                          Navigator.of(navigatorContext).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => AuctionCoachPage(
+                                isEnglish: copy.isEnglish,
+                                initialDealer: view.dealer.letter,
+                                initialCalls: calls,
+                                initialSystems: session.gameSystems,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   if (session.finished)
                     Card(
