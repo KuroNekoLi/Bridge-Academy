@@ -3,7 +3,7 @@
 - Feature ID：M5-F01
 - Milestone：M5.1 Public Auction Evidence Coach
 - 類型：純 Dart、可信賴教學資料、公開資訊／AI 推理分離
-- 工程狀態：IMPLEMENTED；實際 PASS 待該版 CI 確認
+- 工程狀態：SCOPED VERIFIED — [CI #40154923631](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40154923631) Domain 36/36 PASS、analyzer PASS
 - 學習狀態：DELIVERED
 - 原始碼：[auction_coach.dart](../../../packages/bridge_conventions/lib/src/auction_coach.dart) · [GameSystems](../../../packages/bridge_conventions/lib/src/game_systems.dart)
 - 驗收與測試：[Domain tests](../../../packages/bridge_conventions/test/auction_coach_test.dart) · [M5 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/m5-coach.yml)
