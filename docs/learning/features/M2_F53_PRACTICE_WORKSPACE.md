@@ -3,7 +3,7 @@
 - Feature ID：M2-F53
 - Milestone：M2／A3 UI 延伸
 - 類型：Flutter UI
-- 工程狀態：VERIFIED／ENGINEERING_PASS（本機限定，實際命令與範圍見驗收）
+- 工程狀態：VERIFIED／ENGINEERING_PASS（Windows＋Web/Chrome CI scoped）
 - 學習狀態：DELIVERED；尚無 PRACTICED／MASTERED 證據
 - 原始碼：[工作區與 Session composition](../../../apps/bridge_academy_flutter/lib/src/bridge_app.dart)、[練習卡元件](../../../apps/bridge_academy_flutter/lib/src/widgets/bridge_practice_hub.dart)、[雙語文案](../../../apps/bridge_academy_flutter/lib/src/app_copy.dart)
 - 驗收與測試：[Workspace 測試](../../../apps/bridge_academy_flutter/test/m2_practice_workspace_test.dart)、[本輪驗收](../../product/UX_WORKSPACE_ACCEPTANCE.md)
@@ -52,6 +52,8 @@ flutter build web --no-pub --release
 測試斷言：頁籤切換不改 version／手牌；Review 不顯示 active table；學院能返回；未完牌取消重發保留事件及手牌，確認才 reset；活動牌桌在 launcher 前；320/768/1280px、2x 字體與中英切換無 overflow。確切最後執行結果與 CI 狀態記於 [驗收紀錄](../../product/UX_WORKSPACE_ACCEPTANCE.md)，不要把教學檔的存在當作測試通過。
 
 Widget test 使用 Demo／本機 fixture，不能證明真 BEN、正式部署或裝置輔具體驗；Android/iOS QA 仍未執行。
+
+**本輪實際 CI：** [Flutter/Web/Chrome #40255094253](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094253)，source SHA `5b72c13241a6f75dafed66b4a20ebe87677098f3`；198/198 Flutter、analyze、Web release、ChromeDriver 155 的新局 52-card/13-trick 與加密 checkpoint targets 全部 PASS。這是 Demo／Mock scope，真 BEN／Precision regression 狀態另記在驗收，仍非裝置或正式部署。
 
 ## 練習與自我檢驗
 

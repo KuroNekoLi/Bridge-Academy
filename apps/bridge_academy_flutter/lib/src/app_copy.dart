@@ -115,6 +115,7 @@ class AppCopy {
       'Choose your language, manage local convention drafts and explore public auction evidence.',
     ],
     'licenses': ['開源授權', 'Open-source licenses'],
+    'handScrollHint': ['左右滑動查看所有手牌', 'Scroll sideways to see all cards'],
     'replaceDealTitle': ['放棄目前牌局？', 'Leave this deal?'],
     'replaceDealBody': ['這副牌尚未完成。重新發牌會取代目前進度。', 'This deal is unfinished. Dealing again will replace your current progress.'],
     'keepDeal': ['繼續目前牌局', 'Keep playing'],

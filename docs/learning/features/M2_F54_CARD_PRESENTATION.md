@@ -3,7 +3,7 @@
 - Feature ID：M2-F54
 - Milestone：M2／A3 UI 延伸
 - 類型：Flutter UI／第三方 presentation adapter
-- 工程狀態：VERIFIED／ENGINEERING_PASS（本機限定，實際命令與範圍見驗收）
+- 工程狀態：VERIFIED／ENGINEERING_PASS（Windows＋Web/Chrome CI scoped）
 - 學習狀態：DELIVERED；尚無 PRACTICED／MASTERED 證據
 - 原始碼：[牌面 adapter](../../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_face.dart)、[手牌／明手／本墩](../../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart)、[本機牌桌](../../../apps/bridge_academy_flutter/lib/src/bridge_app.dart)、[Gateway 牌桌](../../../apps/bridge_academy_flutter/lib/src/gateway_table.dart)
 - 驗收與測試：[牌面測試](../../../apps/bridge_academy_flutter/test/m2_card_presentation_test.dart)、[既有明手回歸](../../../apps/bridge_academy_flutter/test/a3_table_components_test.dart)、[驗收](../../product/UX_WORKSPACE_ACCEPTANCE.md)
@@ -57,6 +57,8 @@ flutter build web --no-pub --release
 新測試逐張核對 52 個 suit/rank、排序不修改輸入、叫牌只 render ownCards 共 13 張、叫牌牌不可點、鍵盤 Enter 與 semantics tap 可各提交合法牌、單張牌語意不與手牌區合併、busy／illegal callback 為 null、不載入 Image 元件。既有明手所有權／13 墩／隱私及放大字體回歸繼續執行。確切最後執行結果與 Chrome 範圍見 [驗收](../../product/UX_WORKSPACE_ACCEPTANCE.md)。
 
 本輪沒有重跑 genuine BEN、native DDS 或裝置 UI/E2E，不能用 Demo 測試冒稱那些通過。
+
+**本輪實際 CI：** [Flutter/Web/Chrome #40255094253](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094253)，source SHA `5b72c13241a6f75dafed66b4a20ebe87677098f3`；198/198 Flutter、analyze、Web release、ChromeDriver 155 的新局 52-card/13-trick 與加密 checkpoint targets 全部 PASS。這是 Demo／Mock scope，真 BEN／Precision regression 狀態另記在驗收，仍非裝置或正式部署。
 
 ## 練習與自我檢驗
 

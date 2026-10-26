@@ -47,7 +47,7 @@
 
 牌桌進行中依序顯示：模式／儲存警示 → 牌號局況與輪次 → 四座位及本墩 → 自己可見手牌／公開明手與當前操作 → 結果／下一副／複盤。其他練習放在下方。切換頁籤不能改動對局版本；重發未完牌必須有明確放棄選擇。
 
-桌面內容限制最大寬度 1240；練習卡片依可用寬度顯示 1／2／3 欄，手機採可捲動且不重疊的 48px 以上按牌操作，保留放大文字。下一批才優化單屏緊湊牌桌和橫向手牌；不為扇形外觀犧牲點擊區或暗牌隔離。
+桌面內容限制最大寬度 1240；練習卡片依可用寬度顯示 1／2／3 欄。M2-F55 已將手機 own/dummy 牌列改為水平捲動且不重疊的 48px 以上按牌操作，保留放大文字；寬度夠時展開。整張牌桌的單屏緊湊布局與動畫仍待後續，不為扇形外觀犧牲點擊區或暗牌隔離。
 
 ## 4. 分批實作、依賴與完成條件
 
@@ -81,6 +81,6 @@
 
 ## 6. 本輪驗收與回退
 
-本輪只接受 U1/U2，對應 [M2-F53](../learning/features/M2_F53_PRACTICE_WORKSPACE.md) 與 [M2-F54](../learning/features/M2_F54_CARD_PRESENTATION.md)。完整命令、實際版本、結果、Chrome 範圍與未執行事項見 [驗收紀錄](UX_WORKSPACE_ACCEPTANCE.md)。未改牌局存檔 schema；可以以單一 `git revert` 回退介面、套件與文件，不改寫歷史或搬遷玩家資料。
+本輪 U1/U2 對應 [M2-F53](../learning/features/M2_F53_PRACTICE_WORKSPACE.md) 與 [M2-F54](../learning/features/M2_F54_CARD_PRESENTATION.md)，已有命名 CI。使用者要求繼續後另完成 U3.1／[M2-F55 水平牌列](../learning/features/M2_F55_RESPONSIVE_CARD_STRIP.md)，本機 200/200＋Web PASS；新 CI 與前批分開記錄。完整命令、實際版本、結果、Chrome 範圍與未執行事項見 [驗收紀錄](UX_WORKSPACE_ACCEPTANCE.md)。未改牌局存檔 schema；各提交可用 `git revert` 回退，不改寫歷史或搬遷玩家資料。
 
 下個可執行工作包為 **U3：單屏牌桌、手牌操作與可中止動畫**。安全續局／server history 先做 U4 的授權協定設計；公開服務、比賽與裝置驗收繼續遵守既有決策。

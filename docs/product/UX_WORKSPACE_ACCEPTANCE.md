@@ -1,8 +1,8 @@
 # A3 UI 延伸：練習工作區與牌面呈現驗收
 
 - 日期：2026-10-26（使用者 Asia/Taipei 日期）
-- 功能：M2-F53、M2-F54；[全產品未完成計畫](PRODUCT_COMPLETION_PLAN_2026_10.md)
-- 工程：**SCOPED LOCAL ENGINEERING_PASS**；以本機 Widget／Session、analyzer 與 Web build 範圍為限
+- 功能：M2-F53、M2-F54、M2-F55；[全產品未完成計畫](PRODUCT_COMPLETION_PLAN_2026_10.md)
+- 工程：**SCOPED ENGINEERING_PASS（Windows 本機＋Ubuntu CI Web／Chrome）**；不代表產品／裝置發布
 - 教學：**LESSON_DELIVERED**；沒有 PRACTICED／MASTERED 證據
 - 部署／全產品／A3.5：**NOT READY／未通過**；Android/iOS UI/E2E 仍 OWNER HOLD
 
@@ -52,13 +52,13 @@ Chrome 驗證抓到並修正了 Widget-only 測試原先沒覆蓋的兩個無障
 - Chrome viewport 實際 `innerWidth=375`／`innerHeight=812`／DPR=1；重新載入確認窄屏布局，之後已 reset 至原桌面 viewport。這是 Chrome Web，不是手機裝置驗收。
 - 本機截圖位於使用者 Codex visualization 目錄 `bridge-table-desktop.jpg`／`bridge-mobile375.jpg`，沒有將私人帳號資料或 unverifiable 截圖提交 Git。
 
-**範圍限制**：本輪人工 Chrome Demo 牌局跨開發 reload／修復，最後版本從還原的第 12 墩繼續完成；不把它說成同一 final build 從新局不中斷的自動 E2E。新增 `integration_test/browser_table_test.dart` 的完整新局回歸另檢查 26 次玩家／明手選擇、52 unique cards、13 墩與 Review→Play，待對應 ChromeDriver CI 實際執行後再附證據。
+**範圍限制**：本輪人工 Chrome Demo 牌局跨開發 reload／修復，最後版本從還原的第 12 墩繼續完成；不把它說成同一 final build 從新局不中斷的自動 E2E。新增 `integration_test/browser_table_test.dart` 的完整新局回歸另檢查 26 次玩家／明手選擇、52 unique cards、13 墩與 Review→Play，已由下方對應 ChromeDriver CI 實際執行通過。
 
 曾嘗試 `flutter test --no-pub integration_test/browser_table_test.dart -d windows --reporter expanded`，**BLOCKED：No Windows desktop project configured**，測試未能載入；沒有宣稱 Windows native integration 通過，也未新增未要求的 desktop scaffolding。analyzer 已通過 browser test；本機 198 項 test/ 不包含 integration_test。
 
 ## NOT RUN／限制
 
-- 本輪未啟動 genuine BEN、Precision native BBA、native DDS、正式 VPS／TLS、多人／MP/IMP 或成本壓測；不挪用舊 CI 當作本輪重新執行證據。
+- 本機未啟動 genuine BEN／Precision native BBA／native DDS。提交後既有真 BEN／Precision workflows 自動執行，狀態見本檔末；未執行正式 VPS／TLS、多人／MP/IMP 或成本壓測，不挪用舊 CI 當本輪證據。
 - Android/iOS 模擬器與實機 UI/E2E：**OWNER HOLD，沒有 dispatch、schedule 或解除 workflow guard**。
 - 真人新手／熟手 usability、TalkBack／VoiceOver、A3.5 最終玩家驗收尚未執行。Widget／Chrome 不可代替裝置驗收。
 - package 未使用的 bundled Wikimedia 圖像可能仍進 build；公開 binary 之前必須完成來源或排除，見 OSS audit。
@@ -68,3 +68,22 @@ Chrome 驗證抓到並修正了 Widget-only 測試原先沒覆蓋的兩個無障
 ## 回退與後續
 
 無 schema migration。回退使用本輪 source/docs commit 的 `git revert <commit>` 並依 lock 重新取依賴，不 force-push、不改已保存牌局、不刪除歷史。後續以 U3 的單屏牌桌與可中止呈現動畫為下一包；公開部署與裝置 release gate 維持獨立決策。
+
+## U3.1／M2-F55：窄屏手牌與明手單排捲動
+
+使用者要求繼續後，在用量仍高於 30% 時完成下一個可獨立驗收的 UI 範圍。
+
+- [BridgeCardStrip](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_strip.dart) 只接收原有授權牌面 Widgets；68px 外框＋6px 間距超出實際內容寬度才顯示水平捲動／可拖曳捲軸／雙語提示，放得下時直接展開。
+- 自己與公開明手共用，不縮小 touch target，不變更 legal/busy/owner/callback/key，不新增 package／Core／schema 變動。
+- [測試](../../apps/bridge_academy_flutter/test/m2_card_strip_test.dart)：320px 最後一張 CA 初始在畫面外，捲到後能正確點選；牌列高度 <180、點擊區 >=48；中英提示；13→2→0 安全切換；1280px 同列且無捲動提示。
+- **EXECUTED/PASS**：`flutter analyze --no-pub` 無問題；scoped strip＋A3 accessibility＋components **10/10**；`flutter test --no-pub --reporter expanded` **200/200**；`flutter build web --no-pub --release` 成功，保留前述非致命 font warning。
+- [M2-F55 lesson](../learning/features/M2_F55_RESPONSIVE_CARD_STRIP.md) 與 INDEX 同批。前段 `5b72c13` 的 CI 屬 F53/F54，不挪用為本次新布局 CI；新提交後另記新 run/SHA。
+- Chrome release 375px 已觀察單排提示／可見捲軸，實際向右捲到最末 C6，牌面未縮小；已 reset viewport。人工 locator 曾有捲動／popup 焦點不同步及非法叫牌拒絕，沒有把此操作當作完整新局 F55 E2E。
+- 尚未完成 U3 整張牌桌單屏、飛牌／收墩動畫或裝置 QA；不以這個小範圍解除原 gates。
+- 2026-10-26 09:49 Asia/Taipei 帳號工具回報 5 小時剩 24%／週剩 88%，已先更新交接，停止新增功能，只保存已驗證工作。
+
+## 已提交與自動 CI
+
+功能、測試、兩篇教學與用量硬性規範已一起直接 push master：`5b72c13241a6f75dafed66b4a20ebe87677098f3`。
+
+[Flutter／Web／Chrome Demo CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094253) 已成功結束，analyzer 成功；**198/198 Flutter＋Web Release＋ChromeDriver Demo 新局完整 52 張／13 墩與 browser encrypted checkpoint 全部成功**。Chrome／ChromeDriver `155.0.8059.39`，Flutter `3.47.8`；jobs `121355118469`、`121355118337` 步驟與日誌已查核。兩個 `flutter drive` target 皆回報 `All tests passed.`。 [Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094204)、[M4](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094234)、[M5](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094228)、[Precision 研究](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094239) 均已 success；既有 [真 BEN Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094235) 同次 push 自動觸發，已 **success**，job `121355118328` 的三個 Flutter drive targets 皆 `All tests passed.`；此為該 SHA 的固定 fixture 真模型回歸，非公開部署或任意牌力保證。

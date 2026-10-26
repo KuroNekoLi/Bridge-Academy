@@ -1,5 +1,7 @@
 # A3 — Bridge Table UI V2: Component Contracts and Acceptance
 
+**2026-10-26 additive UI delivery:** M2-F53／F54 已提供可用練習工作區與牌面／叫牌 ownCards（[198/198 + Web + Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094253)）；M2-F55 的 `BridgeCardStrip` 進一步將窄屏 own/dummy 牌列改為水平捲動，維持 68px 外框／48px 以上目標、雙語提示與可見捲軸，寬屏仍展開。權威、dummyExposed、owner、原 key 不變。這是 U3 的第一個小範圍，不等於動畫／整張牌桌單屏或 A3.5 裝置驗收。精確本輪結果見 [驗收](UX_WORKSPACE_ACCEPTANCE.md)。
+
 **Date:** 2026-10-16 · **Owner:** bridge-orchestrator + bridge-architecture-guardian + bridge-learning-mentor  
 **Scope:** Flutter UI decomposition and accessibility, not a change to Bridge Core rules, BEN protocol, archived events, or product login.  
 **Device QA:** ON HOLD until explicit owner approval. Do not run emulator/physical Android/iOS UI or E2E.

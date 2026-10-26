@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
 import 'bridge_card_face.dart';
+import 'bridge_card_strip.dart';
 
 /// The table widgets are deliberately presentation-only:
 /// they receive a seat-filtered PlayerView, never Deal or BridgeSession.
@@ -221,9 +222,10 @@ class BridgeSeatPanel extends StatelessWidget {
                 textAlign: TextAlign.center),
           if (hasDummyCards && seat != view.viewer) ...[
             Text(copy.t('dummy'), key: const Key('dummy_revealed')),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 4,
+            BridgeCardStrip(
+              id: 'dummy_${seat.letter}',
+              copy: copy,
+              centerWhenFits: true,
               children: [
                 for (final card in sortedVisibleCards(view.dummyCards!))
                   BridgePlayingCardButton(
@@ -270,9 +272,9 @@ class BridgePlayerHand extends StatelessWidget {
             children: [
               Text(copy.t('cards')),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 5,
+              BridgeCardStrip(
+                id: 'hand',
+                copy: copy,
                 children: [
                   for (final card in sortedVisibleCards(view.ownCards))
                     BridgePlayingCardButton(

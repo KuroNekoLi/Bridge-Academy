@@ -8,6 +8,8 @@
 
 共用 renderer 套件固定 `0.4.1+11`；所有標準 suit/rank 以字形覆寫，不呼叫內附圖像；授權頁保留 Flutter 產生的 notices。圖像打包／個別來源仍是 release gate，見 [OSS audit](OPEN_SOURCE_AUDIT.md)。Gateway 仍獨立持有伺服器 authority，不因新增導覽建立本機 fallback。
 
+M2-F55 的 `BridgeCardStrip` 只接收上述原有 Widget，依可用寬度決定 Wrap 或水平 ScrollView，own/dummy 都不重建 Core 順序與牌權。ScrollController 由 Widget State 擁有並釋放；滑動只改 offset。卡片仍保有獨立 semantics、>=48px 目標與既有 command callback，不為 13 張扇形外觀縮小到無法點選。
+
 ## M3.6 — 真原生 BBA 約定推論接入 Bridge Core 合法出牌
 
 最新研究流程為：`BbaResearchTablePolicy.choose(PlayerView)` 取得當前座位合法可打 `legalCards` → 私有 `/v1/precision/auction-inference` → BBA `BBABotBid.find_info` 依同一固定 Meckwell/SAYC/21GF 約定卡**推估每座位花色長度** → Dart 先嚴格驗證 16 項長度、來源及 pinned SHA，再以簡單且可測試的搭檔支持分數對 **只有 legalCards** 排序 → `CardAction` proposal → `BridgeGame.apply` 審核。終局評分仍完全由 Core 決定。
