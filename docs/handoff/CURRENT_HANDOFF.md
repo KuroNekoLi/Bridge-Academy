@@ -1,6 +1,57 @@
 # Bridge Academy 目前交接
 
-**最後 heartbeat 查詢：5 小時 remaining 5%、每週 remaining 85%**（2026-10-26 09:52–09:56 Asia/Taipei；首次觸發仍是下方 24%／88%）。已跨過新的 5% 門檻，先更新交接再通知；不開始新功能、不重跑昂貴測試。功能／測試／三篇教學均已 push。查核分支 `master`、HEAD `7679ff6422b7c0bf90e8f59a7a8ecdbc8c8bf82d`，`git status --short` 空白；本次僅更新交接文件。最新功能 SHA `022da3f`、前批 `5b72c13`。後續先查 git status/log 與下列待完成 CI；待額度恢復或明確變更規範後再接續。此為帳號共用視窗，並非專案個別消耗。
+**最新交接檢查：2026-10-26 10:54 Asia/Taipei。** 本宿主沒有提供規定使用的 `get_usage_limits` 工具，因此本次用量狀態為 **UNKNOWN**；不得將較早 heartbeat 的比例當成目前數值。本次由使用者要求更新並提交 handoff，非新的額度觸發。分支 `master`，更新前 HEAD 與 `origin/master` 均為 `425da3ed393e6b9307f3d9961e52e542368c79e5`（ahead/behind `0/0`），更新前工作樹乾淨。本次只應提交 `docs/handoff/CURRENT_HANDOFF.md`；不推送、不開始新功能、不執行 Android/iOS 裝置測試。提交後需確認工作樹乾淨。
+
+## 最新本機交接（2026-10-26）
+
+### 目標與範圍
+
+- 使用者在 Windows 上設定 Flutter，以 Chrome 試跑 Bridge Academy；IDE 接連顯示 `package:bridge_conventions/bridge_conventions.dart`、`package:crypto/crypto.dart` 與 `package:bridge_core/bridge_core.dart` URI 缺失。
+- Flutter **3.47.8 stable / Dart 3.13.7** 已安裝於 `C:\Users\user05\develop\flutter`，並加入 Windows 使用者層級 `PATH`。`flutter doctor -v` 確認 Chrome、Edge、Windows desktop target 可見；Chrome 可以作為下一步 Web 試跑目標。
+- 三個 import 所屬 package 的依賴都已宣告，原因為各 package 尚未分別執行 Pub dependency resolution；已各自 `pub get`，並生成本機 `.dart_tool/package_config.json`。未修改 source／pubspec，也未留下 package lock 變更。
+- invariant：`bridge_core` 是規則與狀態權威；依賴解析不更動叫牌／出牌規則、AI 或資料邊界。DDS 只供已完成牌局的 double-dummy 分析，不可當作一般隱藏資訊 AI。
+
+### 本機檔案與 package 狀態
+
+- App：`apps/bridge_academy_flutter/pubspec.yaml` 已有 `bridge_conventions` 相依。執行 `flutter pub get` 後，`flutter analyze` **PASS，No issues found**。
+- `packages/bridge_conventions/pubspec.yaml` 已有 `crypto: ^3.0.6`。執行 `dart pub get` 後，`dart analyze --fatal-infos` **PASS**，`dart test` **36/36 PASS**。
+- `packages/bridge_ben_adapter/pubspec.yaml` 已有 `bridge_conventions` path dependency。執行 `dart pub get` 後，`dart analyze` **PASS**，`dart test` **29/29 PASS**。
+- `packages/bridge_dds_adapter/pubspec.yaml` 已有 `bridge_core` path dependency。執行 `dart pub get` 後，`dart analyze --fatal-infos` **PASS**；`dart test` **FAILED**，詳見下方。依賴解析只解決 URI，**不代表 DDS 測試或真實 DDS 驗收通過**。
+- 上述 `dart pub get` 均確認必要 package 出現在 `.dart_tool/package_config.json`；為避免無關 lockfile，只保留本機解析產物，額外產生的 `packages/bridge_ben_adapter/pubspec.lock`、`packages/bridge_conventions/pubspec.lock`、`packages/bridge_dds_adapter/pubspec.lock` 已移除。
+- 更新 handoff 前 `git status --short` 為空；除本次 handoff 文件外無程式碼變更。Dart package config 是本機生成的忽略檔。
+
+### 測試證據與限制
+
+環境：Windows PowerShell；Flutter `3.47.8`、Dart `3.13.7`。
+
+- **EXECUTED / PASS**：`cd apps/bridge_academy_flutter; flutter pub get; flutter analyze` — `No issues found!`
+- **EXECUTED / PASS**：`cd packages/bridge_conventions; dart pub get; dart analyze --fatal-infos; dart test` — analyzer 無問題，**36 tests passed**。
+- **EXECUTED / PASS**：`cd packages/bridge_ben_adapter; dart pub get; dart analyze; dart test` — analyzer 無問題，**29 tests passed**。
+- **EXECUTED / PASS**：`cd packages/bridge_dds_adapter; dart pub get; dart analyze --fatal-infos` — analyzer 無問題。
+- **EXECUTED / FAILED**：同目錄執行 `dart test`。`Native process contract + 5x4 mapping (FAKE runner, not DDS)` 收到 `solverFailure`；`Timeout and errors fail closed; private PBN never in errors` 預期 timeout，實際先收到 `solverFailure`。需要重現並調查 Windows Python child-process／fixture 的實際啟動狀態；目前沒有修改測試或 native process 程式碼。
+- **EXECUTED / SKIPPED**：`Three REAL DDS3 deal tables: 20 cells each, suit-vs-NT` 因未安裝 pinned genuine DDS3 Python extension 而 skip，**不是真實 DDS 驗收通過**。
+- **NOT RUN**：本次沒有重新執行 Flutter 全量測試或 Web build；沒有啟動 Chrome app、真 BEN、Gateway 或 DDS3；沒有查閱／確認 GitHub Actions 最新狀態。
+- **BLOCKED / Doctor warnings**：`flutter doctor -v` 顯示 Android SDK 缺 `cmdline-tools` 且 Android licenses 未處理；Windows desktop 開發未安裝 Visual Studio C++ workload。這些不阻擋 Chrome target。Android/iOS device QA 仍依 owner hold，不得自行執行。
+
+### 接續步驟
+
+1. 先 `git status --short`、`git log -3 --oneline` 確認 handoff commit 與工作樹狀態。
+2. 若接著處理 IDE URI，於 IDE 對專案根目錄 `C:\Users\user05\StudioProjects\Bridge-Academy` 執行 **Restart Dart Analysis Server**；若只開單一 package，應開啟整個 monorepo 或對該 package 單獨執行 `dart pub get`。
+3. 若使用者要本機 Chrome 試跑，先確認 `apps/bridge_academy_flutter/web/index.html` 平台 scaffold 是否存在；若缺少，先詢問／依使用者請求執行 `flutter create --platforms=web --project-name=bridge_academy_flutter .`，再在 App 目錄執行 `flutter pub get`、`flutter run -d chrome`。預設 Demo 不需 BEN/Gateway。
+4. 若處理 DDS 兩個失敗，從 `packages/bridge_dds_adapter` 重跑失敗測試並檢查 Windows 上 fake worker interpreter／exit code／timeout 行為；先取得可重現根因，再做最小修復及測試。不要把 fake runner 標作 genuine DDS。
+5. Chrome Web 可驗證不等於產品 READY。沒有部署服務；Android/iOS 裝置測試、A3.5、部署安全／持久性與模型授權 gate 仍依 repo 文件保持 OPEN。
+
+### 額度、風險、回退與 CI
+
+- 本次 `get_usage_limits` 工具不可用：**quota UNKNOWN**，檢查時間 2026-10-26 10:54 Asia/Taipei；不推估百分比。既有 heartbeat 歷史數字保留為歷史，不當成本次即時狀態。
+- `flutter doctor` 的 Android／Visual Studio 缺件不影響 Chrome Web target，但可能阻擋對應 native build；先前只確認 Chrome 和 SDK 可見，尚未實際跑 App。
+- 本次未查 GitHub Actions；既有最新 handoff 的 F55 CI 記錄指向 [Flutter/Web/Chrome #40256171652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171652)、[Learning Gate #40256171449](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171449)、[真 BEN Chrome #40256171464](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171464)、[Precision #40256171518](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171518)、[M4 #40256171638](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171638)、[M5 #40256171575](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171575)。這些是既有文件在先前 heartbeat 記載的狀態，不代表本次重新確認。
+- 無資料格式／production source 變更。若需回退，只 revert 本文件的文件提交；不刪除使用者或其他 agent 變更、不 reset／改寫歷史、不 force-push。
+- 下一個需要使用者／接手者決定的工作：先試跑 Chrome Demo，或先查明 DDS Windows fake-worker 兩個失敗；不需為目前 URI 問題新增程式碼。
+
+---
+
+**最後 heartbeat 查詢：5 小時 remaining 5%、每週 remaining 85%**（2026-10-26 09:52–09:56 Asia/Taipei；首次觸發仍是下方 24%／88%）。此為較早查詢結果；不能視為本次即時用量。本次最新查詢無工具可用，請以上方 UNKNOWN 為準。功能／測試／三篇教學均已 push。查核分支 `master`、HEAD `7679ff6422b7c0bf90e8f59a7a8ecdbc8c8bf82d`，`git status --short` 空白；本次僅更新交接文件。最新功能 SHA `022da3f`、前批 `5b72c13`。後續先查 git status/log 與下列待完成 CI；待額度恢復或明確變更規範後再接續。此為帳號共用視窗，並非專案個別消耗。
 
 更新時間：**2026-10-26 09:49:18 Asia/Taipei（01:49:18 UTC）**。**已觸發 30% 先交接規範**：帳號工具本次回報 5 小時視窗 used 76%／remaining **24%**，每週 used 12%／remaining **88%**。已先更新本文件，之後只做必要驗證／保存／提交收尾，不開始新功能。這是帳號共用用量，不代表本專案獨占消耗；之後必須重新讀取。
 
