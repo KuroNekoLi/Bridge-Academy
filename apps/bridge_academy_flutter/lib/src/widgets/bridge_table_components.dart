@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../app_copy.dart';
 import 'bridge_card_face.dart';
 import 'bridge_card_strip.dart';
+import 'bridge_public_card_entrance.dart';
 
 /// The table widgets are deliberately presentation-only:
 /// they receive a seat-filtered PlayerView, never Deal or BridgeSession.
@@ -120,51 +121,87 @@ class BridgeTableSurface extends StatelessWidget {
       );
 }
 
-class BridgeCurrentTrick extends StatelessWidget {
+class BridgeCurrentTrick extends StatefulWidget {
   const BridgeCurrentTrick({super.key, required this.view, required this.copy});
   final PlayerView view;
   final AppCopy copy;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    key: const Key('current_trick'),
-    padding: const EdgeInsets.all(12),
-    child: Column(
-      children: [
-        Text(
-          copy.t('currentTrick'),
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        if (view.currentTrick.isEmpty)
-          Text(copy.t('notYet'))
-        else
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 6,
-            runSpacing: 4,
-            children: [
-              for (final play in view.currentTrick)
-                Semantics(
-                  label:
-                      '${copy.seat(play.handOwner.letter)}: ${copy.cardName(play.card.code)}',
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(copy.seat(play.handOwner.letter)),
-                      SizedBox(
-                        width: 54,
-                        height: 76,
-                        child: BridgeCardFace(card: play.card),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
+  State<BridgeCurrentTrick> createState() => _BridgeCurrentTrickState();
+}
+
+class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
+  Set<String> _entering = {};
+  String _identity(PlayerView view, PlayedCard play) =>
+      '${view.completedTricks.length}:${play.handOwner.letter}:${play.card.code}';
+
+  @override
+  void didUpdateWidget(BridgeCurrentTrick oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final previous = oldWidget.view;
+    final current = widget.view;
+    // Mounting/restoring a snapshot is static. Only newly accepted public
+    // cards animate; removal disposes the animation, with no outgoing ghost.
+    final existing = previous.currentTrick
+        .map((play) => _identity(previous, play))
+        .toSet();
+    _entering = current.version > previous.version
+        ? current.currentTrick
+              .map((play) => _identity(current, play))
+              .where((id) => !existing.contains(id))
+              .toSet()
+        : {};
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final view = widget.view;
+    final copy = widget.copy;
+    return Padding(
+      key: const Key('current_trick'),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Text(
+            copy.t('currentTrick'),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
-      ],
-    ),
-  );
+          const SizedBox(height: 8),
+          if (view.currentTrick.isEmpty)
+            Text(copy.t('notYet'))
+          else
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 6,
+              runSpacing: 4,
+              children: [
+                for (final play in view.currentTrick)
+                  BridgePublicCardEntrance(
+                    key: ValueKey(_identity(view, play)),
+                    animate: _entering.contains(_identity(view, play)),
+                    child: Semantics(
+                      excludeSemantics: true,
+                      label:
+                          '${copy.seat(play.handOwner.letter)}: ${copy.cardName(play.card.code)}',
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(copy.seat(play.handOwner.letter)),
+                          SizedBox(
+                            width: 54,
+                            height: 76,
+                            child: BridgeCardFace(card: play.card),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class BridgeSeatPanel extends StatelessWidget {
@@ -193,7 +230,9 @@ class BridgeSeatPanel extends StatelessWidget {
       label: copy.seatSummary(seat.letter,
           active: active, viewer: seat == view.viewer,
           dummy: hasDummyCards, remaining: view.remainingCards[seat] ?? 0),
-      child: Container(
+      child: AnimatedContainer(
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero : const Duration(milliseconds: 180),
       key: Key('seat_${seat.letter}'),
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.symmetric(vertical: 4),

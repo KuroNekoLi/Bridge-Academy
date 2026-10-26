@@ -10,6 +10,12 @@
 
 ## Flutter 玩家可操作功能
 
+## M2-F56｜公開出牌動態回饋與減少動畫
+
+新接受的公開出牌以 180ms 淡入／12px 位移呈現，活動座位邊框平順切換。「我的」提供中英減少動態效果開關，僅適用本次使用；裝置減少動畫偏好永遠優先。還原 snapshot 靜態顯示、換墩即移除舊牌、設定切換中止現有效果，動畫不提交動作也不鎖住下一回合。Local／Gateway 共用 `BridgeCurrentTrick`；只接收 `PlayerView`，不新增套件或存檔格式。
+
+程式：[公開牌動畫](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_public_card_entrance.dart)、[共用牌桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart)、[設定](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart)；[測試](../../apps/bridge_academy_flutter/test/m2_table_motion_test.dart)、[教學](ENGINEERING_NOTES.md#m2-f56公開出牌動態回饋與減少動畫)。本機 `flutter analyze --no-pub`、**206/206 Flutter tests**、Web release PASS；真 Chrome 與本次 SHA CI 尚待 push 後確認，不能沿用舊 CI。狀態 **ENGINEERING_PASS（本機範圍）／LESSON_DELIVERED**；未聲稱 PRACTICED／MASTERED。全桌單屏、選牌／拖曳與收墩動畫仍待實作，A3.5／裝置 QA、Production NO-GO 不變。
+
 | 領域 | 已實現 |
 | --- | --- |
 | 打牌 | 四座位牌桌、叫牌盒、點牌操作、本機 Demo 或明確選取的 Gateway Session、叫牌時顯示自己的牌 |

@@ -69,6 +69,11 @@ class AppCopy {
       ].join(', ');
 
   static const Map<String, List<String>> _strings = {
+    'reduceMotion': ['減少動態效果', 'Reduce motion'],
+    'reduceMotionDescription': [
+      '適用本次使用；也會遵循裝置的減少動畫偏好。',
+      'Applies for this visit. Device reduced-motion preferences are also respected.',
+    ],
     'navPlay': ['打牌', 'Play'],
     'navLearn': ['學院', 'Learn'],
     'navReview': ['複盤', 'Review'],

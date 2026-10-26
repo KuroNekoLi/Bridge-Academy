@@ -34,6 +34,17 @@ void main() {
       final prefix = view.turn == view.viewer ? 'hand_card_' : 'dummy_card_';
       await tapControl(tester, '$prefix${view.legalCards.first.code}');
       selections++;
+      if (selections == 2) {
+        final version = session.view!.version;
+        final hand = session.view!.ownCards;
+        await tapControl(tester, 'nav_me');
+        await tapControl(tester, 'reduce_motion');
+        expect(tester.widget<SwitchListTile>(
+          find.byKey(const Key('reduce_motion'))).value, isTrue);
+        await tapControl(tester, 'nav_play');
+        expect(session.view!.version, version);
+        expect(session.view!.ownCards, hand);
+      }
     }
     final terminal = session.view!;
     expect(session.finished, isTrue);

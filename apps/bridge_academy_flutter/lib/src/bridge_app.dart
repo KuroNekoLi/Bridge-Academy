@@ -53,6 +53,7 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
   bool _ownsSession = false;
   bool _gatewayConfigError = false;
   bool _isEnglish = false;
+  bool _reduceMotion = false;
   int _destination = 0;
 
   @override
@@ -125,6 +126,13 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
   Widget build(BuildContext context) {
     final copy = AppCopy(_isEnglish);
     return MaterialApp(
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          disableAnimations:
+              MediaQuery.disableAnimationsOf(context) || _reduceMotion,
+        ),
+        child: child!,
+      ),
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (_) => copy.t('title'),
       locale: _isEnglish ? const Locale('en') : const Locale('zh', 'TW'),
@@ -247,6 +255,14 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
                     leading: const Icon(Icons.language),
                     title: Text(copy.t('language')),
                     onTap: () => setState(() => _isEnglish = !_isEnglish),
+                  ),
+                  SwitchListTile(
+                    key: const Key('reduce_motion'),
+                    secondary: const Icon(Icons.animation),
+                    title: Text(copy.t('reduceMotion')),
+                    subtitle: Text(copy.t('reduceMotionDescription')),
+                    value: _reduceMotion,
+                    onChanged: (value) => setState(() => _reduceMotion = value),
                   ),
                   ListTile(
                     key: const Key('m4_open_custom_conventions'),
