@@ -57,7 +57,8 @@ void main() {
         .map((p) => p.card).toSet().length, 52);
     expect(find.byKey(const Key('focus_result')), findsOneWidget);
     expect(tester.takeException(), isNull);
-    await tester.pageBack();
+    // pageBack() searches the English "Back" tooltip; this app is zh-TW.
+    Navigator.of(tester.element(find.byKey(const Key('focus_result')))).pop();
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('final_result')), findsOneWidget);
   });
