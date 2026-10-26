@@ -51,6 +51,40 @@ Future<void> showTable(
 );
 
 void main() {
+  for (final width in [320.0, 375.0, 768.0, 1280.0]) {
+    testWidgets('M2-F62 dummy is above table and own hand below at $width', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 812);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await showTable(tester, initial());
+      expect(find.byKey(const Key('focus_N_card_strip')), findsNothing);
+      await showTable(tester, advance(initial()));
+      final surface = find.byKey(const Key('focus_table_surface'));
+      final dummy = find.byKey(const Key('focus_N_card_strip'));
+      final arena = find.byKey(const Key('focus_drop_zone'));
+      final own = find.byKey(const Key('focus_S_card_strip'));
+      expect(find.ancestor(of: dummy, matching: surface), findsOneWidget);
+      expect(find.ancestor(of: own, matching: surface), findsOneWidget);
+      expect(
+        tester.getBottomLeft(dummy).dy,
+        lessThanOrEqualTo(tester.getTopLeft(arena).dy),
+      );
+      expect(
+        tester.getTopLeft(own).dy,
+        greaterThanOrEqualTo(tester.getBottomLeft(arena).dy),
+      );
+      if (width >= 768) {
+        final tableCenter = tester.getCenter(surface).dx;
+        expect((tester.getCenter(dummy).dx - tableCenter).abs(), lessThan(1));
+        expect((tester.getCenter(own).dx - tableCenter).abs(), lessThan(1));
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('M2-F61 public plays fly from their compass seat only once', (
     tester,
   ) async {
@@ -73,14 +107,23 @@ void main() {
         matching: find.byType(BridgePublicCardEntrance),
       );
       expect(entrances, findsNWidgets(state.currentTrick.length));
-      for (var playIndex = 0; playIndex < state.currentTrick.length; playIndex++) {
+      for (
+        var playIndex = 0;
+        playIndex < state.currentTrick.length;
+        playIndex++
+      ) {
         final play = state.currentTrick[playIndex];
         final entrance = entrances.at(playIndex);
-        expect(tester.widget<BridgePublicCardEntrance>(entrance).from,
-            expected[play.handOwner]);
+        expect(
+          tester.widget<BridgePublicCardEntrance>(entrance).from,
+          expected[play.handOwner],
+        );
       }
       final newest = entrances.last;
-      final opacity = find.descendant(of: newest, matching: find.byType(Opacity));
+      final opacity = find.descendant(
+        of: newest,
+        matching: find.byType(Opacity),
+      );
       expect(tester.widget<Opacity>(opacity).opacity, 0);
       await showTable(tester, state);
       expect(tester.widget<Opacity>(opacity).opacity, 0);
@@ -140,7 +183,11 @@ void main() {
       while (!progressing.isFinished) {
         progressing = advance(progressing);
         await showTable(tester, progressing);
-        expect(tester.takeException(), isNull, reason: 'version ${progressing.version}');
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: 'version ${progressing.version}',
+        );
       }
     });
   }

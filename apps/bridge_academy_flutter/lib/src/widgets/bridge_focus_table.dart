@@ -120,6 +120,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
       Text(label, style: Theme.of(context).textTheme.labelLarge),
       BridgeCardStrip(
         useFan: true,
+        centerWhenFits: true,
         id: 'focus_${owner.letter}',
         copy: widget.copy,
         children: [
@@ -289,6 +290,33 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     ),
   );
 
+  Widget _tableSurface({double? arenaHeight}) {
+    final view = widget.view;
+    return ColoredBox(
+      key: const Key('focus_table_surface'),
+      color: const Color(0xFFD8E9DE),
+      child: Column(
+        mainAxisSize: arenaHeight == null ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (view.dummyExposed &&
+              view.dummyCards != null &&
+              view.contract!.dummy != view.viewer)
+            _hand(
+              view.contract!.dummy,
+              view.dummyCards!,
+              widget.copy.t('dummy'),
+            ),
+          if (arenaHeight != null)
+            SizedBox(height: arenaHeight, child: _arena())
+          else
+            Expanded(child: _arena()),
+          _hand(view.viewer, view.ownCards, widget.copy.t('cards')),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final view = widget.view;
@@ -305,9 +333,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
         child: LayoutBuilder(
           builder: (context, constraints) {
             final large = MediaQuery.textScalerOf(context).scale(14) > 19;
-            final minimum = view.phase == Phase.auction
-                ? 730.0
-                : 620.0;
+            final minimum = view.phase == Phase.auction ? 730.0 : 620.0;
             final fallback = large || constraints.maxHeight < minimum;
             return SingleChildScrollView(
               key: const Key('focus_viewport'),
@@ -364,24 +390,15 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                             const LinearProgressIndicator(),
                           const SizedBox(height: 6),
                           if (fallback)
-                            SizedBox(height: large ? 500 : 260, child: _arena())
+                            _tableSurface(arenaHeight: large ? 500 : 260)
                           else
-                            Expanded(child: _arena()),
+                            Expanded(child: _tableSurface()),
                           if (view.completedTricks.isNotEmpty)
                             Text(
                               copy.replayWinner(
                                 view.completedTricks.last.winner.letter,
                               ),
                             ),
-                          if (view.dummyExposed &&
-                              view.dummyCards != null &&
-                              view.contract!.dummy != view.viewer)
-                            _hand(
-                              view.contract!.dummy,
-                              view.dummyCards!,
-                              copy.t('dummy'),
-                            ),
-                          _hand(view.viewer, view.ownCards, copy.t('cards')),
                           if (view.phase == Phase.play)
                             Text(
                               copy.t('focusDragHint'),

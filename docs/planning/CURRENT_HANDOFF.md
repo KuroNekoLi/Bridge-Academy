@@ -1,5 +1,19 @@
 # 目前開發交接（屬於產品規劃）
 
+## M2-F62 明手牌列位置修正（2026-10-27 06:50 Asia/Taipei）
+
+- **目標／來源：** 使用者明確指出上個版本把明手與己方手牌都放在桌面下方，要求像提供的 BBO 圖，明手在上、自己在下；允許研究開源牌桌。依已釘選 Nickel Bridge `92a81b5...` 座位佈局作參考，Flutter 仍以 `PlayerView` 授權狀態與現有 FlatCardFan 顯示，未複製 TSX／素材或換規則引擎。
+- **目前 Git：** `C:/Users/user05/StudioProjects/Bridge-Academy`、`master`、HEAD `6ad995ea067d2dfa10ffd1951f75a9478ecc4269`。本修正**未提交／未 push**：`apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart`、`test/m2_focus_table_test.dart`、`docs/implemented/FEATURES.md`、`ENGINEERING_NOTES.md`、`docs/planning/ROADMAP.md`、本交接。保留既有工作及 7 份 docs。
+- **已完成：** 同一淡綠桌面內，揭露後明手牌列在上緣、中央 DragTarget 與四座位在中間、自己的手牌在下緣；寬畫面兩排居中，窄畫面水平捲動。明手未揭露前不建立該牌列。Chrome 本機成品已目視確認桌面／375px；截圖 `C:/Users/user05/.codex/visualizations/2026/10/26/01a175af-1471-7de1-9db7-6b9fa6279e83/focus-table-corrected-{desktop,mobile}.png` 不入 Git。
+- **EXECUTED／PASS：** Flutter 3.47.8：`flutter analyze --no-pub` 0 issue；`flutter test --no-pub --reporter expanded` **224/224**；`flutter build web --no-pub --release` PASS（既有 CupertinoIcons 字型警告）；最後補上明手揭露前斷言後再跑 `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **14/14**。既有 320／375／768／1280px 完整 52 張／13 墩及拖曳／收墩回歸在此檔通過。尚未執行 owner-held Android/iOS／A3.5 QA。
+- **CI 區分：** 舊源 `48c3ee2` [Flutter／Web／Chrome #40335776691](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776691)、[真 BEN Chrome #40335776679](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776679)、[learning #40335776848](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776848) 後續已查到 **success**；這些不驗證本次 F62。F62 新 SHA CI URL／狀態 **NOT RUN**，提交推送後再查。
+- **接續／風險／回退：** `git diff --check` 與 feature lesson gate → 核對 quota → 功能、四寬度位置測試及兩份 feature 文件同批 direct commit/push master → 讀新 SHA Actions；不得 dispatch held device QA。目前桌面中央公開牌偏小、質感與 BBO 還有差距，後續在其他 UI slice 改善；不把工程截圖稱真人 UX 通過。無 Core/schema/API 遷移，回退 `git revert <M2-F62 commit>`。
+
+## Heartbeat 恢復（2026-10-27 01:28 Asia/Taipei／2026-10-26 17:28 UTC）
+
+- `get_usage_limits.rateLimitsByLimitId.codex`：primary used 2%／remaining **98%**；secondary used 32%／remaining **68%**，兩個視窗均已從 ≤30% 恢復。最後監看狀態 `RECOVERED_ABOVE_30`、最後通知值 98%／68%；這是帳號共用額度，不代表此專案使用量，也不保證電腦或 App 關閉時會繼續監看。
+- `master` HEAD `6ad995ea067d2dfa10ffd1951f75a9478ecc4269`。使用者指出明手和己方手牌都排在桌面下方；目前**未提交** `apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart`、`test/m2_focus_table_test.dart`：把明手改到桌面上緣、己方手牌放下緣，同一桌面底色，並新增 320／768px 位置測試。`flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **12/12 PASS**；完整分析、全測試、Web build、此修正的新 SHA CI **NOT RUN**。此 heartbeat 沒有改功能檔或重跑昂貴測試；下一個一般開發回合應按功能交付規定更新 FEATURES／ENGINEERING_NOTES、驗證、再提交。勿把上段歷史的「工作樹乾淨」當成現在狀態。
+
 ## 目前檢查點：M2-F60／F61（2026-10-26 21:59 Asia/Taipei／13:59 UTC）
 
 - **推送後新門檻／CI（2026-10-26 22:01 Asia/Taipei／14:01 UTC）：** `f22edb9` 功能提交及 `48c3ee246e34d33bdb645be1b2927913344e439e` 額度交接提交已 direct push `origin/master`，工作樹在本證據更新前乾淨。`get_usage_limits.rateLimitsByLimitId.codex.primary` remaining **7%**（used 93%）、secondary remaining **70%**（used 30%），最後狀態 `TRIGGERED_PRIMARY_LE_10`、最後通知門檻 10%；先更新本交接，停止新功能。新 SHA [Feature Learning Gate #40335776848](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776848) **success**；[Flutter／Web／Chrome #40335776691](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776691) **in_progress**；[真 BEN Chrome #40335776679](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776679) **in_progress**。目前不能宣稱這兩個 CI 已通過。`gh` CLI 本機不存在，已改用 GitHub connector 讀當次 run。此行證據更新尚未提交／推送；如需保存，以小型 docs-only commit/push，不重跑昂貴測試。

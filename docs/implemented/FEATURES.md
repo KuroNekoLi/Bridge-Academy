@@ -24,6 +24,12 @@
 
 程式：[公開墩](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart)、[入場效果](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_public_card_entrance.dart)、[專注桌收墩](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；[專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證四方位、只對新牌演出、四牌往贏家移動、取消／減少動畫及 320／375／768／1280px 完整 52 張。只讀 PlayerView 的公開牌與完成墩，狀態 **ENGINEERING_PASS（本機 scoped）／LESSON_DELIVERED**；Chrome CI、真人及裝置驗收依實際新 run 判定。
 
+## M2-F62｜明手在北側、自己在南側的同一牌桌
+
+專注牌桌把揭露後的明手牌列放在桌面**上緣**，把自己的手牌放在**下緣**，中央保留四座位與本墩公開牌；兩排都在同一桌面底色內。可容納時兩排居中，窄屏仍可水平捲動，不會把未揭露的明手或防家暗牌放進畫面。這修正使用者指出的舊版錯位：明手與自己原本都擠在桌面下方。參考 BBO 截圖與已釘選 Nickel Bridge 的座位佈局；Nickel 是 React 實作，沒有直接複製其 TSX／CSS 或取代 Flutter／Bridge Core。
+
+程式：[專注牌桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；[位置與既有牌局測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證 320／375／768／1280px 的上下關係、明手揭露前不渲染及寬畫面置中。本機 analyzer 0 issue、全 Flutter 224/224、Web release PASS；真 Chrome 375px 與桌面畫面已核對，這是工程視覺檢查而非 A3.5。狀態 **ENGINEERING_PASS（本機範圍）／LESSON_DELIVERED**；新 SHA CI、PRACTICED／MASTERED 與 A3.5／裝置驗收仍待確認。
+
 ## M2-F57｜專注單屏牌桌
 
 Local／Gateway 活動牌局可開啟專注牌桌，保留原 Session，返回工作區不重開局。四座位、牌號／莊家／身價／定約／墩數、公開叫牌、可見牌與叫牌盒整合在同頁。320／375／768／1280 × 812px 一般字體打牌測試不需垂直捲動；矮視窗與大字體採內容自然延伸的捲動模式。錯誤與重試仍可見，存檔失敗／恢復確認／Gateway pending 會鎖操作。程式：[共用專注牌桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)、[Local](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart)、[Gateway](../../apps/bridge_academy_flutter/lib/src/gateway_table.dart)。

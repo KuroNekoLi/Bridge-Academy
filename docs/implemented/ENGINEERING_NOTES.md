@@ -58,6 +58,16 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 
 **5–15 分鐘練習：** 用固定 seed 對局走四張公開牌，指出 `handOwner` 與 `winner` 各決定哪個畫面座標；在第三張入場時重新建立相同 view，預測動畫會否重播，再開減少動畫檢查立即顯示。回退 `git revert <本功能提交>`，無資料遷移。
 
+## M2-F62｜明手與己方手牌回到牌桌兩端
+
+**使用者情境／驗收：** 使用者的 BBO 參考圖是北側明手、南側己方手牌，先前 focus table 把 `_hand(dummy)` 與 `_hand(viewer)` 都接在 `_arena()` 後，導致兩排都在桌面下方。現在 [BridgeFocusTable._tableSurface](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart) 在同一 ColoredBox 內依序放已授權明手、中央 DragTarget、自己的手牌；足夠寬時 `BridgeCardStrip.centerWhenFits` 使牌列置中。Flutter 用既有授權卡牌與 Session，不複製 Nickel Bridge 的 React 元件；其 pinned `TrickArea.tsx` 與 BBO 參考只指導座位關係，沒有匯入第三方素材。
+
+**邊界／替代：** `view.dummyExposed && view.dummyCards != null` 仍是揭露條件，未揭露時不建立北側牌列；沒有把四家暗牌傳給 Widget。沿用已有 FlatCardFan、合法點牌、長按拖曳、取消與回合版本檢查。原本只把明手移到 arena 前卻保持桌面底色分離的方案不足以表達同一牌桌，因此用容器包三區。正常高度的中區 Expanded，矮視窗／大字體使用既有自然捲動，沒有修改 Core、schema 或 API。
+
+**測試證據：** `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` 14/14 PASS（補上揭露前不渲染斷言後已重跑）：320／375／768／1280px 明手底緣在中區頂緣上方、己方頂緣在中區底緣下方、寬版居中；既有四寬度完整 52 張／13 墩、2×字體、拖曳與收墩回歸同批通過。`flutter analyze --no-pub` 0 issue、完整 `flutter test --no-pub --reporter expanded` 224/224 PASS、`flutter build web --no-pub --release` PASS（既有 CupertinoIcons 字型警告）；真 Chrome 檢查桌面與 375px 成品，截圖在 Codex visualization 目錄、不入 Git。這是工程視覺核對，不冒稱 A3.5 真人驗收；新 SHA CI 仍需提交後讀。狀態 **ENGINEERING_PASS（本機）／LESSON_DELIVERED**；PRACTICED／MASTERED 未驗收，A3.5／Android／iOS HOLD，Production NO-GO。
+
+**5–15 分鐘練習：** 在固定 1NT 南家局比較第一張公開牌之前與之後的 PlayerView，指出何時允許建立北側明手牌列；把視窗改為 375px 與 1280px，檢查上下位置及水平可達性。回退使用 `git revert <M2-F62 commit>`；無資料遷移。
+
 ## M2-F57｜專注牌桌與可及性退路
 
 **情境：** 打牌時不要一直捲過練習入口與設定。Local／Gateway route 使用 AnimatedBuilder 監聽原 Session，再投影 PlayerView 給 [BridgeFocusTable](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；Widget 沒有 Deal／Bearer。一般高度用 Expanded arena＋兩組水平手牌，返回頁面仍是同一局。矮視窗或大字體使用無固定總高度的 Column，讓內容自然捲動，而不是縮字／縮觸控目標。相當於 Compose 將遊戲 ViewModel 留在上一層，新增同一狀態的不同畫面。
