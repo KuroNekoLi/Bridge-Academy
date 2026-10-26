@@ -6,7 +6,7 @@ description: Audits external bridge engines, ML model weights, native solvers an
 # Bridge Open Source Auditor
 
 ## Entry
-Read docs/OPEN_SOURCE_AUDIT.md, docs/ARCHITECTURE.md, docs/DECISIONS.md. State proposed mode: reference-only, API-hosted service, source reuse, statically/dynamically linked binary, mobile bundling or modified fork.
+Read docs/research/OPERATIONS_AND_LICENSES.md, docs/implemented/ARCHITECTURE.md, docs/planning/DECISIONS.md. State proposed mode: reference-only, API-hosted service, source reuse, statically/dynamically linked binary, mobile bundling or modified fork.
 
 ## Audit workflow
 1. Identify exact repository canonical URL, immutable SHA/tag, published artifacts and model checkpoint provenance. No floating "latest" for sign-off.
@@ -16,7 +16,7 @@ Read docs/OPEN_SOURCE_AUDIT.md, docs/ARCHITECTURE.md, docs/DECISIONS.md. State p
 5. Evaluate obligations in specific integration scenario: modified server code, network usage, distribution, fork, linked library, SDK. For BEN GPL-3.0, do not misstate it as AGPL or claim REST automatically removes all derivative-work exposure.
 6. Record performance/deployment implications: TensorFlow/solver memory, startup, PIMC sampling and hosting cost; use measurements only with provenance.
 7. Recommend ACCEPT / ACCEPT WITH CONDITIONS / BLOCK / INVESTIGATE with risk owner and rollback.
-8. Update docs/OPEN_SOURCE_AUDIT.md with source and date; request professional license review when consequences are material.
+8. Update docs/research/OPERATIONS_AND_LICENSES.md with source and date; request professional license review when consequences are material.
 
 ## Mandatory dependency record
 name, URL, pinned_sha, release_date, purpose, integration_mode, license_and_url, notice_files, model_weight_license, transitive_licenses, known_cves, build_environment, supported_platforms, test_evidence, risks, decision_and_owner, next_review_date.
