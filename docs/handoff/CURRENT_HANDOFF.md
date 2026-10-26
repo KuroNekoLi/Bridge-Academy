@@ -1,6 +1,6 @@
 # Bridge Academy 目前交接
 
-**最後安全收尾查詢：5 小時 remaining 11%、每週 remaining 86%**（首次觸發仍是下方 24%／88%）。已停止新功能；功能／測試／三篇教學均已 push。最新功能 SHA `022da3f`、前批 `5b72c13`；handoff/evidence 收尾已提交 `b186028`，其後僅補這段最新用量。本次 source 工作樹已乾淨，後續先查 git status/log 與下列待完成 CI。不要繼續消耗額度跑新功能；待恢復或明確變更規範後再接續。
+**最後 heartbeat 查詢：5 小時 remaining 5%、每週 remaining 85%**（2026-10-26 09:52–09:56 Asia/Taipei；首次觸發仍是下方 24%／88%）。已跨過新的 5% 門檻，先更新交接再通知；不開始新功能、不重跑昂貴測試。功能／測試／三篇教學均已 push。查核分支 `master`、HEAD `7679ff6422b7c0bf90e8f59a7a8ecdbc8c8bf82d`，`git status --short` 空白；本次僅更新交接文件。最新功能 SHA `022da3f`、前批 `5b72c13`。後續先查 git status/log 與下列待完成 CI；待額度恢復或明確變更規範後再接續。此為帳號共用視窗，並非專案個別消耗。
 
 更新時間：**2026-10-26 09:49:18 Asia/Taipei（01:49:18 UTC）**。**已觸發 30% 先交接規範**：帳號工具本次回報 5 小時視窗 used 76%／remaining **24%**，每週 used 12%／remaining **88%**。已先更新本文件，之後只做必要驗證／保存／提交收尾，不開始新功能。這是帳號共用用量，不代表本專案獨占消耗；之後必須重新讀取。
 
@@ -14,7 +14,7 @@
 6. 已完成必要 git hygiene／lesson gate（14 files PASS），F55 source＋test＋lesson 與前批 evidence 已同一 commit `022da3f` 直接 push master。新 CI 下節列出；因低於門檻保留 PENDING，不再跑重複昂貴測試或新增功能。
 7. 配額恢復並重新檢查後，再從 U3 尚未完成的整張單屏牌桌／可中止動畫繼續；A4 production、server history、安全 bearer 續局、公平比賽與多人仍未完成。Android/iOS device hold 不變。
 
-**最後觸發狀態：** `TRIGGERED_PRIMARY_LE_30`；已在先保存本文件後向使用者回報 24%／88%。除有新行動／恢復／重要交接變更，監看不要重複提醒同一狀態。不要把本段的 24% 長期當即時值。
+**最後觸發狀態：** `TRIGGERED_PRIMARY_LE_5`；本次通知值 5%／85%，先前通知值 11%／86%，首次觸發 24%／88%。本次查詢 primary used 95%、secondary used 15%，依 clamp(100-usedPercent,0,100) 計算。除下降至新的門檻、恢復或交接需使用者處理，監看不要重複提醒同一狀態。欄位未知時記 UNKNOWN，不把歷史比例當即時值。監看不保證電腦／app 關閉時仍執行。
 
 ## 使用者目標與最新要求
 
@@ -65,8 +65,8 @@
 - 已執行 analyzer PASS、scoped 10/10、完整 **200/200**、Web release PASS（同 font warning）。
 - 教學 `M2_F55_RESPONSIVE_CARD_STRIP.md`／INDEX 已寫，新的 source＋test＋lesson 已同批 `022da3f` commit/push；不能用 `5b72c13` 的 CI 證明 F55。
 - Chrome 375px 提示／右捲到最後 C6 已觀察，viewport 已 reset、popup 已清除。這是 U3 第一小範圍，整張單屏牌桌／動畫未完成。
-- 新 SHA **`022da3fec4b67667a29ce37a98b4c64512d04c4a`**；[Flutter 200/Web/Chrome CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171652) **in_progress**，尚不可宣稱 PASS。
-- 同 SHA [Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171449) 已 success；[真 BEN Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171464)、[Precision](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171518)、[M4](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171638)、[M5](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171575) 於 09:50 查核尚在執行。只在實際完成後改 PASS。
+- 新 SHA **`022da3fec4b67667a29ce37a98b4c64512d04c4a`**；[Flutter 200/Web/Chrome CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171652) **success**（heartbeat 已查核 workflow conclusion；本次未另讀 job logs、未重跑測試）。
+- 同 SHA [Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171449) 已 success；[真 BEN Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171464)、[Precision](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171518)、[M4](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171638)、[M5](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171575) 於 09:50 查核尚在執行；09:55 heartbeat 已確認 Precision、M4、M5 全部 success，真 BEN Chrome 仍 in_progress。不得提前稱真 BEN 完成。
 
 ## 尚待完成的安全收尾
 
