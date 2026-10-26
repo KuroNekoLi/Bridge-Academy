@@ -1,5 +1,16 @@
 # 目前開發交接（屬於產品規劃）
 
+## 暫停交接：M2-F62 已推送（2026-10-27 06:54 Asia/Taipei／2026-10-26 22:54 UTC）
+
+- **使用者目標與暫停指示：** 依 BBO 截圖把揭露後明手手牌放在同一桌面上緣、使用者手牌放在下緣，保留扇形排列、合法拖放、引牌／跟牌／收墩動畫，優先研究可重用的 GitHub／Flutter 元件。使用者現已明確要求暫停並更新交接；不開始新功能。
+- **專案／Git：** `C:/Users/user05/StudioProjects/Bridge-Academy`；分支 `master`；功能 SHA `3f7215228669845c50c5d2a0d20e26b379cbc3d1`（M2-F62，已 direct push `origin/master`）；更新交接前 `git status --short` 無輸出。本交接為目前唯一未提交檔案，保留他人工作；回退功能用 `git revert 3f7215228669845c50c5d2a0d20e26b379cbc3d1`，不可 force push。
+- **共用帳號用量：** 本次 `get_usage_limits.rateLimitsByLimitId.codex` 的 primary 剩 **36%**、secondary 剩 **57%**（2026-10-27 06:54 Asia/Taipei），均仍高於 30%；依使用者指示提早停下。此為帳號共用額度，不歸因本專案，也不保證 App 或電腦關閉時會監看；最後觸發狀態維持 `RECOVERED_ABOVE_30`，沒有新的 ≤30% 告警。
+- **已完成：** Flutter `bridge_focus_table.dart` 的同一桌面內，上方是授權揭露後明手牌列，中間是四座位及公開墩牌，下方是自己的牌列；寬版置中，窄版水平捲動，未揭露前不建立明手牌列。現有 `playing_cards`／`FlatCardFan`、Bridge Core／`PlayerView` 邊界及動作流程保留。研究顯示 Nickel Bridge 為 React／TSX 可參考座位與動效；`card_game` 隔離試驗有拖放結束例外與 reduced-motion 缺口，故未直接換入正式牌桌，來源及取捨記在 `docs/research/RESEARCH_REPORTS.md`。
+- **精確本機驗證：** `flutter analyze --no-pub` **PASS（0 issue）**；`flutter test --no-pub --reporter expanded` **PASS 224/224**（最後再加一項測試斷言之前）；加斷言後 `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **PASS 14/14**；`flutter build web --no-pub --release` **PASS**（既有 CupertinoIcons 字型警告）；`scripts/check_feature_lessons.py` **PASS**，該檢查器自測 **7/7 PASS**，`git diff --check` **PASS**。桌面及 375×812 Chrome 工程目視檢查 **已執行**，證據在 Codex visualization 目錄 `focus-table-corrected-{desktop,mobile}.png`，不是 owner-held A3.5 真人驗收。完整 224 測試在最後測試斷言後 **未重跑**。Android／iOS 裝置、模擬器與 A3.5 **NOT RUN（owner QA HOLD）**。
+- **此 SHA 的 CI：** [Feature Learning Gate #40415495839](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495839) **success**；[Flutter M2 Single Player #40415495846](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495846) **success**；[BEN Flutter Chrome Real E2E #40415495696](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495696) **in_progress**，不得先稱通過。此交接的證據更新本身尚未提交／推送；更新後 `git status --short` 應只見本檔。
+- **未完成／下一步：** 使用者恢復時先讀本檔、`AGENTS.md` 與四份 canonical docs，查用量與 `git status`，再查上述 BEN CI 的最終結論；若失敗，依 job 診斷並作有界修復。接著做 BBO 風格的視覺細節迭代（中央牌較小、留白較多）及動畫節奏驗證，仍須遵守 Reuse First、PlayerView 隔離、雙語與 owner QA HOLD。不得把目前 UI 稱 BBO 等級完成。交接文件的證據更新可做單獨 docs-only commit/push，不重跑昂貴測試；之後每個功能 slice 同時更新 FEATURES／ENGINEERING_NOTES。
+- **接續命令／風險：** `git status --short`；`git rev-parse HEAD`；使用 app `get_usage_limits`；查 GitHub Actions 上述 run；`cd apps/bridge_academy_flutter` 後 `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded`（僅在新改動需要時）。無 schema／API／Core 遷移；本次 UI 回退用上述 `git revert`。正式部署與 owner-held 裝置 QA 仍未放行。
+
 ## M2-F62 明手牌列位置修正（2026-10-27 06:50 Asia/Taipei）
 
 - **目標／來源：** 使用者明確指出上個版本把明手與己方手牌都放在桌面下方，要求像提供的 BBO 圖，明手在上、自己在下；允許研究開源牌桌。依已釘選 Nickel Bridge `92a81b5...` 座位佈局作參考，Flutter 仍以 `PlayerView` 授權狀態與現有 FlatCardFan 顯示，未複製 TSX／素材或換規則引擎。
