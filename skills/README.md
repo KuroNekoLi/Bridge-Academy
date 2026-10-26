@@ -2,7 +2,7 @@
 
 These are repository-local Agent Skills in the open SKILL.md layout. Open **AGENTS.md** first; choose only the skill for the requested domain. Every skill has YAML frontmatter (name = directory, description = trigger), workflow, safety boundary and evidence required. Skills are task instructions, not a running background multi-agent system or an automatic permission grant.
 
-**Product baseline:** Start with [PRD v1](../docs/product/BRIDGE_ACADEMY_PRD_V1.md), [Delivery Roadmap](../docs/product/PRODUCT_DELIVERY_ROADMAP.md) and [Competitor Benchmark](../docs/product/COMPETITOR_BENCHMARK.md) when choosing the next user-visible slice. Do not derive product completion from the engineering milestones alone.
+**Product baseline:** Start with [PRD v1](../docs/planning/PRODUCT_REQUIREMENTS.md), [Delivery Roadmap](../docs/planning/ROADMAP.md) and [Competitor Benchmark](../docs/research/UX_AND_PLATFORM.md) when choosing the next user-visible slice. Do not derive product completion from the engineering milestones alone.
 
 | Task | Skill |
 | --- | --- |
@@ -20,6 +20,6 @@ Reference formats and examples:
 - https://github.com/anthropics/skills/tree/main/template
 - https://github.com/openai/codex/blob/main/codex-rs/skills/src/assets/samples/skill-creator/SKILL.md
 
-**Required for feature tasks:** coordinate the domain skill with bridge-learning-mentor, add one lesson per feature under docs/learning/features/, update docs/learning/INDEX.md, then include one brief interactive teaching checkpoint in the completion message. See docs/learning/README.md. This does not mean each trivial commit needs a lesson.
+**Required for feature tasks:** coordinate the domain skill with bridge-learning-mentor, append one section per feature to docs/implemented/ENGINEERING_NOTES.md, update docs/implemented/FEATURES.md, then include one brief interactive teaching checkpoint in the completion message. See docs/implemented/ENGINEERING_NOTES.md. This does not mean each trivial commit needs a lesson.
 
 Original instructions written for this project. Do not confuse the public examples' licensing with our own repository or BEN's GPL-3.0. No placeholder scripts are included; add executable scripts only when required and tested.
