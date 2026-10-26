@@ -1,14 +1,14 @@
 # 目前開發交接（屬於產品規劃）
 
-> 2026-10-26 18:29（台北／09:29 UTC）。本次宿主可用 `get_usage_limits`，實測帳號共用 primary 剩 **79%**、secondary 剩 **97%**（used 21%／3%，採 `rateLimitsByLimitId`）；未觸發 30% 交接門檻。歷史宿主的 UNKNOWN 不作即時值，不宣稱電腦關閉時持續監看。
+> 2026-10-26 18:34（台北／09:34 UTC）。本次宿主可用 `get_usage_limits`，實測帳號共用 primary 剩 **70%**、secondary 剩 **95%**（used 30%／5%，採 `rateLimitsByLimitId`）；未觸發 30% 交接門檻。歷史宿主的 UNKNOWN 不作即時值，不宣稱電腦關閉時持續監看。
 
 ## M2-F56 本次續作檢查點
 
 - 目標：依 ROADMAP U3 實作公開出牌動態回饋與減少動畫偏好。Bridge Core／PlayerView 邊界不變；無新套件、資料 schema 或 AI 呼叫。
-- 分支 `master`，實作基底 `7305bf4dd4abfe3c7b6f0ec6a43a8a268f80834c`；已 fetch origin，開始時沒有他人的未提交變更。當前未提交：Flutter app/copy/shared table、新 public entrance widget、六項 motion tests、browser full-board 設定切換測試，以及 FEATURES／ENGINEERING_NOTES／ROADMAP／本交接。提交後先以 `git status --short`、`git log -2 --oneline` 查最終 SHA。
+- 分支 `master`，實作基底 `7305bf4dd4abfe3c7b6f0ec6a43a8a268f80834c`；已 fetch origin，開始時沒有他人的未提交變更。Flutter app/copy/shared table、新 public entrance widget、六項 motion tests、browser full-board 設定切換測試，以及 FEATURES／ENGINEERING_NOTES／ROADMAP／本交接已同批提交並 push **`030276b1e10d8243a429146ec1a5d7e559592998`**，push 後工作樹乾淨。之後僅補實際 CI 證據文件，最終 SHA 用 `git status --short`、`git log -2 --oneline` 查核。
 - EXECUTED／PASS：Windows Flutter 3.47.8／Dart 3.13.7；`flutter analyze --no-pub` 無問題，scoped 20/20、全 `flutter test --no-pub --reporter expanded` **206/206**、`flutter build web --no-pub --release` PASS（既有 CupertinoIcons font inventory 警告仍在）。Python `scripts/test_check_feature_lessons.py` 7/7、canonical feature lesson gate、`git diff --check` PASS；docs 仍 7 份。
 - FAILED→FIXED：初版 motion test 編譯名稱、座位時序與 semantics handle 問題已修正；公開牌重複語意標籤一併修正。錯誤的 Python module 執行方式 import 失敗，改以 script 路徑後 7/7 PASS。詳見 ENGINEERING_NOTES。
-- CI：基底 merge `7305bf4` 查無綁定 run；歷史 F55 CI 不作本次驗收。下一步 direct commit/push source＋tests＋兩份 feature docs，查新 SHA 的 Flutter／Web／Chrome、Learning Gate；本次 browser full-board integration 本機 **NOT RUN**，由既有允許的 CI 驗證，不冒稱通過。
+- CI：基底 merge `7305bf4` 查無綁定 run；歷史 F55 CI 不作本次驗收。本次 `030276b` [Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087861) **success**；[Flutter／Web／Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087862) **success**（logs 已驗證 206 tests、Web release、browser_table_test 含中途動畫偏好切換／13 墩與 browser_secure_checkpoint_test 均成功）；自動 path triggers 的 [M4](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087891)、[M5](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087872) **success**；[Precision](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300088005)、[真 BEN Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087864) **in_progress**。本次 browser integration 本機 **NOT RUN**，由上述真 Chrome CI 已成功執行；真 BEN／Precision 則仍未完成，不提前稱通過；沒有手動 dispatch 或 held device QA。
 - 限制／風險：設定僅本次使用，裝置 reduce-motion 永遠優先。只動畫當前公開牌；不延後 submit、不保留 outgoing card。單屏牌桌、拖曳、完整收墩仍未完成。A3.5／Android/iOS HOLD，公開部署 NO-GO，沒有排程／dispatch 裝置測試。
 - 接續：`git status --short` → 查當次 Actions → 若 scoped CI 有錯先修復；下一功能是 U3 單屏佈局。回退 `git revert <M2-F56 commit>`，不改歷史／不刪存檔。沒有待 owner 決定的規則或制度變更。
 

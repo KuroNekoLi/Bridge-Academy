@@ -36,7 +36,7 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 
 ## M2-F56｜公開出牌動態回饋與減少動畫
 
-**情境／驗收：** 玩家需要看見新公開牌及輪到的座位，但動畫不能延後合法操作。還原 snapshot 不重播；新牌只進場一次；換墩／離頁可取消；設定與裝置減少動畫偏好都使效果立即結束。狀態：**ENGINEERING_PASS（本機限定）／LESSON_DELIVERED**；PRACTICED、MASTERED 待真實練習。
+**情境／驗收：** 玩家需要看見新公開牌及輪到的座位，但動畫不能延後合法操作。還原 snapshot 不重播；新牌只進場一次；換墩／離頁可取消；設定與裝置減少動畫偏好都使效果立即結束。狀態：**ENGINEERING_PASS（本機與下列 scoped CI）／LESSON_DELIVERED**；PRACTICED、MASTERED 待真實練習。
 
 **程式與資料流：** 已接受 Action → Core／Gateway → `PlayerView` → [BridgeCurrentTrick](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart)。比較新舊 view version，對新增的公開 `completedTricks.length:handOwner:card.code` 建立穩定 key → [BridgePublicCardEntrance](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_public_card_entrance.dart) 自有 `AnimationController` → 180ms 淡入與最多 12px 位移。Widget 不讀 Deal、不呼叫 Session，沒有 completion callback 或延遲 submit。換墩移除 widget，dispose controller，因此不留下上一墩 ghost。公開牌語意從第一幀就存在，不因 opacity=0 而延遲讓螢幕閱讀器知道已接受的出牌。
 
@@ -53,6 +53,8 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 
 **修正過的失敗：** 初版測試誤用 `BridgeEngine`（正確名稱 `BridgeGame`）、誤認兩張牌後輪到 South，及語意 handle teardown 時機；均修正後重跑。語意測試另找出公開座位子標籤重複，現以單一完整 seat/card label 排除子節點重複內容。Python gate 以錯誤 module 工作目錄執行曾 import 失敗，須使用 `python scripts/test_check_feature_lessons.py`。
 
-**NOT RUN／限制：** 本次真 Chrome full-board CI 尚待 push 後確認；新增 [browser_table_test](../../apps/bridge_academy_flutter/integration_test/browser_table_test.dart) 在完整 Demo 牌局第二次選牌後切換減少動畫再繼續到 13 墩。未啟動 Android/iOS／A3.5 QA、真 BEN 本機、部署。此功能未完成全桌單屏／拖曳／收墩飛行；回退以 `git revert <本功能提交>`，無 schema 遷移與新相依。
+**Chrome 已執行／其餘限制：** 新增 [browser_table_test](../../apps/bridge_academy_flutter/integration_test/browser_table_test.dart) 在完整 Demo 牌局第二次選牌後切換減少動畫再繼續到 13 墩，已由下列真 Chrome CI 執行成功。未啟動 Android/iOS／A3.5 QA、真 BEN 本機、部署。此功能未完成全桌單屏／拖曳／收墩飛行；回退以 `git revert <本功能提交>`，無 schema 遷移與新相依。
 
 **5–15 分鐘練習：** 執行上述 scoped tests，讀 `didUpdateWidget` 的新舊 identity 比較，在 90ms 時加入一次相同 view rebuild 並確認 opacity 不回到 0。再開啟系統減少動畫、關閉 app 開關，說明為何仍應立即顯示牌；不要為測試加入第二次 Session submit。CI 通過不代表已掌握此概念。
+
+**提交與 CI：** source＋tests＋本節及 FEATURES 已同一 commit `030276b1e10d8243a429146ec1a5d7e559592998` push master。[Feature Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087861) success；[Flutter／Web／Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087862) **success**。已讀 jobs `121495539167`／`121495538670` 實際 logs：No issues found、206 tests passed、Built build/web；browser_table_test 及 browser_secure_checkpoint_test targets 均 All tests passed。這是 Demo／Chrome 技術驗收，不是真人或正式發行驗收。M4/M5 CI 亦 success；真 BEN／Precision 自動回歸當時仍執行中，不能提前稱成功。
