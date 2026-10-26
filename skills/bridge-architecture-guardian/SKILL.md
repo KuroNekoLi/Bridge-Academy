@@ -6,11 +6,11 @@ description: Reviews Bridge Academy architecture changes for pure Bridge Core bo
 # Bridge Architecture Guardian
 
 ## Inputs
-Read docs/ARCHITECTURE.md, docs/DECISIONS.md, docs/PRODUCT_VISION.md, docs/DEVELOPMENT_STANDARDS.md, AGENTS.md. Obtain proposed change, trust boundaries, anticipated clients and source-of-truth state.
+Read docs/implemented/ARCHITECTURE.md, docs/planning/DECISIONS.md, docs/planning/PRODUCT_REQUIREMENTS.md, docs/implemented/ENGINEERING_NOTES.md, AGENTS.md. Obtain proposed change, trust boundaries, anticipated clients and source-of-truth state.
 
 ## Product delivery gate
 
-For new module/persistence/network/release features, additionally read docs/product/BRIDGE_ACADEMY_PRD_V1.md and docs/product/PRODUCT_DELIVERY_ROADMAP.md. Any multiplayer or async tournament requires server-owned hidden deals; client-owned SinglePlayerCoordinator is only local practice authority. Any online BEN production path must address private hand leakage in GET URLs, authentication, model/service latency, rate limits and license/weight provenance. Product READY requires deployed mobile/client evidence, crash resume and history—not just one pinned benchmark in GitHub CI.
+For new module/persistence/network/release features, additionally read docs/planning/PRODUCT_REQUIREMENTS.md and docs/planning/ROADMAP.md. Any multiplayer or async tournament requires server-owned hidden deals; client-owned SinglePlayerCoordinator is only local practice authority. Any online BEN production path must address private hand leakage in GET URLs, authentication, model/service latency, rate limits and license/weight provenance. Product READY requires deployed mobile/client evidence, crash resume and history—not just one pinned benchmark in GitHub CI.
 
 ## Architecture constraints
 - Domain core pure: no Flutter widgets, BEN, HTTP, SQL or clock/random globals in deterministic reducers.
@@ -29,7 +29,7 @@ For new module/persistence/network/release features, additionally read docs/prod
 5. Check testability: dependency injection, fixed PBN fixtures, event replay, independent scoring oracle.
 6. Check i18n zh-TW/en, accessibility, observability and operational cost where relevant.
 7. Compare at least one alternative, including costs and migration pathway. Recommend smallest reversible design.
-8. If accepted, update docs/ARCHITECTURE.md and docs/DECISIONS.md alongside implementation.
+8. If accepted, update docs/implemented/ARCHITECTURE.md and docs/planning/DECISIONS.md alongside implementation.
 
 ## Typical red flags
 - Flutter directly calls BEN with four complete hands.
