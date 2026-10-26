@@ -18,6 +18,7 @@
 
 ## Absolute rules
 
+- **Reuse First（owner approved 2026-10-26）**：每次新增 UI，先查既有套件／開源橋牌專案、授權及適配性；優先整合現成牌面、手牌排列、拖放與動畫，只有無合適方案才自行實作，並在既有研究文件記理由。優先研究 Nickel Bridge、card_game、playing_cards／FlatCardFan 及官方 card template。Owner 已明確表示取得 Nickel Bridge 完整修改授權；移植時仍記來源、釘選版本、檔案及 notices，不讓外部規則／AI／比賽計分取代 Bridge Core。新 PoC 不載入未授權四家暗牌；裝置 QA hold 不因參考流程自動解除。
 - **Bridge Core is authoritative** for 13 cards per seat, 52 unique cards, auction, Pass Out, Double/Redouble, legal follow-suit, trick winner, contracts and signed NS score. BEN/BBA is an untrusted action proposer; validate before mutating `GameState`.
 - **PlayerView and private data**: only seat-permitted hand, dummy after correct reveal, public calls/events and authorized state. DDS can see all four hands **only for finished-board/offline explicitly scoped analysis**. Do not leak private deal in GET URI logs, third-party telemetry, screenshots or errors. Never forge a fourth Pass to reconcile a BEN 3-Pass outcome.
 - **System pinning**: `GameSystems` NS/EW identity, revision and fingerprint must be immutable per game. Only explicitly allowed BEN 21GF/SAYC profiles are playable by existing runtime; BBA Meckwell Precision is research-only unless all gates pass, 1NT fixed at 13–15 HCP. Custom draft `ENGINE_UNVERIFIED` cannot register itself as supported AI; no fake model capabilities.

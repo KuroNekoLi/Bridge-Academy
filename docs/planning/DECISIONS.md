@@ -22,6 +22,12 @@
 
 ## 用量規則細節
 
+## 2026-10-26：Reuse First UI 與 Nickel Bridge 授權
+
+Owner 明確要求：新增 UI 前優先調查現成套件／開源橋牌專案及授權；牌面用 playing_cards，手牌排列先評估其 FlatCardFan，拖放／移動／翻牌優先評估 card_game，四人桌／明手／叫牌流程優先完整研究 Nickel Bridge，可參考 bridgegui 與 Flutter 官方 Card Template。只有不適配時才自製，並在 RESEARCH_REPORTS 說明。Owner 已表示取得 Nickel Bridge 完整授權、可自由修改；這是 owner 授權聲明，不偽造已閱合約或傳遞其他第三方資產權利。
+
+保留 Bridge Academy 的 Core、BEN、2/1／SAYC／Precision 身分與計分。外部元件只接授權 PlayerView、公開事件與 action intent；不引進第二個規則權威。下一次低額度恢復後，先做重用適配 PoC／替換比較，再擴寫現有手製互動。四家 13 張展示只限獨立公開 fixture；真人／AI 一般對局不把暗牌傳給 UI。Web／桌面工程可測，Android／A3.5 仍 HOLD。現有 F57–F59 實作保留為可回退技術基線，不宣稱已採用 card_game 或移植 Nickel。
+
 `remainingPercent = clamp(100 - usedPercent, 0, 100)`，所有 primary/secondary 限額都要看，優先 `rateLimitsByLimitId`；缺失是 UNKNOWN。持續工作至少每 15 分鐘核對（宿主工具可用時）。任一剩餘 ≤30%：**優先**更新 [CURRENT_HANDOFF](CURRENT_HANDOFF.md)（branch/SHA、工作樹、已完成/待辦、可重現命令、實測狀態、風險與回退），通知使用者，改做安全收尾；不可藉此執行未授權部署、額度購買、重置資料或解除 QA hold。若宿主沒有用量工具，要明確標 UNKNOWN 並備妥交接，不能捏造數字。
 
 ## 決策更新機制

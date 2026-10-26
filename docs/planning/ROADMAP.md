@@ -4,9 +4,13 @@
 
 ## 下一個應做的功能
 
+**最新 owner steering：Reuse First。** 新 UI 先研究 Nickel Bridge（owner 已明示完整修改授權）、card_game／playing_cards／官方 template，以小型 presentation adapter PoC 比較重用；不再先擴寫自製互動。保留 Core／BEN／計分權威，細節見 DECISIONS 與 RESEARCH_REPORTS；額度恢復後先做此適配研究，裝置 QA HOLD 不變。
+
 ### U3｜牌桌操作、動畫與窄屏完整體驗（目前最高 UI 優先）
 
 **前置已完成：** U1 練習工作區、U2 共用可見牌面、U3.1 橫向手牌列。
+
+**U3.3 本次實作：** M2-F57 專注單屏牌桌、M2-F58 合法牌長按拖曳、M2-F59 公開收墩效果已加入 Local／Gateway；scoped 九項 PASS，最終 full suite／Web／Chrome CI 以 CURRENT_HANDOFF 為準。大字體／矮視窗保留捲動退路；仍不解除 A3.5／裝置 QA hold，也不稱整個 U3 產品驗收完成。
 
 **本次小範圍 U3.2／M2-F56：** 公開新牌入場與活動座位過渡、可中止動態及本次使用的減少動畫設定已實作；本機 206 tests／analyze／Web release PASS，[當次 030276b Chrome CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087862) 已成功（含完整 Demo 中途切換動畫偏好及加密 checkpoint）。詳見 [功能與限制](../implemented/FEATURES.md#m2-f56公開出牌動態回饋與減少動畫)。尚未完成下面完整 U3 驗收；下一個範圍仍為單屏牌桌佈局。
 

@@ -122,9 +122,11 @@ class BridgeTableSurface extends StatelessWidget {
 }
 
 class BridgeCurrentTrick extends StatefulWidget {
-  const BridgeCurrentTrick({super.key, required this.view, required this.copy});
+  const BridgeCurrentTrick({super.key, required this.view, required this.copy,
+    this.compact = false});
   final PlayerView view;
   final AppCopy copy;
+  final bool compact;
 
   @override
   State<BridgeCurrentTrick> createState() => _BridgeCurrentTrickState();
@@ -159,8 +161,9 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
     final copy = widget.copy;
     return Padding(
       key: const Key('current_trick'),
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(widget.compact ? 6 : 12),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             copy.t('currentTrick'),
@@ -186,10 +189,11 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(copy.seat(play.handOwner.letter)),
+                          Text(widget.compact ? play.handOwner.letter
+                              : copy.seat(play.handOwner.letter)),
                           SizedBox(
-                            width: 54,
-                            height: 76,
+                            width: widget.compact ? 40 : 54,
+                            height: widget.compact ? 56 : 76,
                             child: BridgeCardFace(card: play.card),
                           ),
                         ],
@@ -344,6 +348,7 @@ class BridgePlayingCardButton extends StatelessWidget {
     required this.legal,
     required this.busy,
     required this.onTap,
+    this.dragEnabled = false,
   });
   final bridge.Card card;
   final String prefix;
@@ -351,6 +356,7 @@ class BridgePlayingCardButton extends StatelessWidget {
   final bool legal;
   final bool busy;
   final VoidCallback onTap;
+  final bool dragEnabled;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -361,6 +367,8 @@ class BridgePlayingCardButton extends StatelessWidget {
     excludeSemantics: true,
     onTap: legal && !busy ? onTap : null,
     child: Tooltip(
+      // A long-press tooltip would win the gesture arena over the parent drag.
+      triggerMode: dragEnabled ? TooltipTriggerMode.manual : null,
       message: copy.formatCard(card.code, legal: legal && !busy),
       excludeFromSemantics: true,
       child: OutlinedButton(

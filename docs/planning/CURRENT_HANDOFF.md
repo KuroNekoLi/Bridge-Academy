@@ -1,5 +1,19 @@
 # 目前開發交接（屬於產品規劃）
 
+## 最新：M2-F57／F58／F59 安全收尾
+
+- **最新 owner steering：Reuse First**，Nickel Bridge owner 已表示完整授權可改。已寫 AGENTS／DECISIONS／RESEARCH_REPORTS；下一工作改為先釘選 Nickel 與 card_game／FlatCardFan 適配 PoC，而非再擴寫自製 UI。沒有安裝 card_game／複製外部原始碼；UI 基線不丟棄。≤30% 下本次只核對一次來源與保存，完整研究／整合待額度恢復。Owner 所列 Android PoC 仍受 QA HOLD 限制，未另批准前不執行。
+- 使用者明確要求完成「單屏牌桌、拖曳、收墩動畫」。目前已實作 Local／Gateway 共用專注牌桌、合法長按 drag/drop、公開收墩 overlay；仍保留 Core、PlayerView、QA HOLD／Production NO-GO。
+- Repository `C:/Users/user05/StudioProjects/Bridge-Academy`，分支 master，修改基底 `6ad2de02372bb22433e4f86663b39b63350ac350`，開始時 clean，fetch 後與 origin/master 0/0。未提交：app_copy、bridge_app、gateway_table、bridge_table_components、browser_table_test；新 bridge_focus_table.dart／m2_focus_table_test.dart；FEATURES／ENGINEERING_NOTES／ROADMAP／本交接。沒有覆蓋他人工作。
+- **已觸發 30% 先交接：2026-10-26 18:56:30 Asia/Taipei（09:56:30 UTC）**，`rateLimitsByLimitId` primary used 75%／remaining **25%**、secondary used 12%／remaining **88%**，均為帳號共用。首次觸發值 25%／88%。安全收尾再查 primary remaining **17%**／secondary **87%**，最後狀態 `TRIGGERED_PRIMARY_LE_20`，最後通知值 17%／87%；使用數值 83%／13%，仍為帳號共用。本文件已先更新；後續僅必要修復、 bounded verification、提交與證據收尾，不開始大型新功能。除新門檻／恢復／需 owner 處理不要重複提醒。
+- EXECUTED／PASS：Windows Flutter 3.47.8／Dart 3.13.7；九項專注牌桌 scoped tests：四寬度 320/375/768/1280×812，一般字體逐張完整 52／13；大字體退路、真 pointer 拖曳取消／一次提交、過期／重複／paused 拒絕、收墩中止、頁面往返。較早 full suite 215/215 與 Web release PASS；最後置中／自然捲動修正後 analyzer 再 PASS，最終 full suite **215/215**／Web release 已完成 PASS。
+- FAILED→FIXED：Tooltip 長按搶 drag 手勢，改 dragEnabled 時 manual trigger；中央公開座位標籤太寬，compact 40×56 但保留完整語意；2×字體固定高度溢位改自然內容高度。測試初版點擊離屏按鈕已改 ensureVisible。沒有改 Core 法則。
+- 最後 full suite 曾 FAILED：320px／version 3 公開牌區 40px overflow，重讀檔案發現 compact 仍為 44×62 且 Column 沒有 min，已明確改為 40×56／mainAxisSize.min，再跑 scoped **9/9 PASS**，並重讀檔案確認。最終修正後已重跑 analyzer PASS、全 Flutter **215/215 PASS**、Web release PASS；`build/focus-final-tests.log` 為本機忽略檔，不提交。
+- Chrome 人工工程檢查：127.0.0.1:8734 真 Web 開啟新專注桌、叫牌後顯示合法牌；觀察到 current trick 貼頂，已修正 mainAxisSize.min，最後修正後已 reload 核對中央牌區置中，最終截圖保存於 Codex visualization 目錄 `bridge-focus-table.jpg`（不入 Git）。這不是 A3.5 玩家驗收，沒有裝置 QA。
+- CI：本次 source 尚未 commit/push，新 SHA 的 Flutter／Web／Chrome NOT RUN。新 browser_table_test 含首張實際長按拖到中央、其後點牌完成 13 墩；需確認 CI，不能用前批 F56 success 替代。
+- 接續命令：讀 running verification 結果；`git diff --check`；`python -B scripts/check_feature_lessons.py --paths <source> docs/implemented/FEATURES.md docs/implemented/ENGINEERING_NOTES.md`；重新查 quota；direct commit/push master（source＋tests＋三節 lesson 同一批）；查新 SHA Actions；記真實結果後提交 evidence-only 文件。不要 dispatch held device workflows。
+- 風險／回退：大字體和矮視窗允許捲動；本次使用的 reduce-motion 設定仍不跨重啟保存；收墩只做公開副本，不延遲動作；無 schema／新相依。回退以 `git revert <本次功能 SHA>`。未決 owner 決策無新增；A3.5／裝置／託管安全／模型權利仍未放行。
+
 > 2026-10-26 18:34（台北／09:34 UTC）。本次宿主可用 `get_usage_limits`，實測帳號共用 primary 剩 **70%**、secondary 剩 **95%**（used 30%／5%，採 `rateLimitsByLimitId`）；未觸發 30% 交接門檻。歷史宿主的 UNKNOWN 不作即時值，不宣稱電腦關閉時持續監看。
 
 ## M2-F56 本次續作檢查點

@@ -34,6 +34,30 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 
 原本分散為數十份的 Mx-Fxx 教學不再每新增一個功能就建立新 Markdown。只要維護本文的一節，保留真正的來源／測試連結、為何採取此解法、設計替代方案、限制和練習即可。M1.3/M1.4 真 BEN 對照與容量資料統一查 [整合研究報告](../research/RESEARCH_REPORTS.md)；以 CI 狀態而不是文字敘述判定是否真正執行。
 
+## M2-F57｜專注牌桌與可及性退路
+
+**情境：** 打牌時不要一直捲過練習入口與設定。Local／Gateway route 使用 AnimatedBuilder 監聽原 Session，再投影 PlayerView 給 [BridgeFocusTable](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；Widget 沒有 Deal／Bearer。一般高度用 Expanded arena＋兩組水平手牌，返回頁面仍是同一局。矮視窗或大字體使用無固定總高度的 Column，讓內容自然捲動，而不是縮字／縮觸控目標。相當於 Compose 將遊戲 ViewModel 留在上一層，新增同一狀態的不同畫面。
+
+**替代／陷阱：** 直接刪掉舊工作區會破壞教學／存檔恢復入口；複製 Session 會開另一局。固定最小高度曾在 2×字體溢位，現改自然延伸。中央公開牌使用 compact 顯示、完整語意標籤不變；Column 使用 mainAxisSize.min 才能真正置中。Local saveFailed／恢復確認與 Gateway actionsPaused 仍必須守住。
+
+**驗證：** [m2_focus_table_test.dart](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 的四種寬度逐張跑到 52 張／13 墩、2×字體退路、開啟／叫牌／返回保留版本；scoped 九項 PASS。最終 analyzer PASS、全 Flutter 215/215 PASS、Web release PASS（既有 CupertinoIcons font inventory 警告），ENGINEERING_PASS 限本機範圍；Chrome CI 待 push 後確認。新 [browser target](../../apps/bridge_academy_flutter/integration_test/browser_table_test.dart) 驗證專注桌完整 Demo 牌局；真 BEN／裝置／真人 QA 不由 Widget 測試代替。**5–15 分鐘練習：** 375×812 與 320×600／2×字體各執行一次，解釋為何後者允許捲動而不是隱藏按鈕。LESSON_DELIVERED，未聲稱熟練。
+
+## M2-F58｜拖曳是動作意圖
+
+**資料流：** 可見牌 → LongPressDraggable 的 `BridgeCardDrag(version, owner, card)` → DragTarget `_allowed` 重新檢查最新 PlayerView → `_play` 單版本 guard → 原 Session submit → Core。過期、非輪到、非法牌、paused、重複 drop 都不送出；桌外取消無動作。點擊／鍵盤仍走同一 callback，拖曳不是唯一操作方式。
+
+**為何／替代：** 若在 drag start 就提交，取消也會出牌；若只相信 drag start 的合法性，網路已更新時會送過期輸入。UI guard 只改善互動，Server action ID／Core validation 才是權威。實測找到 Tooltip 子節點的長按搶先贏得 gesture arena；[BridgePlayingCardButton](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart) 的 dragEnabled 才採 manual tooltip trigger，其他頁面保留原互動。
+
+**驗證：** 上述九項中實際 pointer 長按→桌外取消→回桌放下一次，以及直接過期／重複 payload、paused／wrong-owner 不送出。Chrome 新 target 首張也用實際 drag，結果須查 CI 後才宣稱通過。**5–15 分鐘練習：** drag 開始後版本更新，說明 drop 為何必須拒絕；保留合法點擊與語意操作。LESSON_DELIVERED；PRACTICED／MASTERED 需真實參與。
+
+## M2-F59｜收墩與權威狀態分開
+
+**實作：** `didUpdateWidget` 觀察 completedTricks 增加，只取最後公開 Trick；AnimationController 在 IgnorePointer／ExcludeSemantics overlay 將四張牌朝贏家方向位移／淡出。沒有 animation-complete submit，也不把演出存入 checkpoint。新墩可替換，dispose／reduce-motion／版本重設會中止，已存在的還原 snapshot 靜態顯示。
+
+**替代／陷阱：** 留著上一墩作真正的 currentTrick 會混淆合法狀態，等 220ms 才允許下一張則會卡回合。Overlay 只做視覺副本，當前 cards 與 legalCards 直接用新投影。類似 Compose 的 presentation animation state，不應回寫 domain reducer。
+
+**驗證：** 固定 seed 57，四種寬度逐張驗證；收墩卡只等於剛完成的公開四張，reduce-motion 立即消失，再開動態不重播，52 動作／13 墩後 dispose 無 ticker 殘留。Scoped 九項 PASS，最終證據見交接；不代表 A3.5／裝置 QA。**5–15 分鐘練習：** 在收墩第一幀檢查下一張合法牌仍可操作；指出為何 overlay 需要 IgnorePointer 和 ExcludeSemantics。LESSON_DELIVERED，未推論 MASTERED。三功能無新相依／schema，回退 `git revert <本次功能提交>`。
+
 ## M2-F56｜公開出牌動態回饋與減少動畫
 
 **情境／驗收：** 玩家需要看見新公開牌及輪到的座位，但動畫不能延後合法操作。還原 snapshot 不重播；新牌只進場一次；換墩／離頁可取消；設定與裝置減少動畫偏好都使效果立即結束。狀態：**ENGINEERING_PASS（本機與下列 scoped CI）／LESSON_DELIVERED**；PRACTICED、MASTERED 待真實練習。
@@ -58,3 +82,5 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **5–15 分鐘練習：** 執行上述 scoped tests，讀 `didUpdateWidget` 的新舊 identity 比較，在 90ms 時加入一次相同 view rebuild 並確認 opacity 不回到 0。再開啟系統減少動畫、關閉 app 開關，說明為何仍應立即顯示牌；不要為測試加入第二次 Session submit。CI 通過不代表已掌握此概念。
 
 **提交與 CI：** source＋tests＋本節及 FEATURES 已同一 commit `030276b1e10d8243a429146ec1a5d7e559592998` push master。[Feature Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087861) success；[Flutter／Web／Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087862) **success**。已讀 jobs `121495539167`／`121495538670` 實際 logs：No issues found、206 tests passed、Built build/web；browser_table_test 及 browser_secure_checkpoint_test targets 均 All tests passed。這是 Demo／Chrome 技術驗收，不是真人或正式發行驗收。M4/M5 CI 亦 success；真 BEN／Precision 自動回歸當時仍執行中，不能提前稱成功。
+
+三功能最後共同驗證：`flutter analyze --no-pub` 無問題、`flutter test --no-pub --reporter expanded` **215/215 PASS**、`flutter build web --no-pub --release` PASS；Windows／Flutter 3.47.8／Dart 3.13.7。無外部元件移植、未新增規則引擎。新 browser target 真 Chrome 待 CI，Gateway 專注路由的真 BEN／裝置／A3.5 NOT RUN。

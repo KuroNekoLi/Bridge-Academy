@@ -12,6 +12,7 @@ import 'bridge_session.dart';
 import 'daily_practice_store.dart';
 import 'widgets/daily_practice_panel.dart';
 import 'widgets/bridge_table_components.dart';
+import 'widgets/bridge_focus_table.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bidding_convention_panel.dart';
 import 'conventions/convention_profile.dart';
@@ -521,6 +522,35 @@ class _BridgeTableState extends State<BridgeTable> {
                           view: view,
                           busy: session.busy,
                           copy: copy,
+                        ),
+                        OutlinedButton.icon(
+                          key: const Key('focus_table_open'),
+                          icon: const Icon(Icons.fullscreen),
+                          label: Text(copy.t('focusTable')),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(builder: (_) => AnimatedBuilder(
+                              animation: session,
+                              builder: (context, _) => BridgeFocusTable(
+                                view: session.view!, copy: copy,
+                                boardNumber: session.board.number,
+                                modeLabel: copy.t(session.mode == OpponentMode.demo
+                                    ? 'demoNotice' : 'liveNotice'),
+                                actionsPaused: session.actionsPaused ||
+                                    session.saveFailed ||
+                                    session.recoveryNeedsConfirmation ||
+                                    (session.isBiddingPractice && session.biddingPracticeComplete),
+                                error: session.errorCode == null ?
+                                    (session.recoveryNeedsConfirmation
+                                      ? copy.t('recoveredOlderCheckpoint') : null)
+                                    : copy.t(session.errorCode!),
+                                onRetry: session.recoveryNeedsConfirmation ? null
+                                    : session.saveFailed ? session.retrySave
+                                    : session.errorCode != null ? session.retryBots : null,
+                                onPlayCard: session.submitCard,
+                                onSubmitCall: session.submitCall,
+                              ),
+                            )),
+                          ),
                         ),
                         if (session.restoredFromStorage)
                           Text(

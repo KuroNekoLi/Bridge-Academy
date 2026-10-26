@@ -10,6 +10,18 @@
 
 ## Flutter 玩家可操作功能
 
+## M2-F57｜專注單屏牌桌
+
+Local／Gateway 活動牌局可開啟專注牌桌，保留原 Session，返回工作區不重開局。四座位、牌號／莊家／身價／定約／墩數、公開叫牌、可見牌與叫牌盒整合在同頁。320／375／768／1280 × 812px 一般字體打牌測試不需垂直捲動；矮視窗與大字體採內容自然延伸的捲動模式。錯誤與重試仍可見，存檔失敗／恢復確認／Gateway pending 會鎖操作。程式：[共用專注牌桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)、[Local](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart)、[Gateway](../../apps/bridge_academy_flutter/lib/src/gateway_table.dart)。
+
+## M2-F58｜合法牌長按拖曳
+
+公開明手與自己的合法牌可點擊或長按拖到桌面；桌外放下取消。拖曳資料只有 PlayerView 已授權的牌、owner、version，落點重新驗證 canAct／legalCards／turn／paused；同版本有一次提交保護。原有鍵盤／語意按牌仍保留。長按提示改為 manual trigger，避免搶走拖曳手勢；原工作區牌面行為不變。Core 仍做最後裁決，沒有 UI 自判跟牌規則。
+
+## M2-F59｜可中止公開收墩
+
+只對新完成墩的公開四張牌播放 220ms 朝贏家方向淡出，不讀暗牌、不延遲下一回合。IgnorePointer／ExcludeSemantics 避免搶操作及重複語意；減少動畫、離頁、重設或更快的新墩可中止，還原 snapshot 不重播。F57–F59 共用 [九項測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart)，含四寬度逐張 52／13、2×字體、實際拖曳／取消、過期／重複拒絕、公開收墩與頁面往返。[工程教學](ENGINEERING_NOTES.md) 分三節。最終 analyzer、完整 **215/215 Flutter tests**、Web release PASS；Chrome CI 仍待本次 push，不能沿用 F56。狀態 ENGINEERING_PASS（本機範圍）／LESSON_DELIVERED，PRACTICED／MASTERED 未驗收；A3.5／裝置 QA HOLD、Production NO-GO 不變。
+
 ## M2-F56｜公開出牌動態回饋與減少動畫
 
 新接受的公開出牌以 180ms 淡入／12px 位移呈現，活動座位邊框平順切換。「我的」提供中英減少動態效果開關，僅適用本次使用；裝置減少動畫偏好永遠優先。還原 snapshot 靜態顯示、換墩即移除舊牌、設定切換中止現有效果，動畫不提交動作也不鎖住下一回合。Local／Gateway 共用 `BridgeCurrentTrick`；只接收 `PlayerView`，不新增套件或存檔格式。

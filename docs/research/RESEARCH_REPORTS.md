@@ -172,4 +172,14 @@ U3：單屏佈局、可中止出牌/收墩動畫、合法目標與錯誤重試�
 
 ## 競品與技術借鑑的著作權界線
 
+### Reuse First 核對（2026-10-26）
+
+Owner 已授權新 UI 採 Reuse First，並明確表示取得 Nickel Bridge 完整修改授權。來源已定位為 [brannondorsey/nickel-bridge](https://github.com/brannondorsey/nickel-bridge)；React／TypeScript 生態不能直接當 Flutter Widget 安裝，下一步需釘選 SHA，檢視牌桌、叫牌盒、明手／墩牌呈現與 adapter 邊界。完整 source／依賴／素材 inventory 本次因 ≤30% quota 僅記 INVESTIGATE，沒有匯入或宣稱已完成移植。
+
+[card_game 2.0.0](https://pub.dev/packages/card_game) 官方文件已核對：CardRow／CardColumn／CardDeck、自訂 CardGameStyle、canCardBeGrabbed／canMoveCardHere／onCardMovedHere、移動與翻牌動畫。候選用於 presentation adapter；實測重試、版本衝突、非法提案不改投影及 reduce-motion／鍵盤／可及性後再決定替換。**未加入 pubspec、未以 README 功能清單冒稱整合 PASS**；授權／notice／transitive inventory 與確切原始碼釘選仍待採用前完成。
+
+[playing_cards 0.4.1+11](https://pub.dev/packages/playing_cards) 已是目前 render-only dependency；官方 README 的 FlatCardFan 確認存在，下一步評估 13 張重疊排列是否保有 ≥48 觸控目標、鍵盤焦點／語意及橫向可達性。官方 [Flutter card template](https://github.com/flutter/games/blob/main/templates/card/README.md) 可作另一參考。bridge_game 不因 UI 需要而引進第二套規則；bridgegui 尚未釘選來源，本次未審核或複製。
+
+驗收 PoC：只餵公開固定 fixture 或 seat-filtered PlayerView → 自訂牌面 adapter → 點擊／拖曳 action intent → 原 Session／Gateway → Core validation → 新投影驅動動畫。保留 BEN 制度、計分與 server action ID。四人隱藏手只顯示數量／牌背，不把真暗牌塞進 isCardFlipped。Web 52 unique／13 tricks、明手控制、非法動作無 mutation、stale drag／取消、同 ID 重試與 reduced-motion 必測；裝置 QA 不在此 PoC 自動解除。來源、版本／SHA、license、notice、使用邊界及實測結果寫本節，沒有合適方案才記理由自製。
+
 BBO、新睿、BBO Trainer 可以當作練習分類、牌桌操作與玩家旅程的比較對象，不授權複製其程式、API 私有協定、素材或教材。Flutter `playing_cards 0.4.1+11` 採用於可見牌面渲染，Apache-2.0 package 仍有未使用的內附 Wikimedia 圖像可能被打包，正式釋出要排除或逐項查核；`card_game 2.0.0` 僅是備選，未正式採用。

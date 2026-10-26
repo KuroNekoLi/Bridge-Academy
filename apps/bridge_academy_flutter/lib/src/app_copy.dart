@@ -69,6 +69,12 @@ class AppCopy {
       ].join(', ');
 
   static const Map<String, List<String>> _strings = {
+    'focusTable': ['專注牌桌', 'Focused table'],
+    'focusRetry': ['重試', 'Retry'],
+    'focusDragHint': [
+      '點擊合法牌，或長按拖到牌桌中央；放在桌外即可取消。',
+      'Tap a legal card, or hold and drag it to the table. Drop outside to cancel.',
+    ],
     'reduceMotion': ['減少動態效果', 'Reduce motion'],
     'reduceMotionDescription': [
       '適用本次使用；也會遵循裝置的減少動畫偏好。',

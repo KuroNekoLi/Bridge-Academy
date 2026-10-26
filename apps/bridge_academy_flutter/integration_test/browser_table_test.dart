@@ -21,6 +21,47 @@ Future<void> tapControl(WidgetTester tester, String key) async {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  testWidgets('REAL BROWSER: focused table drag and taps complete 13 tricks',
+      (tester) async {
+    final session = BridgeSession();
+    addTearDown(session.dispose);
+    await tester.pumpWidget(BridgeAcademyApp(session: session));
+    await tapControl(tester, 'new_game');
+    await tapControl(tester, 'focus_table_open');
+    await tapControl(tester, 'make_bid');
+    var choices = 0;
+    while (!session.finished && choices < 52) {
+      final view = session.view!;
+      final owner = view.turn!.letter;
+      final card = view.legalCards.first;
+      if (choices == 0) {
+        final source = find.byKey(Key('focus_drag_${owner}_${card.code}'));
+        await tester.ensureVisible(source);
+        await tester.pumpAndSettle();
+        final drag = await tester.startGesture(tester.getCenter(source));
+        await tester.pump(const Duration(milliseconds: 600));
+        await drag.moveTo(tester.getCenter(
+            find.byKey(const Key('focus_drop_zone'))));
+        await tester.pump();
+        await drag.up();
+        await tester.pumpAndSettle();
+        expect(session.view!.version, greaterThan(view.version));
+      } else {
+        await tapControl(tester, 'focus_card_${owner}_${card.code}');
+      }
+      choices++;
+    }
+    expect(choices, 26);
+    expect(session.view!.completedTricks.length, 13);
+    expect(session.view!.completedTricks.expand((t) => t.plays)
+        .map((p) => p.card).toSet().length, 52);
+    expect(find.byKey(const Key('focus_result')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('final_result')), findsOneWidget);
+  });
+
   testWidgets('REAL BROWSER: card renderer completes a full Demo board', (tester) async {
     final session = BridgeSession();
     addTearDown(session.dispose);

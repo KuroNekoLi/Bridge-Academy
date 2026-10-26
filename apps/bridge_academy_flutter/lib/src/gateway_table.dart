@@ -6,6 +6,7 @@ import 'conventions/auction_coach_page.dart';
 import 'gateway_game_session.dart';
 import 'widgets/bridge_bidding_box.dart';
 import 'widgets/bridge_table_components.dart';
+import 'widgets/bridge_focus_table.dart';
 import 'widgets/bridge_table_toolbar.dart';
 
 /// Explicitly opted-in server-owned table. Unlike local Demo/BEN, no
@@ -148,6 +149,27 @@ class _GatewayTableState extends State<GatewayTable> {
                     view: view,
                     busy: session.busy,
                     copy: copy,
+                  ),
+                  OutlinedButton.icon(
+                    key: const Key('focus_table_open'),
+                    icon: const Icon(Icons.fullscreen),
+                    label: Text(copy.t('focusTable')),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => AnimatedBuilder(
+                        animation: session,
+                        builder: (context, _) => BridgeFocusTable(
+                          view: session.view!, copy: copy, boardNumber: 1,
+                          modeLabel: copy.t('gatewayNotice'),
+                          actionsPaused: session.actionsPaused,
+                          error: session.errorCode == null ? null
+                              : copy.t(session.errorCode!),
+                          onRetry: session.errorCode == null || session.busy
+                              ? null : session.retry,
+                          onPlayCard: session.submitCard,
+                          onSubmitCall: session.submitCall,
+                        ),
+                      )),
+                    ),
                   ),
                   BridgeTableSurface(
                     view: view,
