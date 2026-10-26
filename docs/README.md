@@ -1,26 +1,24 @@
-# Bridge Academy 文件總覽
+# Bridge Academy｜正式文件入口
 
-> 注意：新版三類主文件已建立，但舊版檔案仍保留在其他路徑。原本的批次清理尚未全部完成；舊版不再是目前產品現況的權威。
+> **2026-10-26**：因專案擁有人要求極簡文件，已將原本 190 份 `docs/` 文件整併成 **7 份**，分三類。今後新增功能請更新現有文件，不要逐功能新開驗收、ADR、教學、週報 Markdown。
 
-> 更新：2026-10-26。這是本專案文件的**唯一入口**。所有功能狀態以**實作與測試證據**為準；規劃、研究、原型和正式發行不能混為一談。
+## 1. 已實現哪些功能
 
-文件只分三類：
+- [**已實作功能與核心規則**](implemented/FEATURES.md)：產品目前真正有的能力、原始碼、可用範圍、架構、核心不變條件與未實作功能。
+- [**功能工程導讀**](implemented/ENGINEERING_NOTES.md)：對實際程式和測試的教學、原因、設計取捨與練習；追加章節即可。
 
-| 類別 | 看什麼 | 入口 |
-| --- | --- | --- |
-| **一、已實作功能** | 玩家可使用的內容、技術架構、橋牌規則、工程教學摘要 | [功能清單](implemented/FEATURES.md) · [架構](implemented/ARCHITECTURE.md) · [規則](implemented/BRIDGE_RULES.md) · [工程筆記](implemented/ENGINEERING_NOTES.md) |
-| **二、接下來的產品規劃** | 產品目標、未完成任務的優先順序、正式發行門檻與決策／交接 | [產品需求](planning/PRODUCT_REQUIREMENTS.md) · [下一步路線](planning/ROADMAP.md) · [發行關卡](planning/RELEASE_CHECKLIST.md) · [決策](planning/DECISIONS.md) · [目前交接](planning/CURRENT_HANDOFF.md) |
-| **三、相關研究報告** | BEN、2/1/SAYC、Precision、橋牌 AI、效能、UX、授權與競品研究 | [BEN 制度實測](research/BEN_SYSTEMS.md) · [Precision](research/PRECISION.md) · [自訂約定／教練](research/CUSTOM_AND_COACH.md) · [UI／產品驗收](research/UX_AND_PLATFORM.md) · [授權與容量](research/OPERATIONS_AND_LICENSES.md) · [Precision 約定規格](research/PRECISION_CONVENTION_SPEC.md) |
+## 2. 接下來的產品如何規劃
 
-## 文件使用原則
+- [**產品路線與正式上線 Gate**](planning/ROADMAP.md)：玩家流程、開發順序 U3 → U4 → A4.5、Precision 與 custom AI 的待辦，以及正式發布驗收。
+- [**已核准決策**](planning/DECISIONS.md)：制度版本、不變規則、owner hold、安全／權利、文件維護、配額與工作規則。
+- [**目前工作交接**](planning/CURRENT_HANDOFF.md)：最新接續工作、真實測試狀態與 Git 回退方式，不當成產品已發行憑證。
 
-1. **問「現在能玩什麼」：**讀 `implemented/FEATURES.md`，再以其中連結到的程式與 CI 驗證。
-2. **問「下一步做什麼」：**讀 `planning/ROADMAP.md`，尚有阻斷須同時看 `RELEASE_CHECKLIST.md`。
-3. **問「為什麼選這個 AI／有沒有真實測試」：**讀 `research/` 的對應報告。
-4. **改橋牌玩法：**`implemented/BRIDGE_RULES.md` 是工程法則權威，先補測試再改規則。
-5. **架構、AI 或安全決策：**先核對 `planning/DECISIONS.md`，不得將 scoped CI pass 說成公開部署許可。
-6. **開始程式工作：**由根目錄 [AGENTS.md](../AGENTS.md) 與 [skills/README.md](../skills/README.md) 確認開發規範。
+## 3. 相關研究報告
 
-## 已清理的舊文件
+- [**研究與驗收整合報告**](research/RESEARCH_REPORTS.md)：BEN／2/1／SAYC、Precision BBA、M4 自訂草稿、M5 教練、效能／授權／UX、可追溯 CI 與 SHA。
 
-2026-10-26 將散落的里程碑報告、逐版本交接、重複規格、分散式教學整理為上述主題文件。先前精確技術內容並非消失，可由整理前的 Git commit `425da3ed393e6b9307f3d9961e52e542368c79e5` 查閱。**歷史報告的 PASS 只適用其當時 SHA、fixture 與環境；本版不把歷史證據提升為新的產品核准。**
+## 本文件編制與安全界線
+
+本索引亦算入文件總數，因此目前 `docs/` 共 **7** 份。刪掉的歷史文件仍在 Git commit history，不是 `git filter-repo` 清除；不能將舊版驗收說成目前通過。研究 CI Pass 只適用於列明的版本、環境和 fixture。**正式公開服務仍 NO-GO；A3.5 和 Android/iOS emulator/實機 QA 仍 OWNER HOLD**，未經後續批准不可啟動。核心公平規則及 Bridge Core 的程式才是實際合法性裁判。
+
+完整原始碼、CI workflow、測試與 agent skill 不在本次刪除範圍。

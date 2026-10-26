@@ -2,7 +2,7 @@
 
 These are repository-local Agent Skills in the open SKILL.md layout. Open **AGENTS.md** first; choose only the skill for the requested domain. Every skill has YAML frontmatter (name = directory, description = trigger), workflow, safety boundary and evidence required. Skills are task instructions, not a running background multi-agent system or an automatic permission grant.
 
-**Product baseline:** Start with [PRD v1](../docs/planning/PRODUCT_REQUIREMENTS.md), [Delivery Roadmap](../docs/planning/ROADMAP.md) and [Competitor Benchmark](../docs/research/UX_AND_PLATFORM.md) when choosing the next user-visible slice. Do not derive product completion from the engineering milestones alone.
+**Product baseline:** Start with [PRD v1](../docs/planning/ROADMAP.md), [Delivery Roadmap](../docs/planning/ROADMAP.md) and [Competitor Benchmark](../docs/research/RESEARCH_REPORTS.md) when choosing the next user-visible slice. Do not derive product completion from the engineering milestones alone.
 
 | Task | Skill |
 | --- | --- |

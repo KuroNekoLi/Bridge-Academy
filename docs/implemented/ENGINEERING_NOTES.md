@@ -20,12 +20,16 @@
 
 ## M3-F10～M3-F17｜Precision 是另一種引擎
 
-`BBA/EPBot` 的 `Meckwell.bbsa` 被釘選為 `BA-PRECISION-MECKWELL/r1`。1NT 範圍 13–15 HCP，不能偷換外部 Meckwell Lite 13–16。研究可完成整局合法牌，但沒有受測的競賽級 Precision neural cardplayer。[研究](../research/PRECISION.md)。練習：為什麼 1000 次原生開叫 PASS 不代表 1000 局比賽通過？
+`BBA/EPBot` 的 `Meckwell.bbsa` 被釘選為 `BA-PRECISION-MECKWELL/r1`。1NT 範圍 13–15 HCP，不能偷換外部 Meckwell Lite 13–16。研究可完成整局合法牌，但沒有受測的競賽級 Precision neural cardplayer。[整合研究報告](../research/RESEARCH_REPORTS.md#precision-club-研究)。練習：為什麼 1000 次原生開叫 PASS 不代表 1000 局比賽通過？
 
 ## M4-F01～M5-F03｜本機約定草稿與來源可追的教練
 
-原有規格允許編輯本機約定規則、sha256-linked revision、差異、匯入、審查包，但**草稿不是可執行 AI**。`PublicAuctionCoach` 只解釋公開資訊：無已驗證規則時返回 `UNKNOWN`，草稿標 `USER_DRAFT`。程式：[Conventions](../../packages/bridge_conventions/)；[研究](../research/CUSTOM_AND_COACH.md)。練習：何時允許草稿進入 Gateway playable system whitelist？
+原有規格允許編輯本機約定規則、sha256-linked revision、差異、匯入、審查包，但**草稿不是可執行 AI**。`PublicAuctionCoach` 只解釋公開資訊：無已驗證規則時返回 `UNKNOWN`，草稿標 `USER_DRAFT`。程式：[Conventions](../../packages/bridge_conventions/)；[整合研究報告](../research/RESEARCH_REPORTS.md#自訂約定與公開叫牌教練)。練習：何時允許草稿進入 Gateway playable system whitelist？
 
 ## M2-F53～M2-F55｜工作區與可見牌
 
 Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。牌面套件只顯示 `PlayerView` 允許的牌，窄屏水平捲動不改 GameState。程式：[Flutter](../../apps/bridge_academy_flutter/)；[198/198](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40255094253)、[200/200](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171652)。練習：為什麼排序玩家手牌時不能直接 mutate Core 的清單？
+
+## 本次文件精簡後的維護規則
+
+原本分散為數十份的 Mx-Fxx 教學不再每新增一個功能就建立新 Markdown。只要維護本文的一節，保留真正的來源／測試連結、為何採取此解法、設計替代方案、限制和練習即可。M1.3/M1.4 真 BEN 對照與容量資料統一查 [整合研究報告](../research/RESEARCH_REPORTS.md)；以 CI 狀態而不是文字敘述判定是否真正執行。
