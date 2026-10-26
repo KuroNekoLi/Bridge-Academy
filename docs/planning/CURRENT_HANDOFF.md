@@ -2,6 +2,8 @@
 
 ## 目前檢查點：M2-F60／F61（2026-10-26 21:59 Asia/Taipei／13:59 UTC）
 
+- **推送後新門檻／CI（2026-10-26 22:01 Asia/Taipei／14:01 UTC）：** `f22edb9` 功能提交及 `48c3ee246e34d33bdb645be1b2927913344e439e` 額度交接提交已 direct push `origin/master`，工作樹在本證據更新前乾淨。`get_usage_limits.rateLimitsByLimitId.codex.primary` remaining **7%**（used 93%）、secondary remaining **70%**（used 30%），最後狀態 `TRIGGERED_PRIMARY_LE_10`、最後通知門檻 10%；先更新本交接，停止新功能。新 SHA [Feature Learning Gate #40335776848](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776848) **success**；[Flutter／Web／Chrome #40335776691](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776691) **in_progress**；[真 BEN Chrome #40335776679](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776679) **in_progress**。目前不能宣稱這兩個 CI 已通過。`gh` CLI 本機不存在，已改用 GitHub connector 讀當次 run。此行證據更新尚未提交／推送；如需保存，以小型 docs-only commit/push，不重跑昂貴測試。
+
 - **保存進度／新門檻（2026-10-26 約 22:01 Asia/Taipei）：** 功能、測試、研究、課程與本交接已同批提交 `f22edb903d50ec94a62901e1f2b0b400d34d97ca`，提交後工作樹乾淨；**尚未 push**，新 SHA 的 CI 仍 NOT RUN。提交後再查 `rateLimitsByLimitId.codex.primary` remaining **15%**（used 85%）、secondary remaining **71%**（used 29%）；狀態 `TRIGGERED_PRIMARY_LE_15`，最後通知門檻 15%。本段先記錄再做 push／CI 查核，不開始新功能。以上「尚未 push」應以其後新增的 push 證據行為準。
 
 - **新門檻（2026-10-26 22:00 Asia/Taipei／14:00 UTC）：** `rateLimitsByLimitId.codex.primary` remaining **19%**（used 81%）、secondary remaining **72%**（used 28%）；最後觸發狀態更新為 `TRIGGERED_PRIMARY_LE_20`，最後通知門檻 20%。先更新本交接，僅完成提交／CI 查核等安全收尾，不開始新的視覺功能。本次 `check_feature_lessons.py --paths ...` PASS（8 feature sections）、`docs/*.md` 7 份、`git diff --check` PASS；Chrome 本地專注桌視覺證據 `C:/Users/user05/.codex/visualizations/2026/10/26/01a175af-1471-7de1-9db7-6b9fa6279e83/bridge-focus-reuse-f61.png` 不入 Git。
