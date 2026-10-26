@@ -1,77 +1,55 @@
 # Bridge Academy — Agent Operating Contract
 
-## Mandatory quota monitoring and 30% handoff (owner-approved 2026-10-26)
+> Canonical project documentation: [docs/README.md](docs/README.md). **Only 7 docs files** in three categories (implementation, future product plan, research). Never auto-create a separate feature note/acceptance report/weekly plan Markdown under docs. Update the existing files.
 
-- **Hard requirement for every agent working on this project:** read actual Codex usage at task start, before starting a substantial new slice, after major verification, and before commit/push/final handoff; during sustained work check at least every 15 minutes when tools are available. Do not estimate remaining quota from context length or number of messages.
-- Use the app's `get_usage_limits` tool. Prefer available `rateLimitsByLimitId`, falling back to `rateLimits` only when the former is absent. For every numeric primary/secondary window, calculate `remainingPercent = clamp(100 - usedPercent, 0, 100)`. These are **account-shared** windows, not project-only consumption. Missing/null fields mean UNKNOWN, never zero consumption or unlimited quota.
-- If **any available window has remainingPercent <= 30**, **first create/update [docs/planning/CURRENT_HANDOFF.md](docs/planning/CURRENT_HANDOFF.md)** before another substantial task: goal/scope, branch + SHA, working tree/uncommitted changes, completed/pending items, exact EXECUTED/FAILED/BLOCKED/NOT RUN tests, CI links and status, next commands, risk/rollback and pending user decisions. Record the triggering window, percentage and check time; omit credentials, account identifiers, tokens and private deals.
-- After preparing the handoff, notify the user. Below the threshold, prioritize safe checkpoints, necessary repairs and bounded verification; do not start a large new feature until quota recovers or the user explicitly changes this policy. Do not interpret this as permission to discard changes, rewrite Git history, purchase credits, switch models, spawn agents, deploy, or run held device QA.
-- If the tool is unavailable, mark usage UNKNOWN and prepare a current handoff before large new work; explain the limitation without pretending a monitor is running. Never inspect credentials to bypass the supported tool.
-- The local thread heartbeat **Bridge Academy 額度與交接監看** checks every 15 minutes when supported. Do not create duplicates; preserve its quiet-until-actionable behavior. A scheduler is a backup to active-task checks, not proof of continuous monitoring when the machine/app is closed. See [policy and recovery details](docs/planning/DECISIONS.md).
+## Mandatory Codex quota / handoff policy — owner approved 2026-10-26
 
-This file is the entry point for Codex, Work and other coding agents. The repository docs, not old chats or model memory, are the working source of truth. User-approved product decisions outrank agent assumptions. In a contradiction, report it and request a decision before silently changing the baseline.
+- At task start, before a substantial new slice, after verification and before commit/push/handoff, use the app `get_usage_limits` tool **if actually available**; during extended tool work repeat at most 15-minute intervals. Check every available numeric primary/secondary quota, prefer `rateLimitsByLimitId`, falling back to `rateLimits` if absent. `remainingPercent = clamp(100-usedPercent,0,100)`; quotas are account-shared. Missing fields = **UNKNOWN**, not zero/unlimited.
+- If **any** window is ≤30% remaining, **first update [docs/planning/CURRENT_HANDOFF.md](docs/planning/CURRENT_HANDOFF.md)** with project/ref/SHA, branch, uncommitted changes, real tests, pending work, risk/revert and exact triggering window/time; notify owner, prioritize checkpoint and bounded repairs over another major feature.
+- If the quota tool is absent, record **UNKNOWN**, prepare a factual handoff before large new work; do not claim to monitor usage nor attempt to access secrets. Existing scheduled owner reminders are independent; do not create duplicates or assume constant background monitoring.
 
-## Product-level source of truth (approved 2026-10-15)
+## Read these before making changes
 
-Before choosing the next feature, read:
-1. docs/planning/PRODUCT_REQUIREMENTS.md — **what the complete product must do**, user journeys, privacy, MVP release gates;
-2. docs/planning/ROADMAP.md — **what comes next**, dependency order, scope and product-vs-engineering acceptance;
-3. docs/research/UX_AND_PLATFORM.md — verified 新睿／BBO／BBO Trainer inspiration, **not** a license to copy code/assets;
-4. docs/planning/ROADMAP.md — **historical engineering milestone and CI ledger**, retained without rebranding earlier successes;
-5. docs/implemented/BRIDGE_RULES.md and docs/planning/DECISIONS.md — authoritative game invariants and accepted ADRs.
+1. [Implemented features, architecture and Bridge Core invariants](docs/implemented/FEATURES.md).
+2. [Next product work, scope, user journeys and release gates](docs/planning/ROADMAP.md).
+3. [Binding user decisions](docs/planning/DECISIONS.md).
+4. [Research / actual CI evidence](docs/research/RESEARCH_REPORTS.md).
+5. [Current handoff](docs/planning/CURRENT_HANDOFF.md), then current GitHub `master` and source/tests.
 
-B2.2 four-seat Just Declare player flow and UI progress were introduced to correct B2.1's absent Flutter Session entry and improve the actual practice experience; **CI fresh verification remains required** (the B2.1 runs had no allocated GitHub Actions runner). A5.1 player-visible completed history, encrypted terminal archive and old-board replay are now [scoped Flutter 91/91 + Web + Chrome verified](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38852504246); A5.2 search/retention and A5.3 remote Gateway history remain open. Do not automatically postpone new visible features for additional unrelated CI, and keep scoped tests/lesson in the same commit. For generic "下一步" requests, compare the latest code and scoped CI evidence with the **current** product roadmap. A1 Board Management has verified Core/Flutter/real BEN fixed regression. A2 local checkpoints, secure native SQLite and browser encrypted archive have been implemented with scoped test evidence, but native device durability, deployment security and remote BEN idempotency remain **open P0 release gates**. A3.1–A3.4 have scoped engineering acceptance; **owner deferred A3.5**, still a release blocker. The next feature phase is **A4 Production BEN Integration**, with A4.1 HTTPS client verified and A4.2 local-only anonymous Gateway has scoped [14/14 HTTP CI evidence](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38836219472). **No deployed service, no server game/seat authority; A4.3.1 private BEN loopback adapter is scoped real-model verified; A4.3.2 introduced server-owned game authority and scoped 27/27 Gateway CI; A4.3.2b opt-in encrypted single-node checkpoint, per-bot-event persistence and actual Dart SIGKILL process restart are [scoped 32/32 CI verified](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38841623172) (not production distributed exactly-once)**; A4.3.3 [pinned genuine BEN full game through authorized Gateway PASSED](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38845244764) for ONE fixed 52-card/13-trick board; A4.4 Flutter Gateway opt-in session/UI has [86/86 Flutter tests, Web Release and Demo Chrome E2E CI PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38848030915) with secure origin, Bearer lifecycle and same-ID retry; [one real Chrome→localhost Gateway→pinned BEN 13-trick full board has now PASSED](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38849429500) with a bounded opt-in dev quota; A4.5 production TLS/model rights/multiuser cost/privacy capacity, A3.5 and device QA remain OPEN; never call A4 production ready. Safe A2 security work may continue independently. Do not mistake initial historical A1/A2 planning prose for the latest implementation status. Keep distinct:
-- technical-domain correctness (actual code and scoped CI)
-- Web/browser and real-BEN end-to-end acceptance in named environments
-- device-specific acceptance, **currently on owner hold**
-- deployed product's durability/privacy/license/release readiness.
+## Absolute rules
 
-**QA hold (owner-approved 2026-10-15):** never re-enable, schedule or dispatch Android emulator or physical Android/iOS UI/E2E workflows without subsequent explicit owner approval. Relevant device workflows are guarded off. Dart/Flutter unit, analysis, Web builds and currently permitted browser/real-BEN checks remain available. Device QA remains a mandatory release gate, not canceled acceptance.
+- **Bridge Core is authoritative** for 13 cards per seat, 52 unique cards, auction, Pass Out, Double/Redouble, legal follow-suit, trick winner, contracts and signed NS score. BEN/BBA is an untrusted action proposer; validate before mutating `GameState`.
+- **PlayerView and private data**: only seat-permitted hand, dummy after correct reveal, public calls/events and authorized state. DDS can see all four hands **only for finished-board/offline explicitly scoped analysis**. Do not leak private deal in GET URI logs, third-party telemetry, screenshots or errors. Never forge a fourth Pass to reconcile a BEN 3-Pass outcome.
+- **System pinning**: `GameSystems` NS/EW identity, revision and fingerprint must be immutable per game. Only explicitly allowed BEN 21GF/SAYC profiles are playable by existing runtime; BBA Meckwell Precision is research-only unless all gates pass, 1NT fixed at 13–15 HCP. Custom draft `ENGINE_UNVERIFIED` cannot register itself as supported AI; no fake model capabilities.
+- **No unsupported interpretation**: convention meanings, coaching and suggestions need trustworthy versioned evidence. `UNKNOWN` or `USER_DRAFT` when unverified. No LLM-invented BEN hidden reasoning, no claim of actual competitor strength from a small fixture.
+- **No production deployment** until real target-VPS performance, TLS/identity/privacy, licensing/model/asset rights, durability, fairness, human/device QA are formally accepted. Research CI is not release approval. No external source/code/assets without provenance and clear licensed use.
+- **Owner QA HOLD**: do not dispatch or enable Android emulator, physical Android/iOS app UI/E2E or A3.5 human UX runs without later explicit owner approval. Dart/Flutter unit, analysis, Web, permitted browser/real BEN CI remain allowed. Do not declare blocked QA as passed.
+- **Locale**: zh-TW and en. No hard-coded user-facing strings. Change gameplay only with deterministic tests, view isolation checks and explicit user-facing error handling. Reject illegal AI action with no mutation/fallback.
+- **Git**: user wants direct push `master` with no PR; never force-push/rewrite history, never clobber another contributor. Git revert is rollback. No credentials, hidden deals, private tokens, proprietary binaries committed.
 
-**Daily feature split:** B6/P1 may deliver an **unranked original fixed-board daily practice**; a ranked daily Duplicate, MP/IMP, leaderboard or friend comparison remains D/P3 after server-owned comparable boards and fair scoring. Product doc priority changes need explicit ADR/version history; feature completion needs real code/tests and per-feature lesson.
-## On every task
-1. Read README.md, docs/planning/DECISIONS.md, docs/implemented/ARCHITECTURE.md, docs/implemented/BRIDGE_RULES.md and the relevant milestone in docs/planning/ROADMAP.md.
-2. Select the smallest applicable skill in skills/README.md; do not activate unrelated skills for decoration.
-3. State which invariant you will preserve, the scope, measurable acceptance criteria and files affected.
-4. Implement the smallest safe change and add deterministic tests at the boundary.
-5. Run relevant checks if the environment permits. Clearly distinguish EXECUTED / BLOCKED / NOT RUN; retain exact commands, environment, versions and result excerpts.
-6. **Learn While Building:** after each independently testable functional feature is accepted, assign an Mx-Fxx ID, append a dedicated Mx-Fxx teaching section to docs/implemented/ENGINEERING_NOTES.md and update docs/implemented/FEATURES.md, link actual implementation + tests, and include one small interactive question in the completion message. Multiple functional features need separate clearly labeled sections in the consolidated note. Do not treat code comments or a milestone summary as sufficient.
-7. Summarize changes, residual risks, test evidence, lesson links, one concept taught, one exercise and next decision; update docs/planning/DECISIONS.md or the POC record if a decision changes. Engineering PASS does not imply learner mastery.
+## Feature delivery and learning gate
 
-## Absolute invariants
-- Bridge Core, not BEN, is authoritative for card ownership, auction legality, contracts, trick wins, scores and turn transitions.
-- AI models are **untrusted action proposers**. Validate actions before mutating state.
-- A player or bot receives only its permissible view: own hand; dummy only when exposed; public auction/play/history; permitted vulnerability and contract. Never feed an unseen deal to normal playing AI.
-- DDS may see all four hands ONLY in offline analysis / test fixtures and must never be represented as fair-play single-dummy strategy.
-- A natural Pass Out requires four actual passes to prove a complete transcript; a BEN response reporting PASS with three displayed passes is **outcome-accepted with transcript warning**, not independently proven fourth pass.
-- Never forge an auction call to hide missing evidence. Keep server, raw AI and normalized event logs distinguishable.
-- No hard-coded user-visible strings: Traditional Chinese (zh-TW) and English (en).
-- No external code/license imports without recording the exact origin, version, usage boundary and obligations. No secrets, PBN with private account data, credentials or tokens in Git.
-- Non-regression: deterministic seed/PBN fixtures; avoid silently changing scoring conventions or visibility rules.
+For each independently testable user-facing behavior change: plan a small acceptance boundary; implement + tests; update **both** [docs/implemented/FEATURES.md](docs/implemented/FEATURES.md) and [docs/implemented/ENGINEERING_NOTES.md](docs/implemented/ENGINEERING_NOTES.md) in the same change. Append an `## Mx-Fxx｜...` section explaining actual code/files, why, alternatives, exact executed CI, limitation, 5–15-minute practice. Status must distinguish `ENGINEERING_PASS`, `LESSON_DELIVERED`, `PRACTICED`, `MASTERED` (last two require actual learner participation). Docs-only chores such as this consolidation do not fabricate features. The [CI feature learning gate](scripts/check_feature_lessons.py) checks the retained documents on master.
 
-## Authority and skill routing
-- Scope/task sequencing → bridge-orchestrator
-- Auction/trick/scoring rules → bridge-rules-reviewer
-- BEN/API/adapters/evaluation isolation → bridge-ai-integration
-- Batch fixtures, QA and regression evidence → bridge-playtest
-- Client/server boundaries and multi-platform architecture → bridge-architecture-guardian
-- Convention cards, bidding meaning, explanations → bridge-convention-reviewer
-- Third-party dependencies/licensing → bridge-open-source-auditor
-- **Any completed feature / learner walkthrough** → bridge-learning-mentor (works alongside domain specialist; not a separate approval of rules, AI or licensing)
+## How to work
 
-## Mandatory feature-learning gate
-- A feature is user-observable or independently testable behavior with acceptance criteria, **not** each class or commit; routine chores without behavior do not need fabricated lessons.
-- For **each** completed feature: implementation + tests + an Mx-Fxx section in docs/implemented/ENGINEERING_NOTES.md + an updated feature status in docs/implemented/FEATURES.md **in the same direct-push change set**. No PR is required unless the user requests one. Use bridge-learning-mentor and docs/implemented/ENGINEERING_NOTES.md.
-- Lessons teach the *actual code*, why the design was chosen, an Android/Kotlin analogy when useful, one alternative, pitfalls, accurate executed test evidence and a small learner exercise. Communicate a brief teaching checkpoint after the engineering update, without blocking development on the learner's answer.
-- Distinguish status: ENGINEERING_PASS, LESSON_DELIVERED, PRACTICED, MASTERED; last two require genuine learner participation. If lesson is absent, say FEATURE_DONE_LESSON_PENDING rather than DONE.
-- Direct-push CI verifies the consolidated lesson and feature ledger on master; per-feature teaching and domain correctness still require review.
+1. Choose one relevant [skill](skills/README.md) and preserve domain/visibility/authority invariants.
+2. Verify the latest source and CI, not just old summaries. If unknown or stale, say so; distinguish **EXECUTED / FAILED / BLOCKED / NOT RUN**.
+3. Implement bounded code, deterministic tests and migration/rollback considerations. Do not run held device QA.
+4. Give an actual evidence-backed completion summary, no implied asynchronous work, and mark product rollout gated if appropriate.
+5. Update [docs/planning/DECISIONS.md](docs/planning/DECISIONS.md) only for a meaningful owner-authorized product or architecture decision, otherwise keep docs ≤10 by amending the existing three categories.
 
-## Git policy
-Approved workflow (2026-10-15): commit and push verified work directly to master, without opening PRs. Do not force-push or rewrite history. Record tests, learning notes and rollback guidance in the commit/report. Keep third-party modifications as explicit upstream patches with their own tests. Commit source and documentation, not generated secrets or unverifiable "passed" screenshots. If commands or repository operations are unavailable, report the blocker without claiming the commit exists.
+## Skill routing
 
-## Task output format
-Goal / Feature IDs / Changed files / Design decision / Executed tests + command / Evidence / Lesson links and key idea / One learner question / Known limitations / Next step. A partial test does not imply complete acceptance.
+- Broad scope / dependencies: bridge-orchestrator.
+- Auction, trick, scoring: bridge-rules-reviewer.
+- BEN / AI request and response: bridge-ai-integration.
+- Testing / benchmarks / fixtures: bridge-playtest.
+- Architecture / transport / security: bridge-architecture-guardian.
+- Bid meaning / conventions: bridge-convention-reviewer.
+- Third-party rights / native code: bridge-open-source-auditor.
+- Any independent feature explanation: bridge-learning-mentor (in parallel with relevant primary skill).
 
-## A5.2 local history management (2026-10-16)
+## Task result format
 
-A5.1 [91/91 Flutter scoped verified](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38852504246) delivered a local encrypted completed-history list. A5.2 adds player-searchable and filterable completed deals, five-item pagination, per-item deletion confirmation and encrypted deletion tombstones to prevent re-archival from an older terminal checkpoint; [Flutter scoped 94/94 + Web build + Chrome Demo CI PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38857429965). Do not conflate this with the separate Gateway authoritative history (A5.3), full PBN export, distributed game retention or A4.5 production readiness. Android/iOS emulator and device UI tests, plus A3.5, stay on owner-requested hold.
+Goal / Feature ID (if applicable) / Changed files / Core boundary / Executed tests and CI URLs / Lesson when relevant / Known limitations / Release gate / Next action. Evidence is scoped; historical acceptance does not imply current master all green.

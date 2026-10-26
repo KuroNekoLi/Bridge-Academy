@@ -1,6 +1,6 @@
 # 接下來如何開發 Bridge Academy
 
-> 2026-10-26 產品路線（**優先順序**），已完成成果不再複寫在本文。請先讀 [目前已有功能](../implemented/FEATURES.md)、[發行關卡](RELEASE_CHECKLIST.md)，再挑選下一項小任務。此路線不授權解除 owner-held QA、購買主機或發布服務。
+> 2026-10-26 產品路線（**優先順序**），已完成成果不再複寫在本文。請先讀 [目前已有功能](../implemented/FEATURES.md)、[下方正式上線驗收門檻](#正式上線驗收門檻)，再挑選下一項小任務。此路線不授權解除 owner-held QA、購買主機或發布服務。
 
 ## 下一個應做的功能
 
@@ -39,4 +39,75 @@ A3.5 玩家體驗、全 Web 發行安全與實機長期儲存測試。**Android 
 
 `U3 → U4 security/remote-history → A4.5 hosted real BEN → A7 release validation → AI quality → ranked duplicate → live multiplayer`；獨立研究可並行，但不得為進度先解除安全門檻。
 
-開始每個功能前：對照最新 `master` 原始碼與 CI，寫最小驗收、更新 [功能表](../implemented/FEATURES.md)、[工程筆記](../implemented/ENGINEERING_NOTES.md)。完成技術測試只標 **SCOPED VERIFIED**；涉及正式上線時由 [RELEASE_CHECKLIST](RELEASE_CHECKLIST.md) 逐項放行。
+開始每個功能前：對照最新 `master` 原始碼與 CI，寫最小驗收、更新 [功能表](../implemented/FEATURES.md)、[工程筆記](../implemented/ENGINEERING_NOTES.md)。完成技術測試只標 **SCOPED VERIFIED**；涉及正式上線時由 [本文正式上線驗收門檻](#正式上線驗收門檻) 逐項放行。
+
+## 產品目標與玩家旅程
+
+
+> 版本 2026-10-26。這是**尚待完成的產品需求**，不是聲稱所有功能已上線。已存在的功能見 [功能清單](../implemented/FEATURES.md)。
+
+## 目標與受眾
+
+讓新手、進階橋牌玩家透過真實規則、可信賴的機器人搭檔、牌局練習、事後複盤與有來源的教學，建立可持續的橋牌學習體驗。產品靈感可參考 BBO、新睿、BBO Trainer，但**不複製**第三方程式與資產。
+
+## 玩家旅程
+
+| 場景 | 使用者預期 | 真正完成的要求 |
+| --- | --- | --- |
+| 開局到下一局 | 選座位、模式、制度 → 叫牌／打完 13 墩 → 計分與下一局 | AI 真實回應、事件合法、身價／莊家正確、斷線可處理 |
+| 暫停與恢復 | 關閉視窗後明確選擇繼續，保留已完成事件 | 本機／雲端正確來源、版本一致、不重複執行 |
+| 練習與學院 | 自由對局、Just Declare、四副練習、叫牌課、個人進度 | 清楚區分教學練習與排名結果 |
+| 回顧與分析 | 完局 history、Replay、PBN、DDS、可以信任的制度意義 | 過去牌局可重播；雙明手分析不在進行中偷看 |
+| 叫牌搭檔 | 分別選 NS／EW 的 2/1、SAYC；研究可用的 Precision | profile 與模型版號釘選、可以證明真模型在決策 |
+| 自訂約定與教練 | 編輯約定卡、檢視來源、經過驗證後可用於 AI | 沒有引擎證據的草稿不得假裝可玩；Coach 必須標 UNKNOWN |
+| 排名競賽與多人 | 公平比較同一副牌、MP/IMP、排行榜、同桌互動 | Server-owned BoardSet／權限、重現性、公平分數、反作弊與多人協定 |
+
+## 產品導航與體驗
+
+`打牌`、`學院`、`複盤`、`比賽`、`我的` 是規劃分區；目前只顯示**已有可操作內容**，不可先做不能點的空頁籤。桌面／平板／手機要支援中文繁體與英文、鍵盤／螢幕閱讀器、合法動作提示及大尺寸觸控，並保留遊戲進度。演出動畫**不能**篡改事件或使重試雙重生效。
+
+## 資料、隱私與公平原則
+
+- Bridge Core 永遠裁判合法叫牌／出牌與分數。只讓當前座位獲得 `PlayerView` 有權看見的牌。
+- 真人、電腦及教學模式必須明確標示；不得把研究版 Precision 或自訂草稿當已核准商用 AI。
+- 伺服器不可在公開 query/log 洩漏原始私牌、token 或未完成全四手牌。
+- 每場可比較的排名必須由不可變 BoardSet 與 scoring/verifiable event log 建立；未排名每日練習不得改稱賽事。
+- 真人／裝置 QA 與正式第三方原生套件、權重、資產授權都屬上線必要條件。
+
+下一階段先完成 [本文件產品路線](#下一個應做的功能) 的 U3／U4，再解除 [下方正式上線驗收門檻](#正式上線驗收門檻)，不以 CI 成功取代真人體驗。
+
+## 正式上線驗收門檻
+
+
+> 截至 2026-10-26，Bridge Academy **尚未獲准公開 Production 上線**。工程測試通過、GitHub Runner 能跑 BEN、研究版 Precision 能完成一局都不能替代下面的門檻。本文是下一步 release 依據，不是已通過報告。
+
+| 關卡 | 產品 release 必須提交的證據 | 現況 |
+| --- | --- | --- |
+| 核心橋牌規則 | 完整 Pass Out/X/XX／Follow-suit、決定方、13 墩／計分回歸 | 已有 Core CI，仍需發行 SHA 回歸 |
+| 真實玩家完整牌局 | 最少多張不同莊家／身價的四局以上真 BEN，固定與隨機牌 | 隔離真模型 CI 有；**公開服務 NOT RUN** |
+| UX 與可用性 A3.5 | 真玩家、320/375/768/1280px、輔具／動畫／失敗處理 | **OWNER HOLD**；U3 尚未完成 |
+| Android/iOS | 指定實機與 emulator 的生命週期、加密儲存、背景恢復、觸控及輔具 | **OWNER HOLD**，禁止無批准啟動 |
+| Server 安全 A4.5 | HTTPS TLS／allowed origins、可信身份、原始私牌只走受權私路由、外部金鑰、異常限流／WAF、禁止 debug 端點 | **NO-GO** |
+| Server durability | expired bearer、CAS/ID 重試、重啟／多節點同時事件、備份／還原與 RTO/RPO | **單節點研究版通過，跨節點 NOT RUN** |
+| BEN 及本機 native 著作權 | 原始碼、模型 weights、BBA/EPBot、DDS、Flutter assets 的逐項商用 hosting／再散布許可與 notice | **未完成核准清單** |
+| 實際部署容量 | 目標 2 vCPU／4GB 機器下 1/2/4/8 並發、真 bid+lead+play、冷啟、持續壓力、RPS／p95／RSS／CPU、故障恢復 | GitHub CI 樣本通過；**VPS NOT TESTED** |
+| 精準制牌力 | 專家 Golden、完整同牌比較 MP/IMP、非全知合法訓練策略、對手推斷與進局成功率 | **研究 only / NO-GO** |
+| 自訂 AI 制度 | 引擎能力／SHA、可玩模型、對手 reader、迫叫／競叫／Alert Golden | **草稿功能有，執行引擎 NOT VERIFIED** |
+| 教練的建議 | 每個說明有來源；最佳叫品須有可重現 AI／專家證據 | **目前只提供公開證據，完整 Coach NO-GO** |
+| 排名賽／多人 | 不變的 server BoardSet、跨人一致的 MP/IMP baseline、反作弊、角色／私牌權限 | **NOT IMPLEMENTED** |
+
+## 容量採樣格式
+
+固定測試環境、BEN 與 native/model SHA、模擬參數；記錄完整 13 墩的 `/bid`/`lead`/`play` 各自 P50/P95/P99、秒數、成功/失敗、timeout、CPU time、程序 RSS 峰值、系統 RAM、gateway / database / proxy 開銷；獨立測 1/2/4/8 併發與至少 30 副牌／組。成本須寫來源日期、幣別、帳單項、請求量與餘裕，不得猜測免費。
+
+研究版 BEN 单程序約 1 GiB RSS、雙程序約 2 GiB 是**GitHub Ubuntu Runner 小樣本 NN-biased**，不是目標 VPS 的保證；採樣細節見 [整合研究報告](../research/RESEARCH_REPORTS.md)。
+
+## 目前明確禁止
+
+不得恢復 owner-held Android/iOS／A3.5 QA；不得公開 localhost BEN/Gateway、把私牌與 token 放在 URL／logs；不得在未核可第三方權重及 native binary 前發行；不得稱自訂草稿已影響 BEN，亦不得將非排名每日練習稱作公平比較的積分賽。
+
+**重新准入流程：** 每個待測關卡都記實際環境／SHA／fixture 與結論，明確區分 PASS／FAILED／BLOCKED／NOT RUN，經 owner 確認後才更新正式 release 狀態。
+
+## 更新與排序規則
+
+先核對 master 真正實作與最新 CI。優先修復使用者有感的 U3 體驗，再處理 U4 安全續局、A4.5 實機實測與權利確認，正式發行依 A7 Gate。每一個新功能仍要更新 [已實作功能](../implemented/FEATURES.md)、[工程導讀](../implemented/ENGINEERING_NOTES.md)。

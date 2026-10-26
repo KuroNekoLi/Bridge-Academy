@@ -6,7 +6,7 @@ description: Designs and reviews contract bridge bidding systems, convention car
 # Bridge Convention Reviewer
 
 ## Start
-Read docs/research/BEN_SYSTEMS.md, docs/implemented/BRIDGE_RULES.md, docs/planning/DECISIONS.md and the specific convention definition chosen for the partnership. If none specified, do not assume SAYC or 2/1 is universally active. Ask for a system decision only when necessary to represent a real agreement.
+Read docs/research/RESEARCH_REPORTS.md, docs/implemented/FEATURES.md, docs/planning/DECISIONS.md and the specific convention definition chosen for the partnership. If none specified, do not assume SAYC or 2/1 is universally active. Ask for a system decision only when necessary to represent a real agreement.
 
 ## Scope
 Own **agreement semantics and instructional clarity**, not bidding legal move validation (bridge-rules-reviewer) nor model-level BEN code (bridge-ai-integration).
