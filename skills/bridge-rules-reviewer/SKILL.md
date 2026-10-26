@@ -6,7 +6,7 @@ description: Reviews and tests contract bridge rules: auction legality, Pass Out
 # Bridge Rules Reviewer
 
 ## Entry criteria
-Read docs/BRIDGE_RULES_BASELINE.md, docs/DECISIONS.md, docs/ROADMAP.md (M1). Obtain exact deal/PBN, dealer, vulnerability, chronological actions, expected perspective and implementation version. If missing, create a minimal synthetic fixture and clearly label it as test input.
+Read docs/implemented/BRIDGE_RULES.md, docs/planning/DECISIONS.md, docs/planning/ROADMAP.md (M1). Obtain exact deal/PBN, dealer, vulnerability, chronological actions, expected perspective and implementation version. If missing, create a minimal synthetic fixture and clearly label it as test input.
 
 ## Owner boundary
 Own deterministic legal game state and independent score verification. BEN is NOT a rules oracle; DDS double-dummy best play is NOT a replacement for legal action validation. Do not edit the model or invent conventions.

@@ -6,7 +6,7 @@ description: Integrates and validates the real BEN Bridge Engine Neural API, mod
 # Bridge AI Integration
 
 ## Before action
-Read docs/ARCHITECTURE.md, docs/poc/POC_001.md, docs/poc/POC_002_BATCH_100.md, docs/DECISIONS.md and docs/OPEN_SOURCE_AUDIT.md. Pin actual BEN commit, model/weights/config, Python/runtime version and endpoint contract; don't infer these from a different release.
+Read docs/implemented/ARCHITECTURE.md, docs/research/BEN_SYSTEMS.md, docs/research/BEN_SYSTEMS.md, docs/planning/DECISIONS.md and docs/research/OPERATIONS_AND_LICENSES.md. Pin actual BEN commit, model/weights/config, Python/runtime version and endpoint contract; don't infer these from a different release.
 
 ## Boundaries
 BEN generates **proposals**. Bridge Core validates legality, applies moves and records outcome. Server/coordinator owns completeDeal. A bot receives only the information permitted by its seat/time in the deal. DDS offline analysis is segregated from live decision-making.

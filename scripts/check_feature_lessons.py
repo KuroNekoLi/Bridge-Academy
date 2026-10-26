@@ -1,25 +1,21 @@
 #!/usr/bin/env python3
-"""Minimal PR gate for feature lessons. Human review verifies one note per feature."""
+"""Require the consolidated implementation ledger/lesson on behavior changes."""
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 import re
 import subprocess
 import sys
-from pathlib import Path
 from typing import Callable, Iterable
 
-LESSON_DIR = "docs/learning/features/"
-INDEX = "docs/learning/INDEX.md"
+NOTE = "docs/implemented/ENGINEERING_NOTES.md"
+INDEX = "docs/implemented/FEATURES.md"
 REQUIRED_SECTIONS = (
-    "## 功能目的與實際情境",
-    "## 主要程式碼導讀",
-    "## 為什麼這樣設計",
-    "## 驗證與實際證據",
-    "## 練習與自我檢驗",
+    "# 已完成功能的工程導讀",
+    "## 功能更新時的筆記規格",
 )
-SOURCE_EXTENSIONS = (".dart", ".py", ".kt", ".java", ".swift",
-                     ".ts", ".tsx", ".js", ".jsx", ".go")
+SOURCE_EXTENSIONS = (".dart", ".py", ".kt", ".java", ".swift", ".ts", ".tsx", ".js", ".jsx", ".go")
 
 
 def is_behavior_source(path: str) -> bool:
@@ -38,37 +34,30 @@ def is_behavior_source(path: str) -> bool:
 
 def check(paths: Iterable[str], reader: Callable[[str], str]) -> list[str]:
     changed = set(paths)
-    source = sorted(p for p in changed if is_behavior_source(p))
-    notes = sorted(p for p in changed if p.startswith(LESSON_DIR) and p.endswith(".md"))
+    production = sorted(p for p in changed if is_behavior_source(p))
     errors: list[str] = []
-    if source and not notes:
-        errors.append("Feature source changed without a lesson under " + LESSON_DIR)
-    if source and INDEX not in changed:
+    if production and NOTE not in changed:
+        errors.append("Feature source changed without updating " + NOTE)
+    if production and INDEX not in changed:
         errors.append("Feature source changed without updating " + INDEX)
-    for path in notes:
-        match = re.fullmatch(r"M(\d+)_F(\d+)_[A-Z0-9_]+", Path(path).stem)
-        if not match:
-            errors.append("Invalid note path (expect Mx_Fxx_TOPIC.md): " + path)
-            continue
-        feature_id = "M" + str(int(match.group(1))) + "-F" + str(int(match.group(2))).zfill(2)
+    if NOTE in changed:
         try:
-            body = reader(path)
+            body = reader(NOTE)
         except (OSError, UnicodeError, KeyError) as exc:
-            errors.append("Cannot read note: " + path + ": " + str(exc))
-            continue
-        if ("- Feature ID：" + feature_id not in body and
-                "- Feature ID: " + feature_id not in body):
-            errors.append(path + " is missing Feature ID " + feature_id)
+            return errors + ["Cannot read note: " + str(exc)]
         for section in REQUIRED_SECTIONS:
             if section not in body:
-                errors.append(path + " is missing " + section)
+                errors.append(NOTE + " missing " + section)
+        if not re.search(r"(?m)^## M\d+-F\d+\s*[｜|]", body):
+            errors.append(NOTE + " missing identifiable Mx-Fxx feature lesson")
+    if INDEX in changed:
         try:
-            index = reader(INDEX)
+            page = reader(INDEX)
         except (OSError, UnicodeError, KeyError) as exc:
-            errors.append("Cannot read " + INDEX + ": " + str(exc))
+            errors.append("Cannot read feature index: " + str(exc))
         else:
-            if feature_id not in index or Path(path).name not in index:
-                errors.append("Missing " + feature_id + " note link in " + INDEX)
+            if not page.startswith("# 已實作功能"):
+                errors.append(INDEX + " missing feature status heading")
     return errors
 
 
@@ -82,12 +71,12 @@ def changed_files(base: str, head: str) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base", help="PR base commit SHA")
-    parser.add_argument("--head", help="PR head commit SHA")
-    parser.add_argument("--paths", nargs="*", help="Test explicit changed paths")
+    parser.add_argument("--base")
+    parser.add_argument("--head")
+    parser.add_argument("--paths", nargs="*")
     args = parser.parse_args()
     if args.paths is None and not (args.base and args.head):
-        parser.error("Pass --base and --head, or --paths")
+        parser.error("Pass --base/--head or --paths")
     try:
         paths = args.paths if args.paths is not None else changed_files(args.base, args.head)
         errors = check(paths, lambda p: Path(p).read_text(encoding="utf-8"))
@@ -97,13 +86,10 @@ def main() -> int:
     if errors:
         for error in errors:
             print("ERROR: " + error, file=sys.stderr)
-        print("Review docs/learning/README.md and the feature template.", file=sys.stderr)
         return 1
-    print("PASS: lesson presence, headings and index link for "
-          + str(len(paths)) + " changed files. One-note-per-feature remains a PR review task.")
+    print("PASS: canonical feature inventory and engineering note gate", len(paths))
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
