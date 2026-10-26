@@ -2,6 +2,8 @@
 
 ## 目前檢查點：M2-F60／F61（2026-10-26 21:59 Asia/Taipei／13:59 UTC）
 
+- **保存進度／新門檻（2026-10-26 約 22:01 Asia/Taipei）：** 功能、測試、研究、課程與本交接已同批提交 `f22edb903d50ec94a62901e1f2b0b400d34d97ca`，提交後工作樹乾淨；**尚未 push**，新 SHA 的 CI 仍 NOT RUN。提交後再查 `rateLimitsByLimitId.codex.primary` remaining **15%**（used 85%）、secondary remaining **71%**（used 29%）；狀態 `TRIGGERED_PRIMARY_LE_15`，最後通知門檻 15%。本段先記錄再做 push／CI 查核，不開始新功能。以上「尚未 push」應以其後新增的 push 證據行為準。
+
 - **新門檻（2026-10-26 22:00 Asia/Taipei／14:00 UTC）：** `rateLimitsByLimitId.codex.primary` remaining **19%**（used 81%）、secondary remaining **72%**（used 28%）；最後觸發狀態更新為 `TRIGGERED_PRIMARY_LE_20`，最後通知門檻 20%。先更新本交接，僅完成提交／CI 查核等安全收尾，不開始新的視覺功能。本次 `check_feature_lessons.py --paths ...` PASS（8 feature sections）、`docs/*.md` 7 份、`git diff --check` PASS；Chrome 本地專注桌視覺證據 `C:/Users/user05/.codex/visualizations/2026/10/26/01a175af-1471-7de1-9db7-6b9fa6279e83/bridge-focus-reuse-f61.png` 不入 Git。
 
 - **用量先交接觸發：** `get_usage_limits.rateLimitsByLimitId.codex.primary` used 72%／remaining **28%**；secondary used 27%／remaining **73%**。2026-10-26 13:59 UTC 查得；是目前登入帳號共用額度，不是此專案消耗。最後觸發狀態 `TRIGGERED_PRIMARY_LE_30`、最後通知門檻 30%；本段已優先寫入，後續只做安全收尾、必要修復、驗證與保存，不開始新大型 UI 改造。下次只在新低門檻、恢復或需 owner 處理時提醒。
