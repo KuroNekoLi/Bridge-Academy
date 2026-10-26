@@ -34,6 +34,30 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 
 原本分散為數十份的 Mx-Fxx 教學不再每新增一個功能就建立新 Markdown。只要維護本文的一節，保留真正的來源／測試連結、為何採取此解法、設計替代方案、限制和練習即可。M1.3/M1.4 真 BEN 對照與容量資料統一查 [整合研究報告](../research/RESEARCH_REPORTS.md)；以 CI 狀態而不是文字敘述判定是否真正執行。
 
+## M2-F60｜重用弧形手牌元件，保留動作與可及性邊界
+
+**情境：** Reuse First 要避免重寫 fan 排列，也不能把 13 張牌壓成無法點選的小條。[BridgeFocusTable._hand](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart) 對 [BridgeCardStrip](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_strip.dart) 開啟 useFan。以既有 68px slot 與至少 48px 可見步距計算 `68 + (n - 1) * 48`，13 張為 644px；寬度符合且一般字體時，用上游 FlatCardFan 排列原 child widgets，子牌各自旋轉最多 0.06 弧度並在 100px 高內做 6px 弧線。若不足或大字體，沿用原水平捲動；不是另一個卡牌引擎。
+
+**真實資料流：** filtered PlayerView → 既有合法牌 Button／Draggable → layout-only FlatCardFan → 原 callback → Session／Gateway → Core。Fan 不知道 Card／Deal／分數，不讀未揭露手牌，不另送動作。Android/Compose 類比是把同一批 state-hoisted buttons 換成可重用 Layout，而不是把規則塞進 Layout。
+
+**為何與替代方案：** 直接把 13 張重疊到 320px 只剩約 21px 步距，背後卡的 68px widget 雖然還在，實際點擊卻會被後面的卡攔截。此處測試點的是每張卡左方可見區，沒有只量完整 widget 尺寸就冒稱可及性。FlatCardFan 的 Stack 以最後卡疊最上層，故可見步距是驗收重點。無動畫／schema 變更，縮放偏好仍由既有 MediaQuery 處理。
+
+**已執行證據：** Windows／Flutter 3.47.8／Dart 3.13.7；加入弧形與四方位墩牌後，scoped `flutter test --no-pub test/m2_reuse_fan_test.dart test/m2_focus_table_test.dart test/m2_table_motion_test.dart --reporter expanded` 20/20 PASS；`flutter analyze --no-pub` 無問題；完整 `flutter test --no-pub --reporter expanded` 220/220 PASS；`flutter build web --no-pub --release` PASS（既有 CupertinoIcons font inventory 非致命警告）。最初 num clamp 無法傳給 double width 的編譯失敗已加 toDouble 修正。本次新 SHA CI 待提交後確認，不沿用舊來源綠燈。
+
+**隔離 PoC 的學習：** [experiments/card_game_probe](../../experiments/card_game_probe/) 精確依賴 card_game 2.0.0，自訂 Renderer 只畫 Card.code，不使用上游 SVG。CardGame 只輸出 proposal，測試證明 Core state/version 不變。`flutter analyze --no-pub`、三項 probe tests PASS；其中兩項刻意斷言已知限制：非最後牌的 stack size 1 不可拖、同步 proposal guard 會使上游 drag-end `!` 拋 TypeError、以及 reduce-motion 下 AnimatedPositioned 仍有非零 duration。這是 **REPRODUCED／正式採用 BLOCKED**，不是「修好 card_game」或完整 gameplay PASS。Probe 不在正式 app dependency graph；CI 以獨立步驟驗證。
+
+**5–15 分鐘練習：** 在 644px 與 643px 各跑一次 13 張 hand，預測哪個會用 fan；計算可見步距與左右旋轉方向，再逐張點選左方 24px、用 Tab／Enter 操作第一張。讀 probe 中 onPropose 後的 `_sent`，說明為何 UI 的 proposal guard 合理，卻會暴露第三方 drag-end 的空值假設。狀態 ENGINEERING_PASS（本機 fan）／LESSON_DELIVERED；PRACTICED／MASTERED 須真實參與。回退 `git revert <M2-F60 commit>`，無存檔遷移。Android/iOS／A3.5／正式發布未驗收。
+
+## M2-F61｜四方位公開牌與朝贏家收墩
+
+**情境／邊界：** 使用者提供 BBO 截圖，要求牌從引牌／跟牌座位移入、四家公開牌可辨、完成墩往贏家收攏。對照 Nickel Bridge 釘選 SHA 的 `web/src/components/game/TrickArea.tsx`：其 compass slots、diff-driven glide、collect sweep 只作設計參考，未複製原碼／素材；其 Board staging 若使操作等演出則不採用。[BridgeCurrentTrick](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart) 的 compact 分支用 PlayerView.currentTrick 的 handOwner 放四個固定方位，[BridgePublicCardEntrance](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_public_card_entrance.dart) 以來源方位參數動畫，只在新公開牌出現時啟動。完整工作區原本的非 compact 呈現保留。
+
+**收墩／替代方案：** [BridgeFocusTable](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart) 依 completedTricks 增量取得公開四張牌及 Core winner，overlay 從各自 slot 朝 winner 線性靠攏並淡出；IgnorePointer／ExcludeSemantics、版本與 reduced motion 保護照舊。原先四張橫列整體平移看不出各座位，改為各自起點。320px 下較高的 compass 曾讓牌桌底部 overflow；把公開牌 slot 壓到 116px，且專注桌的窄屏手牌捲動不另留 14px 空白，保留正常字體 812px 高的單屏。沒有新 schema／Core 邏輯／動畫完成後 action。
+
+**已執行證據：** `flutter test --no-pub test/m2_reuse_fan_test.dart test/m2_focus_table_test.dart test/m2_table_motion_test.dart --reporter expanded` 20/20 PASS；新增測試驗證四方位來源、同版不重播與四張牌實際距離贏家縮短，舊測試驗證四寬度 52 張／13 墩、減少動畫及取消。首次兩次 scoped 嘗試因 24px／40px overflow FAILED，調整後重跑 PASS。完整測試與 Chrome CI 需以最後新 SHA 紀錄，不挪用舊版 PASS。狀態 **ENGINEERING_PASS（本機 scoped）／LESSON_DELIVERED**，PRACTICED／MASTERED 待使用者練習；A3.5／裝置 QA HOLD、Production NO-GO。
+
+**5–15 分鐘練習：** 用固定 seed 對局走四張公開牌，指出 `handOwner` 與 `winner` 各決定哪個畫面座標；在第三張入場時重新建立相同 view，預測動畫會否重播，再開減少動畫檢查立即顯示。回退 `git revert <本功能提交>`，無資料遷移。
+
 ## M2-F57｜專注牌桌與可及性退路
 
 **情境：** 打牌時不要一直捲過練習入口與設定。Local／Gateway route 使用 AnimatedBuilder 監聽原 Session，再投影 PlayerView 給 [BridgeFocusTable](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；Widget 沒有 Deal／Bearer。一般高度用 Expanded arena＋兩組水平手牌，返回頁面仍是同一局。矮視窗或大字體使用無固定總高度的 Column，讓內容自然捲動，而不是縮字／縮觸控目標。相當於 Compose 將遊戲 ViewModel 留在上一層，新增同一狀態的不同畫面。

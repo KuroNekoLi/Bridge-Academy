@@ -3,6 +3,7 @@ import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_card_face.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_focus_table.dart';
+import 'package:bridge_academy_flutter/src/widgets/bridge_public_card_entrance.dart';
 import 'package:bridge_core/bridge_core.dart' as b;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,6 +51,45 @@ Future<void> showTable(
 );
 
 void main() {
+  testWidgets('M2-F61 public plays fly from their compass seat only once', (
+    tester,
+  ) async {
+    var state = initial();
+    await showTable(tester, state);
+    final expected = <b.Seat, Offset>{
+      b.Seat.north: const Offset(0, -30),
+      b.Seat.east: const Offset(48, 0),
+      b.Seat.south: const Offset(0, 30),
+      b.Seat.west: const Offset(-48, 0),
+    };
+    for (var index = 0; index < 4; index++) {
+      state = advance(state);
+      await showTable(tester, state);
+      if (state.currentTrick.isEmpty) break;
+      final compass = find.byKey(const Key('focus_trick_compass'));
+      expect(compass, findsOneWidget);
+      final entrances = find.descendant(
+        of: compass,
+        matching: find.byType(BridgePublicCardEntrance),
+      );
+      expect(entrances, findsNWidgets(state.currentTrick.length));
+      for (var playIndex = 0; playIndex < state.currentTrick.length; playIndex++) {
+        final play = state.currentTrick[playIndex];
+        final entrance = entrances.at(playIndex);
+        expect(tester.widget<BridgePublicCardEntrance>(entrance).from,
+            expected[play.handOwner]);
+      }
+      final newest = entrances.last;
+      final opacity = find.descendant(of: newest, matching: find.byType(Opacity));
+      expect(tester.widget<Opacity>(opacity).opacity, 0);
+      await showTable(tester, state);
+      expect(tester.widget<Opacity>(opacity).opacity, 0);
+      await tester.pump(const Duration(milliseconds: 190));
+      expect(tester.widget<Opacity>(opacity).opacity, 1);
+    }
+    expect(state.tricks.length, 1);
+  });
+
   for (final width in [320.0, 375.0, 768.0, 1280.0]) {
     testWidgets('M2-F57 focused play fits $width without vertical scrolling', (
       tester,
@@ -235,6 +275,26 @@ void main() {
             .map((w) => w.card),
         orderedEquals(state.tricks.last.plays.map((p) => p.card)),
       );
+      final collecting = find.descendant(
+        of: find.byKey(const Key('focus_collection')),
+        matching: find.byType(BridgeCardFace),
+      );
+      final winnerIndex = state.tricks.last.plays.indexWhere(
+        (play) => play.handOwner == state.tricks.last.winner,
+      );
+      final target = tester.getCenter(collecting.at(winnerIndex));
+      final startDistances = [
+        for (var i = 0; i < 4; i++)
+          (tester.getCenter(collecting.at(i)) - target).distance,
+      ];
+      await tester.pump(const Duration(milliseconds: 110));
+      for (var i = 0; i < 4; i++) {
+        if (i == winnerIndex) continue;
+        expect(
+          (tester.getCenter(collecting.at(i)) - target).distance,
+          lessThan(startDistances[i]),
+        );
+      }
       await showTable(tester, state, reduced: true);
       expect(find.byKey(const Key('focus_collection')), findsNothing);
       await showTable(tester, state);

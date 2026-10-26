@@ -1,0 +1,17 @@
+name: bridge_card_game_probe
+description: Isolated card_game presentation compatibility probe; not shipped by the app.
+publish_to: none
+version: 0.0.1
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  card_game: 2.0.0
+  bridge_core:
+    path: ../../packages/bridge_core
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true

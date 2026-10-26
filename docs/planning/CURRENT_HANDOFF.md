@@ -1,5 +1,25 @@
 # 目前開發交接（屬於產品規劃）
 
+## 目前檢查點：M2-F60／F61（2026-10-26 21:59 Asia/Taipei／13:59 UTC）
+
+- **新門檻（2026-10-26 22:00 Asia/Taipei／14:00 UTC）：** `rateLimitsByLimitId.codex.primary` remaining **19%**（used 81%）、secondary remaining **72%**（used 28%）；最後觸發狀態更新為 `TRIGGERED_PRIMARY_LE_20`，最後通知門檻 20%。先更新本交接，僅完成提交／CI 查核等安全收尾，不開始新的視覺功能。本次 `check_feature_lessons.py --paths ...` PASS（8 feature sections）、`docs/*.md` 7 份、`git diff --check` PASS；Chrome 本地專注桌視覺證據 `C:/Users/user05/.codex/visualizations/2026/10/26/01a175af-1471-7de1-9db7-6b9fa6279e83/bridge-focus-reuse-f61.png` 不入 Git。
+
+- **用量先交接觸發：** `get_usage_limits.rateLimitsByLimitId.codex.primary` used 72%／remaining **28%**；secondary used 27%／remaining **73%**。2026-10-26 13:59 UTC 查得；是目前登入帳號共用額度，不是此專案消耗。最後觸發狀態 `TRIGGERED_PRIMARY_LE_30`、最後通知門檻 30%；本段已優先寫入，後續只做安全收尾、必要修復、驗證與保存，不開始新大型 UI 改造。下次只在新低門檻、恢復或需 owner 處理時提醒。
+- **使用者目標：** 依 ROADMAP、Reuse First 及使用者提供 BBO 四圖，做可操作的弧形南家手牌、北／東／南／西方位公開牌引牌／跟牌動畫及向 winner 收墩；維持 Core、PlayerView 私牌界線，裝置／A3.5 QA HOLD 與正式部署 NO-GO。
+- **Git：** `C:/Users/user05/StudioProjects/Bridge-Academy`，`master`，HEAD `e3b4c7231d0a74911f9c30d851be0307b2e1266e`；本次尚未 commit／push，新 SHA CI **NOT RUN**。未提交：`.github/workflows/flutter-single-player.yml`；Flutter `bridge_card_strip.dart`、`bridge_focus_table.dart`、`bridge_public_card_entrance.dart`、`bridge_table_components.dart`、`test/m2_focus_table_test.dart`、新 `test/m2_reuse_fan_test.dart`；既有文件 `FEATURES.md`、`ENGINEERING_NOTES.md`、`ROADMAP.md`、`RESEARCH_REPORTS.md`、本交接；新隔離 `experiments/card_game_probe/{pubspec.yaml,pubspec.lock,lib/,test/}`。以上為本次工作，未覆蓋他人檔案；忽略的 build/reuse_audit 不提交。
+- **已完成：** 上游 `playing_cards 0.4.1+11` FlatCardFan 作排位，子牌形成輕微弧度、保留可點 48px 與窄屏捲動；Nickel Bridge pinned SHA `92a81b5e81cb7aac2eabc147e82f18e0040b512e` 的 TrickArea 只作互動參考，沒有複製 code/assets；隔離 card_game 2.0.0 PoC 重現單張 stack、drag-end 空值與 reduce-motion 不相容，正式 app 未依賴。公開墩四方位顯示、新牌按 seat 飛入、四牌從原 slot 向 Core winner 收攏；動畫不擁有 action。Chrome 本機看見專注桌南／北手牌輕微弧形與中央公開牌；實際真人／裝置觀感仍未驗收。
+- **EXECUTED／PASS：** Windows Flutter 3.47.8／Dart 3.13.7；Scoped `flutter test --no-pub test/m2_reuse_fan_test.dart test/m2_focus_table_test.dart test/m2_table_motion_test.dart --reporter expanded` **20/20**；最後 `flutter analyze --no-pub` **0 issue**；全 `flutter test --no-pub --reporter expanded` **220/220**；`flutter build web --no-pub --release` **PASS**（Wasm dry run、原有 CupertinoIcons font inventory 警告，不等於 Wasm runtime）。`experiments/card_game_probe` 的 `flutter pub get --enforce-lockfile`、analyze、3/3 tests **PASS＝已重現 upstream 阻礙**，不是 card_game 可上線。`scripts/test_check_feature_lessons.py` **7/7**、`git diff --check` **PASS**。
+- **FAILED→FIXED：** 新四方位墩牌起初使 320／375px 整桌溢出 24px，再測 320px version5 溢出 40px；縮至 116px 墩牌格、移除專注窄屏手牌多餘底空後 scoped 20/20 與全 220/220 PASS。PoC 初版 upstream drag-end TypeError 被測試當成未預期例外，調成明確記錄既知相容阻礙；沒有 patch upstream。
+- **NOT RUN／CI：** 本次新 source 的 GitHub Actions Chrome／feature learning gate／probe 尚未 push，URL／狀態 `UNKNOWN/NOT RUN`；Android/iOS、A3.5 真人 UX、真 BEN 本地、正式部署 **NOT RUN／OWNER HOLD**。舊 HEAD `e3b4c72` 的 Flutter Chrome [#40304575247](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40304575247)／[learning #40304575236](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40304575236) success 只作基底證據。
+- **接續與風險：** 先檢查 `git diff --check`／lesson gate、交接與文檔中的新數字及 status；配額復查；若仍 ≤30% 只作必要修復並 direct commit/push master（不用 PR／force）。查新 SHA 對應 Actions，不挪用舊 run。Web 視覺目前弧度輕微且中央牌偏小，需日後在額度恢復後做響應式卡尺寸與 BBO 參考質感迭代；真人／裝置 QA 仍 hold。回退 `git revert <M2-F60/F61 commit>`；無 Core/schema 遷移。剩餘大型 UI 工作及 card_game 相容修正留待額度恢復。
+
+## Heartbeat 最新狀態（2026-10-26 19:43 Asia/Taipei／11:43 UTC）
+
+- `get_usage_limits` 的 `rateLimitsByLimitId` 實測：primary used 0%／remaining **100%**；secondary used 16%／remaining **84%**，均為目前登入帳號共用視窗。已從先前 ≤30% 恢復；最後監看狀態 `RECOVERED_ABOVE_30`，最後通知值 100%／84%。未跨新門檻時不重複提醒，不宣稱未執行的 heartbeat 或機器關閉期間仍有監看。
+- 查核分支 `master`、HEAD `e3b4c7231d0a74911f9c30d851be0307b2e1266e`，更新前工作樹乾淨；本次僅本交接文件未提交，沒有功能檔變更、測試執行、提交或推送。
+- 上次返回步驟修正已在 `e3b4c72` 保存。此 SHA 的 [Flutter／Web／Chrome CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40304575247) 與 [Feature Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40304575236) 實際 workflow conclusion 均 **success**；本 heartbeat 只查 run 狀態，未另讀 job logs／重跑昂貴測試。下方 `5ef07a0` Chrome FAILED 保留為歷史，不是目前修正後的結論。
+- 本次只監看及更新交接，不自動開始新的 UI 整合。接續仍是 owner 指定的 Reuse First：釘選 Nickel Bridge、比較 card_game／FlatCardFan adapter，再決定移植；保持 Core／PlayerView／QA HOLD／Production NO-GO。回退方式保留 `git revert <功能 commit>`，不重寫歷史。
+
 ## 最新：M2-F57／F58／F59 安全收尾
 
 - **最後額度查詢：2026-10-26 約 19:04 Asia/Taipei（10:04 UTC）**，工具 primary used 97%／remaining **3%**、secondary used 15%／remaining **85%**，狀態 `TRIGGERED_PRIMARY_LE_5`，最後通知值 3%／85%。先更新交接，只保存這次必要測試修復後停止；不要開始重用整合／研究大任務。以實際 tool 訊息時刻為準，非持續監看保證。

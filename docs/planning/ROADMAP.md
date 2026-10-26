@@ -4,6 +4,8 @@
 
 ## 下一個應做的功能
 
+**Reuse First 最新進展：M2-F60／F61** 專注牌桌重用 FlatCardFan 並加輕微弧形，保留 ≥48px 可見操作區及窄屏／大字體退路；公開墩牌依座位四方位入場、向贏家收攏。主 app 無新增依賴。Nickel UI 來源已釘選並作動態參考；card_game 隔離 probe 重現拖曳結束空值例外、單張 stack 與 reduce-motion gate，不能直接切換正式牌桌。後續需要實際 Web 視覺／可及性及上游修正適配驗證，詳見 RESEARCH_REPORTS。
+
 **最新 owner steering：Reuse First。** 新 UI 先研究 Nickel Bridge（owner 已明示完整修改授權）、card_game／playing_cards／官方 template，以小型 presentation adapter PoC 比較重用；不再先擴寫自製互動。保留 Core／BEN／計分權威，細節見 DECISIONS 與 RESEARCH_REPORTS；額度恢復後先做此適配研究，裝置 QA HOLD 不變。
 
 ### U3｜牌桌操作、動畫與窄屏完整體驗（目前最高 UI 優先）
@@ -14,7 +16,7 @@
 
 **本次小範圍 U3.2／M2-F56：** 公開新牌入場與活動座位過渡、可中止動態及本次使用的減少動畫設定已實作；本機 206 tests／analyze／Web release PASS，[當次 030276b Chrome CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087862) 已成功（含完整 Demo 中途切換動畫偏好及加密 checkpoint）。詳見 [功能與限制](../implemented/FEATURES.md#m2-f56公開出牌動態回饋與減少動畫)。尚未完成下面完整 U3 驗收；下一個範圍仍為單屏牌桌佈局。
 
-**待做：** 320／375／768／1280px 的可操作單屏牌桌，合法目標點選與可選拖曳、可中止選牌／出牌飛行／收墩動畫、等待與取消態、降低動態效果設定、長字體及鍵盤／輔助技術。不要讓展示動畫拖延回合／重複 submit，不能偷看暗牌。
+**待做：** M2-F57～F61 已有工程級單屏、合法點牌／長按拖曳、來源方位入場／收墩及減少動畫；仍須實際 Web 視覺／輔具檢查、更多高度／裝置適配、等待與取消態的完整產品驗收。不要讓展示動畫拖延回合／重複 submit，不能偷看暗牌。
 
 **收斂標準：** 同一版 Web、Flutter 測試可完成 52 張／13 墩，請求失敗可復原，視覺／可及性無誤；**A3.5 使用者／裝置 QA 仍 OWNER HOLD**，未解禁前不可稱產品級體驗驗收。
 

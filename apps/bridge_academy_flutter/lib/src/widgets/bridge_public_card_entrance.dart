@@ -6,10 +6,12 @@ class BridgePublicCardEntrance extends StatefulWidget {
     super.key,
     required this.animate,
     required this.child,
+    this.from = const Offset(0, 12),
   });
 
   final bool animate;
   final Widget child;
+  final Offset from;
 
   @override
   State<BridgePublicCardEntrance> createState() =>
@@ -49,7 +51,7 @@ class _BridgePublicCardEntranceState extends State<BridgePublicCardEntrance>
     builder: (context, child) {
       final value = Curves.easeOut.transform(_controller.value);
       return Transform.translate(
-        offset: Offset(0, 12 * (1 - value)),
+        offset: widget.from * (1 - value),
         child: Opacity(
           opacity: value,
           // A screen reader sees the accepted play immediately.

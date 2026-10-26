@@ -6,6 +6,7 @@ on:
       - "apps/bridge_academy_flutter/**"
       - "packages/bridge_core/**"
       - "packages/bridge_ben_adapter/**"
+      - "experiments/card_game_probe/**"
       - ".github/workflows/flutter-single-player.yml"
   workflow_dispatch:
 
@@ -33,6 +34,12 @@ jobs:
         run: flutter analyze --no-pub
       - name: Run Widget and session tests
         run: flutter test --no-pub --reporter expanded
+      - name: Verify isolated upstream card_game compatibility gates
+        working-directory: experiments/card_game_probe
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter analyze --no-pub
+          flutter test --no-pub --reporter expanded
       - name: Compile web release
         run: flutter build web --no-pub --release
 

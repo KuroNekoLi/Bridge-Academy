@@ -119,6 +119,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     children: [
       Text(label, style: Theme.of(context).textTheme.labelLarge),
       BridgeCardStrip(
+        useFan: true,
         id: 'focus_${owner.letter}',
         copy: widget.copy,
         children: [
@@ -244,29 +245,37 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                       return const SizedBox.shrink();
                     }
                     final t = Curves.easeIn.transform(_collection.value);
-                    final target = switch (_collected!.winner) {
-                      Seat.north => const Offset(0, -80),
-                      Seat.east => const Offset(80, 0),
-                      Seat.south => const Offset(0, 80),
-                      Seat.west => const Offset(-80, 0),
+                    Offset slot(Seat seat) => switch (seat) {
+                      Seat.north => const Offset(0, -30),
+                      Seat.east => const Offset(54, 0),
+                      Seat.south => const Offset(0, 30),
+                      Seat.west => const Offset(-54, 0),
                     };
+                    final winner = slot(_collected!.winner);
                     return Center(
-                      child: Opacity(
-                        opacity: 1 - t,
-                        child: Transform.translate(
-                          offset: target * t,
-                          child: Row(
-                            key: const Key('focus_collection'),
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              for (final play in _collected!.plays)
-                                SizedBox(
-                                  width: 32,
-                                  height: 46,
-                                  child: BridgeCardFace(card: play.card),
+                      child: SizedBox(
+                        key: const Key('focus_collection'),
+                        width: 148,
+                        height: 116,
+                        child: Stack(
+                          children: [
+                            for (final play in _collected!.plays)
+                              Positioned(
+                                left: 54 + slot(play.handOwner).dx,
+                                top: 30 + slot(play.handOwner).dy,
+                                child: Opacity(
+                                  opacity: 1 - t,
+                                  child: Transform.translate(
+                                    offset: (winner - slot(play.handOwner)) * t,
+                                    child: SizedBox(
+                                      width: 40,
+                                      height: 56,
+                                      child: BridgeCardFace(card: play.card),
+                                    ),
+                                  ),
                                 ),
-                            ],
-                          ),
+                              ),
+                          ],
                         ),
                       ),
                     );

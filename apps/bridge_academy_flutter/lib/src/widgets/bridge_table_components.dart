@@ -159,6 +159,31 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
   Widget build(BuildContext context) {
     final view = widget.view;
     final copy = widget.copy;
+    Widget played(PlayedCard play) => BridgePublicCardEntrance(
+      key: ValueKey(_identity(view, play)),
+      animate: _entering.contains(_identity(view, play)),
+      from: widget.compact ? switch (play.handOwner) {
+        Seat.north => const Offset(0, -30),
+        Seat.east => const Offset(48, 0),
+        Seat.south => const Offset(0, 30),
+        Seat.west => const Offset(-48, 0),
+      } : const Offset(0, 12),
+      child: Semantics(
+        excludeSemantics: true,
+        label: '${copy.seat(play.handOwner.letter)}: ${copy.cardName(play.card.code)}',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!widget.compact) Text(copy.seat(play.handOwner.letter)),
+            SizedBox(
+              width: widget.compact ? 40 : 54,
+              height: widget.compact ? 56 : 76,
+              child: BridgeCardFace(card: play.card),
+            ),
+          ],
+        ),
+      ),
+    );
     return Padding(
       key: const Key('current_trick'),
       padding: EdgeInsets.all(widget.compact ? 6 : 12),
@@ -172,34 +197,37 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
           const SizedBox(height: 8),
           if (view.currentTrick.isEmpty)
             Text(copy.t('notYet'))
+          else if (widget.compact)
+            SizedBox(
+              key: const Key('focus_trick_compass'),
+              width: 148,
+              height: 116,
+              child: Stack(
+                children: [
+                  for (final play in view.currentTrick)
+                    Positioned(
+                      left: switch (play.handOwner) {
+                        Seat.north || Seat.south => 54,
+                        Seat.west => 0,
+                        Seat.east => 108,
+                      },
+                      top: switch (play.handOwner) {
+                        Seat.north => 0,
+                        Seat.west || Seat.east => 30,
+                        Seat.south => 60,
+                      },
+                      child: played(play),
+                    ),
+                ],
+              ),
+            )
           else
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 6,
               runSpacing: 4,
               children: [
-                for (final play in view.currentTrick)
-                  BridgePublicCardEntrance(
-                    key: ValueKey(_identity(view, play)),
-                    animate: _entering.contains(_identity(view, play)),
-                    child: Semantics(
-                      excludeSemantics: true,
-                      label:
-                          '${copy.seat(play.handOwner.letter)}: ${copy.cardName(play.card.code)}',
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(widget.compact ? play.handOwner.letter
-                              : copy.seat(play.handOwner.letter)),
-                          SizedBox(
-                            width: widget.compact ? 40 : 54,
-                            height: widget.compact ? 56 : 76,
-                            child: BridgeCardFace(card: play.card),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                for (final play in view.currentTrick) played(play),
               ],
             ),
         ],

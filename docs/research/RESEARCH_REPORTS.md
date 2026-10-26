@@ -174,11 +174,27 @@ U3：單屏佈局、可中止出牌/收墩動畫、合法目標與錯誤重試�
 
 ### Reuse First 核對（2026-10-26）
 
-Owner 已授權新 UI 採 Reuse First，並明確表示取得 Nickel Bridge 完整修改授權。來源已定位為 [brannondorsey/nickel-bridge](https://github.com/brannondorsey/nickel-bridge)；React／TypeScript 生態不能直接當 Flutter Widget 安裝，下一步需釘選 SHA，檢視牌桌、叫牌盒、明手／墩牌呈現與 adapter 邊界。完整 source／依賴／素材 inventory 本次因 ≤30% quota 僅記 INVESTIGATE，沒有匯入或宣稱已完成移植。
+### Reuse First 實作核對（2026-10-26）
 
-[card_game 2.0.0](https://pub.dev/packages/card_game) 官方文件已核對：CardRow／CardColumn／CardDeck、自訂 CardGameStyle、canCardBeGrabbed／canMoveCardHere／onCardMovedHere、移動與翻牌動畫。候選用於 presentation adapter；實測重試、版本衝突、非法提案不改投影及 reduce-motion／鍵盤／可及性後再決定替換。**未加入 pubspec、未以 README 功能清單冒稱整合 PASS**；授權／notice／transitive inventory 與確切原始碼釘選仍待採用前完成。
+| 候選／immutable identity | 使用與實際結論 |
+| --- | --- |
+| [Nickel Bridge](https://github.com/brannondorsey/nickel-bridge/tree/92a81b5e81cb7aac2eabc147e82f18e0040b512e)，SHA `92a81b5e81cb7aac2eabc147e82f18e0040b512e`，commit 2026-09-26 | 已讀 HandFan、PlayingCard、AuctionGrid、BidBox 的互動契約，追查 Board 與 TrickArea 的 staging／legalCards／motionOK。React TSX 不能直接充作 Flutter Widget；其 selected/confirm、public projection 可借鑑；inFlight／staged myTurn false 的演出鎖不能照搬，因本專案動畫不應延遲合法回合。此輪不複製程式／CSS／素材，不使用其 AI／計分。Owner 完整修改授權聲明仍有效，實際移植另記對應檔案／notices；上游 README 的 glossary CC BY-SA 與模型／DDS 權利不由 UI 授權推定。 |
+| `playing_cards 0.4.1+11`，既有 registry archive SHA256 `392d5e42317ec657f6814a282e6bb70942c6599d22dac89cdc741a8b2b095d09`；FlatCardFan source SHA256 `c0c6e35f95fcfafc648a299340e49c982ca159811797e74e32ff621bda6c6717` | **ACCEPT_SCOPED／M2-F60**：直接呼叫已安裝 package 的 FlatCardFan，不 vendoring 原始碼；Apache-2.0 LICENSE 已讀，保留 package notices 與 Flutter license registry。只在可見步距 ≥48px 的寬度使用；窄屏／大字體退回可及捲動。正式 app 無新依賴，原有 Wikimedia 資產發行核對仍開放。 |
+| [card_game 2.0.0](https://pub.dev/packages/card_game/versions/2.0.0)，published 2025-04-28，archive SHA256 `d5f0720c3f320fda8adc17f02f155f94fea799efa6dd557091fc60ca4f8055d9`，repository [JLogical-Apps/card_game](https://github.com/JLogical-Apps/card_game) | **ISOLATED RESEARCH／正式採用 BLOCKED**：archive checksum 已自行核對，MIT LICENSE（Copyright 2025 JLogical）已讀；不修改／複製上游 source。獨立 experiments package 釘選版本與 lockfile；app 不依賴它。三項 probe 測試保留重現，不代表上游已修復。 |
 
-[playing_cards 0.4.1+11](https://pub.dev/packages/playing_cards) 已是目前 render-only dependency；官方 README 的 FlatCardFan 確認存在，下一步評估 13 張重疊排列是否保有 ≥48 觸控目標、鍵盤焦點／語意及橫向可達性。官方 [Flutter card template](https://github.com/flutter/games/blob/main/templates/card/README.md) 可作另一參考。bridge_game 不因 UI 需要而引進第二套規則；bridgegui 尚未釘選來源，本次未審核或複製。
+**Nickel 來源檔案（上述 SHA）：** `web/src/components/game/{HandFan.tsx,PlayingCard.tsx,BidBox.tsx,AuctionGrid.tsx,TrickArea.tsx,fanLayout.ts}`、`web/src/pages/Board.tsx`；`docs/design-brief.md` 明示其舊狀態描述不能取代已出貨 source。M2-F61 參照 `TrickArea.tsx` 的 seat compass、public state diff glide 與 collect sweep 互動概念，依本專案 PlayerView 在 Flutter 實作；沒有複製 TSX／CSS／素材，亦未採用上游延遲操作的 staging。這是來源／契約核對，沒有宣稱逐行移植或完成其整個 app 授權 inventory。
+
+**card_game 真實相容性結果：**
+
+1. `CardLinearGroup.getDraggableCardValues` 以尾端 stack 長度判定 maxGrabStackSize；設 1 時非最後一張回 null，不能直接當橋牌「任意合法單張」。PoC 以公開 API subclass 改成只提議一張允許牌，沒有自訂橋牌法則。
+2. 實際拖放後同步鎖住同版本提案，上游 `lib/src/cards/card_game.dart:200` 在 drag-end 重新呼叫已停用的 grab getter 並 `!`，重現 TypeError。測試先驗證只送一次 proposal、Core version 仍為 1，並明確捕捉這個既知錯誤；沒有把測試綠燈說成產品可玩。
+3. `card_game.dart` 的 AnimatedPositioned／DateTime 判定使用固定 300ms；MediaQuery disableAnimations=true 時 probe 仍觀察到非零 duration。尚無可用的上游 public duration override，因此必須有受測 upstream fix／明確 patch 才能通過我們的取消／reduce-motion gate。
+
+PoC custom style 只顯示已授權 Card.code，沒有匯入 52 張 SVG 到主 app；上游 package 自帶 assets，未逐張驗證其獨立授權，正式 binary 採用前仍需 inventory／排除。直接相依 collection（BSD 類 LICENSE）、equatable、flutter_svg、provider 及 nested（MIT LICENSE）已讀 installed LICENSE；完整 transitive list／版本／hash 在 [probe lockfile](../../experiments/card_game_probe/pubspec.lock)。CVE／全平台與長期維護評估 **NOT RUN**，不推論沒有問題。保留原 package LICENSE 義務，不宣稱 GitHub 公開即任意授權。
+
+**可重現命令／環境：** Windows、Flutter 3.47.8／Dart 3.13.7；在 `experiments/card_game_probe` 已執行 `flutter pub get --enforce-lockfile`、`flutter analyze --no-pub`、`flutter test --no-pub --reporter expanded`；analyze 無問題、probe 3/3 PASS＝已重現 gate，不是正式採用 PASS。主 app 最終 220/220、Web release PASS；新 SHA Chrome／probe CI 待 push。後續先決定是否做小型 upstream patch（必須保留 exact source/license/patch/test），再考慮接管拖放；暫不為替換而重寫全部現有 UI。
+
+Owner 已授權 Reuse First 與 Nickel Bridge 修改；實際釘選、授權界線、相容性探查及 M2-F60／F61 結論以上表為準。[Flutter 官方 card template](https://github.com/flutter/games/blob/main/templates/card/README.md) 可作後續參考，bridgegui 尚未釘選或複製；bridge_game 不因 UI 需要引進第二套規則。Nickel 完整依賴／素材 inventory、card_game package SVG 獨立權利與發行核對仍未完成。
 
 驗收 PoC：只餵公開固定 fixture 或 seat-filtered PlayerView → 自訂牌面 adapter → 點擊／拖曳 action intent → 原 Session／Gateway → Core validation → 新投影驅動動畫。保留 BEN 制度、計分與 server action ID。四人隱藏手只顯示數量／牌背，不把真暗牌塞進 isCardFlipped。Web 52 unique／13 tricks、明手控制、非法動作無 mutation、stale drag／取消、同 ID 重試與 reduced-motion 必測；裝置 QA 不在此 PoC 自動解除。來源、版本／SHA、license、notice、使用邊界及實測結果寫本節，沒有合適方案才記理由自製。
 

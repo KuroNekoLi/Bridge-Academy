@@ -10,6 +10,20 @@
 
 ## Flutter 玩家可操作功能
 
+## M2-F60｜重用 FlatCardFan 的可及弧形手牌排列
+
+專注牌桌（Local／Gateway 共用）在空間足夠時，使用既有 `playing_cards 0.4.1+11` 的 **FlatCardFan** 定位，再對子牌旋轉與高低位移形成輕微弧形；每張牌至少保留 48px 不被後牌遮住的操作區。13 張牌至少需 644px；不足、字體放大或只剩 0／1 張時保留原排列／水平捲動，不縮觸控目標。只接已授權的 child widgets，不修改 Core、排序、合法性或 submit。沒有新增正式 app 相依。
+
+程式：[BridgeCardStrip](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_strip.dart)、[專注桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；[四項重用測試](../../apps/bridge_academy_flutter/test/m2_reuse_fan_test.dart) 在 644／768／1280px 檢查弧度、逐張點擊可見區、鍵盤 Tab／Enter、窄屏／大字體退路與 0／1 張。與十項完整專注桌及六項動態測試合計 20/20 scoped PASS；完整驗證依本次新 SHA 為準。狀態 **ENGINEERING_PASS（本機 scoped）／LESSON_DELIVERED**；Chrome CI 待 push 後確認，A3.5／裝置與 Production gate 不變。
+
+另有隔離 [card_game probe](../../experiments/card_game_probe/) 與三項相容性測試：只載入 PlayerView；記錄上游單張 stack limit、同步鎖提案後 drag-end 空值例外、忽略 reduce-motion 三項限制。Probe 的綠燈表示**成功重現已知問題**，不是 card_game 產品驗收通過；正式 app 沒有依賴該實驗。Nickel 已釘選並核對 UI 邊界，未移植其程式／AI／資產，詳見 [研究紀錄](../research/RESEARCH_REPORTS.md#reuse-first-實作核對2026-10-26)。
+
+## M2-F61｜四方位公開牌入場與收墩
+
+專注桌的公開牌依北／東／南／西座位放進四個固定位置。已接受的引牌或跟牌從來源方位滑入；完成的四張公開墩牌由各自位置往 Core 公布的贏家位置收攏並淡出。還原盤面不重播，下一回合操作不等動畫結束。這是以 BBO 畫面作操作參考、以釘選 Nickel Bridge `TrickArea.tsx` 的公開狀態 diff／compass layout 作設計參考，未複製其程式、素材、規則或 AI。
+
+程式：[公開墩](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart)、[入場效果](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_public_card_entrance.dart)、[專注桌收墩](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；[專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證四方位、只對新牌演出、四牌往贏家移動、取消／減少動畫及 320／375／768／1280px 完整 52 張。只讀 PlayerView 的公開牌與完成墩，狀態 **ENGINEERING_PASS（本機 scoped）／LESSON_DELIVERED**；Chrome CI、真人及裝置驗收依實際新 run 判定。
+
 ## M2-F57｜專注單屏牌桌
 
 Local／Gateway 活動牌局可開啟專注牌桌，保留原 Session，返回工作區不重開局。四座位、牌號／莊家／身價／定約／墩數、公開叫牌、可見牌與叫牌盒整合在同頁。320／375／768／1280 × 812px 一般字體打牌測試不需垂直捲動；矮視窗與大字體採內容自然延伸的捲動模式。錯誤與重試仍可見，存檔失敗／恢復確認／Gateway pending 會鎖操作。程式：[共用專注牌桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)、[Local](../../apps/bridge_academy_flutter/lib/src/bridge_app.dart)、[Gateway](../../apps/bridge_academy_flutter/lib/src/gateway_table.dart)。
