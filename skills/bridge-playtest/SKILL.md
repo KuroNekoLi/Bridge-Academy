@@ -6,7 +6,7 @@ description: Designs reproducible contract bridge playtests, 100+ fixed-seed BEN
 # Bridge Playtest / QA
 
 ## Entry
-Read docs/ROADMAP.md, docs/BRIDGE_RULES_BASELINE.md, docs/poc/POC_002_BATCH_100.md and docs/DEVELOPMENT_STANDARDS.md. Declare environment, test dimension, actual sample size and success metrics before execution.
+Read docs/planning/ROADMAP.md, docs/implemented/BRIDGE_RULES.md, docs/research/BEN_SYSTEMS.md and docs/implemented/ENGINEERING_NOTES.md. Declare environment, test dimension, actual sample size and success metrics before execution.
 
 ## Test layers — never mix their claims
 - **Rules unit/property**: deterministic Bridge Core, no neural AI needed.
