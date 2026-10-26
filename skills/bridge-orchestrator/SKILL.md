@@ -6,7 +6,7 @@ description: Coordinates Bridge Academy implementation milestones, architecture 
 # Bridge Orchestrator
 
 ## Entry
-Read AGENTS.md, docs/DECISIONS.md, docs/ROADMAP.md, docs/ARCHITECTURE.md and the directly relevant POC report. Confirm the requested milestone, branch and remaining gates; do not infer hidden Work files or uncommitted test evidence.
+Read AGENTS.md, docs/planning/DECISIONS.md, docs/planning/ROADMAP.md, docs/implemented/ARCHITECTURE.md and the directly relevant POC report. Confirm the requested milestone, branch and remaining gates; do not infer hidden Work files or uncommitted test evidence.
 
 ## Ownership
 Own **task breakdown, interfaces, sequencing, evidence collection and decision escalation**. Do not replace subject-matter reviews with your own assurances. Use only the specialist skill actually needed:
@@ -20,7 +20,7 @@ Own **task breakdown, interfaces, sequencing, evidence collection and decision e
 
 ## Product-sequencing rule (2026-10-15)
 
-For a product-planning or generic "continue development" request, review docs/product/BRIDGE_ACADEMY_PRD_V1.md, docs/product/PRODUCT_DELIVERY_ROADMAP.md and docs/product/COMPETITOR_BENCHMARK.md **before** choosing a slice. Preserve docs/ROADMAP.md as the historical engineering ledger; use PRD player journeys as the ultimate product acceptance gate. A1 Board Management is engineering verified. A2 local prototype has verified Core/Web checkpoint tests, but its encrypted, atomic, migration-tested storage and true device process-restart gates remain unverified. A2.3 Android real force-stop/two-launch resume is already verified; A2.4 warning was implemented but could vanish after a second restart. A2.5 preserves warning/acknowledgment in the checkpoint commit marker across restarts ([Flutter 50/50 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604483), Android/real BEN regressing); encrypted/transactional storage remains required for release. A2.7 native encrypted SQLite adapter is implemented; CI, browser secure storage, migration/recovery checks and future physical device QA remain required before Product READY. User defers device testing until large features are complete. Separate:
+For a product-planning or generic "continue development" request, review docs/planning/PRODUCT_REQUIREMENTS.md, docs/planning/ROADMAP.md and docs/research/COMPETITOR_BENCHMARK.md **before** choosing a slice. Preserve docs/planning/ROADMAP.md as the historical engineering ledger; use PRD player journeys as the ultimate product acceptance gate. A1 Board Management is engineering verified. A2 local prototype has verified Core/Web checkpoint tests, but its encrypted, atomic, migration-tested storage and true device process-restart gates remain unverified. A2.3 Android real force-stop/two-launch resume is already verified; A2.4 warning was implemented but could vanish after a second restart. A2.5 preserves warning/acknowledgment in the checkpoint commit marker across restarts ([Flutter 50/50 PASS](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/38738604483), Android/real BEN regressing); encrypted/transactional storage remains required for release. A2.7 native encrypted SQLite adapter is implemented; CI, browser secure storage, migration/recovery checks and future physical device QA remain required before Product READY. User defers device testing until large features are complete. Separate:
 - technical-domain correctness (actual code and CI)
 - client/real-BEN E2E on specific devices
 - deployed product's durability/privacy/license/release readiness.
@@ -34,9 +34,9 @@ Create a minimal execution contract from the earliest unverified P0 dependency. 
 4. Maintain a dependency graph: M1 rules precede M2 bot UX; real BEN evidence precedes any production performance claim; convention compatibility precedes explanation quality claims.
 5. Route disputed policy choices to the user, but make ordinary engineering defaults reversible and explicit.
 6. Track evidence per task: executed command, environment, versions, seeds/PBN, observed results, limitations.
-7. **When each feature reaches acceptance**, invoke bridge-learning-mentor: assign an Mx-Fxx ID, generate a real-code teaching note following docs/learning/FEATURE_LESSON_TEMPLATE.md, and update docs/learning/INDEX.md in the same direct-push change set. A milestone recap does not replace per-feature notes. On completion explain one core idea and offer one learner exercise in Chat.
+7. **When each feature reaches acceptance**, invoke bridge-learning-mentor: assign an Mx-Fxx ID, generate a real-code teaching note following docs/implemented/ENGINEERING_NOTES.md, and update docs/implemented/FEATURES.md in the same direct-push change set. A milestone recap does not replace per-feature notes. On completion explain one core idea and offer one learner exercise in Chat.
 8. Before final status, compare results against engineering AND learning-delivery acceptance; report PASS, FAIL, BLOCKED, NOT RUN separately; hand off unresolved issues. Do not equate documentation delivered with learner mastery.
-9. When a formal new decision is accepted, update docs/DECISIONS.md and the affected source-of-truth doc in the same change.
+9. When a formal new decision is accepted, update docs/planning/DECISIONS.md and the affected source-of-truth doc in the same change.
 
 ## Required deliverable
 - Scope and plan (including out-of-scope)
