@@ -1,5 +1,21 @@
 # Architecture and Product Decision Log
 
+## ADR-039 — 帳號用量監看與 30% 先交接（2026-10-26）
+
+使用者明確要求持續監看用量、剩餘 30% 先整理交接，並設為本專案硬性規範。根 AGENTS.md 現在要求於 task 開始／主要工作節點及持續工作每 15 分鐘讀取可用帳號用量工具；任一 primary／secondary 剩餘 <=30% 時，先更新 `docs/handoff/CURRENT_HANDOFF.md` 再開始其他大型工作。所有可用窗口以 `100-usedPercent` 計算，帳號共用、缺欄位 UNKNOWN，不把 credits/context 當成額度。
+
+已透過 app 工具建立目前 chat 的本機 15 分鐘 heartbeat `bridge-academy`（**Bridge Academy 額度與交接監看**），大於門檻且無 actionable 變化時保持安靜，低於門檻先交接並安全收尾。機器/app 關閉不保證排程即時，工具失敗不得讀憑證繞過。詳見 [用量政策](USAGE_AND_HANDOFF_POLICY.md)。這不授權購買額度、換模型、開子代理、部署、刪除資料或恢復 owner-held device QA。
+
+## ADR-038 — 可操作的練習工作區與可替換牌面層（2026-10-26）
+
+依本次使用者「整理全專案規劃後實作，改善到 BBO／新睿類型 UI/UX，可評估 Dart 撲克牌套件」要求，先交付既有 A3 介面的 U1/U2：以使用意圖分組可用練習、打牌／學院／本機複盤／我的導覽、切頁保留同一 Session、未完牌重發確認，以及叫牌階段可見的 ownCards 與共用牌面 renderer。[完整缺口及交付計畫](product/PRODUCT_COMPLETION_PLAN_2026_10.md) 補充最新程式／驗收盤點，不覆寫舊 Roadmap 歷史或降低 A4.5／A7／M3–M5 gate。
+
+**呈現邊界**：釘選 `playing_cards 0.4.1+11`（Apache-2.0），只把 PlayerView 中的 Card 單向映射到其公開顯示 API；不呼叫發牌 helper、不把暗牌傳入 renderer、不改 Core、存檔 schema 或 bot 決策。rank/suit 全部採字形 style；未使用的 upstream Wikimedia 圖像仍需公開 binary 發行前的來源／排除審核，詳見 [OSS audit](OPEN_SOURCE_AUDIT.md)。`card_game 2.0.0` 僅列研究候選，未新增依賴。
+
+**產品／QA 邊界**：Gateway 未有完成歷史時不顯示假的 Review tab；不加入無法操作的比賽入口。這一批為本機／Web UI 功能，不代表部署服務、BBO 全功能對等、可玩自訂 AI、正式 Precision 或產品 READY。Android/iOS 模擬器／實機 UI/E2E hold 不變。接續 U3 單屏操作與動畫，部署／公平比賽按原依賴順序。
+
+[M2-F53](learning/features/M2_F53_PRACTICE_WORKSPACE.md) · [M2-F54](learning/features/M2_F54_CARD_PRESENTATION.md) · [實際驗收紀錄](product/UX_WORKSPACE_ACCEPTANCE.md)。
+
 ## ADR-037 — M4 草稿工程結案、M5 證據優先 AI 教練啟動（2026-10-25）
 
 **M4.1–M4.7 DRAFT/REVIEW ENGINEERING COMPLETE; CUSTOM-AI EXECUTION NO-GO.** 自訂 SAYC/2/1 草稿已能編輯、版控 SHA、檢視 diff、版本檢驗、快進式匯入匯出、產生專家待審案例，並由真 Gateway HTTP 明確拒絕任何玩家自行宣稱 `SUPPORTED` 的自訂卡；[M4 scoped CI #40139553945](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139553945) 全套測試成功。因尚未有可信 BEN/BBA 客製 artifact、雙方 reader、100+ expert Goldens，**M4 不能標成「自訂 AI 可玩」**。准許平行開始獨立 M5 教練基礎功能，不解除 M3/M4 Release Gate。

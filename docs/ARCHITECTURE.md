@@ -1,5 +1,13 @@
 # Architecture v0.1 — boundaries first
 
+## A3 UI 延伸：工作區與牌面 adapter（2026-10-26）
+
+`BridgeAcademyApp` 一次建立本機 `BridgeSession` 或 opt-in `GatewayGameSession`，導覽僅切呈現狀態。Play／本機 Review 共用同一個 `BridgeTable` State；Me 經 IndexedStack 保留原頁，學院以 route 返回。開始另一副未完成自由局前先要求 UI 明確選擇，取消不提交 Session command。
+
+呈現資料流：`Core → filtered PlayerView → BridgePlayerHand/BridgeSeatPanel/BridgeCurrentTrick → BridgeCardFace → playing_cards PlayingCardView`。`displayCard` 只有 suit/rank 單向轉換；`sortedVisibleCards` 複製可見清單，不修改權威順序。叫牌時可顯示自己的牌，但不可出牌；只有 Core 投影的合法可行動牌可啟用輸入。動作仍 `onTap → session.submitCard → Coordinator/Core`，套件不取得 Deal／GameState／Token、不決定 move success。明手仍依 dummyExposed 與 handOwner。
+
+共用 renderer 套件固定 `0.4.1+11`；所有標準 suit/rank 以字形覆寫，不呼叫內附圖像；授權頁保留 Flutter 產生的 notices。圖像打包／個別來源仍是 release gate，見 [OSS audit](OPEN_SOURCE_AUDIT.md)。Gateway 仍獨立持有伺服器 authority，不因新增導覽建立本機 fallback。
+
 ## M3.6 — 真原生 BBA 約定推論接入 Bridge Core 合法出牌
 
 最新研究流程為：`BbaResearchTablePolicy.choose(PlayerView)` 取得當前座位合法可打 `legalCards` → 私有 `/v1/precision/auction-inference` → BBA `BBABotBid.find_info` 依同一固定 Meckwell/SAYC/21GF 約定卡**推估每座位花色長度** → Dart 先嚴格驗證 16 項長度、來源及 pinned SHA，再以簡單且可測試的搭檔支持分數對 **只有 legalCards** 排序 → `CardAction` proposal → `BridgeGame.apply` 審核。終局評分仍完全由 Core 決定。

@@ -3,6 +3,7 @@ import 'package:bridge_core/bridge_core.dart' as bridge show Card;
 import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
+import 'bridge_card_face.dart';
 
 /// The table widgets are deliberately presentation-only:
 /// they receive a seat-filtered PlayerView, never Deal or BridgeSession.
@@ -73,7 +74,7 @@ class BridgeTableSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
         key: const Key('bridge_board'),
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: const Color(0xFFD8E9DE),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: LayoutBuilder(
@@ -119,40 +120,50 @@ class BridgeTableSurface extends StatelessWidget {
 }
 
 class BridgeCurrentTrick extends StatelessWidget {
-  const BridgeCurrentTrick({
-    super.key, required this.view, required this.copy,
-  });
+  const BridgeCurrentTrick({super.key, required this.view, required this.copy});
   final PlayerView view;
   final AppCopy copy;
 
   @override
   Widget build(BuildContext context) => Padding(
-        key: const Key('current_trick'),
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Text(copy.t('currentTrick'),
-                style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
-            if (view.currentTrick.isEmpty)
-              Text(copy.t('notYet'))
-            else
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 6,
-                runSpacing: 4,
-                children: [
-                  for (final play in view.currentTrick)
-                    Chip(
-                      label: Text(
-                        '${play.handOwner.letter}: ${bridgeCardText(play.card)}',
-                      ),
-                    ),
-                ],
-              ),
-          ],
+    key: const Key('current_trick'),
+    padding: const EdgeInsets.all(12),
+    child: Column(
+      children: [
+        Text(
+          copy.t('currentTrick'),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
-      );
+        const SizedBox(height: 8),
+        if (view.currentTrick.isEmpty)
+          Text(copy.t('notYet'))
+        else
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              for (final play in view.currentTrick)
+                Semantics(
+                  label:
+                      '${copy.seat(play.handOwner.letter)}: ${copy.cardName(play.card.code)}',
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(copy.seat(play.handOwner.letter)),
+                      SizedBox(
+                        width: 54,
+                        height: 76,
+                        child: BridgeCardFace(card: play.card),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+      ],
+    ),
+  );
 }
 
 class BridgeSeatPanel extends StatelessWidget {
@@ -214,7 +225,7 @@ class BridgeSeatPanel extends StatelessWidget {
               alignment: WrapAlignment.center,
               spacing: 4,
               children: [
-                for (final card in view.dummyCards!)
+                for (final card in sortedVisibleCards(view.dummyCards!))
                   BridgePlayingCardButton(
                     card: card,
                     prefix: 'dummy_card_',
@@ -263,7 +274,7 @@ class BridgePlayerHand extends StatelessWidget {
                 spacing: 6,
                 runSpacing: 5,
                 children: [
-                  for (final card in view.ownCards)
+                  for (final card in sortedVisibleCards(view.ownCards))
                     BridgePlayingCardButton(
                       card: card,
                       prefix: 'hand_card_',
@@ -302,40 +313,64 @@ class BridgePlayingCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-        label: copy.accessibleCard(card.code, playable: legal && !busy),
-        button: true,
-        enabled: legal && !busy,
-        child: Tooltip(
-        message: copy.formatCard(card.code, legal: legal && !busy),
-        excludeFromSemantics: true,
-        child: OutlinedButton(
-          key: Key(prefix + card.code),
-          onPressed: legal && !busy ? onTap : null,
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            minimumSize: const Size(48, 48),
+    container: true,
+    label: copy.accessibleCard(card.code, playable: legal && !busy),
+    button: true,
+    enabled: legal && !busy,
+    excludeSemantics: true,
+    onTap: legal && !busy ? onTap : null,
+    child: Tooltip(
+      message: copy.formatCard(card.code, legal: legal && !busy),
+      excludeFromSemantics: true,
+      child: OutlinedButton(
+        key: Key(prefix + card.code),
+        onPressed: legal && !busy ? onTap : null,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(2),
+          minimumSize: const Size(48, 48),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+          side: BorderSide(
+            color: legal && !busy
+                ? Theme.of(context).colorScheme.primary
+                : const Color(0xFF9BAAA2),
+            width: legal && !busy ? 2 : 1,
           ),
-          // Preserve text geometry when legality changes mid-bot turn.
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+        ),
+        // Preserve text geometry when legality changes mid-bot turn.
+        child: SizedBox(
+          width: 58,
+          height: 84,
+          child: Stack(
             children: [
-              Text(bridgeCardText(card)),
-              const SizedBox(width: 3),
-              ExcludeSemantics(
-                child: Icon(
-                  Icons.check,
-                  size: 13,
-                  color: legal && !busy
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.transparent,
+              Positioned.fill(child: BridgeCardFace(card: card)),
+              Positioned(
+                right: 2,
+                bottom: 2,
+                child: ExcludeSemantics(
+                  child: Icon(
+                    legal && !busy ? Icons.check_circle : Icons.lock_outline,
+                    size: 16,
+                    color: legal && !busy
+                        ? Theme.of(context).colorScheme.primary
+                        : const Color(0xFF62746A),
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        ),
-      );
+      ),
+    ),
+  );
 }
+
+/// Sort a copy of the permitted projection; never touch Core's card order.
+List<bridge.Card> sortedVisibleCards(List<bridge.Card> visible) =>
+    [...visible]..sort((a, b) {
+      const order = [Suit.spades, Suit.hearts, Suit.diamonds, Suit.clubs];
+      final suit = order.indexOf(a.suit).compareTo(order.indexOf(b.suit));
+      return suit != 0 ? suit : b.rank.index.compareTo(a.rank.index);
+    });
 
 String bridgeCardText(bridge.Card card) =>
     (switch (card.suit) {
@@ -343,4 +378,5 @@ String bridgeCardText(bridge.Card card) =>
       Suit.diamonds => '♦',
       Suit.hearts => '♥',
       Suit.spades => '♠',
-    }) + card.rank.symbol;
+    }) +
+    card.rank.symbol;

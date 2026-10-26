@@ -21,6 +21,36 @@ Future<void> tapControl(WidgetTester tester, String key) async {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  testWidgets('REAL BROWSER: card renderer completes a full Demo board', (tester) async {
+    final session = BridgeSession();
+    addTearDown(session.dispose);
+    await tester.pumpWidget(BridgeAcademyApp(session: session));
+    await tapControl(tester, 'new_game');
+    await tapControl(tester, 'make_bid');
+    var selections = 0;
+    while (!session.finished && selections < 52) {
+      final view = session.view!;
+      expect(view.canAct, isTrue);
+      final prefix = view.turn == view.viewer ? 'hand_card_' : 'dummy_card_';
+      await tapControl(tester, '$prefix${view.legalCards.first.code}');
+      selections++;
+    }
+    final terminal = session.view!;
+    expect(session.finished, isTrue);
+    expect(selections, 26); // North + its exposed South dummy.
+    expect(terminal.completedTricks.length, 13);
+    expect(terminal.completedTricks.expand((trick) => trick.plays)
+      .map((play) => play.card).toSet().length, 52);
+    expect(terminal.version, terminal.auction.length + 52);
+    expect(terminal.remainingCards.values, everyElement(0));
+    expect(terminal.nsScore, isNotNull);
+    expect(find.byKey(const Key('final_result')), findsOneWidget);
+    await tapControl(tester, 'nav_review');
+    expect(find.byKey(const Key('history_panel')), findsOneWidget);
+    await tapControl(tester, 'nav_play');
+    expect(session.view!.version, terminal.version);
+  });
+
   testWidgets('REAL BROWSER: language, pass out, restart, dummy play',
       (tester) async {
     final frameworkErrors = <String>[];

@@ -69,6 +69,56 @@ class AppCopy {
       ].join(', ');
 
   static const Map<String, List<String>> _strings = {
+    'navPlay': ['打牌', 'Play'],
+    'navLearn': ['學院', 'Learn'],
+    'navReview': ['複盤', 'Review'],
+    'navMe': ['我的', 'Me'],
+    'hubTitle': ['從一副好牌開始', 'A little practice. A better game.'],
+    'hubSubtitle': [
+      '選擇今天的練習，照自己的步調打牌與學習。',
+      'Choose a practice and play at your own pace.',
+    ],
+    'hubOtherPractice': ['下一次，想練什麼？', 'What would you like to practice next?'],
+    'hubSettings': ['牌桌偏好', 'Table preferences'],
+    'hubFreeTitle': ['自由打牌', 'Free play'],
+    'hubFreeDescription': [
+      '從叫牌到最後一墩，完整練習一副牌。先選擇對手與座位。',
+      'Play a full deal, from auction to final trick. Choose your opponents and seat.',
+    ],
+    'hubFourTitle': ['四副練習', 'Four-board practice'],
+    'hubFourDescription': [
+      '連打四副新牌，逐副查看結果與累計分數。無排名。',
+      'Play four fresh deals and review your local running score. Unranked.',
+    ],
+    'hubDeclareTitle': ['專心練主打', 'Just declare'],
+    'hubDeclareDescription': [
+      '選擇合約，直接練習打牌。使用規則示範 Bot。',
+      'Choose a contract and focus on cardplay with the rules demo bot.',
+    ],
+    'hubDailyTitle': ['每日練習', 'Daily practice'],
+    'hubDailyDescription': [
+      '每天一組固定原創牌例，可中途繼續。示範 Bot，無排名。',
+      'An original fixed set each day, with resume. Demo bot, unranked.',
+    ],
+    'hubBidTitle': ['練習叫牌', 'Bidding practice'],
+    'hubBidDescription': [
+      '只練叫牌並查看規則提示；約定含義以已審核證據為準。',
+      'Focus on auctions and rule hints. Convention meanings require reviewed evidence.',
+    ],
+    'hubReviewTitle': ['回顧與重打', 'Review your deals'],
+    'hubReviewDescription': [
+      '搜尋已完成牌局、逐步複盤，或匯入與匯出 PBN。',
+      'Search completed deals, replay each action, or import and export PBN.',
+    ],
+    'meDescription': [
+      '調整語言，管理本機約定草稿，並了解公開叫牌證據。',
+      'Choose your language, manage local convention drafts and explore public auction evidence.',
+    ],
+    'licenses': ['開源授權', 'Open-source licenses'],
+    'replaceDealTitle': ['放棄目前牌局？', 'Leave this deal?'],
+    'replaceDealBody': ['這副牌尚未完成。重新發牌會取代目前進度。', 'This deal is unfinished. Dealing again will replace your current progress.'],
+    'keepDeal': ['繼續目前牌局', 'Keep playing'],
+    'replaceDeal': ['放棄並重新發牌', 'Leave and deal again'],
     'title': ['Bridge Academy｜橋牌學院', 'Bridge Academy'],
     'language': ['切換英文', 'Switch to Chinese'],
     'academyOpen': ['開啟橋牌學院', 'Open bridge lessons'],

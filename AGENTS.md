@@ -1,5 +1,14 @@
 # Bridge Academy — Agent Operating Contract
 
+## Mandatory quota monitoring and 30% handoff (owner-approved 2026-10-26)
+
+- **Hard requirement for every agent working on this project:** read actual Codex usage at task start, before starting a substantial new slice, after major verification, and before commit/push/final handoff; during sustained work check at least every 15 minutes when tools are available. Do not estimate remaining quota from context length or number of messages.
+- Use the app's `get_usage_limits` tool. Prefer available `rateLimitsByLimitId`, falling back to `rateLimits` only when the former is absent. For every numeric primary/secondary window, calculate `remainingPercent = clamp(100 - usedPercent, 0, 100)`. These are **account-shared** windows, not project-only consumption. Missing/null fields mean UNKNOWN, never zero consumption or unlimited quota.
+- If **any available window has remainingPercent <= 30**, **first create/update [docs/handoff/CURRENT_HANDOFF.md](docs/handoff/CURRENT_HANDOFF.md)** before another substantial task: goal/scope, branch + SHA, working tree/uncommitted changes, completed/pending items, exact EXECUTED/FAILED/BLOCKED/NOT RUN tests, CI links and status, next commands, risk/rollback and pending user decisions. Record the triggering window, percentage and check time; omit credentials, account identifiers, tokens and private deals.
+- After preparing the handoff, notify the user. Below the threshold, prioritize safe checkpoints, necessary repairs and bounded verification; do not start a large new feature until quota recovers or the user explicitly changes this policy. Do not interpret this as permission to discard changes, rewrite Git history, purchase credits, switch models, spawn agents, deploy, or run held device QA.
+- If the tool is unavailable, mark usage UNKNOWN and prepare a current handoff before large new work; explain the limitation without pretending a monitor is running. Never inspect credentials to bypass the supported tool.
+- The local thread heartbeat **Bridge Academy 額度與交接監看** checks every 15 minutes when supported. Do not create duplicates; preserve its quiet-until-actionable behavior. A scheduler is a backup to active-task checks, not proof of continuous monitoring when the machine/app is closed. See [policy and recovery details](docs/USAGE_AND_HANDOFF_POLICY.md).
+
 This file is the entry point for Codex, Work and other coding agents. The repository docs, not old chats or model memory, are the working source of truth. User-approved product decisions outrank agent assumptions. In a contradiction, report it and request a decision before silently changing the baseline.
 
 ## Product-level source of truth (approved 2026-10-15)

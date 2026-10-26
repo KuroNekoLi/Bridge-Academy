@@ -157,6 +157,9 @@ class _GatewayTableState extends State<GatewayTable> {
                   ),
                   BridgeTableToolbar(view: view, copy: copy),
                   if (view.phase == Phase.auction)
+                    BridgePlayerHand(view: view, copy: copy,
+                      actionsPaused: true, onPlayCard: session.submitCard),
+                  if (view.phase == Phase.auction)
                     BridgeBiddingBox(
                       copy: copy,
                       selectedLevel: _level,

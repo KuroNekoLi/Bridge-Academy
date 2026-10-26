@@ -1,5 +1,7 @@
 # Bridge Academy
 
+> **2026-10-26 UI/UX**：[全產品未完成規劃](docs/product/PRODUCT_COMPLETION_PLAN_2026_10.md)與 [U1/U2 驗收](docs/product/UX_WORKSPACE_ACCEPTANCE.md)。Flutter 新增練習卡片入口、打牌／學院／本機複盤／我的導覽與未完牌重發確認；本機／Gateway 叫牌可看自己的手牌，共用釘選 `playing_cards` 呈現層。**尚未完成 BBO／新睿全功能對等、出牌動畫、公開 BEN、雲歷史、排名與多人**；A3.5／裝置 QA hold 保留。
+
 > **2026-10-25 M4→M5**：M4 自訂約定**草稿／審查** scoped engineering 已完成，但實際可玩自訂 BEN/BBA AI 尚缺可執行版本與專家規則證據（release NO-GO）。M5 已實作 [公開叫牌證據教練](packages/bridge_conventions/lib/src/auction_coach.dart)、[雙語教學頁](apps/bridge_academy_flutter/lib/src/conventions/auction_coach_page.dart) 與 Gateway 賽後公開叫牌檢視。無真 AI 最佳叫品臆測、無隱藏手牌。詳見 [M5 Acceptance](docs/research/M5_PUBLIC_AUCTION_COACH_ACCEPTANCE.md) · [M5 CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/workflows/m5-coach.yml)。
 
 

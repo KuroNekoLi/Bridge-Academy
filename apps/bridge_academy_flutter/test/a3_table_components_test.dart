@@ -27,7 +27,7 @@ void main() {
     expect(find.text('發牌者: 東（E）'), findsOneWidget);
     expect(find.text('局況: 南北有局'), findsOneWidget);
     expect(find.byKey(const Key('dummy_revealed')), findsNothing);
-    expect(find.byType(BridgePlayerHand), findsNothing);
+    expect(find.byType(BridgePlayerHand), findsOneWidget);
     // A concealed opponent seat has only its card count, not card buttons.
     expect(find.byKey(const Key('seat_W')), findsOneWidget);
     expect(find.byKey(const Key('dummy_card_SA')), findsNothing);

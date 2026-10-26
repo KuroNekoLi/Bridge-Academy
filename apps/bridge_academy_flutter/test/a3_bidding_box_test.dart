@@ -11,6 +11,7 @@ void main() {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
+    await tester.ensureVisible(find.byKey(const Key('new_game')));
     await tester.tap(find.byKey(const Key('new_game')));
     await tester.pumpAndSettle();
 
@@ -41,6 +42,7 @@ void main() {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
+    await tester.ensureVisible(find.byKey(const Key('new_game')));
     await tester.tap(find.byKey(const Key('new_game')));
     await tester.pumpAndSettle();
 

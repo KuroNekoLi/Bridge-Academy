@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/gateway_game_session.dart';
 import 'package:bridge_academy_flutter/src/gateway_http_api.dart';
+import 'package:bridge_academy_flutter/src/widgets/bridge_card_face.dart';
 import 'package:bridge_core/bridge_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -221,6 +222,17 @@ void main() {
     expect(find.byKey(const Key('bridge_board')), findsOneWidget);
     expect(find.byKey(const Key('gateway_error_message')), findsNothing);
     expect(find.byKey(const Key('dummy_revealed')), findsNothing);
+    expect(find.byKey(const Key('nav_review')), findsNothing);
+    expect(
+      tester.widgetList<BridgeCardFace>(find.byType(BridgeCardFace)).map((w) => w.card),
+      unorderedEquals(fixture.coordinator.humanView.ownCards),
+    );
+    final version = fixture.coordinator.humanView.version;
+    await tester.tap(find.byKey(const Key('nav_me')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('nav_play')));
+    await tester.pumpAndSettle();
+    expect(fixture.coordinator.humanView.version, version);
     await tester.tap(find.byKey(const Key('toggle_locale')));
     await tester.pumpAndSettle();
     expect(find.textContaining('Server-owned Gateway table'), findsOneWidget);

@@ -2,7 +2,8 @@ import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:bridge_dds_adapter/bridge_dds_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart'
+    show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_copy.dart';
@@ -19,6 +20,7 @@ import 'conventions/auction_coach_page.dart';
 import 'widgets/bridge_table_toolbar.dart';
 import 'widgets/bridge_replay_panel.dart';
 import 'widgets/bridge_history_panel.dart';
+import 'widgets/bridge_practice_hub.dart';
 import 'session_persistence.dart';
 import 'completed_history_store.dart';
 import 'secure_session_persistence.dart';
@@ -28,8 +30,14 @@ import 'gateway_table.dart';
 
 /// App composition: Flutter sees only PlayerView through BridgeSession.
 class BridgeAcademyApp extends StatefulWidget {
-  const BridgeAcademyApp({super.key, this.session, this.gatewayApi, this.ddsAnalyzer});
+  const BridgeAcademyApp({
+    super.key,
+    this.session,
+    this.gatewayApi,
+    this.ddsAnalyzer,
+  });
   final BridgeSession? session;
+
   /// Test-injected Gateway API; a configured origin is an explicit opt-in.
   final GatewayApi? gatewayApi;
   final DoubleDummyAnalyzer? ddsAnalyzer;
@@ -45,6 +53,7 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
   bool _ownsSession = false;
   bool _gatewayConfigError = false;
   bool _isEnglish = false;
+  int _destination = 0;
 
   @override
   void initState() {
@@ -57,7 +66,8 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
     const gatewayOrigin = String.fromEnvironment('BRIDGE_GATEWAY_ORIGIN');
     if (widget.gatewayApi != null || gatewayOrigin.isNotEmpty) {
       try {
-        final api = widget.gatewayApi ??
+        final api =
+            widget.gatewayApi ??
             (_ownedGatewayApi = GatewayHttpApi(
               origin: Uri.parse(gatewayOrigin),
             ));
@@ -70,7 +80,8 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
 
     _ownsSession = true;
     // Original encrypted local Demo / developer BEN behavior unchanged.
-    final mobile = !kIsWeb &&
+    final mobile =
+        !kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS);
     _session = BridgeSession(
@@ -78,18 +89,18 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
       dailyStore: mobile
           ? EncryptedDailyPracticeStore.native()
           : kIsWeb
-              ? EncryptedDailyPracticeStore.browser()
-              : MemoryDailyPracticeStore(),
+          ? EncryptedDailyPracticeStore.browser()
+          : MemoryDailyPracticeStore(),
       historyStore: mobile
           ? EncryptedCompletedHistoryStore.native()
           : kIsWeb
-              ? EncryptedCompletedHistoryStore.browser()
-              : MemoryCompletedHistoryStore(),
+          ? EncryptedCompletedHistoryStore.browser()
+          : MemoryCompletedHistoryStore(),
       archiveStore: mobile
           ? EncryptedTransactionalSessionArchiveStore.native()
           : kIsWeb
-              ? EncryptedTransactionalSessionArchiveStore.browser()
-              : PreferencesSessionArchiveStore(),
+          ? EncryptedTransactionalSessionArchiveStore.browser()
+          : PreferencesSessionArchiveStore(),
     );
     _session!.restoreSavedGame(); // Also loads daily and history archives.
   }
@@ -126,11 +137,22 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: const Color(0xFF0C746E),
-        scaffoldBackgroundColor: const Color(0xFFF2F6F3),
+        scaffoldBackgroundColor: const Color(0xFFF3F4EE),
+        cardTheme: CardThemeData(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: Color(0xFFDDE3DA)),
+          ),
+        ),
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text(copy.t('title'), maxLines: 1, overflow: TextOverflow.ellipsis),
+          title: Text(
+            copy.t('title'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           actions: [
             Builder(
               builder: (navigatorContext) => IconButton(
@@ -144,31 +166,6 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
                 icon: const Icon(Icons.school_outlined),
               ),
             ),
-            Builder(
-              builder: (navigatorContext) => IconButton(
-                key: const Key('m4_open_custom_conventions'),
-                tooltip: copy.t('m4Open'),
-                onPressed: () => Navigator.of(navigatorContext).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => CustomConventionDraftPage(
-                        isEnglish: _isEnglish),
-                  ),
-                ),
-                icon: const Icon(Icons.edit_note_outlined),
-              ),
-            ),
-            Builder(
-              builder: (navigatorContext) => IconButton(
-                key: const Key('m5_open_coach'),
-                tooltip: copy.t('m5CoachOpen'),
-                onPressed: () => Navigator.of(navigatorContext).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => AuctionCoachPage(isEnglish: _isEnglish),
-                  ),
-                ),
-                icon: const Icon(Icons.psychology_alt_outlined),
-              ),
-            ),
             IconButton(
               key: const Key('toggle_locale'),
               tooltip: copy.t('language'),
@@ -177,21 +174,129 @@ class _BridgeAcademyAppState extends State<BridgeAcademyApp> {
             ),
           ],
         ),
-        body: _gatewayConfigError
-            ? Center(child: Text(copy.t('gatewayInvalidConfig'),
-                key: const Key('gateway_invalid_config')))
-            : _gateway != null
+        bottomNavigationBar: Builder(
+          builder: (context) => NavigationBar(
+            key: const Key('workspace_navigation'),
+            selectedIndex: _destination,
+            labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+            onDestinationSelected: (index) {
+              if (index == 1) {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => AcademyPage(isEnglish: _isEnglish),
+                  ),
+                );
+              } else {
+                setState(() => _destination = index);
+              }
+            },
+            destinations: [
+              NavigationDestination(
+                key: const Key('nav_play'),
+                icon: const Icon(Icons.style_outlined),
+                label: copy.t('navPlay'),
+              ),
+              NavigationDestination(
+                key: const Key('nav_learn'),
+                icon: const Icon(Icons.school_outlined),
+                label: copy.t('navLearn'),
+              ),
+              if (_session != null)
+                NavigationDestination(
+                  key: const Key('nav_review'),
+                  icon: const Icon(Icons.history),
+                  label: copy.t('navReview'),
+                ),
+              NavigationDestination(
+                key: const Key('nav_me'),
+                icon: const Icon(Icons.tune),
+                label: copy.t('navMe'),
+              ),
+            ],
+          ),
+        ),
+        body: IndexedStack(
+          index: _destination == (_session != null ? 3 : 2) ? 1 : 0,
+          children: [
+            _gatewayConfigError
+                ? Center(
+                    child: Text(
+                      copy.t('gatewayInvalidConfig'),
+                      key: const Key('gateway_invalid_config'),
+                    ),
+                  )
+                : _gateway != null
                 ? GatewayTable(session: _gateway!, copy: copy)
-                : BridgeTable(session: _session!, copy: copy),
+                : BridgeTable(
+                    session: _session!,
+                    copy: copy,
+                    historyOnly: _destination == 2,
+                  ),
+            Builder(
+              builder: (context) => ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
+                  Text(
+                    copy.t('navMe'),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(copy.t('meDescription')),
+                  const SizedBox(height: 16),
+                  ListTile(
+                    leading: const Icon(Icons.language),
+                    title: Text(copy.t('language')),
+                    onTap: () => setState(() => _isEnglish = !_isEnglish),
+                  ),
+                  ListTile(
+                    key: const Key('m4_open_custom_conventions'),
+                    leading: const Icon(Icons.edit_note_outlined),
+                    title: Text(copy.t('m4Open')),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            CustomConventionDraftPage(isEnglish: _isEnglish),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    key: const Key('m5_open_coach'),
+                    leading: const Icon(Icons.psychology_alt_outlined),
+                    title: Text(copy.t('m5CoachOpen')),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => AuctionCoachPage(isEnglish: _isEnglish),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.info_outline),
+                    title: Text(copy.t('licenses')),
+                    onTap: () => showLicensePage(
+                      context: context,
+                      applicationName: copy.t('title'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class BridgeTable extends StatefulWidget {
-  const BridgeTable({super.key, required this.session, required this.copy});
+  const BridgeTable({
+    super.key,
+    required this.session,
+    required this.copy,
+    this.historyOnly = false,
+  });
   final BridgeSession session;
   final AppCopy copy;
+  final bool historyOnly;
 
   @override
   State<BridgeTable> createState() => _BridgeTableState();
@@ -224,9 +329,11 @@ class _BridgeTableState extends State<BridgeTable> {
     setState(() {
       _selectedSeat = widget.session.humanSeat;
       _selectedMode = widget.session.mode;
-      _selectedBoard = (widget.session.boardMode == BoardMode.bidding ||
+      _selectedBoard =
+          (widget.session.boardMode == BoardMode.bidding ||
               widget.session.boardMode == BoardMode.daily)
-          ? BoardMode.fresh : widget.session.boardMode;
+          ? BoardMode.fresh
+          : widget.session.boardMode;
     });
   }
 
@@ -248,356 +355,505 @@ class _BridgeTableState extends State<BridgeTable> {
         final declarerTricks = trainingContract == null || view == null
             ? 0
             : view.completedTricks
-                .where((trick) => trick.winner.isNS ==
-                    trainingContract.declarer.isNS)
-                .length;
+                  .where(
+                    (trick) =>
+                        trick.winner.isNS == trainingContract.declarer.isNS,
+                  )
+                  .length;
         return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-            Card(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1240),
               child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: LayoutBuilder(
-                  builder: (context, constraints) => Wrap(
-                  spacing: 16,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _modeSelector(copy, constraints.maxWidth),
-                    _seatSelector(copy, constraints.maxWidth),
-                    _boardSelector(copy, constraints.maxWidth),
-                    FilledButton.icon(
-                      key: const Key('new_game'),
-                      onPressed: session.busy ||
-                              (session.dailyPractice != null &&
-                                   !session.dailyPractice!.isComplete) ||
-                              (session.fourBoardPractice != null &&
-                               !session.fourBoardPractice!.isComplete)
-                          ? null
-                          : () {
-                              setState(() => _replayIndex = null);
-                              session.newGame(
-                                humanSeat: _selectedSeat,
-                                mode: _selectedMode,
-                                boardMode: _selectedBoard,
-                              );
-                            },
-                      icon: const Icon(Icons.refresh),
-                      label: Text(session.started
-                          ? copy.t('restart')
-                          : copy.t('newGame')),
-                    ),
-                    FilledButton.tonalIcon(
-                      key: const Key('start_four_board'),
-                      onPressed: session.busy || session.saveFailed ||
-                          (session.started && !session.finished && !session.biddingPracticeComplete) ||
-                          (session.dailyPractice != null &&
-                                   !session.dailyPractice!.isComplete) ||
-                              (session.fourBoardPractice != null &&
-                           !session.fourBoardPractice!.isComplete)
-                          ? null : () {
-                        setState(() {
-                          _replayIndex = null;
-                          _selectedBoard = BoardMode.fresh;
-                        });
-                        session.startFourBoardPractice(
-                          humanSeat: _selectedSeat,
-                          mode: _selectedMode,
-                        );
-                      },
-                      icon: const Icon(Icons.view_module),
-                      label: Text(copy.t('practiceFourStart')),
-                    ),
-                    _justDeclareLauncher(session, copy),
-                    FilledButton.tonalIcon(
-                      key: const Key('start_daily_practice'),
-                      onPressed: session.busy || session.saveFailed ||
-                          session.dailySaveFailed ||
-                          (session.started && !session.finished &&
-                              !session.biddingPracticeComplete) ||
-                          (session.dailyPractice != null &&
-                                   !session.dailyPractice!.isComplete) ||
-                              (session.fourBoardPractice != null &&
-                              !session.fourBoardPractice!.isComplete)
-                          ? null : () {
-                        setState(() {
-                          _replayIndex = null;
-                          _selectedMode = OpponentMode.demo;
-                          _selectedBoard = BoardMode.fresh;
-                        });
-                        session.startDailyPractice(humanSeat: _selectedSeat);
-                      },
-                      icon: const Icon(Icons.today),
-                      label: Text(copy.t('dailyStart'),
-                          maxLines: 1, overflow: TextOverflow.ellipsis),
-                    ),
-                     FilledButton.tonalIcon(
-                       key: const Key('start_bidding_practice'),
-                       onPressed: session.busy || session.saveFailed ||
-                           (session.started && !session.finished &&
-                               !session.biddingPracticeComplete) ||
-                           (session.dailyPractice != null &&
-                                   !session.dailyPractice!.isComplete) ||
-                              (session.fourBoardPractice != null &&
-                               !session.fourBoardPractice!.isComplete)
-                           ? null : () {
-                         setState(() {
-                           _replayIndex = null;
-                           _selectedBoard = BoardMode.fresh;
-                           _selectedMode = OpponentMode.demo;
-                         });
-                         session.startBiddingPractice(humanSeat: _selectedSeat);
-                       },
-                       icon: const Icon(Icons.record_voice_over),
-                       label: Text(copy.t('biddingStart'),
-                           maxLines: 1, overflow: TextOverflow.ellipsis),
-                     ),
-                    OutlinedButton.icon(
-                      key: const Key('history_toggle'),
-                      onPressed: () => setState(() {
-                        _historyOpen = !_historyOpen;
-                        if (!_historyOpen) _selectedHistoryId = null;
-                      }),
-                      icon: const Icon(Icons.history),
-                      label: Text(copy.t(_historyOpen
-                          ? 'historyClose' : 'historyOpen')),
-                    ),
-                  ],
-                  ),
-                ),
-              ),
-            ),
-            if (_historyOpen) ...[
-              const SizedBox(height: 8),
-              BridgeHistoryPanel(
-                history: session.completedHistory,
-                copy: copy,
-                selectedId: _selectedHistoryId,
-                selectedReplay: _selectedHistoryId == null
-                    ? null : session.historyReplay(_selectedHistoryId!),
-                replayIndex: _historyStep,
-                onSelect: (id) => setState(() {
-                  _selectedHistoryId = id;
-                  _historyStep = 0;
-                }),
-                onReplayStep: (step) =>
-                    setState(() => _historyStep = step),
-                canDelete: !session.busy,
-                onExportPbn: (id) async {
-                  // The panel requires a separate explicit private-hand
-                  // export confirmation BEFORE calling this callback.
-                  final pbn = session.exportHistoryPbn(id);
-                  if (pbn == null) return false;
-                  await Clipboard.setData(ClipboardData(text: pbn));
-                  return true;
-                },
-                onImportPbn: session.importHistoryPbn,
-                onAnalyzeDds: session.analyzeHistoryDds,
-                onDelete: (id) async {
-                  final removed = await session.deleteHistory(id);
-                  if (removed && mounted && _selectedHistoryId == id) {
-                    setState(() {
-                      _selectedHistoryId = null;
-                      _historyStep = 0;
-                    });
-                  }
-                },
-                errorCode: session.historyError,
-                onRetrySave: session.historySaveFailed
-                    ? session.retryHistorySave : null,
-              ),
-            ],
-            if (session.dailyPractice != null ||
-                session.dailyHistory.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              DailyPracticePanel(
-                copy: copy,
-                today: session.todaysDaily,
-                active: session.dailyPractice,
-                history: session.dailyHistory,
-                finished: session.finished,
-                canAdvance: !session.busy && !session.saveFailed &&
-                    !session.dailySaveFailed && !session.historySaveFailed,
-                canRestart: !session.busy && !session.saveFailed &&
-                    !session.dailySaveFailed,
-                onNext: () {
-                  setState(() => _replayIndex = null);
-                  session.nextDailyBoard();
-                },
-                onRestart: () => _confirmDailyRestart(session, copy),
-              ),
-            ],
-            if (session.dailyError != null)
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Wrap(
-                    spacing: 8,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(copy.t(session.dailyError!)),
-                      if (session.dailySaveFailed)
-                        TextButton(
-                          key: const Key('daily_retry_save'),
-                          onPressed: session.retryDailySave,
-                          child: Text(copy.t('dailyRetrySave')),
-                        ),
+                    if (!widget.historyOnly && view == null)
+                      _practiceHub(session, copy),
+                    if (_historyOpen || widget.historyOnly) ...[
+                      const SizedBox(height: 8),
+                      _historyPanel(session, copy),
                     ],
-                  ),
-                ),
-              ),
-            if (session.fourBoardPractice != null) ...[
-              const SizedBox(height: 8),
-              _fourBoardPanel(session, copy),
-            ],
-            if (session.isBiddingPractice)
-               _biddingPracticePanel(session, copy),
-             if (session.isJustDeclare) ...[
-              const SizedBox(height: 8),
-              Card(
-                key: const Key('just_declare_active'),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(copy.t('justDeclareActive')),
-                      if (trainingContract != null) ...[
-                        Text('${copy.t('justDeclareDeclarer')}: '
-                            '${copy.seat(trainingContract.declarer.letter)}'),
-                        Text('${copy.t('justDeclareDummy')}: '
-                            '${copy.seat(trainingContract.dummy.letter)}'),
-                        Text(
-                          copy.justDeclareProgress(
-                              declarerTricks, trainingContract.targetTricks),
-                          key: const Key('just_declare_goal'),
-                        ),
-                        if (session.finished)
-                          Text(
-                            copy.t(declarerTricks >= trainingContract.targetTricks
-                                ? 'justDeclareMade' : 'justDeclareDown'),
-                            key: const Key('just_declare_outcome'),
-                          ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 8),
-            Text(
-              copy.t(session.mode == OpponentMode.demo
-                  ? 'demoNotice'
-                  : 'liveNotice'),
-            ),
-            if (kIsWeb)
-              Text(
-                copy.t('webCheckpointCaution'),
-                key: const Key('web_checkpoint_caution'),
-              ),
-            if (session.restoring) ...[
-              const LinearProgressIndicator(key: Key('restore_progress')),
-              Text(copy.t('restoringGame')),
-            ],
-            if (view == null && session.errorCode != null)
-              Text(copy.t(session.errorCode!),
-                  key: const Key('error_message')),
-            if (view == null) ...[
-              const SizedBox(height: 24),
-              Text(copy.t('notStarted'), key: const Key('empty_state')),
-            ] else ...[
-              const SizedBox(height: 12),
-              BridgeBoardHeader(
-                 boardNumber: session.board.number,
-                 view: view,
-                 busy: session.busy,
-                 copy: copy,
-               ),
-              if (session.restoredFromStorage)
-                Text(copy.t('restoredGame'),
-                    key: const Key('restored_game')),
-              if (session.recoveryNeedsConfirmation)
-                Card(
-                  key: const Key('recovery_warning'),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(copy.t('recoveredOlderCheckpoint')),
+                    if (!widget.historyOnly) ...[
+                      if (session.dailyPractice != null ||
+                          session.dailyHistory.isNotEmpty) ...[
                         const SizedBox(height: 8),
-                        FilledButton(
-                          key: const Key('ack_recovered_checkpoint'),
-                          onPressed: session.acknowledgeRecoveredCheckpoint,
-                          child: Text(copy.t('ackRecoveredCheckpoint')),
+                        DailyPracticePanel(
+                          copy: copy,
+                          today: session.todaysDaily,
+                          active: session.dailyPractice,
+                          history: session.dailyHistory,
+                          finished: session.finished,
+                          canAdvance:
+                              !session.busy &&
+                              !session.saveFailed &&
+                              !session.dailySaveFailed &&
+                              !session.historySaveFailed,
+                          canRestart:
+                              !session.busy &&
+                              !session.saveFailed &&
+                              !session.dailySaveFailed,
+                          onNext: () {
+                            setState(() => _replayIndex = null);
+                            session.nextDailyBoard();
+                          },
+                          onRestart: () => _confirmDailyRestart(session, copy),
                         ),
                       ],
-                    ),
-                  ),
-                ),
-              if (session.errorCode != null) ...[
-                const SizedBox(height: 8),
-                Card(
-                  color: Theme.of(context).colorScheme.errorContainer,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Wrap(
-                      spacing: 12,
-                      children: [
-                        Text(copy.t(session.errorCode!),
-                            key: const Key('error_message')),
-                        if (session.saveFailed && !session.busy)
-                          TextButton(
-                            key: const Key('retry_save'),
-                            onPressed: session.retrySave,
-                            child: Text(copy.t('retrySave')),
+                      if (session.dailyError != null)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Wrap(
+                              spacing: 8,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Text(copy.t(session.dailyError!)),
+                                if (session.dailySaveFailed)
+                                  TextButton(
+                                    key: const Key('daily_retry_save'),
+                                    onPressed: session.retryDailySave,
+                                    child: Text(copy.t('dailyRetrySave')),
+                                  ),
+                              ],
+                            ),
                           ),
-                        if (!session.saveFailed && !session.busy &&
-                            !view.canAct && !session.finished)
-                          TextButton(
-                            key: const Key('retry_bot'),
-                            onPressed: session.retryBots,
-                            child: Text(copy.t('retry')),
-                          ),
+                        ),
+                      if (session.fourBoardPractice != null) ...[
+                        const SizedBox(height: 8),
+                        _fourBoardPanel(session, copy),
                       ],
-                    ),
-                  ),
+                      if (session.isBiddingPractice)
+                        _biddingPracticePanel(session, copy),
+                      if (session.isJustDeclare) ...[
+                        const SizedBox(height: 8),
+                        Card(
+                          key: const Key('just_declare_active'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(copy.t('justDeclareActive')),
+                                if (trainingContract != null) ...[
+                                  Text(
+                                    '${copy.t('justDeclareDeclarer')}: '
+                                    '${copy.seat(trainingContract.declarer.letter)}',
+                                  ),
+                                  Text(
+                                    '${copy.t('justDeclareDummy')}: '
+                                    '${copy.seat(trainingContract.dummy.letter)}',
+                                  ),
+                                  Text(
+                                    copy.justDeclareProgress(
+                                      declarerTricks,
+                                      trainingContract.targetTricks,
+                                    ),
+                                    key: const Key('just_declare_goal'),
+                                  ),
+                                  if (session.finished)
+                                    Text(
+                                      copy.t(
+                                        declarerTricks >=
+                                                trainingContract.targetTricks
+                                            ? 'justDeclareMade'
+                                            : 'justDeclareDown',
+                                      ),
+                                      key: const Key('just_declare_outcome'),
+                                    ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 8),
+                      Text(
+                        copy.t(
+                          session.mode == OpponentMode.demo
+                              ? 'demoNotice'
+                              : 'liveNotice',
+                        ),
+                      ),
+                      if (kIsWeb)
+                        Text(
+                          copy.t('webCheckpointCaution'),
+                          key: const Key('web_checkpoint_caution'),
+                        ),
+                      if (session.restoring) ...[
+                        const LinearProgressIndicator(
+                          key: Key('restore_progress'),
+                        ),
+                        Text(copy.t('restoringGame')),
+                      ],
+                      if (view == null && session.errorCode != null)
+                        Text(
+                          copy.t(session.errorCode!),
+                          key: const Key('error_message'),
+                        ),
+                      if (view == null) ...[
+                        const SizedBox(height: 24),
+                        Text(
+                          copy.t('notStarted'),
+                          key: const Key('empty_state'),
+                        ),
+                      ] else ...[
+                        const SizedBox(height: 12),
+                        BridgeBoardHeader(
+                          boardNumber: session.board.number,
+                          view: view,
+                          busy: session.busy,
+                          copy: copy,
+                        ),
+                        if (session.restoredFromStorage)
+                          Text(
+                            copy.t('restoredGame'),
+                            key: const Key('restored_game'),
+                          ),
+                        if (session.recoveryNeedsConfirmation)
+                          Card(
+                            key: const Key('recovery_warning'),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(copy.t('recoveredOlderCheckpoint')),
+                                  const SizedBox(height: 8),
+                                  FilledButton(
+                                    key: const Key('ack_recovered_checkpoint'),
+                                    onPressed:
+                                        session.acknowledgeRecoveredCheckpoint,
+                                    child: Text(
+                                      copy.t('ackRecoveredCheckpoint'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        if (session.errorCode != null) ...[
+                          const SizedBox(height: 8),
+                          Card(
+                            color: Theme.of(context).colorScheme.errorContainer,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Wrap(
+                                spacing: 12,
+                                children: [
+                                  Text(
+                                    copy.t(session.errorCode!),
+                                    key: const Key('error_message'),
+                                  ),
+                                  if (session.saveFailed && !session.busy)
+                                    TextButton(
+                                      key: const Key('retry_save'),
+                                      onPressed: session.retrySave,
+                                      child: Text(copy.t('retrySave')),
+                                    ),
+                                  if (!session.saveFailed &&
+                                      !session.busy &&
+                                      !view.canAct &&
+                                      !session.finished)
+                                    TextButton(
+                                      key: const Key('retry_bot'),
+                                      onPressed: session.retryBots,
+                                      child: Text(copy.t('retry')),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (session.busy) ...[
+                          const LinearProgressIndicator(
+                            key: Key('bot_progress'),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(copy.t('waitingBot')),
+                        ],
+                        const SizedBox(height: 12),
+                        BridgeTableSurface(
+                          view: view,
+                          copy: copy,
+                          actionsPaused:
+                              session.actionsPaused ||
+                              (session.isBiddingPractice &&
+                                  session.biddingPracticeComplete),
+                          onPlayCard: session.submitCard,
+                        ),
+                        const SizedBox(height: 8),
+                        BridgeTableToolbar(view: view, copy: copy),
+                        const SizedBox(height: 8),
+                        if (!session.finished)
+                          _humanControls(view, session, copy)
+                        else ...[
+                          if (!session.isBiddingPractice)
+                            _finishCard(view, copy),
+                          const SizedBox(height: 8),
+                          if (!session.isBiddingPractice)
+                            _completedBoardActions(session, copy),
+                          const SizedBox(height: 8),
+                          if (!_historyOpen && !session.isBiddingPractice)
+                            _replayPanel(session, copy),
+                        ],
+                      ],
+                      if (view != null) ...[
+                        const SizedBox(height: 24),
+                        _practiceHub(session, copy),
+                      ],
+                    ],
+                  ],
                 ),
-              ],
-              if (session.busy) ...[
-                const LinearProgressIndicator(key: Key('bot_progress')),
-                const SizedBox(height: 8),
-                Text(copy.t('waitingBot')),
-              ],
-              const SizedBox(height: 12),
-              BridgeTableSurface(
-                 view: view,
-                 copy: copy,
-                 actionsPaused: session.actionsPaused ||
-                     (session.isBiddingPractice && session.biddingPracticeComplete),
-                 onPlayCard: session.submitCard,
-               ),
-              const SizedBox(height: 8),
-              BridgeTableToolbar(view: view, copy: copy),
-              const SizedBox(height: 8),
-              if (!session.finished)
-                _humanControls(view, session, copy)
-              else ...[
-                if (!session.isBiddingPractice) _finishCard(view, copy),
-                const SizedBox(height: 8),
-                if (!session.isBiddingPractice) _completedBoardActions(session, copy),
-                const SizedBox(height: 8),
-                if (!_historyOpen && !session.isBiddingPractice) _replayPanel(session, copy),
-              ],
-            ],
-              ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _historyPanel(BridgeSession session, AppCopy copy) =>
+      BridgeHistoryPanel(
+        history: session.completedHistory,
+        copy: copy,
+        selectedId: _selectedHistoryId,
+        selectedReplay: _selectedHistoryId == null
+            ? null
+            : session.historyReplay(_selectedHistoryId!),
+        replayIndex: _historyStep,
+        onSelect: (id) => setState(() {
+          _selectedHistoryId = id;
+          _historyStep = 0;
+        }),
+        onReplayStep: (step) => setState(() => _historyStep = step),
+        canDelete: !session.busy,
+        onExportPbn: (id) async {
+          // The panel requires a separate explicit private-hand
+          // export confirmation BEFORE calling this callback.
+          final pbn = session.exportHistoryPbn(id);
+          if (pbn == null) return false;
+          await Clipboard.setData(ClipboardData(text: pbn));
+          return true;
+        },
+        onImportPbn: session.importHistoryPbn,
+        onAnalyzeDds: session.analyzeHistoryDds,
+        onDelete: (id) async {
+          final removed = await session.deleteHistory(id);
+          if (removed && mounted && _selectedHistoryId == id) {
+            setState(() {
+              _selectedHistoryId = null;
+              _historyStep = 0;
+            });
+          }
+        },
+        errorCode: session.historyError,
+        onRetrySave: session.historySaveFailed
+            ? session.retryHistorySave
+            : null,
+      );
+
+  Widget _practiceHub(BridgeSession session, AppCopy copy) => BridgePracticeHub(
+    copy: copy,
+    started: session.started,
+    settings: Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              copy.t('hubSettings'),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            LayoutBuilder(
+              builder: (context, constraints) => Wrap(
+                spacing: 16,
+                runSpacing: 12,
+                children: [
+                  _modeSelector(copy, constraints.maxWidth),
+                  _seatSelector(copy, constraints.maxWidth),
+                  _boardSelector(copy, constraints.maxWidth),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    actions: [
+      BridgePracticeAction(
+        copy.t('hubFreeTitle'),
+        copy.t('hubFreeDescription'),
+        Icons.style_outlined,
+        FilledButton.icon(
+          key: const Key('new_game'),
+          onPressed:
+              session.busy ||
+                  (session.dailyPractice != null &&
+                      !session.dailyPractice!.isComplete) ||
+                  (session.fourBoardPractice != null &&
+                      !session.fourBoardPractice!.isComplete)
+              ? null
+              : () => _startFreePlay(session, copy),
+          icon: const Icon(Icons.refresh),
+          label: Text(session.started ? copy.t('restart') : copy.t('newGame')),
+        ),
+      ),
+      BridgePracticeAction(
+        copy.t('hubFourTitle'),
+        copy.t('hubFourDescription'),
+        Icons.view_module_outlined,
+        FilledButton.tonalIcon(
+          key: const Key('start_four_board'),
+          onPressed:
+              session.busy ||
+                  session.saveFailed ||
+                  (session.started &&
+                      !session.finished &&
+                      !session.biddingPracticeComplete) ||
+                  (session.dailyPractice != null &&
+                      !session.dailyPractice!.isComplete) ||
+                  (session.fourBoardPractice != null &&
+                      !session.fourBoardPractice!.isComplete)
+              ? null
+              : () {
+                  setState(() {
+                    _replayIndex = null;
+                    _selectedBoard = BoardMode.fresh;
+                  });
+                  session.startFourBoardPractice(
+                    humanSeat: _selectedSeat,
+                    mode: _selectedMode,
+                  );
+                },
+          icon: const Icon(Icons.view_module),
+          label: Text(copy.t('practiceFourStart')),
+        ),
+      ),
+      BridgePracticeAction(
+        copy.t('hubDeclareTitle'),
+        copy.t('hubDeclareDescription'),
+        Icons.school_outlined,
+        _justDeclareLauncher(session, copy),
+      ),
+      BridgePracticeAction(
+        copy.t('hubDailyTitle'),
+        copy.t('hubDailyDescription'),
+        Icons.today,
+        FilledButton.tonalIcon(
+          key: const Key('start_daily_practice'),
+          onPressed:
+              session.busy ||
+                  session.saveFailed ||
+                  session.dailySaveFailed ||
+                  (session.started &&
+                      !session.finished &&
+                      !session.biddingPracticeComplete) ||
+                  (session.dailyPractice != null &&
+                      !session.dailyPractice!.isComplete) ||
+                  (session.fourBoardPractice != null &&
+                      !session.fourBoardPractice!.isComplete)
+              ? null
+              : () {
+                  setState(() {
+                    _replayIndex = null;
+                    _selectedMode = OpponentMode.demo;
+                    _selectedBoard = BoardMode.fresh;
+                  });
+                  session.startDailyPractice(humanSeat: _selectedSeat);
+                },
+          icon: const Icon(Icons.today),
+          label: Text(
+            copy.t('dailyStart'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      BridgePracticeAction(
+        copy.t('hubBidTitle'),
+        copy.t('hubBidDescription'),
+        Icons.record_voice_over,
+        FilledButton.tonalIcon(
+          key: const Key('start_bidding_practice'),
+          onPressed:
+              session.busy ||
+                  session.saveFailed ||
+                  (session.started &&
+                      !session.finished &&
+                      !session.biddingPracticeComplete) ||
+                  (session.dailyPractice != null &&
+                      !session.dailyPractice!.isComplete) ||
+                  (session.fourBoardPractice != null &&
+                      !session.fourBoardPractice!.isComplete)
+              ? null
+              : () {
+                  setState(() {
+                    _replayIndex = null;
+                    _selectedBoard = BoardMode.fresh;
+                    _selectedMode = OpponentMode.demo;
+                  });
+                  session.startBiddingPractice(humanSeat: _selectedSeat);
+                },
+          icon: const Icon(Icons.record_voice_over),
+          label: Text(
+            copy.t('biddingStart'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      BridgePracticeAction(
+        copy.t('hubReviewTitle'),
+        copy.t('hubReviewDescription'),
+        Icons.history,
+        OutlinedButton.icon(
+          key: const Key('history_toggle'),
+          onPressed: () => setState(() {
+            _historyOpen = !_historyOpen;
+            if (!_historyOpen) _selectedHistoryId = null;
+          }),
+          icon: const Icon(Icons.history),
+          label: Text(copy.t(_historyOpen ? 'historyClose' : 'historyOpen')),
+        ),
+      ),
+    ],
+  );
+
+  Future<void> _startFreePlay(BridgeSession session, AppCopy copy) async {
+    if (session.started &&
+        !session.finished &&
+        !session.biddingPracticeComplete) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(copy.t('replaceDealTitle')),
+          content: Text(copy.t('replaceDealBody')),
+          actions: [
+            TextButton(
+              key: const Key('keep_current_deal'),
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(copy.t('keepDeal')),
+            ),
+            FilledButton(
+              key: const Key('replace_current_deal'),
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(copy.t('replaceDeal')),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+    }
+    if (!mounted || session.busy) return;
+    setState(() => _replayIndex = null);
+    await session.newGame(
+      humanSeat: _selectedSeat,
+      mode: _selectedMode,
+      boardMode: _selectedBoard,
     );
   }
 
@@ -874,14 +1130,25 @@ class _BridgeTableState extends State<BridgeTable> {
 
   Widget _humanControls(PlayerView view, BridgeSession session, AppCopy copy) {
     if (view.phase == Phase.auction) {
-      return BridgeBiddingBox(
-        copy: copy,
-        selectedLevel: _bidLevel,
-        selectedStrain: _bidStrain,
-        canSubmit: view.canAct && !session.actionsPaused,
-        onLevelChanged: (level) => setState(() => _bidLevel = level),
-        onStrainChanged: (strain) => setState(() => _bidStrain = strain),
-        onSubmitCall: session.submitCall,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BridgePlayerHand(
+            view: view,
+            copy: copy,
+            actionsPaused: true,
+            onPlayCard: session.submitCard,
+          ),
+          BridgeBiddingBox(
+            copy: copy,
+            selectedLevel: _bidLevel,
+            selectedStrain: _bidStrain,
+            canSubmit: view.canAct && !session.actionsPaused,
+            onLevelChanged: (level) => setState(() => _bidLevel = level),
+            onStrainChanged: (strain) => setState(() => _bidStrain = strain),
+            onSubmitCall: session.submitCall,
+          ),
+        ],
       );
     }
     if (view.phase == Phase.play && !session.isBiddingPractice) {

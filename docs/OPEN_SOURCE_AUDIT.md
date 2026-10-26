@@ -1,5 +1,26 @@
 # Third-party components and license gate
 
+## 2026-10-26 — Flutter 撲克牌呈現套件（M2-F54）
+
+| 必要欄位 | 實際紀錄 |
+| --- | --- |
+| name / version | `playing_cards 0.4.1+11`，pubspec 精確版本，pubspec.lock 釘選 archive SHA |
+| URL / immutable artifact | [pub.dev](https://pub.dev/packages/playing_cards)、[repository](https://github.com/bedardjo/playing_cards)、[精確 archive](https://pub.dev/api/archives/playing_cards-0.4.1%2B11.tar.gz)；以 registry archive 釘選，不把浮動 master 當審核版本 |
+| pinned_sha | **archive SHA256** `392d5e42317ec657f6814a282e6bb70942c6599d22dac89cdc741a8b2b095d09`；本輪不宣稱對應未查證的 Git commit |
+| release_date | registry `2023-08-02T10:59:56.478688Z`；發版較久，未宣稱持續活躍維護 |
+| purpose / integration_mode | Flutter presentation package dependency；只映射已授權 Card 至 PlayingCardView；不使用 deck generation、規則器、AI、完整四手牌或外部網路服務 |
+| license_and_url / notices | archive `LICENSE` 為 Apache License 2.0；[同版本 license](https://pub.dev/packages/playing_cards/versions/0.4.1+11/license)。archive 無獨立 NOTICE；保留 package LICENSE 並透過 Flutter notices＋App「我的 → 開源授權」提供。未修改上游 source |
+| imagery / model_weight_license | 不涉及模型。上游註解指向 Wikimedia SVG playing cards 類別，未提供各 court/suit/back 圖像唯一來源。App 使用全 rank/suit 字形 style，測試無 Image widget。**Flutter 可能仍打包 package 宣告的未使用圖像，公開 binary 前需排除或補完逐圖授權**；不能把 Apache code license 自動當逐圖 sign-off |
+| transitive_licenses | runtime pubspec 只依賴 Flutter SDK；未增加 provider/svg 等 runtime 套件。Flutter 既有授權沿用 notices，不因此聲稱全 repo 已稽核 |
+| known_cves | 本輪未執行完整 CVE／供應鏈掃描；不宣稱零漏洞 |
+| build_environment / supported_platforms | 本機 Windows Flutter 3.47.8／Dart 3.13.7；pub.dev 宣告 Android/iOS/Linux/macOS/Web/Windows，不等於這些平台都驗證 |
+| test_evidence | [52 張映射／投影／鍵盤／停用測試](../apps/bridge_academy_flutter/test/m2_card_presentation_test.dart)；完整結果見 [本輪驗收](product/UX_WORKSPACE_ACCEPTANCE.md)。Android/iOS UI/E2E 依 owner hold 未執行 |
+| risks | 舊版維護、畫面相容、上游 bundled imagery 來源／打包問題；依賴替換不應改 Core 或資料 schema |
+| decision_and_owner | **ACCEPT WITH CONDITIONS，開發整合**；公開發行仍受影像排除／來源、完整依賴稽核與 owner release sign-off 約束。工程責任範圍為 renderer adapter；產品發行由 owner 決定 |
+| next_review_date / rollback | 最遲公開 binary 發行前重審；SDK／套件／資產有變更立即重審。可 git revert 本輪 source/pubspec/lock；無資料遷移 |
+
+比較候選 `card_game 2.0.0`：[pub.dev](https://pub.dev/packages/card_game)、[上游](https://github.com/JLogical-Apps/card_game)，registry 發版 `2025-04-28T00:16:16.048749Z`，archive SHA256 `d5f0720c3f320fda8adc17f02f155f94fea799efa6dd557091fc60ca4f8055d9`。pub.dev 標示 MIT，支援拖放／翻牌／移動動畫，runtime dependencies 包含 collection/equatable/flutter_svg/provider。**REFERENCE ONLY／未安裝／未複製**，尚無本專案 pinned source、資產及 transitive 授權／CVE 相容性 sign-off。U3 若導入另行審查，不把目前比較當成准入。
+
 **Audit state: preliminary research only.** Verify repository LICENSE at an immutable commit, model weights, bundled native binaries, transitive dependencies and any service/redistribution constraints before code integration or public release. This is engineering triage, not legal advice.
 
 | Candidate | Purpose | License from upstream documentation / initial research | Decision |
