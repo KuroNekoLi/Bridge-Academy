@@ -6,7 +6,8 @@
 - **根因判斷依據：** F62 run [#40415495696](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495696) 只有 `dummyClicks + handClicks > 0` 失敗；13 墩、52 張、分數及結果頁均通過。該計數在 `make_bid` 完成並等待 Gateway 後才開始，只在輪詢期間觀察到 `Phase.play` 才累加。先前成功 run [#40335776679](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776679) 的 source (`48c3ee246e34d33bdb645be1b2927913344e439e`) 有完全相同的斷言；F62 diff 沒改該 integration test。這表示失敗來自 E2E 對客戶端觀察到出牌點擊的額外假設，尚無證據指向牌桌位置回歸。
 - **本次最小修正：** `apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart` 移除該點擊計數必要條件，保留數字作診斷；這個 case 驗證真 Gateway 完成全牌局，旁邊的真 BEN declarer-controls-Dummy case 已成功並明確驗證 UI 出牌／明手控制。無產品玩法或 Bridge Core 改動。
 - **Git／驗證：** 基底 `master` HEAD `63251d09d0c33e0b16c55ac5b730390f810e8c94`，已推送；目前待提交 integration test 與本交接兩檔。`git diff --check` 待最後執行；測試 **NOT RUN**，修正後的 GitHub CI **NOT RUN**。`dart format` 曾報會重排此檔既有區塊，已還原無關格式，只保留局部註解變更；不要把那次 dry-run 說成格式檢查通過。
-- **後續：** 執行 `git diff --check`，commit/push 這項測試修正與本 handoff，等待並查核新 SHA 的 BEN Chrome CI。CI 未通過就保留 failure 和根因證據，不宣稱完成。用量最近值 primary 22%、secondary 55%，屬共用帳號額度；owner 已要求暫時繼續。Android／iOS／A3.5 QA 仍 NOT RUN／HOLD。
+- **CI path filter 缺口與修正：** `ben-flutter-browser.yml` 原本未監看 `browser_gateway_real_test.dart`，因此 `a10efc2` 雖更新該測試，沒有觸發 BEN workflow。現在把該 integration test 加入 push paths；此 workflow 檔本身也在觸發清單內，合併推送後會啟動新 BEN run。
+- **後續：** 執行 `git diff --check`，commit/push path-filter 修正與本 handoff，等待並查核新 SHA 的 BEN Chrome CI。CI 未通過就保留 failure 和根因證據，不宣稱完成。用量最近值 primary 22%、secondary 55%，屬共用帳號額度；owner 已要求暫時繼續。Android／iOS／A3.5 QA 仍 NOT RUN／HOLD。
 
 ## 輕量 CI 收尾（2026-10-27 10:15 Asia/Taipei）
 
