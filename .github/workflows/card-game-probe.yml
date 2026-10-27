@@ -1,0 +1,32 @@
+name: Isolated card_game compatibility probe
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "experiments/card_game_probe/**"
+      - ".github/workflows/card-game-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: experiments/card_game_probe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Fetch pinned dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Analyze compatibility probe
+        run: flutter analyze --no-pub
+      - name: Run compatibility gates
+        run: flutter test --no-pub

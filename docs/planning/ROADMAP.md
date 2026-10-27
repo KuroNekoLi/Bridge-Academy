@@ -4,6 +4,8 @@
 
 ## 下一個應做的功能
 
+**2026-10-27 M2-F63／F64：** 專注桌已改為手機全13張扇形、選牌抬起／確認、可切換寬牌列；公開墩牌響應式放大、共用座標收向贏家。核心／授權不變。最終本機與新SHA CI、Chrome視覺證據以CURRENT_HANDOFF為準；裝置／真人QA仍HOLD。
+
 **Reuse First 最新進展：M2-F60／F61／F62** 專注牌桌重用 FlatCardFan 並加輕微弧形，保留 ≥48px 可見操作區及窄屏／大字體退路；公開墩牌依座位四方位入場、向贏家收攏，已揭露明手與己方手牌分列同一桌面的上、下緣。主 app 無新增依賴。Nickel UI 來源已釘選並作座位／動態參考；card_game 隔離 probe 重現拖曳結束空值例外、單張 stack 與 reduce-motion gate，不能直接切換正式牌桌。已核對桌面與 375px 真 Web 畫面，後續仍需 owner-held 真人／裝置 UX 及上游修正適配，詳見 RESEARCH_REPORTS。
 
 **最新 owner steering：Reuse First。** 新 UI 先研究 Nickel Bridge（owner 已明示完整修改授權）、card_game／playing_cards／官方 template，以小型 presentation adapter PoC 比較重用；不再先擴寫自製互動。保留 Core／BEN／計分權威，細節見 DECISIONS 與 RESEARCH_REPORTS；額度恢復後先做此適配研究，裝置 QA HOLD 不變。

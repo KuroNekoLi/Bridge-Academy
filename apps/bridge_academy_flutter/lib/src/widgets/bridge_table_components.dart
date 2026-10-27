@@ -6,6 +6,7 @@ import '../app_copy.dart';
 import 'bridge_card_face.dart';
 import 'bridge_card_strip.dart';
 import 'bridge_public_card_entrance.dart';
+import 'bridge_trick_geometry.dart';
 
 /// The table widgets are deliberately presentation-only:
 /// they receive a seat-filtered PlayerView, never Deal or BridgeSession.
@@ -123,10 +124,12 @@ class BridgeTableSurface extends StatelessWidget {
 
 class BridgeCurrentTrick extends StatefulWidget {
   const BridgeCurrentTrick({super.key, required this.view, required this.copy,
-    this.compact = false});
+    this.compact = false, this.geometry, this.showHeading = true});
   final PlayerView view;
   final AppCopy copy;
   final bool compact;
+  final BridgeTrickGeometry? geometry;
+  final bool showHeading;
 
   @override
   State<BridgeCurrentTrick> createState() => _BridgeCurrentTrickState();
@@ -159,15 +162,13 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
   Widget build(BuildContext context) {
     final view = widget.view;
     final copy = widget.copy;
+    final geometry = widget.geometry ?? const BridgeTrickGeometry();
     Widget played(PlayedCard play) => BridgePublicCardEntrance(
       key: ValueKey(_identity(view, play)),
       animate: _entering.contains(_identity(view, play)),
-      from: widget.compact ? switch (play.handOwner) {
-        Seat.north => const Offset(0, -30),
-        Seat.east => const Offset(48, 0),
-        Seat.south => const Offset(0, 30),
-        Seat.west => const Offset(-48, 0),
-      } : const Offset(0, 12),
+      from: widget.compact
+          ? geometry.entranceFrom(play.handOwner)
+          : const Offset(0, 12),
       child: Semantics(
         excludeSemantics: true,
         label: '${copy.seat(play.handOwner.letter)}: ${copy.cardName(play.card.code)}',
@@ -176,8 +177,8 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
           children: [
             if (!widget.compact) Text(copy.seat(play.handOwner.letter)),
             SizedBox(
-              width: widget.compact ? 40 : 54,
-              height: widget.compact ? 56 : 76,
+              width: widget.compact ? geometry.cardSize.width : 54,
+              height: widget.compact ? geometry.cardSize.height : 76,
               child: BridgeCardFace(card: play.card),
             ),
           ],
@@ -186,36 +187,28 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
     );
     return Padding(
       key: const Key('current_trick'),
-      padding: EdgeInsets.all(widget.compact ? 6 : 12),
+      padding: EdgeInsets.all(widget.compact ? 0 : 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          if (widget.showHeading) Text(
             copy.t('currentTrick'),
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          const SizedBox(height: 8),
-          if (view.currentTrick.isEmpty)
+          if (widget.showHeading) const SizedBox(height: 8),
+          if (!widget.compact && view.currentTrick.isEmpty)
             Text(copy.t('notYet'))
           else if (widget.compact)
             SizedBox(
               key: const Key('focus_trick_compass'),
-              width: 148,
-              height: 116,
+              width: geometry.size.width,
+              height: geometry.size.height,
               child: Stack(
                 children: [
                   for (final play in view.currentTrick)
                     Positioned(
-                      left: switch (play.handOwner) {
-                        Seat.north || Seat.south => 54,
-                        Seat.west => 0,
-                        Seat.east => 108,
-                      },
-                      top: switch (play.handOwner) {
-                        Seat.north => 0,
-                        Seat.west || Seat.east => 30,
-                        Seat.south => 60,
-                      },
+                      left: geometry.position(play.handOwner).dx,
+                      top: geometry.position(play.handOwner).dy,
                       child: played(play),
                     ),
                 ],
@@ -377,6 +370,7 @@ class BridgePlayingCardButton extends StatelessWidget {
     required this.busy,
     required this.onTap,
     this.dragEnabled = false,
+    this.prominentIndex = false,
   });
   final bridge.Card card;
   final String prefix;
@@ -385,6 +379,7 @@ class BridgePlayingCardButton extends StatelessWidget {
   final bool busy;
   final VoidCallback onTap;
   final bool dragEnabled;
+  final bool prominentIndex;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -419,7 +414,7 @@ class BridgePlayingCardButton extends StatelessWidget {
           height: 84,
           child: Stack(
             children: [
-              Positioned.fill(child: BridgeCardFace(card: card)),
+              Positioned.fill(child: BridgeCardFace(card: card, prominentIndex: prominentIndex)),
               Positioned(
                 right: 2,
                 bottom: 2,

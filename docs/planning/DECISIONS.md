@@ -39,3 +39,8 @@ Owner 明確要求：新增 UI 前優先調查現成套件／開源橋牌專案�
 **使用者明確決策**：`docs/` 只保留「已實現的功能、接下來的產品規劃、研究報告」，總數最多 10，越精簡越好。將 190 份整併為 7 份；重複的逐功能驗收、逐次交接與規劃流水帳從當前 `master` 刪除，但原始版本保留在 Git 歷史，沒有執行 `git filter-branch`、`push --force` 或刪除 repo 的原始程式／測試／CI。保留安全不變條件、啟用限制、權利證據與原始 CI URL。後續**不要再為每個 Feature 產生新 docs 檔**；只增補既有功能清單、工程導讀、路線或研究整合報告。
 
 **重要提醒**：額度檢查與必要交接記錄放同類的 `planning/CURRENT_HANDOFF.md`；不把它當新第四種文件分類。 
+
+
+## 2026-10-27：手機完整扇形手牌優先
+
+Owner 再次提供 BBO 手機介面，明確要求全13張可見、上下明手／自己，以及可把非Flutter開源UI移植成Flutter。專注桌的手機預設因此改為壓縮扇形：不足48px可見區時先選牌抬起、第二點或確認鈕才提交；另保留寬牌列切換與大字體捲動退路。這修訂 F60 的「手機一律48px寬牌列」呈現選擇；授權投影／Core驗證、Reuse First、裝置QA HOLD不變。參考 pinned Nickel HandFan 的 selected／second-tap interaction，以既有 FlatCardFan／PlayingCardView 整合，未複製 React runtime 或第三方素材。

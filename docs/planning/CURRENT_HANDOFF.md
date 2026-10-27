@@ -1,5 +1,29 @@
 # 目前開發交接（屬於產品規劃）
 
+## 2026-10-27 測試與 CI 精簡（最新）
+
+- **使用者目標：** 參考 BBO、修正專注牌桌 UI／動畫；另外明確要求刪減不必要測試、簡化 CI。用量監看僅在實際執行專案任務時檢查；使用者已暫停排程，不重啟或另建排程。
+- **quota：** 2026-10-27 18:00 Asia/Taipei 查 `rateLimitsByLimitId.codex`：primary used 4%／remaining **96%**，secondary used 62%／remaining **38%**。帳號共用用量，不歸因本專案。
+- **Git：** repository `C:/Users/user05/StudioProjects/Bridge-Academy`，branch `master`，HEAD `4266fdaa77fece67dae32018b1d10df803b967b2`。尚未提交／推送的工作樹檔案：`.github/workflows/flutter-single-player.yml`、新增 `.github/workflows/card-game-probe.yml`、`apps/bridge_academy_flutter/lib/src/app_copy.dart`、`bridge_card_face.dart`、`bridge_card_strip.dart`、`bridge_focus_table.dart`、`bridge_table_components.dart`、新增 `bridge_trick_geometry.dart`、`test/m2_focus_table_test.dart`、`docs/implemented/ENGINEERING_NOTES.md`、`FEATURES.md`、本檔、`docs/planning/DECISIONS.md`、`ROADMAP.md`、`docs/research/RESEARCH_REPORTS.md`。尚未 fetch 本次執行期間的最新遠端 ref；提交前需確認 master 未前進。
+- **UI 已完成：** F63/F64 專注牌桌採綠桌面、四座位同一可用區域、局部座標入場／收墩動畫；手機全13張手牌扇形、角標、選牌抬起及獨立確認，明手在上、己方在下，保留寬牌列／大字體退路。Chrome 375×812 PlayerView 工程目視已確認；不是 owner-held 真人／裝置 QA。未改 Bridge Core／API／存檔。
+- **測試縮減：** 專注桌測試把重複 viewport matrices 從 320／375／768／1280 收到 320／1280；中間寬度 375 保留於中英文扇形操作用例。窄屏完整 13 墩重播只執行一次，桌面只驗首屏牌數／版面，不再重播整副牌；移除 **6 個重複 widget case**。Bridge Core、legal action、13 tricks、隱私、取消／過期／重複提交及兩語操作驗收保留。
+- **CI 精簡：** 從 Flutter 主 CI 移除與 app 無依賴的 `card_game_probe` fetch/analyze/test；新增獨立 `.github/workflows/card-game-probe.yml`，僅 probe 路徑／workflow 變更或手動派發才驗證。Flutter 主 CI 保留 analyzer、完整 app tests、Web release build、Chrome UI／checkpoint。probe 相容性檢查並未刪除。更改 YAML 尚無本地 actionlint/parser，也尚未推送觸發 GitHub Actions；第一次 push 後需確認新 path trigger 分流正確。
+- **EXECUTED／PASS（本次）：** `cd apps/bridge_academy_flutter; flutter test --no-pub test/m2_focus_table_test.dart` **15/15 PASS**；`python -B scripts/check_feature_lessons.py --paths <7個本輪source/test路徑> docs/implemented/ENGINEERING_NOTES.md docs/implemented/FEATURES.md` **PASS（9 paths）**；`git diff --check` **PASS**（PowerShell 只提示 app_copy.dart 的既有 LF→CRLF）。第一遍 lesson gate 命令漏列兩個更新文件，故曾 **FAILED** 並印出需更新 FEATURES／ENGINEERING_NOTES；補齊路徑後立即通過，並非文件內容失敗。精簡前已執行 analyzer 0 issue、全 app suite **231/231 PASS**、Web release build PASS；這些不等於精簡後重跑。依刪除6個重複case推估完整 suite 225 tests，尚未執行，不記作 PASS。
+- **NOT RUN／未知：** 本次 full app suite、analyzer、Web release build、probe 測試、YAML linter、Chrome/BEN CI 均 **NOT RUN**；本次 commit SHA／CI URL／status **NOT RUN**；Android/iOS／A3.5 維持 owner QA HOLD。
+- **下一步：** 檢查新舊 workflow 路徑與 YAML → fetch `origin/master` 並確認沒有他人前進 → 再查 quota → direct commit/push `master`（不 force push）→ 查該 SHA 的 Flutter 主 CI、獨立 probe（若 path 變更有觸發）與 feature learning gate。CI 失敗先分類，再做必要修復；不要為此重跑所有外部研究工作流。
+- **風險／回退：** Workflow filter 若漏掉 probe 變更可能失去研究 gate；新 workflow 限制路徑與 `workflow_dispatch` 是保留方式，push 後須實測。UI／測試／CI 此次同一 commit 可用 `git revert <commit>` 回退；不得 force push。沒有引入第二規則引擎或暗牌。
+
+## M2-F63／F64 本輪交接（2026-10-27；最新狀態以本節為準）
+
+- **目標與範圍：** Owner 提供 BBO 手機圖，明確要求可移植非 Flutter 開源互動、全13張扇形手牌、明手在上／自己在下。本輪實作專注牌桌的完整手機扇形與確認互動、可讀公開墩牌、共用座標收墩；一般工作區主畫面未整體改版。
+- **quota：** 2026-10-27 04:09:26 UTC，`rateLimitsByLimitId.codex` primary remaining **7%**、secondary **40%**。Owner 已允許暫時不受 primary 門檻限制，但先記錄本交接並安全提交；帳號共用用量，不歸因專案。
+- **Git：** repo `C:/Users/user05/StudioProjects/Bridge-Academy`，master 基底／HEAD `4266fdaa77fece67dae32018b1d10df803b967b2`，開始時 clean、fetch 後 origin/master 0/0。本輪尚未提交／push：app_copy、bridge_card_face、bridge_card_strip、bridge_focus_table、bridge_table_components、m2_focus_table_test，新 bridge_trick_geometry.dart；FEATURES、ENGINEERING_NOTES、DECISIONS、ROADMAP、RESEARCH_REPORTS 與本交接。保留他人的工作。
+- **已完成：** F63 深綠桌面、公開墩牌依可用空間放大至52–84px工程範圍、入場與收墩共用 BridgeTrickGeometry；收墩先集中再飛向Core贏家，固定footer消除第一墩10px跳位。F64重用FlatCardFan在手機顯示全部13張、牌點索引、選中牌置頂抬起、窄屏初點只選取／第二點或確認才提交；寬牌列切換、大字體退路、版本／暫停清選取、合法拖放不變。重新讀 pinned Nickel HandFan／TrickArea，移植互動契約為Flutter，未複製TSX/CSS/素材或載入暗牌。
+- **EXECUTED：** Flutter analyzer **0 issue**；完整 `flutter test --no-pub --reporter expanded` **231/231 PASS**；`flutter build web --no-pub --release` **PASS**（既有CupertinoIcons inventory警告）。feature learning gate **PASS（11 sections）**、docs仍7份、git diff --check PASS。新3項手機扇形中英文／過期選取測試、4寬度首幀連續／方向測試及既有52張13墩／拖曳取消／減少動畫均涵蓋。初版曾有牌太小、footer跳位、英文大字體header溢位、扇形中心被遮擋而拖曳測試未命中；已依實際露出牌緣和Flexible修正，最終全測試通過。
+- **Chrome工程目視：** 使用獨立本機origin 127.0.0.1:8735，375×812，Just Declare南家，已核對上下兩副全部13張、合法明手選取抬起與確認；只含PlayerView授權牌。最終截圖待保存，手機／桌面檢查不是owner-held A3.5真人QA。兩個本機http server session 95261（8734）／98821（8735）供預覽，可在收尾停止。既有8734存檔已保留，未放棄既有牌局。
+- **CI／未完成：** 本輪新SHA尚未提交，CI **NOT RUN**；不可沿用9c6de50等舊CI綠燈。下一步：保存最終Web截圖 → git diff --check與quota → 程式／測試／F63 F64雙文件同批direct commit/push master → 查新SHA Flutter／Chrome／真BEN／learning結果 → 更新本檔證據。若失敗只修必要回歸。尚未做整個工作區預設導航改版、所有viewer視角的桌面座位旋轉、完整開源資產inventory與owner-held裝置／真人UX。不能聲稱BBO整體產品UX完成。
+- **回退：** 無Core/API/schema變更；以本次feature commit的 `git revert` 回退，不force push。Android/iOS模擬器／實機與A3.5維持NOT RUN／HOLD，Production NO-GO。
+
 ## 輕量 E2E／CI 修正已通過（2026-10-27 10:23 Asia/Taipei）
 
 - **使用者方向：** 輕型 agent 先完成小而明確的測試／CI／文件工作；牌桌視覺改版、動畫架構和套件移植留給較複雜模型。使用者允許暫時不受 primary 門檻限制。

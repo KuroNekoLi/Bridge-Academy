@@ -200,3 +200,12 @@ Owner 已授權 Reuse First 與 Nickel Bridge 修改；實際釘選、授權界�
 驗收 PoC：只餵公開固定 fixture 或 seat-filtered PlayerView → 自訂牌面 adapter → 點擊／拖曳 action intent → 原 Session／Gateway → Core validation → 新投影驅動動畫。保留 BEN 制度、計分與 server action ID。四人隱藏手只顯示數量／牌背，不把真暗牌塞進 isCardFlipped。Web 52 unique／13 tricks、明手控制、非法動作無 mutation、stale drag／取消、同 ID 重試與 reduced-motion 必測；裝置 QA 不在此 PoC 自動解除。來源、版本／SHA、license、notice、使用邊界及實測結果寫本節，沒有合適方案才記理由自製。
 
 BBO、新睿、BBO Trainer 可以當作練習分類、牌桌操作與玩家旅程的比較對象，不授權複製其程式、API 私有協定、素材或教材。Flutter `playing_cards 0.4.1+11` 採用於可見牌面渲染，Apache-2.0 package 仍有未使用的內附 Wikimedia 圖像可能被打包，正式釋出要排除或逐項查核；`card_game 2.0.0` 僅是備選，未正式採用。
+
+
+### 2026-10-27 手機扇形與公開墩座標適配
+
+重新核對上述 pinned Nickel 的 `HandFan.tsx`：其 selected card lift、第二次點牌提交，以及 `TrickArea.tsx` 的共用 slots／flight layer。本次將互動契約寫成 Flutter 的本地 `_selected`、FlatCardFan preview overlay 與 BridgeTrickGeometry；沒有複製 TSX／CSS／資產，也沒有引入上游 action staging、AI 或完整暗牌。正式app仍使用原版本 playing_cards；card_game 的正式採用缺口沒有因此消失。手機由完整扇形＋確認解決原48px gate導致無法同屏看完13張的問題，寬牌列與大字體退路仍可用。實測詳見 M2-F63／F64 工程導讀；Android／A3.5 仍 HOLD。
+
+### 2026-10-27 CI 範圍精簡：隔離 card_game probe
+
+`experiments/card_game_probe` 是獨立研究程式，不是 Flutter app 的依賴或 release gate。過去任何 app、Core 或 BEN adapter 路徑變更，都會在 Flutter 主 CI 額外執行該 probe 的 dependency fetch、analysis 和相容性測試，造成與該變更無關的重複成本。現將它移至 `.github/workflows/card-game-probe.yml`，只在 probe／該 workflow 變更時執行或手動派發；主 Flutter CI 保留 app analyzer、完整 app tests、Web release build 與 Chrome UI／checkpoint 驗收。probe gates 未刪除，仍可獨立重現；此 SHA 的 GitHub Actions 尚未執行，trigger 正確性待 push 後確認。

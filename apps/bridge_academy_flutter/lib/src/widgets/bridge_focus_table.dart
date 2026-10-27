@@ -7,6 +7,7 @@ import 'bridge_bidding_box.dart';
 import 'bridge_card_face.dart';
 import 'bridge_card_strip.dart';
 import 'bridge_table_components.dart';
+import 'bridge_trick_geometry.dart';
 
 /// A drag carries only a visible card and the projection it came from.
 class BridgeCardDrag {
@@ -50,6 +51,8 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
   int _level = 1;
   Strain _strain = Strain.notrump;
   int? _submittedVersion;
+  BridgeCardDrag? _selected;
+  bool _wideHands = false;
   late final AnimationController _collection;
   Trick? _collected;
 
@@ -58,7 +61,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     super.initState();
     _collection = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 220),
+      duration: const Duration(milliseconds: 520),
       value: 1,
     );
   }
@@ -68,6 +71,9 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     super.didUpdateWidget(oldWidget);
     final before = oldWidget.view;
     final after = widget.view;
+    if (after.version != before.version || widget.actionsPaused) {
+      _selected = null;
+    }
     if (after.version != before.version ||
         (oldWidget.actionsPaused && !widget.actionsPaused) ||
         (oldWidget.error != null && widget.error == null)) {
@@ -109,29 +115,87 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
 
   void _play(BridgeCardDrag drag) {
     if (!_allowed(drag)) return;
-    setState(() => _submittedVersion = widget.view.version);
+    setState(() {
+      _submittedVersion = widget.view.version;
+      _selected = null;
+    });
     widget.onPlayCard(drag.card);
   }
 
-  Widget _hand(Seat owner, List<bridge.Card> cards, String label) => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text(label, style: Theme.of(context).textTheme.labelLarge),
-      BridgeCardStrip(
-        useFan: true,
-        centerWhenFits: true,
-        id: 'focus_${owner.letter}',
-        copy: widget.copy,
-        children: [
-          for (final card in sortedVisibleCards(cards))
-            _draggable(BridgeCardDrag(widget.view.version, owner, card)),
-        ],
-      ),
-    ],
-  );
+  Widget _hand(Seat owner, List<bridge.Card> cards, String label) =>
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final sorted = sortedVisibleCards(cards);
+          final confirm =
+              !_wideHands &&
+              constraints.maxWidth < 68 + (sorted.length - 1) * 48 &&
+              MediaQuery.textScalerOf(context).scale(14) <= 19;
+          final selected = _selected?.owner == owner ? _selected : null;
+          final selectedIndex = selected == null
+              ? null
+              : sorted.indexOf(selected.card);
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 48,
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelLarge?.copyWith(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        selected == null
+                            ? widget.copy.seat(owner.letter)
+                            : widget.copy.cardName(selected.card.code),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ),
+                    if (selected != null)
+                      FilledButton(
+                        key: const Key('focus_confirm_card'),
+                        onPressed: _allowed(selected)
+                            ? () => _play(selected)
+                            : null,
+                        child: Text(widget.copy.t('confirmPlay')),
+                      ),
+                  ],
+                ),
+              ),
+              BridgeCardStrip(
+                useFan: !_wideHands,
+                compactFan: !_wideHands,
+                selectedIndex: selectedIndex,
+                hintColor: Colors.white70,
+                centerWhenFits: true,
+                id: 'focus_${owner.letter}',
+                copy: widget.copy,
+                children: [
+                  for (final card in sorted)
+                    _draggable(
+                      BridgeCardDrag(widget.view.version, owner, card),
+                      confirm: confirm,
+                    ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
 
-  Widget _draggable(BridgeCardDrag drag) {
+  Widget _draggable(BridgeCardDrag drag, {bool confirm = false}) {
     final allowed = _allowed(drag);
     return LongPressDraggable<BridgeCardDrag>(
       key: Key('focus_drag_${drag.owner.letter}_${drag.card.code}'),
@@ -143,7 +207,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
         child: SizedBox(
           width: 58,
           height: 84,
-          child: BridgeCardFace(card: drag.card),
+          child: BridgeCardFace(card: drag.card, prominentIndex: true),
         ),
       ),
       childWhenDragging: Opacity(
@@ -151,168 +215,238 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
         child: SizedBox(
           width: 64,
           height: 92,
-          child: BridgeCardFace(card: drag.card),
+          child: BridgeCardFace(card: drag.card, prominentIndex: true),
         ),
       ),
       child: BridgePlayingCardButton(
         dragEnabled: true,
+        prominentIndex:
+            !(_selected?.card == drag.card && _selected?.owner == drag.owner),
         card: drag.card,
         prefix: 'focus_card_${drag.owner.letter}_',
         copy: widget.copy,
         legal: allowed,
         busy: widget.actionsPaused,
-        onTap: () => _play(drag),
+        onTap: () {
+          if (confirm &&
+              (_selected?.card != drag.card ||
+                  _selected?.owner != drag.owner)) {
+            setState(() => _selected = drag);
+          } else {
+            _play(drag);
+          }
+        },
       ),
     );
   }
 
-  Widget _seat(Seat seat) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: widget.view.turn == seat
-          ? Theme.of(context).colorScheme.primaryContainer
-          : Colors.white70,
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(6),
-      child: Text(
-        '${widget.copy.seat(seat.letter)} · '
-        '${widget.view.remainingCards[seat] ?? 0}'
-        '${widget.view.turn == seat ? ' · ${widget.copy.t('activeSeat')}' : ''}',
-        key: Key('focus_seat_${seat.letter}'),
-        textAlign: TextAlign.center,
+  Widget _seat(Seat seat) {
+    final active = widget.view.turn == seat;
+    return Semantics(
+      selected: active,
+      label: active ? widget.copy.t('activeSeat') : null,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFFF4D374) : const Color(0xFFE5EDE8),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Text(
+            '${widget.copy.seat(seat.letter)} · ${widget.view.remainingCards[seat] ?? 0}',
+            key: Key('focus_seat_${seat.letter}'),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xFF163D33),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   Widget _arena() => DragTarget<BridgeCardDrag>(
     onWillAcceptWithDetails: (details) => _allowed(details.data),
     onAcceptWithDetails: (details) => _play(details.data),
-    builder: (context, candidates, rejected) => Container(
-      key: const Key('focus_drop_zone'),
-      decoration: BoxDecoration(
-        color: candidates.isNotEmpty
-            ? const Color(0xFFB3DCCA)
-            : const Color(0xFFD8E9DE),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
-          width: candidates.isNotEmpty ? 3 : 1,
-        ),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Stack(
-        children: [
-          Align(alignment: Alignment.topCenter, child: _seat(Seat.north)),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(width: 76, child: _seat(Seat.west)),
+    builder: (context, candidates, rejected) => LayoutBuilder(
+      builder: (context, constraints) {
+        final arena = constraints.biggest;
+        final side = arena.width < 560 ? 58.0 : 92.0;
+        final geometry = BridgeTrickGeometry.fit(
+          Size(arena.width - side * 2, arena.height - 48),
+          arenaSize: arena,
+        );
+        return Container(
+          key: const Key('focus_drop_zone'),
+          decoration: BoxDecoration(
+            color: candidates.isNotEmpty ? Colors.white12 : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(width: 76, child: _seat(Seat.east)),
-          ),
-          Align(alignment: Alignment.bottomCenter, child: _seat(Seat.south)),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 78),
-              child: widget.view.phase == Phase.auction
-                  ? SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(widget.copy.t('auction')),
-                          for (final entry in widget.view.auction)
-                            Text(
-                              '${widget.copy.seat(entry.seat.letter)} ${entry.call.code}',
-                            ),
-                        ],
-                      ),
-                    )
-                  : BridgeCurrentTrick(
-                      view: widget.view,
-                      copy: widget.copy,
-                      compact: true,
-                    ),
+          foregroundDecoration: BoxDecoration(
+            border: Border.all(
+              color: candidates.isNotEmpty
+                  ? const Color(0xFFF4D374)
+                  : Colors.transparent,
+              width: 3,
             ),
+            borderRadius: BorderRadius.circular(16),
           ),
-          // Public completed cards are decorative only, never another command.
-          Positioned.fill(
-            child: IgnorePointer(
-              child: ExcludeSemantics(
-                child: AnimatedBuilder(
-                  animation: _collection,
-                  builder: (context, _) {
-                    if (_collection.value == 1 || _collected == null) {
-                      return const SizedBox.shrink();
-                    }
-                    final t = Curves.easeIn.transform(_collection.value);
-                    Offset slot(Seat seat) => switch (seat) {
-                      Seat.north => const Offset(0, -30),
-                      Seat.east => const Offset(54, 0),
-                      Seat.south => const Offset(0, 30),
-                      Seat.west => const Offset(-54, 0),
-                    };
-                    final winner = slot(_collected!.winner);
-                    return Center(
-                      child: SizedBox(
-                        key: const Key('focus_collection'),
-                        width: 148,
-                        height: 116,
-                        child: Stack(
-                          children: [
-                            for (final play in _collected!.plays)
-                              Positioned(
-                                left: 54 + slot(play.handOwner).dx,
-                                top: 30 + slot(play.handOwner).dy,
-                                child: Opacity(
-                                  opacity: 1 - t,
-                                  child: Transform.translate(
-                                    offset: (winner - slot(play.handOwner)) * t,
-                                    child: SizedBox(
-                                      width: 40,
-                                      height: 56,
-                                      child: BridgeCardFace(card: play.card),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+          child: Stack(
+            children: [
+              Align(alignment: Alignment.topCenter, child: _seat(Seat.north)),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(width: side - 4, child: _seat(Seat.west)),
               ),
-            ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(width: side - 4, child: _seat(Seat.east)),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _seat(Seat.south),
+              ),
+              Center(
+                child: widget.view.phase == Phase.auction
+                    ? SizedBox(
+                        width: arena.width - side * 2,
+                        height: arena.height - 92,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                widget.copy.t('auction'),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              for (final entry in widget.view.auction)
+                                Text(
+                                  '${widget.copy.seat(entry.seat.letter)} ${entry.call.code}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : BridgeCurrentTrick(
+                        view: widget.view,
+                        copy: widget.copy,
+                        compact: true,
+                        geometry: geometry,
+                        showHeading: false,
+                      ),
+              ),
+              _collectionLayer(geometry, arena),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     ),
   );
 
+  Widget _collectionLayer(BridgeTrickGeometry geometry, Size arena) =>
+      Positioned.fill(
+        child: IgnorePointer(
+          child: ExcludeSemantics(
+            child: AnimatedBuilder(
+              animation: _collection,
+              builder: (context, _) {
+                if (_collection.value == 1 || _collected == null) {
+                  return const SizedBox.shrink();
+                }
+                final t = _collection.value;
+                final gather = const Interval(
+                  .12,
+                  .45,
+                  curve: Curves.easeInOut,
+                ).transform(t);
+                final fly = const Interval(
+                  .45,
+                  1,
+                  curve: Curves.easeInCubic,
+                ).transform(t);
+                final fade = 1 - const Interval(.65, 1).transform(t);
+                final center =
+                    arena.center(Offset.zero) -
+                    geometry.cardSize.center(Offset.zero);
+                final destination =
+                    geometry.seatAnchor(_collected!.winner) -
+                    geometry.cardSize.center(Offset.zero);
+                return SizedBox(
+                  key: const Key('focus_collection'),
+                  child: Stack(
+                    children: [
+                      for (final play in _collected!.plays)
+                        Positioned(
+                          key: Key('focus_collect_${play.handOwner.letter}'),
+                          left:
+                              center.dx +
+                              geometry.seatOffset(play.handOwner).dx *
+                                  (1 - gather) +
+                              (destination.dx - center.dx) * fly,
+                          top:
+                              center.dy +
+                              geometry.seatOffset(play.handOwner).dy *
+                                  (1 - gather) +
+                              (destination.dy - center.dy) * fly,
+                          child: Opacity(
+                            opacity: fade,
+                            child: Transform.scale(
+                              scale: 1 - .3 * fly,
+                              child: SizedBox(
+                                width: geometry.cardSize.width,
+                                height: geometry.cardSize.height,
+                                child: BridgeCardFace(
+                                  card: play.card,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
   Widget _tableSurface({double? arenaHeight}) {
     final view = widget.view;
-    return ColoredBox(
+    return DecoratedBox(
       key: const Key('focus_table_surface'),
-      color: const Color(0xFFD8E9DE),
-      child: Column(
-        mainAxisSize: arenaHeight == null ? MainAxisSize.max : MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (view.dummyExposed &&
-              view.dummyCards != null &&
-              view.contract!.dummy != view.viewer)
-            _hand(
-              view.contract!.dummy,
-              view.dummyCards!,
-              widget.copy.t('dummy'),
-            ),
-          if (arenaHeight != null)
-            SizedBox(height: arenaHeight, child: _arena())
-          else
-            Expanded(child: _arena()),
-          _hand(view.viewer, view.ownCards, widget.copy.t('cards')),
-        ],
+      decoration: BoxDecoration(
+        gradient: const RadialGradient(
+          radius: 1.2,
+          colors: [Color(0xFF246653), Color(0xFF123F35)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: arenaHeight == null
+              ? MainAxisSize.max
+              : MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (view.dummyExposed &&
+                view.dummyCards != null &&
+                view.contract!.dummy != view.viewer)
+              _hand(
+                view.contract!.dummy,
+                view.dummyCards!,
+                widget.copy.t('dummy'),
+              ),
+            if (arenaHeight != null)
+              SizedBox(height: arenaHeight, child: _arena())
+            else
+              Expanded(child: _arena()),
+            _hand(view.viewer, view.ownCards, widget.copy.t('cards')),
+          ],
+        ),
       ),
     );
   }
@@ -323,8 +457,19 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     final copy = widget.copy;
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            key: const Key('focus_hand_layout'),
+            tooltip: copy.t(_wideHands ? 'fanHand' : 'wideHand'),
+            icon: Icon(_wideHands ? Icons.style : Icons.view_carousel_outlined),
+            onPressed: () => setState(() {
+              _wideHands = !_wideHands;
+              _selected = null;
+            }),
+          ),
+        ],
         title: Text(
-          copy.t('focusTable'),
+          '${copy.contract(view.contract?.label ?? copy.t('notYet'))} · ${copy.boardNumber(widget.boardNumber)}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -348,22 +493,21 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 2,
-                            children: [
-                              Text(copy.boardNumber(widget.boardNumber)),
-                              Text(copy.dealer(view.dealer.letter)),
-                              Text(
-                                copy.contract(
-                                  view.contract?.label ?? copy.t('notYet'),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                Text(
+                                  copy.trickCount(view.completedTricks.length),
                                 ),
-                              ),
-                              Text(
-                                copy.trickCount(view.completedTricks.length),
-                              ),
-                              Text(copy.vulnerability(view.vulnerability.name)),
-                            ],
+                                const SizedBox(width: 12),
+                                Text(copy.dealer(view.dealer.letter)),
+                                const SizedBox(width: 12),
+                                Text(
+                                  copy.vulnerability(view.vulnerability.name),
+                                ),
+                              ],
+                            ),
                           ),
                           Text(
                             widget.modeLabel,
@@ -393,15 +537,21 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                             _tableSurface(arenaHeight: large ? 500 : 260)
                           else
                             Expanded(child: _tableSurface()),
-                          if (view.completedTricks.isNotEmpty)
-                            Text(
-                              copy.replayWinner(
-                                view.completedTricks.last.winner.letter,
-                              ),
-                            ),
+                          SizedBox(
+                            height: MediaQuery.textScalerOf(context).scale(24),
+                            child: view.completedTricks.isEmpty
+                                ? const SizedBox.shrink()
+                                : Text(
+                                    copy.replayWinner(
+                                      view.completedTricks.last.winner.letter,
+                                    ),
+                                  ),
+                          ),
                           if (view.phase == Phase.play)
                             Text(
-                              copy.t('focusDragHint'),
+                              copy.t(
+                                _wideHands ? 'focusDragHint' : 'selectPlayHint',
+                              ),
                               style: Theme.of(context).textTheme.labelSmall,
                             ),
                           if (view.phase == Phase.auction)

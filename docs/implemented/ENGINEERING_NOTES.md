@@ -118,3 +118,24 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **提交與 CI：** source＋tests＋本節及 FEATURES 已同一 commit `030276b1e10d8243a429146ec1a5d7e559592998` push master。[Feature Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087861) success；[Flutter／Web／Chrome](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40300087862) **success**。已讀 jobs `121495539167`／`121495538670` 實際 logs：No issues found、206 tests passed、Built build/web；browser_table_test 及 browser_secure_checkpoint_test targets 均 All tests passed。這是 Demo／Chrome 技術驗收，不是真人或正式發行驗收。M4/M5 CI 亦 success；真 BEN／Precision 自動回歸當時仍執行中，不能提前稱成功。
 
 三功能最後共同驗證：`flutter analyze --no-pub` 無問題、`flutter test --no-pub --reporter expanded` **215/215 PASS**、`flutter build web --no-pub --release` PASS；Windows／Flutter 3.47.8／Dart 3.13.7。無外部元件移植、未新增規則引擎。新 browser target 真 Chrome 待 CI，Gateway 專注路由的真 BEN／裝置／A3.5 NOT RUN。
+
+
+## M2-F63｜讓墩牌與收墩共用座標
+
+**情境與資料流：** 先前中央牌固定 40×56，收墩又有獨立的 148×116 魔術數字。現在 `BridgeFocusTable._arena` 依實際寬高建立 `BridgeTrickGeometry`，交給 `BridgeCurrentTrick` 及 `_collectionLayer`。幾何類只含尺寸／Seat；公開牌與贏家仍來自 PlayerView。入場從對應座位邊緣開始；收墩使用同一個 `seatOffset`，先集中再飛往 winner anchor，沒有第二個規則或動作排程器。
+
+**取捨與已修問題：** 參照 Nickel `TrickArea.tsx` 的 slot／flight layer 概念，以 Flutter 原生 AnimationController 接現有 PlayingCardView，避免引入有 drag-end／reduced-motion 缺口的 card_game。測試曾抓到第一墩完成後 footer 新增造成 10px 跳位，改為固定保留依文字縮放計算的高度。窄屏依可用高度調整牌面，不能只按螢幕寬度放大；收墩純裝飾且 IgnorePointer／ExcludeSemantics，不阻擋下一回合。還原、縮減動畫與卸載仍能中止。
+
+**真實證據：** Windows／Flutter 3.47.8，`flutter analyze --no-pub` 0 issue；精簡前 `flutter test --no-pub --reporter expanded` 231/231 PASS；`flutter build web --no-pub --release` PASS（既有 CupertinoIcons inventory 警告）。測試精簡後把重複寬度矩陣收斂為 320／1280px，保留端點尺寸、收墩首幀連續與贏家方向；完整13墩重播只跑一次窄屏，不在桌面重複重播。精簡後 `flutter test --no-pub test/m2_focus_table_test.dart` 15/15 PASS；新 SHA CI 待 push，不沿用舊綠燈。狀態 ENGINEERING_PASS／LESSON_DELIVERED，owner-held 裝置／A3.5 NOT RUN。
+
+**5–15 分鐘練習：** 讀 `bridge_trick_geometry.dart` 的 `position` 和 `seatAnchor`，指出前者為何只用局部 stage、後者為何需要整個 arena。把瀏覽器從 375px 改成 1280px，觀察牌面變大後收墩第一幀仍不跳位。回退用本功能 commit 的 git revert；無 schema/API 遷移。
+
+## M2-F64｜把重疊手機手牌的選取與提交分開
+
+**情境與實作：** 使用者提供 BBO 手機圖，要求同屏看完 13 張牌、真正的扇形上下手牌。先前 48px exposed-width gate 導致手機只顯示可捲動列，未達此要求。現在 `BridgeCardStrip.compactFan` 重用 FlatCardFan 定位，選中牌的原槽放尺寸佔位，並在同一 Stack 最上層繪製一次抬起的牌；沒有重複的可點擊／語意實例。PlayingCardView 保留背景／牌面渲染，focus 牌加大左上角牌點並留白中心，使被遮住的牌仍可辨識。
+
+**邊界與替代方案：** 從 pinned Nickel `HandFan.tsx` 選取／第二點提交與 lift 概念移植為 Flutter `_selected`。小於 48px 可見步距時第一點只更新 UI 選取，第二點或獨立確認鈕才呼叫 `_play`；`_play` 仍以投影版本、owner、canAct、legalCards、paused、同版本防重檢查提交。新版本／暫停會清除選取。寬版保留直接點牌；大字體或標題列手動切換採原寬牌列。單純把手機牌縮到很小可保住48px點擊區，但可讀性差；取消整副手牌則違反 owner 的參考，因此採重疊預覽＋確認＋可切換寬版。沒有外部 AI／規則移植。
+
+**真實證據與修復：** 320／375px 中英文測試初點不提交、抬起、一次確認、13 張牌點位於 viewport、新版本／暫停清除、寬列可及；大字體回歸找到 header Row 英文溢位，已加 Flexible／ellipsis。拖曳測試改在扇形真正露出的牌緣施作，不再把被下一張遮住的中心當命中點；仍驗證送出卡牌等於原合法牌、取消不送、同版本一次。最終 analyzer 0 issue、全測試231/231與Web release PASS；Chrome 375px 實際目視和選取操作已核對，新 SHA CI 待 push。ENGINEERING_PASS／LESSON_DELIVERED；PRACTICED／MASTERED 不由 CI 推論。
+
+**5–15 分鐘練習：** 在375px選一張合法明手牌，先確認墩牌數沒有改變，再按確認出牌；切換寬牌列並用鍵盤操作。讀 `_selected` 和 `_submittedVersion`，說明兩者為何不能合成同一個欄位。回退用本次 commit 的 git revert；無存檔遷移。

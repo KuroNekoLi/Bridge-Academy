@@ -1,4 +1,4 @@
-# 已實作功能（截至 2026-10-26）
+# 已實作功能（截至 2026-10-27）
 
 > 「工程測試通過」不代表「已公開部署」；「研究可用」也不代表正式產品功能。
 
@@ -28,7 +28,7 @@
 
 專注牌桌把揭露後的明手牌列放在桌面**上緣**，把自己的手牌放在**下緣**，中央保留四座位與本墩公開牌；兩排都在同一桌面底色內。可容納時兩排居中，窄屏仍可水平捲動，不會把未揭露的明手或防家暗牌放進畫面。這修正使用者指出的舊版錯位：明手與自己原本都擠在桌面下方。參考 BBO 截圖與已釘選 Nickel Bridge 的座位佈局；Nickel 是 React 實作，沒有直接複製其 TSX／CSS 或取代 Flutter／Bridge Core。
 
-程式：[專注牌桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；[位置與既有牌局測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證 320／375／768／1280px 的上下關係、明手揭露前不渲染及寬畫面置中。本機 analyzer 0 issue、全 Flutter 224/224、Web release PASS；真 Chrome 375px 與桌面畫面已核對，這是工程視覺檢查而非 A3.5。狀態 **ENGINEERING_PASS（本機範圍）／LESSON_DELIVERED**；新 SHA CI、PRACTICED／MASTERED 與 A3.5／裝置驗收仍待確認。
+程式：[專注牌桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)；[位置與既有牌局測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 保留 320px 窄屏與 1280px 桌面兩端的上下關係、揭露限制及置中驗收；中間寬度由扇形操作的 320／375px 用例覆蓋，不重複跑完整墩流程。本機原完整 Flutter 224/224、Web release PASS；真 Chrome 375px 與桌面畫面已核對，這是工程視覺檢查而非 A3.5。狀態 **ENGINEERING_PASS（本機範圍）／LESSON_DELIVERED**；新 SHA CI、PRACTICED／MASTERED 與 A3.5／裝置驗收仍待確認。
 
 ## M2-F57｜專注單屏牌桌
 
@@ -159,3 +159,16 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 ## 維護要求
 
 新增產品功能時，同一次提交必須更新本文件與 [工程導讀](ENGINEERING_NOTES.md)，附真正可重現的測試與 CI 證據。舊驗收細節並未遺失，可用本次精簡前的 Git 歷史還原；**不能把曾經通過的特定環境 CI 當作最新正式版全部通過**。
+
+
+## M2-F63｜可讀墩牌與連續的收墩路徑
+
+專注牌桌改為深綠桌布，公開墩牌依可用寬高放大（320px 工程 fixture 至少 52px，寬版最大 84px）；[BridgeTrickGeometry](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_trick_geometry.dart) 同時供目前墩牌、座位入場與收墩使用。完成墩先短暫保留，再集中並飛向 Core 公布的贏家座位。上一墩資訊預留高度，第一墩完成時不再讓墩牌跳位；動畫不鎖下一次合法動作，減少動畫仍即時完成。
+
+[專注桌／幾何與動態測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 在 320／1280px 驗證牌面尺寸、收墩首幀與原墩牌重合、飛向贏家、結束移除；既有 52 張／13 墩、取消、重複提交與大字體回歸保留。Flutter analyzer 0 issue、精簡前全測試 231/231 PASS、Web release PASS；精簡後專注桌 15/15 PASS。最新 SHA CI 尚未執行。狀態 **ENGINEERING_PASS（本機工程範圍）／LESSON_DELIVERED**，真人／裝置 QA 與正式部署仍未放行。
+
+## M2-F64｜手機完整扇形手牌與選牌確認
+
+手機專注牌桌預設把全部 13 張牌放進同一個扇形，明手與自己的手牌維持上、下兩端。重用 `playing_cards` 的 FlatCardFan 和牌面 renderer，增加重疊時可讀的左上角牌點；選中的合法牌會抬起並移到最上層。窄到每張可見區不足 48px 時，第一次點擊只選牌，再點同牌或「確認出牌」才提交；長按拖曳仍走既有授權檢查。標題列可切到寬牌列，大字體自動保留捲動退路。新版本、暫停及切換排列會清掉選牌，避免過期提交。
+
+程式：[BridgeCardStrip](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_strip.dart)、[牌面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_face.dart)、[專注桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)、[雙語文案](../../apps/bridge_academy_flutter/lib/src/app_copy.dart)。[測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證中英文 320／375px 的全部牌點可見、初點不提交、選牌抬起、確認只提交一次、版本與暫停清除選取、寬牌列切換；全 Flutter 231/231 PASS，Chrome 工程目視已核對。這是移植 Nickel pinned HandFan 的選取／第二次點牌概念到 Flutter，沒有匯入其 React runtime、AI 或暗牌。狀態 **ENGINEERING_PASS（工程範圍）／LESSON_DELIVERED**，PRACTICED／MASTERED 需使用者真實練習。

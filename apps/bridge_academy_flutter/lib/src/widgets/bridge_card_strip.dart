@@ -13,12 +13,18 @@ class BridgeCardStrip extends StatefulWidget {
     required this.id,
     this.centerWhenFits = false,
     this.useFan = false,
+    this.hintColor,
+    this.compactFan = false,
+    this.selectedIndex,
   });
   final List<Widget> children;
   final AppCopy copy;
   final String id;
   final bool centerWhenFits;
   final bool useFan;
+  final Color? hintColor;
+  final bool compactFan;
+  final int? selectedIndex;
 
   @override
   State<BridgeCardStrip> createState() => _BridgeCardStripState();
@@ -44,15 +50,19 @@ class _BridgeCardStripState extends State<BridgeCardStrip> {
       final cards = [
         for (final child in widget.children) SizedBox(width: 68, child: child),
       ];
-      // Later cards cover earlier ones. Keep >=48 logical pixels of every
-      // target exposed; a fully compressed 13-card phone fan would not do so.
+      // Compact fans require caller-owned selection/confirmation. The default
+      // keeps 48px exposed; large text always uses the accessible scroll layout.
       final fanMinimum = 68 + (cards.length - 1) * 48;
       if (widget.useFan &&
           cards.length > 1 &&
           constraints.hasBoundedWidth &&
-          constraints.maxWidth >= fanMinimum &&
+          (widget.compactFan
+              ? constraints.maxWidth >= 68
+              : constraints.maxWidth >= fanMinimum) &&
           MediaQuery.textScalerOf(context).scale(14) <= 19) {
-        final width = contentWidth.clamp(fanMinimum, constraints.maxWidth).toDouble();
+        final width = contentWidth
+            .clamp(widget.compactFan ? 68 : fanMinimum, constraints.maxWidth)
+            .toDouble();
         final middle = (cards.length - 1) / 2;
         return Align(
           alignment: widget.centerWhenFits
@@ -61,18 +71,47 @@ class _BridgeCardStripState extends State<BridgeCardStrip> {
           child: SizedBox(
             key: Key('${widget.id}_card_strip'),
             width: width,
-            height: 100,
-            child: FlatCardFan(children: [
-              for (var index = 0; index < cards.length; index++)
-                Transform.translate(
-                  offset: Offset(0, 6 * (index - middle) * (index - middle) /
-                      (middle * middle) - 3),
-                  child: Transform.rotate(
-                    angle: (index - middle) / middle * .06,
-                    child: cards[index],
+            height: widget.compactFan ? 120 : 100,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: widget.compactFan ? 20 : 0,
+                  height: 100,
+                  child: FlatCardFan(
+                    children: [
+                      for (var index = 0; index < cards.length; index++)
+                        Transform.translate(
+                          offset: Offset(
+                            0,
+                            6 *
+                                    (index - middle) *
+                                    (index - middle) /
+                                    (middle * middle) -
+                                3,
+                          ),
+                          child: Transform.rotate(
+                            angle: (index - middle) / middle * .08,
+                            child: widget.selectedIndex == index
+                                ? const SizedBox(width: 68, height: 92)
+                                : cards[index],
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-            ]),
+                if (widget.selectedIndex case final int selected
+                    when selected >= 0 && selected < cards.length)
+                  Positioned(
+                    left: selected * (width - 68) / (cards.length - 1),
+                    top: 0,
+                    width: 68,
+                    child: cards[selected],
+                  ),
+              ],
+            ),
           ),
         );
       }
@@ -94,6 +133,7 @@ class _BridgeCardStripState extends State<BridgeCardStrip> {
           Text(
             widget.copy.t('handScrollHint'),
             key: Key('${widget.id}_scroll_hint'),
+            style: TextStyle(color: widget.hintColor),
           ),
           const SizedBox(height: 4),
           Scrollbar(

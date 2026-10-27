@@ -71,6 +71,10 @@ class AppCopy {
   static const Map<String, List<String>> _strings = {
     'focusTable': ['專注牌桌', 'Focused table'],
     'focusRetry': ['重試', 'Retry'],
+    'confirmPlay': ['確認出牌', 'Play card'],
+    'wideHand': ['切換寬牌列', 'Use wider card targets'],
+    'fanHand': ['切換扇形手牌', 'Show fan hand'],
+    'selectPlayHint': ['點牌抬起查看，再點一次或按確認出牌；也可長按拖曳。', 'Tap to lift a card, then tap again or confirm. Hold to drag.'],
     'focusDragHint': [
       '點擊合法牌，或長按拖到牌桌中央；放在桌外即可取消。',
       'Tap a legal card, or hold and drag it to the table. Drop outside to cancel.',

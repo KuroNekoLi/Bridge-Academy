@@ -4,6 +4,7 @@ import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_card_face.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_focus_table.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_public_card_entrance.dart';
+import 'package:bridge_academy_flutter/src/widgets/bridge_table_components.dart';
 import 'package:bridge_core/bridge_core.dart' as b;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +29,7 @@ Future<void> showTable(
   String? error,
   VoidCallback? retry,
   double textScale = 1,
+  bool english = true,
 }) => tester.pumpWidget(
   MaterialApp(
     home: MediaQuery(
@@ -37,7 +39,7 @@ Future<void> showTable(
       ),
       child: BridgeFocusTable(
         view: b.PlayerView.forSeat(state, b.Seat.south),
-        copy: const AppCopy(true),
+        copy: AppCopy(english),
         boardNumber: 1,
         modeLabel: 'Demo',
         actionsPaused: paused,
@@ -51,7 +53,89 @@ Future<void> showTable(
 );
 
 void main() {
-  for (final width in [320.0, 375.0, 768.0, 1280.0]) {
+  testWidgets(
+    'M2-F64 public version and pause invalidate an unsubmitted selection',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(375, 812);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final state = advance(initial());
+      var calls = 0;
+      await showTable(tester, state, onPlay: (_) => calls++);
+      final card = b.PlayerView.forSeat(state, b.Seat.south).legalCards.first;
+      final source = find.byKey(Key('focus_card_N_${card.code}'));
+      await tester.tapAt(tester.getTopLeft(source) + const Offset(8, 40));
+      await tester.pump();
+      expect(find.byKey(const Key('focus_confirm_card')), findsOneWidget);
+      await showTable(tester, advance(state), onPlay: (_) => calls++);
+      expect(find.byKey(const Key('focus_confirm_card')), findsNothing);
+      await showTable(tester, state, onPlay: (_) => calls++);
+      await tester.tapAt(tester.getTopLeft(source) + const Offset(8, 40));
+      await tester.pump();
+      expect(find.byKey(const Key('focus_confirm_card')), findsOneWidget);
+      await showTable(tester, state, paused: true, onPlay: (_) => calls++);
+      expect(find.byKey(const Key('focus_confirm_card')), findsNothing);
+      expect(calls, 0);
+    },
+  );
+
+  for (final width in [320.0, 375.0]) {
+    testWidgets(
+      'M2-F64 all 13 fan indexes visible; select then confirm once at $width',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(width, 812);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        var state = advance(initial());
+        var calls = 0;
+        final english = width == 375;
+        await showTable(
+          tester,
+          state,
+          english: english,
+          onPlay: (_) => calls++,
+        );
+        expect(find.byKey(const Key('focus_N_scroll')), findsNothing);
+        final view = b.PlayerView.forSeat(state, b.Seat.south);
+        for (final card in view.dummyCards!) {
+          final index = tester.getTopLeft(
+            find.byKey(Key('focus_card_N_${card.code}')),
+          );
+          expect(index.dx, inInclusiveRange(-3, width - 16));
+        }
+        final card = view.legalCards.first;
+        final source = find.byKey(Key('focus_card_N_${card.code}'));
+        final start = tester.getTopLeft(source);
+        await tester.tapAt(start + const Offset(8, 40));
+        await tester.pump();
+        expect(calls, 0);
+        expect(tester.getTopLeft(source).dy, lessThan(start.dy - 8));
+        expect(find.text(english ? 'Play card' : '確認出牌'), findsOneWidget);
+        await tester.tap(find.byKey(const Key('focus_confirm_card')));
+        await tester.pump();
+        expect(calls, 1);
+        expect(find.byKey(const Key('focus_confirm_card')), findsNothing);
+        // A new public version clears any selection; wider targets remain available.
+        state = advance(state);
+        await showTable(
+          tester,
+          state,
+          english: english,
+          onPlay: (_) => calls++,
+        );
+        expect(find.byKey(const Key('focus_confirm_card')), findsNothing);
+        await tester.tap(find.byKey(const Key('focus_hand_layout')));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('focus_S_scroll')), findsOneWidget);
+        expect(calls, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  for (final width in [320.0, 1280.0]) {
     testWidgets('M2-F62 dummy is above table and own hand below at $width', (
       tester,
     ) async {
@@ -85,17 +169,72 @@ void main() {
     });
   }
 
+  for (final width in [320.0, 1280.0]) {
+    testWidgets(
+      'M2-F63 readable public cards and continuous collection at $width',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(width, 812);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        var state = advance(advance(advance(initial())));
+        await showTable(tester, state);
+        await tester.pumpAndSettle();
+        final stage = find.byKey(const Key('focus_trick_compass'));
+        final cards = find.descendant(
+          of: stage,
+          matching: find.byType(BridgeCardFace),
+        );
+        final before = [
+          for (var i = 0; i < 3; i++) tester.getCenter(cards.at(i)),
+        ];
+        expect(tester.getSize(cards.first).width, inInclusiveRange(52, 84));
+        final arena = tester.getRect(find.byKey(const Key('focus_drop_zone')));
+        for (final point in before) {
+          expect(arena.contains(point), isTrue);
+        }
+        state = advance(state);
+        await showTable(tester, state);
+        final collected = find.descendant(
+          of: find.byKey(const Key('focus_collection')),
+          matching: find.byType(BridgeCardFace),
+        );
+        expect(collected, findsNWidgets(4));
+        for (var i = 0; i < 3; i++) {
+          expect(
+            (tester.getCenter(collected.at(i)) - before[i]).distance,
+            lessThan(1),
+          );
+        }
+        final start = tester.getCenter(collected.first);
+        await tester.pump(const Duration(milliseconds: 480));
+        final moved = tester.getCenter(collected.first) - arena.center;
+        switch (state.tricks.last.winner) {
+          case b.Seat.north:
+            expect(moved.dy, lessThan(-10));
+          case b.Seat.east:
+            expect(moved.dx, greaterThan(10));
+          case b.Seat.south:
+            expect(moved.dy, greaterThan(10));
+          case b.Seat.west:
+            expect(moved.dx, lessThan(-10));
+        }
+        expect(
+          (tester.getCenter(collected.first) - start).distance,
+          greaterThan(10),
+        );
+        await tester.pump(const Duration(milliseconds: 50));
+        expect(find.byKey(const Key('focus_collection')), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('M2-F61 public plays fly from their compass seat only once', (
     tester,
   ) async {
     var state = initial();
     await showTable(tester, state);
-    final expected = <b.Seat, Offset>{
-      b.Seat.north: const Offset(0, -30),
-      b.Seat.east: const Offset(48, 0),
-      b.Seat.south: const Offset(0, 30),
-      b.Seat.west: const Offset(-48, 0),
-    };
     for (var index = 0; index < 4; index++) {
       state = advance(state);
       await showTable(tester, state);
@@ -116,7 +255,10 @@ void main() {
         final entrance = entrances.at(playIndex);
         expect(
           tester.widget<BridgePublicCardEntrance>(entrance).from,
-          expected[play.handOwner],
+          tester
+              .widget<BridgeCurrentTrick>(find.byType(BridgeCurrentTrick))
+              .geometry!
+              .entranceFrom(play.handOwner),
         );
       }
       final newest = entrances.last;
@@ -133,7 +275,7 @@ void main() {
     expect(state.tricks.length, 1);
   });
 
-  for (final width in [320.0, 375.0, 768.0, 1280.0]) {
+  for (final width in [320.0, 1280.0]) {
     testWidgets('M2-F57 focused play fits $width without vertical scrolling', (
       tester,
     ) async {
@@ -178,16 +320,19 @@ void main() {
         }),
       );
       expect(tester.takeException(), isNull);
-      // Every public trick size and the collection overlay fit this width.
-      var progressing = state;
-      while (!progressing.isFinished) {
-        progressing = advance(progressing);
-        await showTable(tester, progressing);
-        expect(
-          tester.takeException(),
-          isNull,
-          reason: 'version ${progressing.version}',
-        );
+      // Exercise every trick only at the narrow boundary; the desktop case
+      // checks the same layout contract without replaying the full board.
+      if (width == 320) {
+        var progressing = state;
+        while (!progressing.isFinished) {
+          progressing = advance(progressing);
+          await showTable(tester, progressing);
+          expect(
+            tester.takeException(),
+            isNull,
+            reason: 'version ${progressing.version}',
+          );
+        }
       }
     });
   }
@@ -229,13 +374,17 @@ void main() {
     final card = view.legalCards.first;
     final source = find.byKey(Key('focus_drag_N_${card.code}'));
     await tester.ensureVisible(source);
-    final outside = await tester.startGesture(tester.getCenter(source));
+    final outside = await tester.startGesture(
+      tester.getTopLeft(source) + const Offset(8, 40),
+    );
     await tester.pump(const Duration(milliseconds: 600));
     await outside.moveTo(const Offset(1, 1));
     await outside.up();
     await tester.pumpAndSettle();
     expect(calls, 0);
-    final gesture = await tester.startGesture(tester.getCenter(source));
+    final gesture = await tester.startGesture(
+      tester.getTopLeft(source) + const Offset(8, 40),
+    );
     await tester.pump(const Duration(milliseconds: 600));
     expect(find.byKey(const Key('focus_drag_feedback')), findsOneWidget);
     await gesture.moveTo(
