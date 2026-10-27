@@ -1,5 +1,21 @@
 # 目前開發交接（屬於產品規劃）
 
+## 輕量 E2E 驗收修正待驗證（2026-10-27 10:16 Asia/Taipei）
+
+- **使用者指示：** 暫時不受 primary 限制，先做輕型模型可完成項目；複雜 UI／架構工作留給複雜模型。
+- **根因判斷依據：** F62 run [#40415495696](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495696) 只有 `dummyClicks + handClicks > 0` 失敗；13 墩、52 張、分數及結果頁均通過。該計數在 `make_bid` 完成並等待 Gateway 後才開始，只在輪詢期間觀察到 `Phase.play` 才累加。先前成功 run [#40335776679](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40335776679) 的 source (`48c3ee246e34d33bdb645be1b2927913344e439e`) 有完全相同的斷言；F62 diff 沒改該 integration test。這表示失敗來自 E2E 對客戶端觀察到出牌點擊的額外假設，尚無證據指向牌桌位置回歸。
+- **本次最小修正：** `apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart` 移除該點擊計數必要條件，保留數字作診斷；這個 case 驗證真 Gateway 完成全牌局，旁邊的真 BEN declarer-controls-Dummy case 已成功並明確驗證 UI 出牌／明手控制。無產品玩法或 Bridge Core 改動。
+- **Git／驗證：** 基底 `master` HEAD `63251d09d0c33e0b16c55ac5b730390f810e8c94`，已推送；目前待提交 integration test 與本交接兩檔。`git diff --check` 待最後執行；測試 **NOT RUN**，修正後的 GitHub CI **NOT RUN**。`dart format` 曾報會重排此檔既有區塊，已還原無關格式，只保留局部註解變更；不要把那次 dry-run 說成格式檢查通過。
+- **後續：** 執行 `git diff --check`，commit/push 這項測試修正與本 handoff，等待並查核新 SHA 的 BEN Chrome CI。CI 未通過就保留 failure 和根因證據，不宣稱完成。用量最近值 primary 22%、secondary 55%，屬共用帳號額度；owner 已要求暫時繼續。Android／iOS／A3.5 QA 仍 NOT RUN／HOLD。
+
+## 輕量 CI 收尾（2026-10-27 10:15 Asia/Taipei）
+
+- **本輪意圖：** 使用者指示暫時不受 primary 剩餘比例限制，先完成輕型模型可處理項目，複雜牌桌 UI／動畫重設留給較強模型。
+- **CI 診斷：** F62 的真 BEN E2E run [#40415495696](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495696) 確認整局結果通過 13 墩、52 張、分數和 final-result 斷言；失敗只在 `browser_gateway_real_test.dart:100` 的 `dummyClicks + handClicks > 0`。計數器在 `make_bid` 及其 server wait 後才初始化，只在之後的 polling loop 看見 `Phase.play` 時增加。上一個成功 run #40335776679 的 SHA `48c3ee246e34d33bdb645be1b2927913344e439e` 有相同計數器／斷言；GitHub 該 SHA 的檔案內容也確認一致。F62 diff 未觸及這支 integration test。這支持是測試假設與 Gateway 時序偶發不一致，不能證明 F62 UI 回歸。
+- **輕量修正（尚未 commit）：** 移除單一點擊計數作為全牌局結果的必要條件，保留它們作診斷輸出。相鄰 `Real BEN declarer controls Dummy through Chrome UI` 步驟另有明確互動驗收：13 次防守點擊、13 次明手機器人回合、/bid 與 /play 路由，且該步在失敗 run 中 success。沒有改玩法、Bridge Core 或產品 UI。
+- **目前 Git：** `master`，基底 HEAD `63251d09d0c33e0b16c55ac5b730390f810e8c94`，已推送；待提交修改 `apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart` 與本 handoff。額度最近讀值 primary **22%**、secondary **55%**，屬帳號共用；本輪依使用者明確指示繼續有界工作。回退本次測試變更可用 `git revert <test-fix SHA>`。
+- **驗證／後續：** `dart format` 已套用，`dart format --output=none --set-exit-if-changed ...` **PASS**；本地測試 **NOT RUN**。`git diff --check` 待提交前執行。提交後 push master，查新 SHA 的 BEN Flutter Chrome、Flutter M2 Single Player、Feature Learning Gate CI；不把原 F62 CI failure 改稱通過。若 CI 仍失敗，根據新日誌續查，不擴成牌桌 UI 大改。A3.5／Android／iOS QA 仍 NOT RUN（owner QA HOLD）。
+
 ## 再次觸發：primary 剩 24%／BEN E2E 斷言未通過（2026-10-27 07:06 Asia/Taipei）
 
 - **使用者目標：** 在輕型模型能力範圍繼續完成低風險工作，把複雜牌桌設計／架構項目保留給較強模型。使用者說可暫不理會 primary 限制，但專案硬性規範要求任一額度 ≤30% 先更新此 handoff；目前只作必要 checkpoint 與有界診斷。
