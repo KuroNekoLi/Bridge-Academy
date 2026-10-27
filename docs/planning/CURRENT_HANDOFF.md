@@ -1,5 +1,15 @@
 # 目前開發交接（屬於產品規劃）
 
+## 新門檻交接：用量到 30%，F62 有一項 CI 失敗（2026-10-27 07:02 Asia/Taipei）
+
+- **使用者本輪目標：** 先按 CURRENT_HANDOFF 延續工作，考慮現用 agent 是輕型模型，先做低風險、可界定的工作，把重要 UI／架構工作留給複雜模型。使用者先前要求暫停；目前不做新牌桌功能。
+- **額度觸發：** 2026-10-27 07:02 Asia/Taipei，`get_usage_limits.rateLimitsByLimitId.codex` primary remaining **30%**、secondary remaining **56%**。這是共用帳號用量，非本專案消耗。
+- **Git 現況：** repo `C:/Users/user05/StudioProjects/Bridge-Academy`，`master`，HEAD **`2622172a1537d56c93288a9e5029b58673938ef3`**，已推送 `origin/master`；此檢查 `git status --short` 為空。功能提交是 **`3f7215228669845c50c5d2a0d20e26b379cbc3d1`**；後續 `2622172` 只更新 handoff。保留其他人的工作，不 force push；回退 F62 用 `git revert 3f7215228669845c50c5d2a0d20e26b379cbc3d1`。
+- **低風險／已完成：** 讀取 AGENTS、ROADMAP、DECISIONS、FEATURES、ENGINEERING_NOTES、RESEARCH_REPORTS 與目前交接；核對工作樹與最新遠端狀態。F62 已把授權揭露後明手牌放在桌面上方、自己的手牌放下方，位置及單屏回歸已完成；桌面／手機 Web 工程目視已做。Nickel Bridge 是 React/TSX，適合作佈局／動畫參考，不能直接作 Flutter Widget；`card_game` probe 有 drag-end 例外與 reduced-motion 缺口，暫不正式採用。進一步視覺重設、動畫重做、套件移植留待較強模型／後續 slice。
+- **本輪精確驗證：** 本輪沒有執行測試。前一交接記載的本機結果：`flutter analyze --no-pub` PASS；完整 `flutter test --no-pub --reporter expanded` 224/224 PASS（最後多一項斷言前）；新增斷言後 scoped `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` 14/14 PASS；`flutter build web --no-pub --release` PASS（既有字型警告）；`scripts/check_feature_lessons.py` PASS、自測 7/7 PASS、`git diff --check` PASS。Android／iOS／A3.5 **NOT RUN（owner QA HOLD）**。
+- **F62 CI 最新狀態：** [Feature Learning Gate #40415495839](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495839) **success**；[Flutter M2 Single Player #40415495846](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495846) **success**；[BEN Flutter Chrome Real E2E #40415495696](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495696) **failure**（head SHA 為 F62 `3f72152`）。失敗 job 為 `Real BEN + Flutter Chrome UI`，唯一失敗步驟 `REAL Chrome browser → Gateway POST → genuine Python BEN full game`；Flutter Chrome full game 與 declarer-controls-Dummy 兩步均 success。GitHub connector 可讀 job 摘要但 logs endpoint 不可用，**具體錯誤根因 UNKNOWN**；未重跑 CI，也未修復。後續可先定位日誌，再決定是否是 F62 回歸。
+- **接續／風險：** 先用 GitHub run `40415495696` jobs 與失敗 log 查根因；若屬既有測試不穩或與 F62 無關，記錄證據。只有確認是 F62 回歸時才作最小修復，並同步更新 FEATURES／ENGINEERING_NOTES、測試及 lesson。複雜桌面重設、逐項移植 Nickel 動畫、完整 asset/license inventory 留給更強模型。不得啟動 owner-held 裝置 QA 或部署。quota ≤30% 後先保存此 handoff，再安全收尾；不要開始另一大型功能。
+
 ## 暫停交接：M2-F62 已推送（2026-10-27 06:54 Asia/Taipei／2026-10-26 22:54 UTC）
 
 - **使用者目標與暫停指示：** 依 BBO 截圖把揭露後明手手牌放在同一桌面上緣、使用者手牌放在下緣，保留扇形排列、合法拖放、引牌／跟牌／收墩動畫，優先研究可重用的 GitHub／Flutter 元件。使用者現已明確要求暫停並更新交接；不開始新功能。
