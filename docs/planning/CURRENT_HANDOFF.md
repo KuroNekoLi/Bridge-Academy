@@ -1,5 +1,14 @@
 # 目前開發交接（屬於產品規劃）
 
+## 輕量 E2E／CI 修正已通過（2026-10-27 10:23 Asia/Taipei）
+
+- **使用者方向：** 輕型 agent 先完成小而明確的測試／CI／文件工作；牌桌視覺改版、動畫架構和套件移植留給較複雜模型。使用者允許暫時不受 primary 門檻限制。
+- **已完成：** `browser_gateway_real_test.dart` 不再要求點擊計數大於零才接受全牌局結果；該測試仍要求 finished、13 墩、52 張、version、計分及結果頁。相鄰 declarer-controls-Dummy 真 BEN Chrome 測試仍明確驗證實際出牌和 dummy 控制。`.github/workflows/ben-flutter-browser.yml` 已將 Gateway integration test 加入 path filters，避免該測試修改漏掉 BEN workflow。`docs/research/RESEARCH_REPORTS.md` 已補入此 CI 證據。
+- **CI 證據：** [BEN Flutter Chrome Real E2E #40437523925](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40437523925) **success**，SHA `9c6de50fc47be2e5268f519014e336eaf8353807`；[Feature Learning Gate #40437523906](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40437523906) **success**。測試修正 SHA `a10efc267610b7a6844509b6c826fefb4d1f6ec9` 的 [Flutter M2 #40437410089](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40437410089) 與 [Learning Gate #40437410118](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40437410118) 也 **success**。F62 原始 run #40415495696 failure 已由修正後真 BEN E2E 成功覆蓋；不能把原 run 改稱通過。
+- **本機驗證：** 未跑 Flutter tests／analyzer。本地 `git diff --check` 在程式與 workflow 提交前 **PASS**；`.github` path filter 已由新 CI 實際觸發並通過。Dart formatter 曾顯示會改寫整支既有風格，已避免提交無關重排；此處只是一段註解變更。
+- **Git／額度：** 分支 `master`，HEAD `9c6de50fc47be2e5268f519014e336eaf8353807` 已推送；程式／CI 修正 commits `a10efc2` 與 `9c6de50`。本次 research／handoff 證據更新目前未提交。最近查到帳號共用 primary **19%**、secondary **55%**；不代表專案消耗。回退測試與 workflow commits 可分別 `git revert a10efc2`、`git revert 9c6de50`。
+- **接續：** 提交／推送這次 docs-only evidence update，再確認工作樹乾淨。下一個低風險工作可整理可重現的 CI／feature evidence；需要牌桌構圖或動畫重新設計的項目交較強模型。A3.5／Android／iOS owner QA 維持 NOT RUN／HOLD。
+
 ## 輕量 E2E 驗收修正待驗證（2026-10-27 10:16 Asia/Taipei）
 
 - **使用者指示：** 暫時不受 primary 限制，先做輕型模型可完成項目；複雜 UI／架構工作留給複雜模型。

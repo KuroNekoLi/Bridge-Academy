@@ -1,6 +1,6 @@
 # Bridge Academy｜研究與驗收整合報告
 
-> 更新：2026-10-26。此檔是現行唯一研究報告，整合 BEN、Precision、自訂約定、開源／授權、平台 UX。可用 Git 歷史還原先前 190 份文件的完整驗收與教學資料；刪除 docs 文字不等於移除原始碼／測試。
+> 更新：2026-10-27。此檔是現行唯一研究報告，整合 BEN、Precision、自訂約定、開源／授權、平台 UX。可用 Git 歷史還原先前 190 份文件的完整驗收與教學資料；刪除 docs 文字不等於移除原始碼／測試。
 
 ## 證據定義
 
@@ -167,6 +167,7 @@ U3：單屏佈局、可中止出牌/收墩動畫、合法目標與錯誤重試�
 | Flutter 窄屏手牌 | [200 測試 #40256171652](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40256171652) | 全牌桌 320px UX 完工 |
 | M4 本機自訂草稿與 Gateway 防注入 | [CI #40139553945](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40139553945) | 可執行自訂 AI／專家 Goldens |
 | M5 公開叫牌 Coach | [CI #40154923631](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40154923631) | 真 BEN/BBA 最佳叫品解釋 |
+| Gateway 真 BEN 全牌局＋Chrome 明手互動 | [CI #40437523925](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40437523925)，SHA `9c6de50` | 該 SHA 的 Gateway 13 墩／52 張全牌局及明手互動流程成功；非 owner-held 真人 UX 或發布核准 |
 
 **來源規範**：GitHub Actions 必須看明確 SHA、環境、fixtures、status 和 logs；舊成功 run 不等於最新 commit 的端到端全面放行。完整版的歷史逐檔報告在刪除前的 Git 歷史中仍可檢索。
 
