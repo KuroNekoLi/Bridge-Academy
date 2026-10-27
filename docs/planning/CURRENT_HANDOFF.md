@@ -1,5 +1,14 @@
 # 目前開發交接（屬於產品規劃）
 
+## 再次觸發：primary 剩 24%／BEN E2E 斷言未通過（2026-10-27 07:06 Asia/Taipei）
+
+- **使用者目標：** 在輕型模型能力範圍繼續完成低風險工作，把複雜牌桌設計／架構項目保留給較強模型。使用者說可暫不理會 primary 限制，但專案硬性規範要求任一額度 ≤30% 先更新此 handoff；目前只作必要 checkpoint 與有界診斷。
+- **用量：** `get_usage_limits.rateLimitsByLimitId.codex` primary remaining **24%**、secondary **56%**，2026-10-27 07:06 Asia/Taipei。為帳號共用額度，不是本專案消耗。
+- **Git：** repo `C:/Users/user05/StudioProjects/Bridge-Academy`；`master` HEAD **`d797a387cd404e6052c89e2f8fc3910de4976d27`**，已推送 `origin/master`。功能提交 `3f7215228669845c50c5d2a0d20e26b379cbc3d1`；handoff checkpoint 為 `2622172`、`d797a38`。更新前 `git status --short` clean。本次 handoff 更新尚未提交；回退功能用 `git revert 3f7215228669845c50c5d2a0d20e26b379cbc3d1`，不得 force push。
+- **CI 根因進展：** F62 BEN run [#40415495696](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40415495696) 的失敗 job `Real BEN + Flutter Chrome UI`。唯一失敗步驟 `REAL Chrome browser → Gateway POST → genuine Python BEN full game`；Chrome 完成整局測試及 declarer-controls-Dummy 測試均成功。已安全抽取錯誤摘要，失敗定位 `browser_gateway_real_test.dart:100`：`Expected: a value greater than 0; Actual: 0`，對應 `expect(dummyClicks + handClicks, greaterThan(0))`。整局其他斷言（finished、13 tricks、52 cards、score、final result）都已越過。**原因尚未定論**：可能是整局測試路徑沒有記錄手動點擊，或計數器／預期失配；未確認與 F62 桌面位置改動有因果關係。未執行重跑、未修改產品或測試程式。
+- **下一步（較輕型可做）：** 讀取 `browser_gateway_real_test.dart` 的點擊計數器定義／更新點，與 GitHub failure line 對照；查 run 前最近同一 workflow 的通過紀錄，判斷是否既有 flaky assertion。這是診斷，不輸出／記錄 private deal。只有證據證明是錯誤斷言或程式回歸後，才用最小範圍修正並按規範加必要驗證。較複雜牌桌視覺／動畫重設、套件移植和授權盤點留給複雜模型。Android／iOS／A3.5 維持 NOT RUN（owner QA HOLD）。
+- **本輪執行狀態：** 本輪未跑任何測試；已讀專案規範、handoff、roadmap、decisions、功能／工程／研究文件，核對 `master` 和 CI job/log 摘要。此 handoff 修改需單獨提交／推送作 checkpoint；若額度繼續下降，僅安全收尾。
+
 ## 新門檻交接：用量到 30%，F62 有一項 CI 失敗（2026-10-27 07:02 Asia/Taipei）
 
 - **使用者本輪目標：** 先按 CURRENT_HANDOFF 延續工作，考慮現用 agent 是輕型模型，先做低風險、可界定的工作，把重要 UI／架構工作留給複雜模型。使用者先前要求暫停；目前不做新牌桌功能。
