@@ -7,13 +7,11 @@ on:
       - "packages/bridge_precision_adapter/**"
       - "services/bridge_gateway/**"
       - "apps/bridge_academy_flutter/lib/src/gateway_table.dart"
-      - "apps/bridge_academy_flutter/lib/src/app_copy.dart"
       - "apps/bridge_academy_flutter/test/m34_precision_research_test.dart"
       - "scripts/precision_m33_sidecar.py"
       - "scripts/test_precision_m34_table.py"
       - "scripts/precision_m36_native_inference_smoke.py"
       - "scripts/precision_m35_evaluate.py"
-      - ".github/workflows/precision-m34-m35-research.yml"
   workflow_dispatch:
 permissions:
   contents: read

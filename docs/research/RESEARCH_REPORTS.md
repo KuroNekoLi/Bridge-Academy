@@ -208,4 +208,6 @@ BBO、新睿、BBO Trainer 可以當作練習分類、牌桌操作與玩家旅�
 
 ### 2026-10-27 CI 範圍精簡：隔離 card_game probe
 
-`experiments/card_game_probe` 是獨立研究程式，不是 Flutter app 的依賴或 release gate。過去任何 app、Core 或 BEN adapter 路徑變更，都會在 Flutter 主 CI 額外執行該 probe 的 dependency fetch、analysis 和相容性測試，造成與該變更無關的重複成本。現將它移至 `.github/workflows/card-game-probe.yml`，只在 probe／該 workflow 變更時執行或手動派發；主 Flutter CI 保留 app analyzer、完整 app tests、Web release build 與 Chrome UI／checkpoint 驗收。probe gates 未刪除，仍可獨立重現；此 SHA 的 GitHub Actions 尚未執行，trigger 正確性待 push 後確認。
+`experiments/card_game_probe` 是獨立研究程式，不是 Flutter app 的依賴或 release gate。過去任何 app、Core 或 BEN adapter 路徑變更，都會在 Flutter 主 CI 額外執行該 probe 的 dependency fetch、analysis 和相容性測試，造成與該變更無關的重複成本。現將它移至 `.github/workflows/card-game-probe.yml`，只在 probe 變更時執行或手動派發；workflow 定義本身可手動驗證。主 Flutter CI 保留 app analyzer、完整 app tests、Web release build 與 Chrome UI／checkpoint 驗收。probe gates 未刪除，仍可獨立重現；新 workflow 在 SHA `d5f9a634e0834ecd4d68a915904585d21f1f405a` 的 run [#40485202644](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202644) **success**。
+
+同一輪 path audit 發現共用 `app_copy.dart` 會無關地啟動 M4、M5 及 Precision research tests。專項 workflow 現只由各自 domain／feature／test source 觸發，不因通用牌桌文案更新而重跑；重型 workflow 定義變更不再自動啟動整套測試，可從 workflow_dispatch 手動驗證。Core、M4/M5/Precision 功能檔與專項 tests 的 path gates 保留。這是減少誤觸發，不是移除產品驗收。

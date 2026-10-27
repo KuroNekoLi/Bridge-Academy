@@ -10,7 +10,6 @@ on:
       - "apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart"
       - "packages/bridge_ben_adapter/lib/**"
       - "packages/bridge_core/lib/**"
-      - ".github/workflows/ben-flutter-browser.yml"
   workflow_dispatch:
 
 permissions:

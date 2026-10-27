@@ -5,7 +5,6 @@ on:
     branches: [master]
     paths:
       - "experiments/card_game_probe/**"
-      - ".github/workflows/card-game-probe.yml"
   workflow_dispatch:
 
 permissions:
