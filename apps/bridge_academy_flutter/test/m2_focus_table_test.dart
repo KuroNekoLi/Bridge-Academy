@@ -30,6 +30,7 @@ Future<void> showTable(
   VoidCallback? retry,
   double textScale = 1,
   bool english = true,
+  b.Seat viewer = b.Seat.south,
 }) => tester.pumpWidget(
   MaterialApp(
     home: MediaQuery(
@@ -38,7 +39,7 @@ Future<void> showTable(
         textScaler: TextScaler.linear(textScale),
       ),
       child: BridgeFocusTable(
-        view: b.PlayerView.forSeat(state, b.Seat.south),
+        view: b.PlayerView.forSeat(state, viewer),
         copy: AppCopy(english),
         boardNumber: 1,
         modeLabel: 'Demo',
@@ -53,6 +54,101 @@ Future<void> showTable(
 );
 
 void main() {
+  testWidgets(
+    'M2-F65 all player seats share hand, trick and winner perspective',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(375, 812);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      for (final viewer in b.Seat.values) {
+        await tester.pumpWidget(const SizedBox.shrink());
+        var state = b.GameState.justDeclareStart(
+          b.Deal.shuffled(seed: 65),
+          b.Seat.north,
+          b.Vulnerability.none,
+          b.Contract(level: 1, strain: b.Strain.notrump, declarer: viewer),
+        );
+        state = advance(advance(advance(state)));
+        await showTable(tester, state, viewer: viewer);
+        await tester.pumpAndSettle();
+        final arena = tester.getRect(find.byKey(const Key('focus_drop_zone')));
+        Offset seat(b.Seat seat) =>
+            tester.getCenter(find.byKey(Key('focus_seat_${seat.letter}')));
+        expect(seat(viewer).dy, greaterThan(arena.center.dy));
+        expect(seat(viewer.partner).dy, lessThan(arena.center.dy));
+        expect(seat(viewer.next).dx, lessThan(arena.center.dx));
+        expect(seat(viewer.partner.next).dx, greaterThan(arena.center.dx));
+        final view = b.PlayerView.forSeat(state, viewer);
+        final rendered = tester
+            .widgetList<BridgeCardFace>(find.byType(BridgeCardFace))
+            .map((w) => w.card)
+            .toSet();
+        expect(
+          rendered,
+          unorderedEquals({
+            ...view.ownCards,
+            ...view.dummyCards!,
+            ...view.currentTrick.map((p) => p.card),
+          }),
+        );
+        final stage = find.byKey(const Key('focus_trick_compass'));
+        final publicCards = find.descendant(
+          of: stage,
+          matching: find.byType(BridgeCardFace),
+        );
+        final before = [
+          for (var i = 0; i < 3; i++) tester.getCenter(publicCards.at(i)),
+        ];
+        // Opening leader is to our left, followed by dummy above, then right.
+        expect(before[0].dx, lessThan(arena.center.dx));
+        expect(before[1].dy, lessThan(arena.center.dy));
+        expect(before[2].dx, greaterThan(arena.center.dx));
+        state = advance(state);
+        await showTable(tester, state, viewer: viewer);
+        final collected = find.descendant(
+          of: find.byKey(const Key('focus_collection')),
+          matching: find.byType(BridgeCardFace),
+        );
+        for (var i = 0; i < 3; i++) {
+          expect(
+            (tester.getCenter(collected.at(i)) - before[i]).distance,
+            lessThan(1),
+          );
+        }
+        await tester.pump(const Duration(milliseconds: 480));
+        final destination = tester.getCenter(collected.first) - arena.center;
+        final winner = state.tricks.last.winner;
+        if (winner == viewer) {
+          expect(destination.dy, greaterThan(10));
+        } else if (winner == viewer.partner) {
+          expect(destination.dy, lessThan(-10));
+        } else if (winner == viewer.next) {
+          expect(destination.dx, lessThan(-10));
+        } else {
+          expect(destination.dx, greaterThan(10));
+        }
+        // Changing perspective on the same public version cancels the old flight.
+        await showTable(tester, state, viewer: viewer.next);
+        expect(find.byKey(const Key('focus_collection')), findsNothing);
+        expect(seat(viewer.next).dy, greaterThan(arena.center.dy));
+        final changedView = b.PlayerView.forSeat(state, viewer.next);
+        expect(
+          tester
+              .widgetList<BridgeCardFace>(find.byType(BridgeCardFace))
+              .map((w) => w.card)
+              .toSet(),
+          unorderedEquals({
+            ...changedView.ownCards,
+            ...changedView.dummyCards!,
+            ...changedView.currentTrick.map((p) => p.card),
+          }),
+        );
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
+
   testWidgets(
     'M2-F64 public version and pause invalidate an unsubmitted selection',
     (tester) async {
@@ -75,6 +171,17 @@ void main() {
       await tester.pump();
       expect(find.byKey(const Key('focus_confirm_card')), findsOneWidget);
       await showTable(tester, state, paused: true, onPlay: (_) => calls++);
+      expect(find.byKey(const Key('focus_confirm_card')), findsNothing);
+      await showTable(tester, state, onPlay: (_) => calls++);
+      await tester.tapAt(tester.getTopLeft(source) + const Offset(8, 40));
+      await tester.pump();
+      expect(find.byKey(const Key('focus_confirm_card')), findsOneWidget);
+      await showTable(
+        tester,
+        state,
+        viewer: b.Seat.north,
+        onPlay: (_) => calls++,
+      );
       expect(find.byKey(const Key('focus_confirm_card')), findsNothing);
       expect(calls, 0);
     },

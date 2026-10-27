@@ -139,3 +139,13 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **真實證據與修復：** 320／375px 中英文測試初點不提交、抬起、一次確認、13 張牌點位於 viewport、新版本／暫停清除、寬列可及；大字體回歸找到 header Row 英文溢位，已加 Flexible／ellipsis。拖曳測試改在扇形真正露出的牌緣施作，不再把被下一張遮住的中心當命中點；仍驗證送出卡牌等於原合法牌、取消不送、同版本一次。最終 analyzer 0 issue、全測試231/231與Web release PASS；Chrome 375px 實際目視和選取操作已核對，新 SHA CI 待 push。ENGINEERING_PASS／LESSON_DELIVERED；PRACTICED／MASTERED 不由 CI 推論。
 
 **5–15 分鐘練習：** 在375px選一張合法明手牌，先確認墩牌數沒有改變，再按確認出牌；切換寬牌列並用鍵盤操作。讀 `_selected` 和 `_submittedVersion`，說明兩者為何不能合成同一個欄位。回退用本次 commit 的 git revert；無存檔遷移。
+
+## M2-F65｜真實座位與畫面方位分開
+
+**問題與實作：** 手牌原已放在底部，但中央標籤、墩牌和收墩仍固定北上南下，導致北／東／西家玩家看見不一致的來源方向。現在 PlayerView.viewer → BridgeTrickGeometry.fit(viewer: ...) → displaySeat／seatAt → seatOffset／position／seatAnchor；BridgeFocusTable 的四個標籤及 collection layer 共用同一幾何。這是 presentation adapter，CardAction 與 PlayedCard.handOwner 始終使用原本的 Seat，不旋轉 Core 事件。
+
+**取捨與邊界：** 參考 pinned Nickel `TrickArea.tsx` 的 flipped compass mapping，擴展為四座位的可逆映射；未複製上游程式／素材，沿用既有 renderer、drag 和動畫。另一方案是旋轉整個 Widget，但會把文字／牌面一併轉向，亦讓手牌與語意定位難以維持。明手上方獨立面板仍標實際座位；防家視角下不把明手偽稱搭檔。相同 version 也可能換 viewer，因此選牌／提交鎖／收墩必須按 viewer identity 重置；公開入場 Widget key 加入 viewer，避免繼續播放舊方位動畫。
+
+**驗證：** `flutter test --no-pub test/m2_focus_table_test.dart` **16/16 PASS**；`flutter analyze --no-pub` **0 issue**。只新增一個四座位情境，不為每個寬度重播整副牌；斷言開引者在左、明手在上、下一家在右及 Core winner 的實際收墩方向，另驗視角切換後沒有殘留暗牌或舊選取。最終補 defender projection／選取清除斷言後已重跑同一 scoped 檔與分析。完整本機 suite／新 Web build／新 SHA CI **NOT RUN**。狀態 ENGINEERING_PASS（本機）／LESSON_DELIVERED，PRACTICED／MASTERED 未驗收。
+
+**5–15 分鐘練習：** 選東家當莊家，指出畫面上、下、左、右各對應哪個真實 Seat，再讀 `seatAt` 檢查答案。確認事件中的 handOwner 沒有被改成畫面方位。回退使用本功能 commit 的 `git revert`，無 schema／API 遷移。

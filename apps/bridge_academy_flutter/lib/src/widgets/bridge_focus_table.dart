@@ -71,6 +71,13 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     super.didUpdateWidget(oldWidget);
     final before = oldWidget.view;
     final after = widget.view;
+    if (after.viewer != before.viewer) {
+      _selected = null;
+      _submittedVersion = null;
+      _collected = null;
+      _collection.value = 1;
+      return;
+    }
     if (after.version != before.version || widget.actionsPaused) {
       _selected = null;
     }
@@ -276,6 +283,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
         final geometry = BridgeTrickGeometry.fit(
           Size(arena.width - side * 2, arena.height - 48),
           arenaSize: arena,
+          viewer: widget.view.viewer,
         );
         return Container(
           key: const Key('focus_drop_zone'),
@@ -294,18 +302,27 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
           ),
           child: Stack(
             children: [
-              Align(alignment: Alignment.topCenter, child: _seat(Seat.north)),
+              Align(
+                alignment: Alignment.topCenter,
+                child: _seat(geometry.seatAt(Seat.north)),
+              ),
               Align(
                 alignment: Alignment.centerLeft,
-                child: SizedBox(width: side - 4, child: _seat(Seat.west)),
+                child: SizedBox(
+                  width: side - 4,
+                  child: _seat(geometry.seatAt(Seat.west)),
+                ),
               ),
               Align(
                 alignment: Alignment.centerRight,
-                child: SizedBox(width: side - 4, child: _seat(Seat.east)),
+                child: SizedBox(
+                  width: side - 4,
+                  child: _seat(geometry.seatAt(Seat.east)),
+                ),
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: _seat(Seat.south),
+                child: _seat(geometry.seatAt(Seat.south)),
               ),
               Center(
                 child: widget.view.phase == Phase.auction

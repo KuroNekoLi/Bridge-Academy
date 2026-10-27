@@ -172,3 +172,9 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 手機專注牌桌預設把全部 13 張牌放進同一個扇形，明手與自己的手牌維持上、下兩端。重用 `playing_cards` 的 FlatCardFan 和牌面 renderer，增加重疊時可讀的左上角牌點；選中的合法牌會抬起並移到最上層。窄到每張可見區不足 48px 時，第一次點擊只選牌，再點同牌或「確認出牌」才提交；長按拖曳仍走既有授權檢查。標題列可切到寬牌列，大字體自動保留捲動退路。新版本、暫停及切換排列會清掉選牌，避免過期提交。
 
 程式：[BridgeCardStrip](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_strip.dart)、[牌面](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_card_face.dart)、[專注桌](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)、[雙語文案](../../apps/bridge_academy_flutter/lib/src/app_copy.dart)。[測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證中英文 320／375px 的全部牌點可見、初點不提交、選牌抬起、確認只提交一次、版本與暫停清除選取、寬牌列切換；全 Flutter 231/231 PASS，Chrome 工程目視已核對。這是移植 Nickel pinned HandFan 的選取／第二次點牌概念到 Flutter，沒有匯入其 React runtime、AI 或暗牌。狀態 **ENGINEERING_PASS（工程範圍）／LESSON_DELIVERED**，PRACTICED／MASTERED 需使用者真實練習。
+
+## M2-F65｜玩家視角一致的公開墩牌與動畫
+
+專注桌不再把方位固定為北上南下。無論玩家選北／東／南／西，自己的中央座位在下方、搭檔在上方；實際座位名稱、actor、handOwner 和 Core 贏家不變。座位標籤、公開墩牌、入場與收墩共用 [BridgeTrickGeometry](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_trick_geometry.dart) 的視角轉換。已揭露明手仍使用上方獨立手牌面板並標實際座位；玩家當防家時，該面板不代表中央上方的搭檔座位。切換 PlayerView.viewer 會清除舊選牌與動畫，不沿用舊視角的演出。
+
+[專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 新增一個四座位行為案例，核對真實座位與位置、公開卡片權限、收墩首幀及贏家方向、切換視角取消；原選牌案例補同版本切換 viewer 的清除檢查。Windows／Flutter 3.47.8，最終 scoped **16/16 PASS**、analyzer **0 issue**。新 SHA CI 尚未執行；未另重跑完整本機 suite／Web build。狀態 **ENGINEERING_PASS（本機範圍）／LESSON_DELIVERED**；裝置／真人 QA HOLD 與 release NO-GO 保留。

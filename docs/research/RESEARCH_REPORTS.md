@@ -204,6 +204,8 @@ BBO、新睿、BBO Trainer 可以當作練習分類、牌桌操作與玩家旅�
 
 ### 2026-10-27 手機扇形與公開墩座標適配
 
+**M2-F65 視角適配：** 已重新讀取 pinned Nickel `92a81b5e81cb7aac2eabc147e82f18e0040b512e` 的 `web/src/components/game/TrickArea.tsx`；其 flipped 時用 `seats` 對應畫面 slot 並讓 glide／collect 依同一座位定位。本次沿用此顯示契約，把既有 Flutter BridgeTrickGeometry 擴為四座位 viewer mapping；無新相依、無複製 TSX／CSS／素材。純座位轉換不需另一套牌桌／規則 framework；真實座位和 PlayerView 權限保留。上方明手面板繼續以真實座位標示，防家時不假裝其為上方搭檔。測試與限制見 M2-F65 工程導讀。
+
 重新核對上述 pinned Nickel 的 `HandFan.tsx`：其 selected card lift、第二次點牌提交，以及 `TrickArea.tsx` 的共用 slots／flight layer。本次將互動契約寫成 Flutter 的本地 `_selected`、FlatCardFan preview overlay 與 BridgeTrickGeometry；沒有複製 TSX／CSS／資產，也沒有引入上游 action staging、AI 或完整暗牌。正式app仍使用原版本 playing_cards；card_game 的正式採用缺口沒有因此消失。手機由完整扇形＋確認解決原48px gate導致無法同屏看完13張的問題，寬牌列與大字體退路仍可用。實測詳見 M2-F63／F64 工程導讀；Android／A3.5 仍 HOLD。
 
 ### 2026-10-27 CI 範圍精簡：隔離 card_game probe

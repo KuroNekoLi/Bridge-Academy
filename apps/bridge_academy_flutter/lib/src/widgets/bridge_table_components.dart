@@ -138,7 +138,7 @@ class BridgeCurrentTrick extends StatefulWidget {
 class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
   Set<String> _entering = {};
   String _identity(PlayerView view, PlayedCard play) =>
-      '${view.completedTricks.length}:${play.handOwner.letter}:${play.card.code}';
+      '${view.viewer.letter}:${view.completedTricks.length}:${play.handOwner.letter}:${play.card.code}';
 
   @override
   void didUpdateWidget(BridgeCurrentTrick oldWidget) {
@@ -150,7 +150,8 @@ class _BridgeCurrentTrickState extends State<BridgeCurrentTrick> {
     final existing = previous.currentTrick
         .map((play) => _identity(previous, play))
         .toSet();
-    _entering = current.version > previous.version
+    _entering = current.viewer == previous.viewer &&
+            current.version > previous.version
         ? current.currentTrick
               .map((play) => _identity(current, play))
               .where((id) => !existing.contains(id))
