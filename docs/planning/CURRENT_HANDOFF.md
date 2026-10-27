@@ -9,7 +9,7 @@
 
 ## Git／目標
 
-- Repo C:/Users/user05/StudioProjects/Bridge-Academy；branch master；本輪基底 `9b6d1e746807c1e5fed3af9c4b325290beb738a8`；功能commit `531ba3f83e2202b2b89a7d5378a5cd4aa38a9ae1` 已push至origin/master。本handoff checkpoint commit `23376b2ec40ce16d95a1d0380f71a3eb050aec22` 亦已push；工作樹乾淨。GitHub Actions查詢功能SHA當下回傳 `workflow_runs=[]`，新SHA CI尚未開始／目前無run可報；不沿用F65舊CI。
+- Repo C:/Users/user05/StudioProjects/Bridge-Academy；branch master；本輪基底 `9b6d1e746807c1e5fed3af9c4b325290beb738a8`；功能commit `531ba3f83e2202b2b89a7d5378a5cd4aa38a9ae1` 已push至origin/master。本handoff checkpoint commit `23376b2ec40ce16d95a1d0380f71a3eb050aec22` 亦已push；最新master checkpoint為`417980f6244778c25afc17aaacc99b02e4bf498a`。工作樹乾淨。GitHub Actions對功能SHA的實際狀態：Feature Learning Gate、Bridge Core CI、Bridge Gateway A4.2 CI **success**；Flutter M2 Single Player、M3.4-M3.5 Experimental Precision Gateway and Evaluation、BEN Flutter Chrome Real E2E (M2-F07/F09)、M4 Custom Convention Drafts、M5 Public Auction Coach **in_progress**。查詢時間UNKNOWN；各run URL見本handoff末尾。不能以success三項代表整體或已完成真BEN驗收。
 - Owner要求真正把Nickel Bridge React/TypeScript成熟叫牌互動適配Flutter；已實作F66/F67，並非只讀source。不要把當前結果誇成完整BBO產品UX或已審核制度解釋。
 
 ## 已完成的高風險工作
@@ -42,6 +42,17 @@
 - **L2 文件證據校對。** 只改7份canonical docs中的舊F63～F65「CI尚未跑」與當前結論矛盾之處；以明確SHA/run URL核對，不改歷史FAIL為PASS、不把研究CI當release核准。不動功能／測試，無須重跑昂貴suite。此項也可補本次新SHA最終CI status。
 - **L3 授權資料機械盤點。** 在既有RESEARCH_REPORTS列installed playing_cards內附檔案、版本／archive hash、LICENSE/notice路徑及可查來源；只收集事實，不裁決商用／再散布合法性，不下載未授權素材、不把API key或私牌寫入文件，不改dependency或資產bundle。法律／權重／native binaries發行範圍仍需較高風險審查。
 - **L4 最終history對話框視覺留證。** 用fresh loopback origin的已編譯Web及公開測試局，在375px核對N/E/S/W全欄、四個call都在clip內、點call出現未知說明；保存正常尺寸截圖至本機artifact，不入Git。禁止改規則／送出狀態，裝置QA仍HOLD。
+
+## 本次功能 SHA 的 CI URLs
+
+- Flutter M2 Single Player: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751337 (in_progress)
+- M3.4-M3.5 Experimental Precision Gateway and Evaluation: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751294 (in_progress)
+- BEN Flutter Chrome Real E2E (M2-F07/F09): https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751276 (in_progress)
+- M4 Custom Convention Drafts — Domain and Flutter: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751296 (in_progress)
+- Feature Learning Gate: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751250 (success)
+- M5 Public Auction Coach — Domain and Flutter: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751293 (in_progress)
+- Bridge Core CI: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751233 (success)
+- Bridge Gateway A4.2 CI: https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40599751247 (success)
 
 ## 下一個高風險產品任務（尚未開始）
 
