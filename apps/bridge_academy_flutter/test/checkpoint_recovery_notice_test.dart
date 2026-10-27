@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'dart:convert';
 
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
@@ -133,7 +134,7 @@ void main() {
 
     await tester.ensureVisible(find.byKey(const Key('pass')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('pass')));
+    await tapBiddingAware(tester, find.byKey(const Key('pass')), 'pass');
     await tester.pumpAndSettle();
     expect(session.finished, true);
     expect(session.view!.version, 4);

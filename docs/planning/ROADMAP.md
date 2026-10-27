@@ -4,6 +4,8 @@
 
 ## 下一個應做的功能
 
+**M2-F66／F67當前：** 已把Nickel BidBox／AuctionGrid互動契約實作到Flutter共享元件及Local／Gateway／專注桌／歷史：合法矩陣、選取確認、等待／版號鎖、四欄dealer排列及最新列。Core提供公開合法集合並與reducer共用驗證，無JSON schema變更。完整本機227tests、Core58tests及最新scoped8tests通過；Web工程證據與新SHA CI以CURRENT_HANDOFF為準。原「只研究、未實作」是歷史checkpoint，不代表現況。下一高風險產品切片仍是主工作區預設導向牌桌與安全返回；低風險工作已拆入CURRENT_HANDOFF，交由owner之後派agent。
+
 **Owner最新優先序（2026-10-27）：叫牌UI同等程度移植。** 充分採用 pinned Nickel Bridge BidBox／AuctionGrid 的直接叫品矩陣、合法停用、獨立確認、等待鎖定、四座位叫牌表與最新回合提示，整合Local／Gateway／專注桌及歷史。此項排在工作區預設導航之前。2026-10-27 19:15 secondary額度剩30%，已依AGENTS先寫交接；本輪只有來源研究和介面盤點，**UI／Core helper／測試移轉均未實作**。恢復後從CURRENT_HANDOFF的具體檔案和驗收開始，不把這段計畫當成交付。
 
 **2026-10-27 M2-F65：** 已補專注牌桌四座位 viewer 視角：玩家在下、搭檔在上，中央標籤／墩牌／入場／收墩使用相同映射；切換視角清除舊演出與選取。本機 scoped16 tests／analysis PASS。**下一個工程範圍是主工作區到專注桌的預設動線**：開局／繼續後直接到可玩的牌桌，返回工作區不遺失 session，Local 與 Gateway 需一致；尚未實作。另待完成第三方套件／內附素材 inventory，以及 owner-held 裝置／真人驗收。不能把單一專注頁工程成功稱作整個 U3 已完成。

@@ -69,6 +69,14 @@ class AppCopy {
       ].join(', ');
 
   static const Map<String, List<String>> _strings = {
+    'biddingPaused': ['叫牌暫停中', 'Bidding is paused'],
+    'selectCall': ['請先選取叫品', 'Select a call'],
+    'confirmCall': ['確認叫牌', 'Confirm'],
+    'submittingCall': ['正在送出叫品…', 'Submitting call…'],
+    'moreBidLevels': ['展開更高階叫品', 'Show higher levels'],
+    'callMeaningUnknown': ['尚未提供此叫品的已驗證說明。', 'A verified meaning for this call is not available.'],
+    'awaitingCall': ['等待此座位叫牌', 'Waiting for this seat to call'],
+
     'focusTable': ['專注牌桌', 'Focused table'],
     'focusRetry': ['重試', 'Retry'],
     'confirmPlay': ['確認出牌', 'Play card'],

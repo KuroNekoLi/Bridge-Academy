@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'dart:convert';
 
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
@@ -45,7 +46,7 @@ void main() {
     expect(acknowledged['generation'], 1);
     final pass = find.byKey(const Key('pass'));
     await tester.ensureVisible(pass);
-    await tester.tap(pass);
+    await tapBiddingAware(tester, pass, 'pass');
     await tester.pumpAndSettle();
     expect(session.finished, true);
     expect(session.view!.version, 4); // Human pass + three actual bot passes.

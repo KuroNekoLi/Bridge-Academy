@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/app_copy.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
@@ -629,7 +630,7 @@ void main() {
     expect(find.byType(BridgeFocusTable), findsOneWidget);
     expect(session.view!.version, version);
     await tester.ensureVisible(find.byKey(const Key('make_bid')).last);
-    await tester.tap(find.byKey(const Key('make_bid')).last);
+    await tapBiddingAware(tester, find.byKey(const Key('make_bid')).last, 'make_bid');
     await tester.pumpAndSettle();
     expect(session.view!.phase, b.Phase.play);
     final progressed = session.view!.version;

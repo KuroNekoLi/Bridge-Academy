@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/widgets/bridge_replay_panel.dart';
@@ -8,14 +9,15 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> a3Tap(WidgetTester tester, String key) async {
   final target = find.byKey(Key(key));
   await tester.ensureVisible(target);
-  await tester.tap(target);
+  await tapBiddingAware(tester, target, key);
   await tester.pumpAndSettle();
 }
 
 void main() {
   for (final width in [320.0, 375.0, 768.0]) {
-    testWidgets('A3.3 $width: oriented seats, toolbar and dummy fit',
-        (tester) async {
+    testWidgets('A3.3 $width: oriented seats, toolbar and dummy fit', (
+      tester,
+    ) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = Size(width, 720);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -28,7 +30,7 @@ void main() {
       for (final position in ['N', 'E', 'S', 'W']) {
         expect(find.byKey(Key('seat_$position')), findsOneWidget);
       }
-      expect(find.byKey(const Key('current_trick')), findsOneWidget);
+      expect(find.byKey(const Key('auction_grid')), findsOneWidget);
       expect(find.byType(BridgeTableToolbar), findsOneWidget);
       final last = tester.widget<OutlinedButton>(
         find.byKey(const Key('last_trick_action')),
@@ -43,8 +45,13 @@ void main() {
     });
   }
 
-  testWidgets('A3.3 public auction dialog does not change game state',
-      (tester) async {
+  testWidgets('A3.3 public auction dialog does not change game state', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(375, 812);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -53,6 +60,12 @@ void main() {
     final version = session.view!.version;
     await a3Tap(tester, 'auction_history_action');
     expect(find.byKey(const Key('auction_history_dialog')), findsOneWidget);
+    final grid = tester.getRect(find.byKey(const Key('auction_grid')));
+    for (var i = 0; i < 4; i++) {
+      final cell = tester.getRect(find.byKey(Key('auction_call_$i')));
+      expect(cell.left, greaterThanOrEqualTo(grid.left));
+      expect(cell.right, lessThanOrEqualTo(grid.right));
+    }
     expect(find.textContaining('PASS'), findsWidgets);
     await a3Tap(tester, 'close_history');
     expect(session.view!.version, version);
@@ -61,8 +74,9 @@ void main() {
     expect(session.view!.version, version);
   });
 
-  testWidgets('A3.3 last trick opens only after four public played cards',
-      (tester) async {
+  testWidgets('A3.3 last trick opens only after four public played cards', (
+    tester,
+  ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));

@@ -125,8 +125,39 @@ abstract final class BridgeGame {
     return _applyCard(state, action);
   }
 
-  static GameState _applyCall(GameState state, CallAction action) {
-    if (action.actor != state.turn) {
+  /// Public auction choices use the same validator as the authoritative reducer.
+  /// Only public transcript/turn data is needed; never pass a Deal to the UI.
+  static List<Call> legalCalls({
+    required Phase phase,
+    required Seat? turn,
+    required Seat actor,
+    required List<AuctionEntry> auction,
+  }) {
+    final result = <Call>[];
+    for (final call in <Call>[
+      const Pass(),
+      const DoubleCall(),
+      const RedoubleCall(),
+      for (var level = 1; level <= 7; level++)
+        for (final strain in Strain.values) Bid(level, strain),
+    ]) {
+      try {
+        _validateCall(phase, turn, auction, CallAction(actor, call));
+        result.add(call);
+      } on RuleViolation {
+        // This candidate is not an available action.
+      }
+    }
+    return List.unmodifiable(result);
+  }
+
+  static void _validateCall(
+    Phase phase, Seat? turn, List<AuctionEntry> auction, CallAction action,
+  ) {
+    if (phase != Phase.auction) {
+      throw const RuleViolation('Expected auction phase');
+    }
+    if (action.actor != turn) {
       throw const RuleViolation('Not your turn to bid');
     }
     if (action.call is Bid) {
@@ -136,13 +167,13 @@ abstract final class BridgeGame {
       }
     }
     final previousBids =
-        state.auction.where((e) => e.call is Bid).toList();
+        auction.where((e) => e.call is Bid).toList();
     final lastBid = previousBids.isEmpty ? null : previousBids.last;
     final lastBidValue = lastBid?.call as Bid?;
     Doubling doubling = Doubling.none;
     if (lastBid != null) {
-      final lastBidIndex = state.auction.lastIndexOf(lastBid);
-      for (final entry in state.auction.skip(lastBidIndex + 1)) {
+      final lastBidIndex = auction.lastIndexOf(lastBid);
+      for (final entry in auction.skip(lastBidIndex + 1)) {
         if (entry.call is DoubleCall) doubling = Doubling.doubled;
         if (entry.call is RedoubleCall) doubling = Doubling.redoubled;
       }
@@ -169,6 +200,12 @@ abstract final class BridgeGame {
           throw const RuleViolation('Invalid redouble');
         }
     }
+  }
+
+  static GameState _applyCall(GameState state, CallAction action) {
+    _validateCall(state.phase, state.turn, state.auction, action);
+    final previousBids = state.auction.where((e) => e.call is Bid).toList();
+    final lastBid = previousBids.isEmpty ? null : previousBids.last;
 
     final auction = [...state.auction, AuctionEntry(action.actor, action.call)];
     final lastThreePass = auction.length >= 3 &&

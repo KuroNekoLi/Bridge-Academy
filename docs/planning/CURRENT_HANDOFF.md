@@ -1,62 +1,94 @@
-# Bridge Academy 目前交接
+# Bridge Academy 目前交接：叫牌 UI 已實作，交付收尾
 
-> 本檔只描述目前狀態。舊交接流水帳可從 `5915bac0c3d96371f9e82b4086c81c5dcc1654f0` 的 Git 歷史查閱；不能用舊記錄的「尚未提交／執行中」判斷目前版本。
+## 最新配額與 owner 指示（2026-10-28；本次檢查時間 UNKNOWN）
 
-## 最新接續：叫牌 UI 同等程度移植（2026-10-27 19:15 Asia/Taipei）
+- 最新指示：本次任一可用視窗剩餘≤10%先寫交接，取代前一7%及原30%；已在AGENTS記本次任務覆寫。優先高風險Core／狀態／整合，低風險列出給owner之後派其他agent，不自行spawn／切模型。排程維持owner暫停，沒有重啟。
+- **上次紀錄：** 2026-10-27 23:26 primary remaining 0%、secondary 7%。
+- **本次觸發：** 本機用量工具於2026-10-28本輪讀值：primary used 4%／remaining **96%**，secondary used 94%／remaining **6%**（觸發10%門檻）。帳號共用用量，不代表專案獨佔消耗。最新狀態`TRIGGERED_SECONDARY_LE_10`。檢查具體時刻：UNKNOWN。立即更新本文件後，只做必要gate、commit/push與CI狀態保存，不開始另一功能。
+- **新待辦請求：** owner要求盤點並刪除無意義測試與CI。尚未盤點／修改／刪除任何測試或workflow。需後續獨立執行：以產品風險和實際pipeline觸發找出重複、無行為斷言、裝置hold等候選，先區分核心規則/安全不變量必要保護，僅移除有證據可刪者，合併重複CI工作；不可將「通通刪除」解讀為刪光測試與CI。此新工作在本次≤10%門檻下未開始。
 
-- **使用者目標／優先序：** Owner 明確要求充分採用開源橋牌成熟叫牌UI，達到與牌桌互動相同程度的Flutter移植。此項優先於下方原「工作區預設動線」。不能把閱讀上游或寫計畫稱作已移植。
-- **配額觸發，先保存：** `get_usage_limits.rateLimitsByLimitId.codex` primary used51%／remaining49%，secondary used70%／remaining **30%**，2026-10-27 19:15:03 Asia/Taipei；任一≤30%的AGENTS硬性門檻已觸發。帳號共用用量，非專案單獨消耗。最後狀態 `TRIGGERED_SECONDARY_LE_30`，最後通知門檻30%；先寫此交接，後續只作文件／證據安全收尾，不開始大型叫牌UI實作。Owner之前僅允許忽略primary，沒有解除secondary門檻。
-- **Git：** repository `C:/Users/user05/StudioProjects/Bridge-Academy`，branch master，HEAD `215d5f2b09f762ff05eb070160f0be9aefe1b069`；開始時clean。本次沒有功能／測試修改；工作樹只有本交接、DECISIONS、ROADMAP、RESEARCH_REPORTS四份文件。git diff --check PASS，fetch後HEAD與origin/master為0/0；無新測試，未新增docs。安全收尾再查primary剩45%／secondary30%（19:16），門檻狀態不變。
-- **已完成研究：** 重新取得並逐段讀 pinned Nickel Bridge `92a81b5e81cb7aac2eabc147e82f18e0040b512e` 的 `web/src/components/game/BidBox.tsx`、`AuctionGrid.tsx`。來源版本、owner修改授權沿用既有研究；這輪未複製原碼／CSS／素材、未加相依。實作尚未開始。
-- **待移植BidBox：** 5花色×7階直接叫品矩陣；從最低合法叫品所在階開始，預設最多4階，較高階可展開，合法最低階改變後重置展開；Pass/X/XX一樣先選取；所有叫品獨立確認後才送出；忙碌／等待時整盒鎖定且高度穩定；version／viewer／回合改變清掉過期選取，禁止重複提交。鍵盤、語意、zh-TW/en與至少48px觸控需有實際驗收。
-- **待移植AuctionGrid：** N/E/S/W四欄、發牌者首列前補空格、玩家與目前輪次標示、最新叫品提示、固定欄頭／內部捲動到最新列；同一元件用於專注桌、一般桌與歷史對話框。上游逐口檢視必須接本專案已有公開叫牌／可信來源；不可移植上游SAYC含義當成我們NS/EW制度的真實解釋，未知保持UNKNOWN。
-- **主要介面缺口：** 現在BridgeBiddingBox只有selectedLevel／selectedStrain／canSubmit，Pass/X/XX直接送出；沒有legalCalls。PlayerView只有legalCards，fromJson嚴格欄位檢查；不能任意加JSON欄位而不處理Gateway相容性。Core合法叫牌目前集中在 `BridgeGame._applyCall`（game.dart）。建議先抽出只依公開auction／phase／actor／turn的Core合法叫品API，與reducer共用驗證，再由Flutter使用投影公開欄位取得38叫品合法集合，避免UI複寫規則或為此破壞傳輸schema。此方案仍是設計，尚未實作或測試。
-- **整合檔案：** `widgets/bridge_bidding_box.dart`、新共享叫牌四欄widget（名稱待實作）、`bridge_app.dart`、`gateway_table.dart`、`widgets/bridge_focus_table.dart`、`widgets/bridge_table_toolbar.dart`、`app_copy.dart`；必要的Core公開合法性helper／最小回歸。既有 `a3_bidding_box_test.dart` 使用DropdownButton與非法X可點的舊假設；`integration_test/browser_ben_test.dart`、`browser_gateway_real_test.dart` 仍操作 `bid_level`。必須一起移轉真實操作流程，不能只留舊key假裝新UI可用。
-- **驗收邊界／測試精簡：** 一個Core用例涵蓋初始Pass與X/XX、叫品階序／7NT、終止後無合法叫品及拒絕無mutation；一個UI情境涵蓋選取不送／確認一次／版本失效／等待鎖；一個四欄排列情境涵蓋非北dealer與跨列／最新位置。保留320px及大字體可及性代表案例，不把整副牌對每個寬度重播。實際Chrome查叫品可讀／表格／確認流程，QA HOLD不解除。
-- **本輪驗證：** 新test／analyzer／Web build／新功能CI **NOT RUN**；只讀檔案及上游source。先前F65 CI不作叫牌移植證據。新功能SHA／CI URL／狀態NOT RUN。未部署、未dispatch held QA。
-- **接續命令：** 恢復時先查quota、`git status --short --branch`、`git rev-parse HEAD`、`git fetch origin master`；quota恢復後依上述介面開始實作，完成時FEATURES與ENGINEERING_NOTES同批更新，不先宣稱ENGINEERING_PASS。當前沒有半成品程式需回退；本次文件checkpoint可git revert，禁止force push或清他人工作。
+## Git／目標
 
-## 先前F65已交付快照（以下不得視為叫牌UI已完成）
+- Repo C:/Users/user05/StudioProjects/Bridge-Academy；branch master；本輪基底／目前HEAD `9b6d1e746807c1e5fed3af9c4b325290beb738a8`，開始時clean。下方為本輪未提交清單，無其他人工作。尚未commit／push，新SHA CI目前NOT RUN。
+- Owner要求真正把Nickel Bridge React/TypeScript成熟叫牌互動適配Flutter；已實作F66/F67，並非只讀source。不要把當前結果誇成完整BBO產品UX或已審核制度解釋。
 
-## 使用者目標與工作規範
+## 已完成的高風險工作
 
-- 依 ROADMAP 完成 BBO 風格單人橋牌體驗，Reuse First：上方明手、下方自己的扇形手牌，清楚的公開引牌／跟牌／收墩。
-- 精簡重複測試及無關 CI；保留 Core 法則、PlayerView 隱私、合法操作／重試和實際流程驗收。
-- 只在 agent 實際執行工作時查用量；使用者已暫停排程，不重啟或建立重複排程。配額為帳號共用，不歸因單一專案。
-- Direct push master、不開 PR、不 force push；Android/iOS 裝置及模擬器、A3.5 真人 UX 仍 OWNER HOLD，Production NO-GO。
+- **M2-F66**：Core BridgeGame.legalCalls只用公開phase/turn/actor/auction，與reducer共用_validateCall，不改PlayerView/Gateway JSON schema、不給UI暗牌。新BridgeBiddingBox共用於Local／Gateway／專注桌；35叫品矩陣+Pass/X/XX，先選後獨立確認、非法停用、最低合法階窗口與高階展開、等待／暫停／送出狀態、version/viewer/turn清過期選取，同version只送一次。Widget自己再核對view.canAct，caller旗標不能開放其他座位。
+- **M2-F67**：BridgeAuctionGrid共用於一般桌／專注桌／公開歷史；N/E/S/W固定欄頭、dealer首列補空格、本人★／pending?／活動欄、最後叫品高亮、內捲追最新。每call可inspect公開Seat／Call，沒有驗證含義就明示未知，不套用Nickel的SAYC詞庫至本局任意制度。375px對話框第四欄裁切已修minWidth並補既有代表test的可見邊界斷言。
+- 源碼互動來源 pinned Nickel SHA `92a81b5e81cb7aac2eabc147e82f18e0040b512e` 的BidBox.tsx/AuctionGrid.tsx；以Flutter重寫，未複製TSX/CSS/素材，無新第三方依賴。source/provenance已寫研究文件及Widget檔頭，owner授權聲明不推定其他模型／DDS／圖像權利。
+- 移除caller舊level/strain狀態。widget與browser整局測試走真實選取／確認，browser BEN/Gateway固定3NT點bid_3NT；共享helper只pump，由原wait處理HTTP，避免pumpAndSettle卡真網路。held Android來源僅同步操作，不執行或dispatchQA。
 
-## 目前 Git 與用量（2026-10-27 19:09 Asia/Taipei）
+## 真實測試與限制
 
-- 專案：`C:/Users/user05/StudioProjects/Bridge-Academy`；branch `master`；F65功能 HEAD `aced15754ab108d79903004a6deb1d15cc0a49f0` 已 direct push。開始時基底5915bac工作樹乾淨，fetch origin/master後0/0；功能push後乾淨且同步。
-- F65已提交檔案：`apps/bridge_academy_flutter/lib/src/widgets/{bridge_trick_geometry,bridge_focus_table,bridge_table_components}.dart`、`test/m2_focus_table_test.dart`、5份既有docs。此輪後續僅更新 `docs/implemented/{FEATURES,ENGINEERING_NOTES}.md` 與本交接，保存CI證據；無他人的未提交工作。
-- 最新實測 `rateLimitsByLimitId.codex`：primary used38%／remaining **62%**，secondary used68%／remaining **32%**。未觸發30%交接門檻；接近secondary門檻，先完成證據收尾。下一大型切片前仍需再查；最後狀態ABOVE_30，沒有新低額度觸發。
+- Core `dart test` **58/58 PASS**；`dart analyze --fatal-infos`無問題。
+- Flutter scoped4檔 **29/29 PASS**；完整suite第一輪226PASS/1FAIL為舊a3_table_components在auction要求BridgeCurrentTrick，改驗真實grid後 **227/227 PASS**。
+- Web目視找到窄history dialog裁到第四欄，修復後 `a3_bidding_box_test.dart`＋`a3_table_toolbar_test.dart` **8/8 PASS**，再補view.canAct防護後同2檔 **8/8 PASS**。最新 `flutter analyze --no-pub` **0 issue**。完整227是在這兩個最後補強前，不假裝又跑過整套；正常CI仍會全跑。
+- 最新 `flutter build web --no-pub --release` **PASS**，build/bidding-release-final.log；只有既有CupertinoIcons字型inventory警告。沒有另重跑Core全suite來驗純排版。
+- Chrome工程檢查：375×812與桌面，點2♥後合約仍未定／N欄仍?，確認後2H成立；返回工作區保留同局，歷史顯示2H及三個實際PASS。只含授權PlayerView。最終選牌手機證據：`C:/Users/user05/.codex/visualizations/2026/10/26/01a175af-1471-7de1-9db7-6b9fa6279e83/auction-mobile-selected-f66.jpg`。桌面證據auction-desktop-selected-f66.jpg。
+- history最終成品截圖曾受瀏覽器cache／分頁控制與viewport中斷影響，不能把縮小失真的auction-history-mobile-f67.jpg當可靠視覺證據；窄dialog的code/test修復已通過，仍可交他人再目視。這不是owner-held A3.5／裝置QA。
+- 新SHA Flutter/Chrome／Bridge Core／真BEN CI **NOT RUN（尚未push）**；不得沿用F65舊綠燈。Android/iOS模擬器與真機、真人UX均OWNER HOLD，Production NO-GO，無部署。
 
-## 已完成的工程範圍
+## 立即安全收尾
 
-- F63/F64（`d5f9a634e0834ecd4d68a915904585d21f1f405a`）：綠桌面、手機13張完整扇形、角標、抬起／確認出牌、寬牌列切換；明手面板在上、己方在下；公開墩牌和收墩共用座標。只在專注頁完成，整個工作區產品 UX 仍有待辦。
-- CI 精簡（`42c12e230bd752ede6d0e115cf01dfb24ec99517`）：隔離 card_game probe；M4/M5/Precision 不因共用 app_copy 文案誤觸發，重型 workflow-only 修改可手動 dispatch。主 app 完整 tests/analyze/Web build/Chrome 與真BEN流程保留。專注桌少6個重複寬度案例，整副13墩只在窄屏重播一次。
-- **本輪 M2-F65：** 玩家選北／東／南／西時，中央玩家座位均在下方、搭檔在上方，標籤／公開墩牌／入場／收墩使用同一可逆視角映射。CardAction、handOwner、Core winner 和真實座位名稱不變。切換 viewer，即使同version，也清除舊選牌／提交鎖／收墩；公開入場按viewer重新建立，避免舊方位演出。
-- 明手上方手牌面板仍標示真實座位；玩家為防家時，該面板不代表中央上方的搭檔座位。沒有引入四家暗牌或新規則引擎。來源是已釘選 Nickel TrickArea 的 flipped compass 契約；未複製外部程式／素材、未加依賴。
+1. 文件F66/F67已追加FEATURES及ENGINEERING_NOTES、研究實作來源／決策／ROADMAP；跑輕量lesson gate及git diff --check，確認只收本輪來源與測試。
+2. packages/bridge_core/pubspec.lock是本次測試生成、原先不存在，已刪，不要誤commit。截圖及build logs不入Git。
+3. direct commit/push master（不PR、不force），查新SHA CI並記實際status；有失敗只修必要回歸。若受quota限制未完成CI，記URL/in_progress並讓後續agent查，不聲稱PASS。
+4. 回退以本次feature commit的git revert；無schema／資料遷移。不要reset --hard或清別人工作。若local preview要停，只針對本次exec sessions31187(8736)、52489(8737)、63848(8738)，不殺其他process。
 
-## 精確驗證與 CI
+## 留給其他 agent 的低風險任務（未派發；由 owner 後續指派）
 
-- **本輪 EXECUTED/PASS：** Windows Flutter3.47.8；`flutter test --no-pub test/m2_focus_table_test.dart` **16/16 PASS**，最後補四視角的defender projection與同版本選牌清除斷言後已重跑；既有共享演出回歸 `flutter test --no-pub test/m2_table_motion_test.dart` **6/6 PASS**；`flutter analyze --no-pub` **0 issue**；`scripts/check_feature_lessons.py --paths <9個變更路徑>` PASS；`git diff --check` PASS。無失敗測試。只新增1個四座位情境，不另加完整牌局／viewport矩陣。
-- **本輪 CI：** F65 SHA `aced15754ab108d79903004a6deb1d15cc0a49f0` 的 [Flutter/Web/Chrome #40493585512](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585512) **success**，jobs包含analysis、完整app tests、Web release、Chrome table/checkpoint；[learning #40493585440](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585440) **success**；[真BEN Chrome #40493585616](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585616) 最後查詢仍in_progress。只觸發這3個workflow，無額外M4/M5/Precision/probe。新runner結果不代表裝置／真人QA。
-- **本輪 NOT RUN：** 完整本機 app suite、本機Web build／Chrome人工目視。Android/iOS及A3.5為HOLD，未執行。沒有部署或手動派發昂貴研究workflow。
-- **前一功能 SHA d5f9a63，已重新查到全部 success：** [Flutter/Web/Chrome #40485202583](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202583)、[真BEN Chrome #40485202676](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202676)、[Precision research #40485202623](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202623)、[probe #40485202644](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202644)、[M4 #40485202606](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202606)、[M5 #40485202853](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202853)、[learning #40485202635](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202635)。這些驗證F63/F64，不當作F65驗收。
-- workflow trigger SHA42c12e2 只有 [learning #40485775560](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485775560) success；docs SHA5915bac 只有 [learning #40485930106](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485930106) success。確認workflow-only／docs-only更新未重跑其他昂貴suite。
+- **L1 雙語／輔具文案核對。** 範圍app_copy.dart的新selectCall/confirmCall/submittingCall/biddingPaused/moreBidLevels/callMeaningUnknown/awaitingCall，及兩Widget的語意名。核對zh-TW/en、200%字體與375px截圖，可調字詞／換行，不能改Core legalCalls、canAct、_sentVersion、確認送出或未知含義政策。交付現有工程筆記補證據，不新增docs／不跑整副牌矩陣。
+- **L2 文件證據校對。** 只改7份canonical docs中的舊F63～F65「CI尚未跑」與當前結論矛盾之處；以明確SHA/run URL核對，不改歷史FAIL為PASS、不把研究CI當release核准。不動功能／測試，無須重跑昂貴suite。此項也可補本次新SHA最終CI status。
+- **L3 授權資料機械盤點。** 在既有RESEARCH_REPORTS列installed playing_cards內附檔案、版本／archive hash、LICENSE/notice路徑及可查來源；只收集事實，不裁決商用／再散布合法性，不下載未授權素材、不把API key或私牌寫入文件，不改dependency或資產bundle。法律／權重／native binaries發行範圍仍需較高風險審查。
+- **L4 最終history對話框視覺留證。** 用fresh loopback origin的已編譯Web及公開測試局，在375px核對N/E/S/W全欄、四個call都在clip內、點call出現未知說明；保存正常尺寸截圖至本機artifact，不入Git。禁止改規則／送出狀態，裝置QA仍HOLD。
 
-## 尚未完成與下一步
+## 下一個高風險產品任務（尚未開始）
 
-1. **當前交付：** F65 source/tests/lesson已同批aced157推送，Flutter/Chrome和learning已成功。查看真BEN #40493585616 最終狀態即可；僅在failure時依job診斷作必要修復，不重跑已通過suite。
-2. **下一個產品切片：主工作區到牌桌的預設動線。** 使用者開始／繼續一局後直接進可玩的專注桌，返回工作區仍保留同一session；Local與Gateway需一致，開局／續局／完局／錯誤重試可達。現仍需額外按專注桌入口，未實作自動導向。這需要整合路由與生命週期，不是單純改標題。
-3. **Web可用性：** 依真實高度／大字體／鍵盤與輔具核對，保留取消、等待和請求失敗重試。四viewer工程測試不等於真人／實機UX已通過。
-4. **第三方權利／素材inventory：** playing_cards內附未使用Wikimedia圖像、Nickel依賴／素材、模型與native binary notices仍需逐項記exact artifact／license／發行範圍。card_game probe有已知drag-end與reduced-motion缺口，尚未正式採用。
-5. 後續依ROADMAP進U4安全續局／雲端history與A4.5託管；不能跳過identity/TLS、目標VPS、durability與QA門檻。
+- 主工作區開局／繼續後預設進專注桌、返回同一session，統一Local與Gateway的路由／恢復／終局／錯誤生命週期。需保持續局同意與fail-closed；不要交輕量agent用單一按鈕改名冒充完成。
+- 已驗證叫品解釋需要本局GameSystems身分與可信版本化含義；當前inspector只公開資訊與UNKNOWN。不能從上游SAYC或LLM捏造BEN推理。
 
-## 接續命令、風險與回退
+## 本輪git status（checkpoint前）
 
-- `git status --short --branch`、`git rev-parse HEAD`、`git fetch origin master`、`git rev-list --left-right --count HEAD...origin/master`；只在必要變更後執行對應測試。
-- 本輪測試：在`apps/bridge_academy_flutter`執行`flutter test --no-pub test/m2_focus_table_test.dart`；完整suite由正常Flutter CI執行，不重複本機重跑。
-- F65純presentation轉換，沒有Core/API/schema遷移；預設geometry仍為南家視角，其他既有caller保留行為。回退用F65功能commit的`git revert`；CI refinement可`git revert 42c12e2`，UI基線可`git revert d5f9a63`。禁止重寫歷史／清掉別人的檔案。
-- 未列為PASS的發行gate仍未放行。舊本機預覽session95261／98821已無可用exec session，不能據此聲稱HTTP listener仍在或已停止；不任意終止其他process。
+```
+ M AGENTS.md
+ M apps/bridge_academy_flutter/integration_test/android_rollback_confirm_test.dart
+ M apps/bridge_academy_flutter/integration_test/android_table_test.dart
+ M apps/bridge_academy_flutter/integration_test/browser_ben_declarer_test.dart
+ M apps/bridge_academy_flutter/integration_test/browser_ben_test.dart
+ M apps/bridge_academy_flutter/integration_test/browser_gateway_real_test.dart
+ M apps/bridge_academy_flutter/integration_test/browser_secure_checkpoint_test.dart
+ M apps/bridge_academy_flutter/integration_test/browser_table_test.dart
+ M apps/bridge_academy_flutter/lib/src/app_copy.dart
+ M apps/bridge_academy_flutter/lib/src/bridge_app.dart
+ M apps/bridge_academy_flutter/lib/src/gateway_table.dart
+ M apps/bridge_academy_flutter/lib/src/widgets/bridge_bidding_box.dart
+ M apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart
+ M apps/bridge_academy_flutter/lib/src/widgets/bridge_table_components.dart
+ M apps/bridge_academy_flutter/lib/src/widgets/bridge_table_toolbar.dart
+ M apps/bridge_academy_flutter/test/a3_accessibility_test.dart
+ M apps/bridge_academy_flutter/test/a3_bidding_box_test.dart
+ M apps/bridge_academy_flutter/test/a3_table_components_test.dart
+ M apps/bridge_academy_flutter/test/a3_table_toolbar_test.dart
+ M apps/bridge_academy_flutter/test/a5_history_test.dart
+ M apps/bridge_academy_flutter/test/a5_pbn_export_test.dart
+ M apps/bridge_academy_flutter/test/b1_four_board_practice_test.dart
+ M apps/bridge_academy_flutter/test/b5_teaching_review_test.dart
+ M apps/bridge_academy_flutter/test/b6_daily_practice_test.dart
+ M apps/bridge_academy_flutter/test/board_management_test.dart
+ M apps/bridge_academy_flutter/test/bridge_app_test.dart
+ M apps/bridge_academy_flutter/test/checkpoint_recovery_notice_test.dart
+ M apps/bridge_academy_flutter/test/completed_replay_test.dart
+ M apps/bridge_academy_flutter/test/m2_focus_table_test.dart
+ M apps/bridge_academy_flutter/test/responsive_layout_test.dart
+ M docs/implemented/ENGINEERING_NOTES.md
+ M docs/implemented/FEATURES.md
+ M docs/planning/CURRENT_HANDOFF.md
+ M docs/planning/DECISIONS.md
+ M docs/planning/ROADMAP.md
+ M docs/research/RESEARCH_REPORTS.md
+ M packages/bridge_core/lib/src/game.dart
+?? apps/bridge_academy_flutter/lib/src/widgets/bridge_auction_grid.dart
+?? apps/bridge_academy_flutter/test_driver/bidding_test_actions.dart
+?? packages/bridge_core/test/auction_choices_test.dart
+```

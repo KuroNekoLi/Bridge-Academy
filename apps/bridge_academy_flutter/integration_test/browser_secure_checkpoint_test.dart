@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/secure_session_persistence.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> tapBrowser(WidgetTester tester, String key) async {
   final target = find.byKey(Key(key));
   await tester.ensureVisible(target);
-  await tester.tap(target);
+  await tapBiddingAware(tester, target, key);
   await tester.pumpAndSettle();
   final error = tester.takeException();
   if (error != null) fail('Browser control $key: $error');

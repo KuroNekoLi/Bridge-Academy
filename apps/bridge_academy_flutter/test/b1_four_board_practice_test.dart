@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_academy_flutter/src/completed_history_store.dart';
@@ -46,7 +47,7 @@ Future<void> _tap(WidgetTester tester, String key) async {
   final item = find.byKey(Key(key));
   await tester.ensureVisible(item);
   await tester.pump();
-  await tester.tap(item);
+  await tapBiddingAware(tester, item, key);
   await tester.pumpAndSettle();
 }
 

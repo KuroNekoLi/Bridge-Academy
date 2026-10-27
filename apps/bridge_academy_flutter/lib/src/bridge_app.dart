@@ -323,8 +323,6 @@ class _BridgeTableState extends State<BridgeTable> {
   Seat _selectedSeat = Seat.north;
   OpponentMode _selectedMode = OpponentMode.demo;
   BoardMode _selectedBoard = BoardMode.training;
-  int _bidLevel = 1;
-  Strain _bidStrain = Strain.notrump;
   int _justDeclareLevel = 3;
   Strain _justDeclareStrain = Strain.notrump;
   int? _replayIndex;
@@ -1187,11 +1185,8 @@ class _BridgeTableState extends State<BridgeTable> {
           ),
           BridgeBiddingBox(
             copy: copy,
-            selectedLevel: _bidLevel,
-            selectedStrain: _bidStrain,
+            view: view,
             canSubmit: view.canAct && !session.actionsPaused,
-            onLevelChanged: (level) => setState(() => _bidLevel = level),
-            onStrainChanged: (strain) => setState(() => _bidStrain = strain),
             onSubmitCall: session.submitCall,
           ),
         ],

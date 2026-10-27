@@ -149,3 +149,24 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **驗證：** `flutter test --no-pub test/m2_focus_table_test.dart` **16/16 PASS**；既有 `flutter test --no-pub test/m2_table_motion_test.dart` **6/6 PASS**；`flutter analyze --no-pub` **0 issue**。只新增一個四座位情境，不為每個寬度重播整副牌；斷言開引者在左、明手在上、下一家在右及 Core winner 的實際收墩方向，另驗視角切換後沒有殘留暗牌或舊選取。最終補 defender projection／選取清除斷言後已重跑同一 scoped 檔與分析。SHA `aced15754ab108d79903004a6deb1d15cc0a49f0` 的 [CI #40493585512](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585512) **success**：完整app tests、analysis、Web release與Chrome table/checkpoint；[learning](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585440) success。[真BEN](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585616)最後查詢仍in_progress。完整本機suite／新本機Web build NOT RUN。狀態 ENGINEERING_PASS（上述範圍）／LESSON_DELIVERED，PRACTICED／MASTERED 未驗收。
 
 **5–15 分鐘練習：** 選東家當莊家，指出畫面上、下、左、右各對應哪個真實 Seat，再讀 `seatAt` 檢查答案。確認事件中的 handOwner 沒有被改成畫面方位。回退使用本功能 commit 的 `git revert`，無 schema／API 遷移。
+
+
+## M2-F66｜用公開狀態提供合法叫品，讓選取與送出分開
+
+**資料流：** PlayerView公開auction/phase/turn → Core BridgeGame.legalCalls → BridgeBiddingBox合法集合 → 本地selected code → 確認 → 原session.submitCall → Core reducer。新_validateCall由公開choices與_applyCall共同使用，保留原先bid outrank、X/XX、turn／phase檢查；不把手牌送進UI helper，也不改Gateway JSON欄位。呼叫方原level/strain本地狀態已刪除，由共享盒持有一次選取。
+
+**移植與取捨：** Nickel BidBox（pinned SHA見研究）提供最低合法階起的4階窗口、折疊高階、全叫品先選後確認、busy/waiting鎖定。Flutter以OutlinedButton矩陣、內部ListView及FillButton確認實現；短視窗顯示較少列但可內捲，避免整個手機桌被擠掉。保留Flutter標準鍵盤focus/semantics；叫品有完整語意名及selected狀態。與直接下拉或直接Pass相比，多一次確認減少誤觸。_sentVersion在原投影尚未回覆時鎖一次提交；重新可操作的失敗回覆可重選重試。Widget再核對view.canAct，不因caller旗標錯誤就開放其他座位。這是UI提案控制，最後合法性仍由原session/Core裁決。
+
+**真實驗證：** Core `dart test`58/58；Core `dart analyze --fatal-infos`無問題；Flutter完整suite227/227、analyzer0，完整suite是在最後窄對話框／權限補強前；最終 `a3_bidding_box_test.dart`＋`a3_table_toolbar_test.dart`8/8。新測試明確驗證選2S不變version、確認一次、等待／非本人不能選、版本失效、7NT後僅正確X、展開高階及2×字體。既有Chrome/BEN fixture移除bid_level下拉，實際選bid_3NT再確認；test helper只pump，真HTTP仍由原wait等待，不能pumpAndSettle卡網路。新SHA CI尚未跑，held Android來源只跟隨遷移而未執行QA。
+
+**5–15分鐘練習：** 在固定局選2♥但先不確認，確認叫牌表仍顯示?；再確認後查事件只有一筆2H。讀Core legalCalls與_applyCall，指出共同驗證位置。ENGINEERING_PASS限上述範圍／LESSON_DELIVERED；PRACTICED／MASTERED待實際練習，回退用本功能commit的git revert，無schema遷移。
+
+## M2-F67｜四欄歷史是公開事件的排列，不是另一個規則引擎
+
+**實作：** BridgeAuctionGrid用dealer.index在首列前補空格，再依公開事件順序每4口分列；固定欄頭標本人與活動座位，pending?放在下一個合法輪次。ScrollController於事件數改變後捲到最後一列，mount/restore不虛構新叫牌。每口按鈕只顯示公開Seat／Call；沒有已審核含義時用明確未知說明，不將Nickel的SAYC glossary套用至本局NS/EW制度。一般桌在auction以grid取代出牌墩區、專注桌直接用arena裝grid、toolbar歷史也用同一Widget。
+
+**取捨／修復：** 參照pinned AuctionGrid的dealer-padding、固定欄頭、pending、新列追蹤與inspect；使用Flutter元件重寫。最新叫品以背景高亮，不加入上游機器人逐口staging或延遲真正回合。Web目視發現375px AlertDialog第四欄被過大的minWidth裁切；最小寬度改成4×48px與文字縮放所需寬度，並在既有toolbar用例檢查每個call的左右邊界都在grid內。大字體仍允許橫捲，避免把字硬縮小。Web reload曾取得舊cache，最終成品需用fresh-origin核對，不把舊畫面當修復證據。
+
+**證據：** 初版full suite226PASS/1FAIL是舊a3_table_components_test要求auction顯示BridgeCurrentTrick；更新為真實grid後227/227PASS。最後窄dialog／權限補強後既有代表檔8/8PASS，analysis0；先前Web releasePASS，最新build與fresh-origin／CI結果見CURRENT_HANDOFF。fixture覆蓋4個dealer的跨列、pending、長歷史最新列及未知說明。沒有以畫面測試推論制度正確或牌力。
+
+**5–15分鐘練習：** 以西家dealer的前5口叫牌手畫4欄，指出首列前3格為何必須留空，再對照測試的auction_call_0與W欄中心。ENGINEERING_PASS限工程驗證／LESSON_DELIVERED，未宣稱PRACTICED／MASTERED。回退用同批功能commit git revert。

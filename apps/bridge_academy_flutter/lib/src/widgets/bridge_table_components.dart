@@ -7,6 +7,7 @@ import 'bridge_card_face.dart';
 import 'bridge_card_strip.dart';
 import 'bridge_public_card_entrance.dart';
 import 'bridge_trick_geometry.dart';
+import 'bridge_auction_grid.dart';
 
 /// The table widgets are deliberately presentation-only:
 /// they receive a seat-filtered PlayerView, never Deal or BridgeSession.
@@ -98,7 +99,7 @@ class BridgeTableSurface extends StatelessWidget {
                         Expanded(child: _seat(Seat.east)),
                       ],
                     ),
-                    BridgeCurrentTrick(view: view, copy: copy),
+                    view.phase == Phase.auction ? BridgeAuctionGrid(view: view, copy: copy) : BridgeCurrentTrick(view: view, copy: copy),
                   ] else
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +108,7 @@ class BridgeTableSurface extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           flex: 2,
-                          child: BridgeCurrentTrick(view: view, copy: copy),
+                          child: view.phase == Phase.auction ? BridgeAuctionGrid(view: view, copy: copy) : BridgeCurrentTrick(view: view, copy: copy),
                         ),
                         const SizedBox(width: 8),
                         Expanded(child: _seat(Seat.east)),

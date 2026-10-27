@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:bridge_ben_adapter/bridge_ben_adapter.dart';
@@ -39,7 +40,7 @@ Future<void> _tap(WidgetTester tester, String key) async {
   final finder = find.byKey(Key(key));
   await tester.ensureVisible(finder);
   await tester.pump();
-  await tester.tap(finder);
+  await tapBiddingAware(tester, finder, key);
   await tester.pump();
 }
 
@@ -99,10 +100,7 @@ void main() {
 
     // The fixed human 3NT opening guarantees a played contract.
     // It is a deterministic integration fixture, not a bidding lesson.
-    await _tap(tester, 'bid_level');
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('3').last);
-    await tester.pumpAndSettle();
+    await _tap(tester, 'bid_3NT');
     await _tap(tester, 'make_bid');
     await _awaitBen(tester, session);
 

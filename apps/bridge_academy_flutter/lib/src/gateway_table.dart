@@ -21,8 +21,6 @@ class GatewayTable extends StatefulWidget {
 }
 
 class _GatewayTableState extends State<GatewayTable> {
-  int _level = 1;
-  Strain _strain = Strain.notrump;
   String _ns = 'LEGACY';
   String _ew = 'LEGACY';
   // This UI may only be compiled into a separately labeled research build.
@@ -184,13 +182,8 @@ class _GatewayTableState extends State<GatewayTable> {
                   if (view.phase == Phase.auction)
                     BridgeBiddingBox(
                       copy: copy,
-                      selectedLevel: _level,
-                      selectedStrain: _strain,
+                      view: view,
                       canSubmit: view.canAct && !session.actionsPaused,
-                      onLevelChanged: (value) =>
-                          setState(() => _level = value),
-                      onStrainChanged: (value) =>
-                          setState(() => _strain = value),
                       onSubmitCall: session.submitCall,
                     ),
                   if (view.phase == Phase.play)

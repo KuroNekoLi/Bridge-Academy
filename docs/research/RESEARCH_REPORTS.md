@@ -219,3 +219,10 @@ BBO、新睿、BBO Trainer 可以當作練習分類、牌桌操作與玩家旅�
 `experiments/card_game_probe` 是獨立研究程式，不是 Flutter app 的依賴或 release gate。過去任何 app、Core 或 BEN adapter 路徑變更，都會在 Flutter 主 CI 額外執行該 probe 的 dependency fetch、analysis 和相容性測試，造成與該變更無關的重複成本。現將它移至 `.github/workflows/card-game-probe.yml`，只在 probe 變更時執行或手動派發；workflow 定義本身可手動驗證。主 Flutter CI 保留 app analyzer、完整 app tests、Web release build 與 Chrome UI／checkpoint 驗收。probe gates 未刪除，仍可獨立重現；新 workflow 在 SHA `d5f9a634e0834ecd4d68a915904585d21f1f405a` 的 run [#40485202644](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202644) **success**。
 
 同一輪 path audit 發現共用 `app_copy.dart` 會無關地啟動 M4、M5 及 Precision research tests。專項 workflow 現只由各自 domain／feature／test source 觸發，不因通用牌桌文案更新而重跑；重型 workflow 定義變更不再自動啟動整套測試，可從 workflow_dispatch 手動驗證。Core、M4/M5/Precision 功能檔與專項 tests 的 path gates 保留。這是減少誤觸發，不是移除產品驗收。
+
+
+### M2-F66／F67 實際Flutter適配（2026-10-27）
+
+**來源：** Nickel Bridge `92a81b5e81cb7aac2eabc147e82f18e0040b512e`，`web/src/components/game/BidBox.tsx`、`AuctionGrid.tsx`。本輪已實作成熟互動契約，不再只停留研究。新Flutter BridgeBiddingBox／BridgeAuctionGrid的檔頭有來源指引；沒有複製TSX/CSS/圖像，也無新第三方runtime。Owner修改授權聲明沿用；這不替模型、DDS、其他圖像授權作保證。
+
+BidBox移植直接叫品、最低合法階4階窗口／高階展開、所有Call先選再確認、等待整盒鎖與過期狀態清除；適配Flutter以固定短viewport內捲避免手機dock長高。合法集合不是上游規則，而由本專案Core同一validator產生，不改投影JSON。AuctionGrid移植N/E/S/W四欄、dealer padding、pending/本人、固定header、最新列追蹤、公開call inspector；最新call以背景高亮，未照搬上游逐口動畫排程或SAYC意義。第三方素材inventory仍是獨立待辦。實際測試／CI與限制以F66/F67工程導讀及CURRENT_HANDOFF為準；舊「尚未實作」段落是前一配額checkpoint，非現況。

@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'dart:convert';
 
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
@@ -46,7 +47,7 @@ Future<void> _passOut(BridgeSession session) async {
 Future<void> _tap(WidgetTester tester, String key) async {
   final target = find.byKey(Key(key));
   await tester.ensureVisible(target);
-  await tester.tap(target);
+  await tapBiddingAware(tester, target, key);
   await tester.pumpAndSettle();
 }
 

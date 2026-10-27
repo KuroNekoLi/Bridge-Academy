@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ Future<void> tapVisible(WidgetTester tester, String key) async {
   final item = find.byKey(Key(key));
   await tester.ensureVisible(item);
   await tester.pump();
-  await tester.tap(item);
+  await tapBiddingAware(tester, item, key);
   await tester.pumpAndSettle();
 }
 
@@ -66,7 +67,7 @@ void main() {
     expect(session.view!.version, greaterThan(before));
   });
 
-  testWidgets('invalid X is rejected, game stays on same version',
+  testWidgets('illegal X is disabled, game stays on same version',
       (tester) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
@@ -74,7 +75,8 @@ void main() {
     await tapVisible(tester, 'new_game');
     await tapVisible(tester, 'double');
     expect(session.view!.version, 0);
-    expect(find.byKey(const Key('error_message')), findsOneWidget);
+    expect(find.byKey(const Key('error_message')), findsNothing);
+    expect(tester.widget<OutlinedButton>(find.byKey(const Key('double'))).onPressed, isNull);
   });
 }
 

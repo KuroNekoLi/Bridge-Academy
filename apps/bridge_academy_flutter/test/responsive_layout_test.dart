@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/bridge_session.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ void main() {
       // 13 public Dummy cards in addition to the human hand.
       final bidButton = find.byKey(const Key('make_bid'));
       await tester.ensureVisible(bidButton);
-      await tester.tap(bidButton);
+      await tapBiddingAware(tester, bidButton, 'make_bid');
       await tester.pumpAndSettle();
       expect(session.view!.dummyExposed, true);
       expect(tester.takeException(), isNull);

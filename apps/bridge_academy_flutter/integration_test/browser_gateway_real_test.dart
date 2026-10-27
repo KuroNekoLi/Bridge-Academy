@@ -1,3 +1,4 @@
+import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
 import 'package:bridge_academy_flutter/src/gateway_table.dart';
 import 'package:bridge_core/bridge_core.dart';
@@ -14,7 +15,7 @@ Future<void> _tap(WidgetTester tester, String key) async {
   final finder = find.byKey(Key(key));
   await tester.ensureVisible(finder);
   await tester.pump();
-  await tester.tap(finder);
+  await tapBiddingAware(tester, finder, key);
   await tester.pump();
 }
 
@@ -59,10 +60,7 @@ void main() {
 
     // Opening 3NT drives the robot seats through the actual Python model,
     // including bidding and (if contracted) opening lead and card play.
-    await _tap(tester, 'bid_level');
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('3').last);
-    await tester.pumpAndSettle();
+    await _tap(tester, 'bid_3NT');
     await _tap(tester, 'make_bid');
     await _waitForServer(tester);
 

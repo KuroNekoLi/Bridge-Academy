@@ -4,6 +4,8 @@
 
 ## Mandatory Codex quota / handoff policy — owner approved 2026-10-26
 
+> **本次叫牌 UI 移植任務覆寫（owner 2026-10-27 最新指示）：** 使用者明確要求本次任一可用視窗剩餘 **≤10%** 才觸發先交接／停止大型新切片；取代下列本次任務的30%門檻，其餘檢查頻率、真實記錄、帳號共用與安全收尾規則保留。此為本次任務限定，不自動延用到其他任務。
+
 - At task start, before a substantial new slice, after verification and before commit/push/handoff, use the app `get_usage_limits` tool **if actually available**; during extended tool work repeat at most 15-minute intervals. Check every available numeric primary/secondary quota, prefer `rateLimitsByLimitId`, falling back to `rateLimits` if absent. `remainingPercent = clamp(100-usedPercent,0,100)`; quotas are account-shared. Missing fields = **UNKNOWN**, not zero/unlimited.
 - If **any** window is ≤30% remaining, **first update [docs/planning/CURRENT_HANDOFF.md](docs/planning/CURRENT_HANDOFF.md)** with project/ref/SHA, branch, uncommitted changes, real tests, pending work, risk/revert and exact triggering window/time; notify owner, prioritize checkpoint and bounded repairs over another major feature.
 - If the quota tool is absent, record **UNKNOWN**, prepare a factual handoff before large new work; do not claim to monitor usage nor attempt to access secrets. Existing scheduled owner reminders are independent; do not create duplicates or assume constant background monitoring.

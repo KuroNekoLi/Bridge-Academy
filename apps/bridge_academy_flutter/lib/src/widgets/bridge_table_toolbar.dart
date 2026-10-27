@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
 import 'bridge_table_components.dart';
+import 'bridge_auction_grid.dart';
 
 /// Compact entry points to *public* auction and completed-trick history.
 /// The live session and private Deal never reach these dialogs.
@@ -22,22 +23,7 @@ class BridgeTableToolbar extends StatelessWidget {
       builder: (dialogContext) => AlertDialog(
         key: const Key('auction_history_dialog'),
         title: Text(copy.t('auction')),
-        content: SingleChildScrollView(
-          child: view.auction.isEmpty
-              ? Text(copy.t('notYet'))
-              : Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: [
-                    for (final entry in view.auction)
-                      Chip(
-                        label: Text(
-                          '${entry.seat.letter}: ${entry.call.code}',
-                        ),
-                      ),
-                  ],
-                ),
-        ),
+        content: SizedBox(width: 440, child: BridgeAuctionGrid(view: view, copy: copy)),
         actions: [
           TextButton(
             key: const Key('close_history'),

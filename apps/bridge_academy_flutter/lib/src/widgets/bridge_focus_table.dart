@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
 import 'bridge_bidding_box.dart';
+import 'bridge_auction_grid.dart';
 import 'bridge_card_face.dart';
 import 'bridge_card_strip.dart';
 import 'bridge_table_components.dart';
@@ -48,8 +49,6 @@ class BridgeFocusTable extends StatefulWidget {
 
 class _BridgeFocusTableState extends State<BridgeFocusTable>
     with SingleTickerProviderStateMixin {
-  int _level = 1;
-  Strain _strain = Strain.notrump;
   int? _submittedVersion;
   BridgeCardDrag? _selected;
   bool _wideHands = false;
@@ -279,6 +278,9 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     builder: (context, candidates, rejected) => LayoutBuilder(
       builder: (context, constraints) {
         final arena = constraints.biggest;
+        if (widget.view.phase == Phase.auction) {
+          return BridgeAuctionGrid(view: widget.view, copy: widget.copy, height: arena.height);
+        }
         final side = arena.width < 560 ? 58.0 : 92.0;
         final geometry = BridgeTrickGeometry.fit(
           Size(arena.width - side * 2, arena.height - 48),
@@ -325,28 +327,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                 child: _seat(geometry.seatAt(Seat.south)),
               ),
               Center(
-                child: widget.view.phase == Phase.auction
-                    ? SizedBox(
-                        width: arena.width - side * 2,
-                        height: arena.height - 92,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                widget.copy.t('auction'),
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              for (final entry in widget.view.auction)
-                                Text(
-                                  '${widget.copy.seat(entry.seat.letter)} ${entry.call.code}',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : BridgeCurrentTrick(
+                child: BridgeCurrentTrick(
                         view: widget.view,
                         copy: widget.copy,
                         compact: true,
@@ -574,13 +555,8 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                           if (view.phase == Phase.auction)
                             BridgeBiddingBox(
                               copy: copy,
-                              selectedLevel: _level,
-                              selectedStrain: _strain,
+                              view: view,
                               canSubmit: view.canAct && !widget.actionsPaused,
-                              onLevelChanged: (value) =>
-                                  setState(() => _level = value),
-                              onStrainChanged: (value) =>
-                                  setState(() => _strain = value),
                               onSubmitCall: widget.onSubmitCall,
                             ),
                           if (view.phase == Phase.finished)

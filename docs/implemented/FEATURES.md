@@ -178,3 +178,16 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 專注桌不再把方位固定為北上南下。無論玩家選北／東／南／西，自己的中央座位在下方、搭檔在上方；實際座位名稱、actor、handOwner 和 Core 贏家不變。座位標籤、公開墩牌、入場與收墩共用 [BridgeTrickGeometry](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_trick_geometry.dart) 的視角轉換。已揭露明手仍使用上方獨立手牌面板並標實際座位；玩家當防家時，該面板不代表中央上方的搭檔座位。切換 PlayerView.viewer 會清除舊選牌與動畫，不沿用舊視角的演出。
 
 [專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 新增一個四座位行為案例，核對真實座位與位置、公開卡片權限、收墩首幀及贏家方向、切換視角取消；原選牌案例補同版本切換 viewer 的清除檢查。Windows／Flutter 3.47.8，最終 scoped **16/16 PASS**、既有共享 motion **6/6 PASS**、analyzer **0 issue**。SHA `aced15754ab108d79903004a6deb1d15cc0a49f0` 的 [Flutter/Web/Chrome CI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585512) 與 [learning gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585440) **success**；[真BEN](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585616) 最後查詢仍in_progress。未另重跑完整本機 suite／Web build。狀態 **ENGINEERING_PASS（上述範圍）／LESSON_DELIVERED**；裝置／真人 QA HOLD 與 release NO-GO 保留。
+
+
+## M2-F66｜成熟叫牌矩陣、合法停用與確認送出
+
+一般Local桌、Gateway桌和專注桌已共用新的 [BridgeBiddingBox](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_bidding_box.dart)：直接選35個階數／花色叫品與Pass/X/XX，所有叫品先選取、再獨立確認；明確標示選取、等待、暫停、送出中，防止同version重複送出，view/version/turn改變清除過期選取。依最低合法階顯示最多4階資料、展開更高階；短視窗在矩陣內捲動，大字體保留橫捲與至少48px目標。這已取代舊階數／花色Dropdown，不保留假下拉控制給測試。
+
+[Core BridgeGame.legalCalls](../../packages/bridge_core/lib/src/game.dart)只需要公開phase/turn/actor/auction，與reducer共用相同合法驗證；UI依Core集合停用非法叫品。沒有改PlayerView JSON／Gateway schema或帶入完整暗牌。參照Nickel pinned BidBox互動契約，以Flutter重寫，來源詳見RESEARCH_REPORTS。Core58/58、完整Flutter227/227（最後窄對話框修復前）、最後叫牌／toolbar scoped8/8、兩套analyzer無問題；Web release已通過，最後權限補強後build結果與新SHA CI以CURRENT_HANDOFF為準。ENGINEERING_PASS限已執行範圍／LESSON_DELIVERED；裝置與真人QA仍HOLD。
+
+## M2-F67｜四欄叫牌表與公開歷史檢視
+
+新增共享 [BridgeAuctionGrid](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_auction_grid.dart)：N/E/S/W固定欄頭、dealer首列前補空格、本人★、活動欄與待叫?、最後叫品高亮、內部捲到最新列；用於一般桌／專注桌／歷史對話框。叫品可點開查看公開座位與叫品；尚無可信制度解釋時明示未提供驗證說明，不冒用上游SAYC語義。一般字體於375px歷史對話框完整呈現4欄，大字體保留橫捲。
+
+來源是Nickel pinned AuctionGrid的排列／捲動／inspect契約，未複製TSX/CSS/資產。既有UI及真BEN/Chrome流程改為實際選叫品+確認。新增測試集中於非北dealer、跨列、長叫牌自動捲動、未知說明、窄對話框可見範圍；不新增每尺寸整副牌重播。實際Web初步驗證桌面與375px選取／確認及歷史；最終fresh-origin成品及CI證據見CURRENT_HANDOFF。ENGINEERING_PASS限工程範圍／LESSON_DELIVERED；不是已驗收的制度Coach或Production放行。
