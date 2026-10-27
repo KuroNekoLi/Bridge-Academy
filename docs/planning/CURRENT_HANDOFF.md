@@ -9,11 +9,11 @@
 - 只在 agent 實際執行工作時查用量；使用者已暫停排程，不重啟或建立重複排程。配額為帳號共用，不歸因單一專案。
 - Direct push master、不開 PR、不 force push；Android/iOS 裝置及模擬器、A3.5 真人 UX 仍 OWNER HOLD，Production NO-GO。
 
-## 目前 Git 與用量（2026-10-27 19:05 Asia/Taipei）
+## 目前 Git 與用量（2026-10-27 19:09 Asia/Taipei）
 
-- 專案：`C:/Users/user05/StudioProjects/Bridge-Academy`；branch `master`；本輪基底 HEAD `5915bac0c3d96371f9e82b4086c81c5dcc1654f0`。開始時工作樹乾淨，fetch origin/master 後 0/0。
-- 本輪尚未提交：`apps/bridge_academy_flutter/lib/src/widgets/{bridge_trick_geometry,bridge_focus_table,bridge_table_components}.dart`、`test/m2_focus_table_test.dart`、`docs/implemented/{FEATURES,ENGINEERING_NOTES}.md`、`docs/planning/{ROADMAP,CURRENT_HANDOFF}.md`、`docs/research/RESEARCH_REPORTS.md`。無其他人的未提交工作。
-- 最新實測 `rateLimitsByLimitId.codex`：primary used28%／remaining **72%**，secondary used66%／remaining **34%**。未觸發30%交接門檻；大型新切片前與提交前仍需再查。
+- 專案：`C:/Users/user05/StudioProjects/Bridge-Academy`；branch `master`；F65功能 HEAD `aced15754ab108d79903004a6deb1d15cc0a49f0` 已 direct push。開始時基底5915bac工作樹乾淨，fetch origin/master後0/0；功能push後乾淨且同步。
+- F65已提交檔案：`apps/bridge_academy_flutter/lib/src/widgets/{bridge_trick_geometry,bridge_focus_table,bridge_table_components}.dart`、`test/m2_focus_table_test.dart`、5份既有docs。此輪後續僅更新 `docs/implemented/{FEATURES,ENGINEERING_NOTES}.md` 與本交接，保存CI證據；無他人的未提交工作。
+- 最新實測 `rateLimitsByLimitId.codex`：primary used38%／remaining **62%**，secondary used68%／remaining **32%**。未觸發30%交接門檻；接近secondary門檻，先完成證據收尾。下一大型切片前仍需再查；最後狀態ABOVE_30，沒有新低額度觸發。
 
 ## 已完成的工程範圍
 
@@ -25,13 +25,14 @@
 ## 精確驗證與 CI
 
 - **本輪 EXECUTED/PASS：** Windows Flutter3.47.8；`flutter test --no-pub test/m2_focus_table_test.dart` **16/16 PASS**，最後補四視角的defender projection與同版本選牌清除斷言後已重跑；既有共享演出回歸 `flutter test --no-pub test/m2_table_motion_test.dart` **6/6 PASS**；`flutter analyze --no-pub` **0 issue**；`scripts/check_feature_lessons.py --paths <9個變更路徑>` PASS；`git diff --check` PASS。無失敗測試。只新增1個四座位情境，不另加完整牌局／viewport矩陣。
-- **本輪 NOT RUN：** 完整本機 app suite、Web build／Chrome人工目視、新SHA GitHub Actions（尚未提交）。Android/iOS及A3.5為HOLD，未執行。沒有部署或手動派發昂貴研究workflow。
+- **本輪 CI：** F65 SHA `aced15754ab108d79903004a6deb1d15cc0a49f0` 的 [Flutter/Web/Chrome #40493585512](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585512) **success**，jobs包含analysis、完整app tests、Web release、Chrome table/checkpoint；[learning #40493585440](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585440) **success**；[真BEN Chrome #40493585616](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40493585616) 最後查詢仍in_progress。只觸發這3個workflow，無額外M4/M5/Precision/probe。新runner結果不代表裝置／真人QA。
+- **本輪 NOT RUN：** 完整本機 app suite、本機Web build／Chrome人工目視。Android/iOS及A3.5為HOLD，未執行。沒有部署或手動派發昂貴研究workflow。
 - **前一功能 SHA d5f9a63，已重新查到全部 success：** [Flutter/Web/Chrome #40485202583](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202583)、[真BEN Chrome #40485202676](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202676)、[Precision research #40485202623](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202623)、[probe #40485202644](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202644)、[M4 #40485202606](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202606)、[M5 #40485202853](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202853)、[learning #40485202635](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202635)。這些驗證F63/F64，不當作F65驗收。
 - workflow trigger SHA42c12e2 只有 [learning #40485775560](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485775560) success；docs SHA5915bac 只有 [learning #40485930106](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485930106) success。確認workflow-only／docs-only更新未重跑其他昂貴suite。
 
 ## 尚未完成與下一步
 
-1. **當前安全交付：** lesson gate／diff檢查 → 查quota → 程式、測試與兩份feature文件同批commit/push master → 查新SHA Flutter/Chrome、BEN、learning結果；只修必要回歸，不能沿用前述舊綠燈。
+1. **當前交付：** F65 source/tests/lesson已同批aced157推送，Flutter/Chrome和learning已成功。查看真BEN #40493585616 最終狀態即可；僅在failure時依job診斷作必要修復，不重跑已通過suite。
 2. **下一個產品切片：主工作區到牌桌的預設動線。** 使用者開始／繼續一局後直接進可玩的專注桌，返回工作區仍保留同一session；Local與Gateway需一致，開局／續局／完局／錯誤重試可達。現仍需額外按專注桌入口，未實作自動導向。這需要整合路由與生命週期，不是單純改標題。
 3. **Web可用性：** 依真實高度／大字體／鍵盤與輔具核對，保留取消、等待和請求失敗重試。四viewer工程測試不等於真人／實機UX已通過。
 4. **第三方權利／素材inventory：** playing_cards內附未使用Wikimedia圖像、Nickel依賴／素材、模型與native binary notices仍需逐項記exact artifact／license／發行範圍。card_game probe有已知drag-end與reduced-motion缺口，尚未正式採用。
