@@ -9,7 +9,7 @@
 
 ## Git／目標
 
-- Repo C:/Users/user05/StudioProjects/Bridge-Academy；branch master；本輪基底／目前HEAD `9b6d1e746807c1e5fed3af9c4b325290beb738a8`，開始時clean。下方為本輪未提交清單，無其他人工作。尚未commit／push，新SHA CI目前NOT RUN。
+- Repo C:/Users/user05/StudioProjects/Bridge-Academy；branch master；本輪基底 `9b6d1e746807c1e5fed3af9c4b325290beb738a8`；功能commit `531ba3f83e2202b2b89a7d5378a5cd4aa38a9ae1` 已push至origin/master。Push後又修改本交接檔，故目前僅這份交接更新待提交；其餘功能commit已提交。GitHub Actions查詢當下回傳該SHA `workflow_runs=[]`，新SHA CI尚未開始／目前無run可報；不沿用F65舊CI。
 - Owner要求真正把Nickel Bridge React/TypeScript成熟叫牌互動適配Flutter；已實作F66/F67，並非只讀source。不要把當前結果誇成完整BBO產品UX或已審核制度解釋。
 
 ## 已完成的高風險工作
@@ -33,7 +33,7 @@
 
 1. 文件F66/F67已追加FEATURES及ENGINEERING_NOTES、研究實作來源／決策／ROADMAP；跑輕量lesson gate及git diff --check，確認只收本輪來源與測試。
 2. packages/bridge_core/pubspec.lock是本次測試生成、原先不存在，已刪，不要誤commit。截圖及build logs不入Git。
-3. direct commit/push master（不PR、不force），查新SHA CI並記實際status；有失敗只修必要回歸。若受quota限制未完成CI，記URL/in_progress並讓後續agent查，不聲稱PASS。
+3. 本交接更新提交後，查新SHA CI並記實際status；有失敗只修必要回歸。若CI仍未觸發或受quota限制，記URL／pending並讓後續agent查，不聲稱PASS。
 4. 回退以本次feature commit的git revert；無schema／資料遷移。不要reset --hard或清別人工作。若local preview要停，只針對本次exec sessions31187(8736)、52489(8737)、63848(8738)，不殺其他process。
 
 ## 留給其他 agent 的低風險任務（未派發；由 owner 後續指派）
@@ -48,7 +48,7 @@
 - 主工作區開局／繼續後預設進專注桌、返回同一session，統一Local與Gateway的路由／恢復／終局／錯誤生命週期。需保持續局同意與fail-closed；不要交輕量agent用單一按鈕改名冒充完成。
 - 已驗證叫品解釋需要本局GameSystems身分與可信版本化含義；當前inspector只公開資訊與UNKNOWN。不能從上游SAYC或LLM捏造BEN推理。
 
-## 本輪git status（checkpoint前）
+## 功能commit前git status（供追溯）
 
 ```
  M AGENTS.md
