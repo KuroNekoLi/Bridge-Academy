@@ -208,6 +208,12 @@ BBO、新睿、BBO Trainer 可以當作練習分類、牌桌操作與玩家旅�
 
 重新核對上述 pinned Nickel 的 `HandFan.tsx`：其 selected card lift、第二次點牌提交，以及 `TrickArea.tsx` 的共用 slots／flight layer。本次將互動契約寫成 Flutter 的本地 `_selected`、FlatCardFan preview overlay 與 BridgeTrickGeometry；沒有複製 TSX／CSS／資產，也沒有引入上游 action staging、AI 或完整暗牌。正式app仍使用原版本 playing_cards；card_game 的正式採用缺口沒有因此消失。手機由完整扇形＋確認解決原48px gate導致無法同屏看完13張的問題，寬牌列與大字體退路仍可用。實測詳見 M2-F63／F64 工程導讀；Android／A3.5 仍 HOLD。
 
+### 2026-10-27 叫牌同等程度移植：來源與缺口（尚未實作）
+
+重新讀取Nickel pinned SHA `92a81b5e81cb7aac2eabc147e82f18e0040b512e` 的 `web/src/components/game/BidBox.tsx` 與 `AuctionGrid.tsx`。BidBox將38叫品按合法集合停用，以最低合法叫品開始的最多4階窗口呈現、折疊較高階；選取與確認分開，busy／waiting鎖整盒，最低合法階改變時折疊展開失效。AuctionGrid按N/E/S/W四欄、dealer前補空格、pending位置、固定欄頭與自動捲到最新行，公開叫品可inspect。以上是本次已讀source的行為，不表示已搬入Flutter；未複製上游source／CSS／資產，owner授權與其他第三方權利仍依前述範圍。
+
+現行Flutter BridgeBiddingBox仍為階數／花色Dropdown及直接Pass/X/XX，三處caller是一般Local桌、Gateway桌、專注桌；歷史toolbar仍是Chip串列。PlayerView沒有legalCalls，JSON欄位檢查嚴格；Core的合法性位於BridgeGame._applyCall。下一實作需先提供Core共用的公開auction合法叫品介面，讓UI依Core合法集合呈現；避免Flutter再寫一套規則，亦避免未處理Gateway schema就硬加欄位。另須移轉a3_bidding_box_test及browser_ben/browser_gateway_real中操作bid_level的舊流程。上游叫品inspect的SAYC說明不能直接套在本專案任意NS/EW制度，未知仍UNKNOWN。secondary30%門檻已觸發，此輪只完成研究／交接，功能與新測試NOT RUN。
+
 ### 2026-10-27 CI 範圍精簡：隔離 card_game probe
 
 `experiments/card_game_probe` 是獨立研究程式，不是 Flutter app 的依賴或 release gate。過去任何 app、Core 或 BEN adapter 路徑變更，都會在 Flutter 主 CI 額外執行該 probe 的 dependency fetch、analysis 和相容性測試，造成與該變更無關的重複成本。現將它移至 `.github/workflows/card-game-probe.yml`，只在 probe 變更時執行或手動派發；workflow 定義本身可手動驗證。主 Flutter CI 保留 app analyzer、完整 app tests、Web release build 與 Chrome UI／checkpoint 驗收。probe gates 未刪除，仍可獨立重現；新 workflow 在 SHA `d5f9a634e0834ecd4d68a915904585d21f1f405a` 的 run [#40485202644](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40485202644) **success**。

@@ -2,6 +2,22 @@
 
 > 本檔只描述目前狀態。舊交接流水帳可從 `5915bac0c3d96371f9e82b4086c81c5dcc1654f0` 的 Git 歷史查閱；不能用舊記錄的「尚未提交／執行中」判斷目前版本。
 
+## 最新接續：叫牌 UI 同等程度移植（2026-10-27 19:15 Asia/Taipei）
+
+- **使用者目標／優先序：** Owner 明確要求充分採用開源橋牌成熟叫牌UI，達到與牌桌互動相同程度的Flutter移植。此項優先於下方原「工作區預設動線」。不能把閱讀上游或寫計畫稱作已移植。
+- **配額觸發，先保存：** `get_usage_limits.rateLimitsByLimitId.codex` primary used51%／remaining49%，secondary used70%／remaining **30%**，2026-10-27 19:15:03 Asia/Taipei；任一≤30%的AGENTS硬性門檻已觸發。帳號共用用量，非專案單獨消耗。最後狀態 `TRIGGERED_SECONDARY_LE_30`，最後通知門檻30%；先寫此交接，後續只作文件／證據安全收尾，不開始大型叫牌UI實作。Owner之前僅允許忽略primary，沒有解除secondary門檻。
+- **Git：** repository `C:/Users/user05/StudioProjects/Bridge-Academy`，branch master，HEAD `215d5f2b09f762ff05eb070160f0be9aefe1b069`；開始時clean。本次沒有功能／測試修改；工作樹只有本交接、DECISIONS、ROADMAP、RESEARCH_REPORTS四份文件。git diff --check PASS，fetch後HEAD與origin/master為0/0；無新測試，未新增docs。安全收尾再查primary剩45%／secondary30%（19:16），門檻狀態不變。
+- **已完成研究：** 重新取得並逐段讀 pinned Nickel Bridge `92a81b5e81cb7aac2eabc147e82f18e0040b512e` 的 `web/src/components/game/BidBox.tsx`、`AuctionGrid.tsx`。來源版本、owner修改授權沿用既有研究；這輪未複製原碼／CSS／素材、未加相依。實作尚未開始。
+- **待移植BidBox：** 5花色×7階直接叫品矩陣；從最低合法叫品所在階開始，預設最多4階，較高階可展開，合法最低階改變後重置展開；Pass/X/XX一樣先選取；所有叫品獨立確認後才送出；忙碌／等待時整盒鎖定且高度穩定；version／viewer／回合改變清掉過期選取，禁止重複提交。鍵盤、語意、zh-TW/en與至少48px觸控需有實際驗收。
+- **待移植AuctionGrid：** N/E/S/W四欄、發牌者首列前補空格、玩家與目前輪次標示、最新叫品提示、固定欄頭／內部捲動到最新列；同一元件用於專注桌、一般桌與歷史對話框。上游逐口檢視必須接本專案已有公開叫牌／可信來源；不可移植上游SAYC含義當成我們NS/EW制度的真實解釋，未知保持UNKNOWN。
+- **主要介面缺口：** 現在BridgeBiddingBox只有selectedLevel／selectedStrain／canSubmit，Pass/X/XX直接送出；沒有legalCalls。PlayerView只有legalCards，fromJson嚴格欄位檢查；不能任意加JSON欄位而不處理Gateway相容性。Core合法叫牌目前集中在 `BridgeGame._applyCall`（game.dart）。建議先抽出只依公開auction／phase／actor／turn的Core合法叫品API，與reducer共用驗證，再由Flutter使用投影公開欄位取得38叫品合法集合，避免UI複寫規則或為此破壞傳輸schema。此方案仍是設計，尚未實作或測試。
+- **整合檔案：** `widgets/bridge_bidding_box.dart`、新共享叫牌四欄widget（名稱待實作）、`bridge_app.dart`、`gateway_table.dart`、`widgets/bridge_focus_table.dart`、`widgets/bridge_table_toolbar.dart`、`app_copy.dart`；必要的Core公開合法性helper／最小回歸。既有 `a3_bidding_box_test.dart` 使用DropdownButton與非法X可點的舊假設；`integration_test/browser_ben_test.dart`、`browser_gateway_real_test.dart` 仍操作 `bid_level`。必須一起移轉真實操作流程，不能只留舊key假裝新UI可用。
+- **驗收邊界／測試精簡：** 一個Core用例涵蓋初始Pass與X/XX、叫品階序／7NT、終止後無合法叫品及拒絕無mutation；一個UI情境涵蓋選取不送／確認一次／版本失效／等待鎖；一個四欄排列情境涵蓋非北dealer與跨列／最新位置。保留320px及大字體可及性代表案例，不把整副牌對每個寬度重播。實際Chrome查叫品可讀／表格／確認流程，QA HOLD不解除。
+- **本輪驗證：** 新test／analyzer／Web build／新功能CI **NOT RUN**；只讀檔案及上游source。先前F65 CI不作叫牌移植證據。新功能SHA／CI URL／狀態NOT RUN。未部署、未dispatch held QA。
+- **接續命令：** 恢復時先查quota、`git status --short --branch`、`git rev-parse HEAD`、`git fetch origin master`；quota恢復後依上述介面開始實作，完成時FEATURES與ENGINEERING_NOTES同批更新，不先宣稱ENGINEERING_PASS。當前沒有半成品程式需回退；本次文件checkpoint可git revert，禁止force push或清他人工作。
+
+## 先前F65已交付快照（以下不得視為叫牌UI已完成）
+
 ## 使用者目標與工作規範
 
 - 依 ROADMAP 完成 BBO 風格單人橋牌體驗，Reuse First：上方明手、下方自己的扇形手牌，清楚的公開引牌／跟牌／收墩。

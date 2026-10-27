@@ -44,3 +44,7 @@ Owner 明確要求：新增 UI 前優先調查現成套件／開源橋牌專案�
 ## 2026-10-27：手機完整扇形手牌優先
 
 Owner 再次提供 BBO 手機介面，明確要求全13張可見、上下明手／自己，以及可把非Flutter開源UI移植成Flutter。專注桌的手機預設因此改為壓縮扇形：不足48px可見區時先選牌抬起、第二點或確認鈕才提交；另保留寬牌列切換與大字體捲動退路。這修訂 F60 的「手機一律48px寬牌列」呈現選擇；授權投影／Core驗證、Reuse First、裝置QA HOLD不變。參考 pinned Nickel HandFan 的 selected／second-tap interaction，以既有 FlatCardFan／PlayingCardView 整合，未複製 React runtime 或第三方素材。
+
+## 2026-10-27：叫牌UI須完成成熟互動移植
+
+Owner明確要求叫牌UI充分採用開源橋牌的成熟設計，達到與手牌／公開墩互動相同程度的Flutter移植，不能停在閱讀BidBox／AuctionGrid或維持下拉選單。下一產品切片優先完成直接選叫品、合法提示、獨立確認及四欄叫牌流程，先於原工作區預設導航。使用Nickel的UI互動不授權把其SAYC含義或AI當本專案制度解釋；Core／PlayerView／NS-EW制度身分／QA HOLD保留。此次配額達secondary30%後只保存研究／介面規劃，尚無叫牌移植成果。
