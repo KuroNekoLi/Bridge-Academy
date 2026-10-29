@@ -77,6 +77,7 @@ class AppCopy {
     'callMeaningUnknown': ['尚未提供此叫品的已驗證說明。', 'A verified meaning for this call is not available.'],
     'awaitingCall': ['等待此座位叫牌', 'Waiting for this seat to call'],
     'emptySuit': ['空門', 'Void'],
+    'legalDummySuit': ['可從此花色出牌', 'Playable suit'],
     'tutorialHelp': ['牌桌操作教學', 'Table tutorial'],
     'tutorialBidTitle': ['選擇叫品', 'Choose a call'],
     'tutorialBidMessage': [

@@ -201,3 +201,9 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 專注桌新增可略過的 spotlight 教學：叫牌時標示叫牌盒；打牌時標示手牌，若由玩家控制明手則依序要求選合法花色、再選牌。叫品與出牌教學只在新 `PlayerView` version 確認相同 call／card 已進入公開事件後前進；花色步驟僅改 UI 選取，跳過／關閉不改遊戲狀態。以 MIT `overmark 0.2.0` 實作 action gate；來源與限制見 [研究紀錄](../research/RESEARCH_REPORTS.md)。兩個教學互動測試 **2/2 PASS**（只驗 deterministic Core fixture；CI、Web及真人裝置驗收未執行）。ENGINEERING_PASS（scoped）／LESSON_DELIVERED；PRACTICED／MASTERED 待使用者實際操作。
 
 **5–15 分鐘練習：** 在叫牌畫面按燈泡教學，選一個合法叫品但先不更新 `PlayerView`，觀察提示仍停留；再讓 Core 接受叫品，觀察提示才結束。指出 `didUpdateWidget` 如何比對 version 與公開事件。
+
+## M2-F70｜明手合法花色提示與大字體操作
+
+莊家控制明手時，四個花色欄依 `PlayerView.legalCards` 顯示可操作狀態：可出的花色以高亮邊框與勾記提示，不能跟出的非空花色淡化；語意標籤同時讀出「可從此花色出牌」。大字體時花色標頭可省略小勾記並以省略號限制文字寬度，完整花色／合法狀態保留在語意標籤，避免窄欄溢位。這只改善提示，不改 Core 合法判定或遊戲狀態。
+
+在 [專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證合法集合與語意啟用旗標相同、勾記只出現在合法花色，以及既有明手位置、出牌和大字體行為。最終本地 **21/21 PASS**、Flutter analyzer **No issues found**；此 SHA 的 CI 狀態與連結記在 [CURRENT_HANDOFF](../planning/CURRENT_HANDOFF.md)。狀態 **ENGINEERING_PASS（scoped）／LESSON_DELIVERED**；本地測試不等於真人 UX 驗收，裝置 QA 仍 HOLD。

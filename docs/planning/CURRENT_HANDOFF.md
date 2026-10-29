@@ -1,5 +1,16 @@
 # Bridge Academy 目前交接：叫牌 UI 已實作，交付收尾
 
+## 2026-10-29 使用者優先 UX 延續：明手合法花色提示
+
+- **使用者指示：** 跳過 X01–X04 參考圖幾何比對，繼續剩餘互動驗收並以玩家操作體驗為優先改善 UI/UX。
+- **配額起始檢查：** `get_usage_limits` primary used 5%／remaining **95%**、secondary used 11%／remaining **89%**。配額帳號共用。
+- **Git 起點：** `master`，`c2cbc361c38831cfc9294410d6e1526cd60dc708`，工作樹乾淨。
+- **完成切片 M2-F70：** 明手合法花色現在以青綠邊框、淡底與勾記提示；不合法的非空花色在玩家控制明手的可操作回合淡化。語意啟用旗標及 zh-TW/en 標籤都與 `PlayerView.legalCards` 同源。大字體隱藏小勾記並限制標頭寬度，保留語意名稱，修正驗收中發現的橫向溢位。未改規則、資料或狀態。
+- **本輪驗證：** 最終 `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **21/21 PASS**；在 `apps/bridge_academy_flutter` 執行 `flutter analyze --no-pub` **No issues found**；lesson gate 與 `git diff --check` PASS。失敗後修復：最初大字體標頭溢出 41px，收斂後指定大字體案例通過，再跑全檔通過；semantics 編譯／句柄初次錯誤與 deprecated API 已修正。曾在 repo 根目錄誤執行 analyzer，因其他子專案依賴未安裝回報 1001 issues；該命令不作為 Flutter app 驗收依據，隨後 app 範圍分析通過。全量 suite、Web production build、真人 usability／Android/iOS QA 未執行。
+- **視覺／互動範圍：** 本輪未操作瀏覽器；依使用者要求跳過 X01–X04 幾何比對。widget 測試驗證 Core 合法集合對應的可用語意和視覺勾記，不宣稱真人可用性已驗收。
+- **下一步：** 以固定公開測試局補叫牌→首攻→揭露明手→選合法花色→選牌→四張收墩的互動走查；任何錯誤行動仍由 Bridge Core 拒絕。保留 X01–X04 為跳過，除非 owner 之後重新要求。接著核對本輪 SHA CI。
+- **狀態：** 功能與文件尚在本地工作樹；提交前檢查 quota、`git diff --check` 與改動範圍。裝置 QA HOLD。
+
 ## 2026-10-29 延續 V3 驗收（11:14 Asia/Taipei）
 
 - **目標／狀態：** 依 `AGENT_PROMPT.md` 繼續完成可在本機驗收的 V3 UI。已存在的 F66/F67 叫牌流程及 F68/F69 明手、教學功能未重做；本輪補齊明手上置／本人手牌下置的手機尺寸驗收。P4 仍未完成，不能稱為整份 V3 驗收完成。

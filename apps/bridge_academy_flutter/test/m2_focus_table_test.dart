@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import '../test_driver/bidding_test_actions.dart';
 import 'package:bridge_academy_flutter/src/app_copy.dart';
 import 'package:bridge_academy_flutter/src/bridge_app.dart';
@@ -68,6 +70,29 @@ void main() {
     Future<void> show() =>
         showTable(tester, state, onPlay: (card) => submitted = card);
     await show();
+    final legalSuits = b.PlayerView.forSeat(state, b.Seat.south).legalCards
+        .map((card) => card.suit)
+        .toSet();
+    expect(legalSuits.length, lessThan(4));
+    final semanticsHandle = tester.ensureSemantics();
+    for (final suit in b.Suit.values) {
+      expect(
+        tester
+                .getSemantics(
+                  find.byKey(Key('focus_dummy_suit_semantics_${suit.name}')),
+                )
+                .getSemanticsData()
+                .flagsCollection
+                .isEnabled ==
+            Tristate.isTrue,
+        legalSuits.contains(suit),
+      );
+      expect(
+        find.byKey(Key('focus_dummy_legal_suit_${suit.name}')),
+        legalSuits.contains(suit) ? findsOneWidget : findsNothing,
+      );
+    }
+    semanticsHandle.dispose();
     await tester.tap(find.byKey(const Key('focus_tutorial')));
     for (var frame = 0; frame < 5; frame++) {
       await tester.pump(const Duration(milliseconds: 80));

@@ -482,13 +482,15 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     required double overlap,
   }) {
     final selected = _selectedDummySuit == suit;
-    final canSelect =
+    final hasLegalCard = cards.any(widget.view.legalCards.contains);
+    final isDummyAction =
         widget.view.phase == Phase.play &&
         widget.view.canAct &&
         !widget.actionsPaused &&
         _submittedVersion != widget.view.version &&
-        widget.view.turn == owner &&
-        cards.any(widget.view.legalCards.contains);
+        widget.view.turn == owner;
+    final canSelect = isDummyAction && hasLegalCard;
+    final dimmed = isDummyAction && cards.isNotEmpty && !hasLegalCard;
     final suitLabel = widget.copy.t(switch (suit) {
       Suit.spades => 'suitS',
       Suit.hearts => 'suitH',
@@ -496,7 +498,10 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
       Suit.clubs => 'suitC',
     });
     return Semantics(
-      label: '$suitLabel, ${widget.copy.remaining(cards.length)}',
+      key: Key('focus_dummy_suit_semantics_${suit.name}'),
+      label:
+          '$suitLabel, ${widget.copy.remaining(cards.length)}'
+          '${canSelect ? ', ${widget.copy.t('legalDummySuit')}' : ''}',
       button: true,
       selected: selected,
       enabled: canSelect,
@@ -513,16 +518,25 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                   }
                 }
               : null,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: selected
-                  ? const Color(0xFFB7E85B).withValues(alpha: .18)
-                  : Colors.transparent,
-              border: Border.all(
-                color: selected ? const Color(0xFFB7E85B) : Colors.white24,
+          child: Opacity(
+            opacity: dimmed ? .42 : 1,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: selected
+                    ? const Color(0xFFB7E85B).withValues(alpha: .18)
+                    : canSelect
+                    ? const Color(0xFF70D9CA).withValues(alpha: .1)
+                    : Colors.transparent,
+                border: Border.all(
+                  color: selected
+                      ? const Color(0xFFB7E85B)
+                      : canSelect
+                      ? const Color(0xFF70D9CA)
+                      : Colors.white24,
+                  width: canSelect || selected ? 2 : 1,
+                ),
+                borderRadius: BorderRadius.circular(8),
               ),
-              borderRadius: BorderRadius.circular(8),
-            ),
             child: SizedBox(
               width: width,
               height:
@@ -538,18 +552,39 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                     left: 0,
                     right: 0,
                     height: 22,
-                    child: Center(
-                      child: Text(
-                        '${_dummySuitSymbol(suit)}  ${cards.length}',
-                        maxLines: 1,
-                        style: TextStyle(
-                          color: suit == Suit.hearts || suit == Suit.diamonds
-                              ? const Color(0xFFFF8990)
-                              : Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${_dummySuitSymbol(suit)}  ${cards.length}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color:
+                                  suit == Suit.hearts ||
+                                      suit == Suit.diamonds
+                                  ? const Color(0xFFFF8990)
+                                  : Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
-                      ),
+                        if (canSelect &&
+                            MediaQuery.textScalerOf(context).scale(14) <= 19)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 2),
+                            child: Icon(
+                              Icons.check_circle,
+                              key: Key(
+                                'focus_dummy_legal_suit_${suit.name}',
+                              ),
+                              color: const Color(0xFF70D9CA),
+                              size: 12,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   if (cards.isEmpty)
@@ -577,6 +612,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                     ),
                 ],
               ),
+            ),
             ),
           ),
         ),

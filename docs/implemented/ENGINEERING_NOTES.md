@@ -182,3 +182,11 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **EXECUTED：** `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **18/18 PASS**；同檔 `--plain-name "tutorial"` **2/2 PASS**；`flutter analyze --no-pub` **No issues found**；`python scripts/check_feature_lessons.py --paths docs/implemented/FEATURES.md docs/implemented/ENGINEERING_NOTES.md` **PASS**。教學測試驗證 Core 接受叫品／出牌前提示不前進、接受後結束，skip 不改動遊戲狀態。完整新 SHA CI、Web/Chrome、Android/iOS與真人 QA **NOT RUN**；不可沿用舊 SHA CI 宣稱本次通過。
 
 **5–15 分鐘練習：** 檢查 `BridgeFocusTable.didUpdateWidget` 的 call/card 比對，手動把測試 callback 改成不更新 state，確認教學不會假完成；再用原 Core reducer更新 view。回退以本功能 commit `git revert`，無 schema／存檔遷移。狀態 ENGINEERING_PASS（上述 scoped 行為）／LESSON_DELIVERED；PRACTICED、MASTERED 未驗收。
+
+## M2-F70｜讓明手可出的花色一眼可辨
+
+`BridgeFocusTable._dummySuitColumn` 已經用 `PlayerView.legalCards` 決定哪些花色能點，但畫面先前把合法與非法花色畫得幾乎一樣。現在輪到玩家控制明手時，含合法牌的花色會有青綠邊框、淡底色與勾記；含牌但無合法選擇的花色降低透明度。外層 `Semantics` 用同一個布林狀態設定啟用旗標，並在 `AppCopy` 提供中英文「可從此花色出牌」標籤。視窗字體放大時不顯示小勾記，標頭採受限寬度與省略號，完整名稱和狀態仍由語意標籤提供。
+
+替代方案是只保留目前的點擊停用行為，或在 Flutter UI 重算跟牌規則；前者仍讓玩家猜測，後者會複製 Bridge Core 規則。採用同一份 `PlayerView.legalCards` 作視覺、輸入與輔助技術狀態，保留 Core 作唯一權威。改動位於 `bridge_focus_table.dart`、`app_copy.dart`，回歸位於 `m2_focus_table_test.dart`。已執行 `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **21/21 PASS**、`flutter analyze --no-pub` **No issues found**；曾發現並修正大字體下標頭橫向溢位，最終回歸已通過。遠端 CI 依新 SHA 狀態記於 CURRENT_HANDOFF；Web 真人操作與裝置 QA 未執行。
+
+**5–15 分鐘練習：** 在 `_dummySuitColumn` 找出 `hasLegalCard`、`isDummyAction` 與 `dimmed` 三個狀態，說明為什麼「有牌可跟」和「現在輪到我且可以操作」要分開計算。再看測試如何用 `PlayerView.legalCards` 對照 `SemanticsFlags.isEnabled`，而不自行重寫橋牌規則。
