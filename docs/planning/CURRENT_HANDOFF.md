@@ -4,12 +4,12 @@
 
 - **目標：** 依使用者提供的 BBO／新睿手機參考與 `AGENT_PROMPT.md` 完成明手四花色選牌及可操作叫牌／出牌 spotlight 教學；沿用既有 Flutter 牌桌、Bridge Core 與 `PlayerView`，維持暗牌隔離與 owner-held 裝置 QA HOLD。依 repo AGENTS 只改七份 canonical docs，不採附件新增 `docs/ui/*` 的建議。
 - **配額：** 提交前最近讀取 `get_usage_limits`：primary used 27%（remaining **73%**），secondary used 8%（remaining **92%**）；未觸發本任務 10% handoff 門檻。帳號共用配額，不表示此專案獨佔消耗。
-- **Git：** branch `master`；HEAD `884a1ca0e8769cec459c9ac0db0d83683258584c`；功能目前未提交。未提交檔案只有：`apps/bridge_academy_flutter/lib/src/app_copy.dart`、`apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart`、`apps/bridge_academy_flutter/pubspec.yaml`、`apps/bridge_academy_flutter/pubspec.lock`、`apps/bridge_academy_flutter/test/m2_focus_table_test.dart`、`docs/implemented/FEATURES.md`、`docs/implemented/ENGINEERING_NOTES.md`、`docs/research/RESEARCH_REPORTS.md`、本 handoff。
+- **Git：** branch `master`；目前 source commit `f603742`（上一個 source commit `0164474`）；`origin/master` 尚未接收本輪提交，push 待執行。此 handoff 更新尚未提交；除本 handoff 外工作樹無未提交檔案。localized strings 最終淨差異為只新增本功能所需字串，避免整檔格式化 churn。
 - **完成：** 明手桌上方四花色牌堆、選花色後展開牌列；合法性仍取自 `PlayerView.legalCards`；Overmark 0.2.0 spotlight 依牌桌實際操作提示叫牌、本人出牌或明手先選花色再選牌；叫品／牌步驟必須等新 PlayerView 明確包含該動作才前進；skip／關閉不改牌局。更新 F68/F69 feature／learning 記錄及 Overmark 授權來源。
 - **已執行：** `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **18/18 PASS**；`flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded --plain-name "tutorial"` **2/2 PASS**；`flutter analyze --no-pub` **No issues found**；`python scripts/check_feature_lessons.py --paths docs/implemented/FEATURES.md docs/implemented/ENGINEERING_NOTES.md` **PASS**；`git diff --check` **PASS**。
 - **失敗／修復：** 第一次完整牌桌測試因 dummy 堆疊過高把 320px 墩牌縮至 41.43px，調低牌堆高度後同檔通過；舊拖曳案例未先選花色而找不到未掛載牌，已調整。教學測試曾在 action gate 尚未 armed 前點擊，增加測試等待後通過；錯用 `Play` 類型的編譯錯已改為 Core `PlayedCard`。Skip 測試一度沿用錯誤起始 version 期望值，改正後完整測試通過。Lesson gate 無參數執行曾回 usage error，補 `--paths` 後 PASS。沒有未解決的測試失敗。
 - **未執行：** 完整 Flutter suite、Web build、Chrome E2E／新畫面截圖、Android/iOS 與真人 QA 未執行。未改 CI workflow。新功能尚未 commit/push，故新 SHA CI URL／狀態 **NOT RUN／無 URL**；不得沿用舊 SHA 的綠燈。
-- **接續：** 最後查 quota；檢查 `git diff --check`、`git status --short` 與 remote master；只提交上列本輪檔案到 `master` 並依 repo 指示直接 push（禁止 force push），之後查新 SHA CI。CI 若有失敗，只修本輪可重現的相關項目，不擴成全量測試維護。
+- **接續：** 提交本 handoff 更新後，最後查 quota並直接 push `master`（禁止 force push），再查新 SHA CI。CI 若有失敗，只修本輪可重現的相關項目，不擴成全量測試維護。
 - **風險／回退：** Overmark 0.2.0 是較新、採用度有限的 MIT Flutter overlay 套件；來源與退回 Flutter `OverlayEntry` 方案記於 `RESEARCH_REPORTS.md`。本輪未改 Core／Gateway schema／存檔，無資料遷移；以本功能 commit 的 `git revert <sha>` 回退，勿 reset 或 force push。裝置 QA／release 仍 HOLD。
 
 ## V3 新睿風格 UI 任務狀態（2026-10-29；更新 10:21 Asia/Taipei）
