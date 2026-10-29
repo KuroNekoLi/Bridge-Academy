@@ -36,6 +36,83 @@ class _GatewayTableState extends State<GatewayTable> {
       builder: (context, _) {
         final session = widget.session;
         final view = session.view;
+        if (view != null) {
+          return BridgeFocusTable(
+            view: view,
+            copy: copy,
+            boardNumber: 1,
+            modeLabel: copy.t('gatewayNotice'),
+            actionsPaused: session.actionsPaused,
+            error: session.errorCode == null
+                ? null
+                : copy.t(session.errorCode!),
+            onRetry: session.errorCode == null || session.busy
+                ? null
+                : session.retry,
+            onPlayCard: session.submitCard,
+            onSubmitCall: session.submitCall,
+            sessionActions: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(copy.t(_precisionResearch
+                    ? 'gatewayConventionResearchNotice'
+                    : 'gatewayConventionNotice')),
+                if (session.gameSystems != null)
+                  Text(copy.t('gatewayActiveSystems'),
+                      key: const Key('gateway_systems_locked')),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      key: const Key('gateway_start'),
+                      onPressed: session.busy ||
+                              (session.started && !session.finished) ||
+                              ((_ns == 'LEGACY') != (_ew == 'LEGACY'))
+                          ? null
+                          : () => session.startNewGame(
+                                northSouth: _ns == 'LEGACY' ? null : _ns,
+                                eastWest: _ew == 'LEGACY' ? null : _ew,
+                              ),
+                      icon: const Icon(Icons.cloud_outlined),
+                      label: Text(copy.t('gatewayNewSession')),
+                    ),
+                    OutlinedButton.icon(
+                      key: const Key('gateway_refresh'),
+                      onPressed: session.busy ? null : session.refreshServerView,
+                      icon: const Icon(Icons.sync),
+                      label: Text(copy.t('gatewayRefresh')),
+                    ),
+                    if (session.finished && session.gameSystems != null)
+                      Builder(
+                        builder: (navigatorContext) => OutlinedButton.icon(
+                          key: const Key('m5_finished_auction_review'),
+                          icon: const Icon(Icons.fact_check_outlined),
+                          label: Text(copy.t('m5ReviewFinished')),
+                          onPressed: () {
+                            final calls = [
+                              for (final entry in view.auction)
+                                entry.call.code,
+                            ];
+                            Navigator.of(navigatorContext).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => AuctionCoachPage(
+                                  isEnglish: copy.isEnglish,
+                                  initialDealer: view.dealer.letter,
+                                  initialCalls: calls,
+                                  initialSystems: session.gameSystems,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),

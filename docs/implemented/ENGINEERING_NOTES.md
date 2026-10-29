@@ -200,3 +200,13 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **驗證與回退：** 已執行 `flutter test --no-pub test/m2_focus_table_test.dart test/a3_table_components_test.dart test/bridge_app_test.dart --reporter expanded`，**28/28 PASS**。`flutter analyze`、Web/Chrome、CI、Android/iOS QA 本次未執行。回退以本功能變更的 `git revert`；無存檔或 API schema 遷移。人工視覺驗收與套件圖像 release inventory 尚未完成。
 
 **5–15 分鐘練習：** 在一般桌及專注桌各選一次明手花色，確認展開後只有該花色、返回後四組恢復；再找到 `BridgeDummySuitPicker` 的 `legalCards` 判斷，說明 UI 為何只表達操作意圖，而實際出牌仍需 Core 接受。狀態 ENGINEERING_PASS（scoped）／LESSON_DELIVERED；PRACTICED／MASTERED 待實際練習。
+
+## M2-F72｜活動牌局只顯示單屏牌桌
+
+**決策實作：** 依使用者明確要求刪除一般桌。Local 與 Gateway session 一旦有 `PlayerView`，便直接以 `BridgeFocusTable` 作活動牌局根畫面；不再由散落式 `BridgeTableSurface` 顯示一遍牌局，再提供跳轉到第二套 focus UI。focus surface 使用 `bridge_board` 作為唯一活動桌面標記，所有牌面與動作仍走原 scoped `PlayerView`／Core validator。
+
+**保留功能：** 無活動牌局時的 Local 開局與 Gateway 連線／制度選擇、歷史檢視、恢復確認、錯誤重試、日常／四副練習、完成結果／重打／下一副及 Gateway 刷新／新 session／公開叫牌複盤保留在單屏桌牌周邊操作。底層舊桌面元件仍可供獨立呈現元件測試使用，但不再由進行中的產品流程呈現。
+
+**驗證與回退：** 已執行 `flutter test --no-pub test/m2_focus_table_test.dart test/bridge_app_test.dart test/a4_gateway_integration_test.dart --reporter expanded`；31 PASS、1 FAIL（舊一般桌使用的 `dummy_card_*` key 在 focus 桌不存在）。只改該測試 selector 後，`flutter test --no-pub test/bridge_app_test.dart --plain-name "make bid -> demo lead -> exposed dummy card is playable" --reporter expanded` **1/1 PASS**；沒有重跑整組 32 項。`flutter analyze --no-pub` **No issues found**；feature lesson gate、`git diff --check` PASS。CI、瀏覽器目視及裝置 QA NOT RUN。無 Core／存檔／網路 schema 遷移；以本功能 commit `git revert` 回退。PRACTICED／MASTERED 尚未驗收。
+
+**5–15 分鐘練習：** 從 Local 開始一副牌並從 Gateway 開啟牌局，確認兩邊都直接進入同一桌面；完成一口叫牌並打開叫牌歷史，說明 session callback 如何保持不變而桌面切換被移除。

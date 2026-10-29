@@ -758,20 +758,17 @@ void main() {
     },
   );
 
-  testWidgets('M2-F57 open/close focus preserves active session and auction', (
+  testWidgets('M2-F72 active game uses the only focus table', (
     tester,
   ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await session.newGame();
     await tester.pumpWidget(BridgeAcademyApp(session: session));
-    final version = session.view!.version;
-    final open = find.byKey(const Key('focus_table_open'));
-    await tester.ensureVisible(open);
-    await tester.tap(open);
-    await tester.pumpAndSettle();
     expect(find.byType(BridgeFocusTable), findsOneWidget);
-    expect(session.view!.version, version);
+    expect(find.byKey(const Key('focus_table_open')), findsNothing);
+    expect(find.byKey(const Key('bridge_board')), findsOneWidget);
+    final version = session.view!.version;
     await tester.ensureVisible(find.byKey(const Key('make_bid')).last);
     await tapBiddingAware(
       tester,
@@ -780,9 +777,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(session.view!.phase, b.Phase.play);
-    final progressed = session.view!.version;
-    Navigator.of(tester.element(find.byType(BridgeFocusTable))).pop();
-    await tester.pumpAndSettle();
-    expect(session.view!.version, progressed);
+    expect(find.byType(BridgeFocusTable), findsOneWidget);
+    expect(session.view!.version, greaterThan(version));
   });
 }

@@ -375,6 +375,66 @@ class _BridgeTableState extends State<BridgeTable> {
                         trick.winner.isNS == trainingContract.declarer.isNS,
                   )
                   .length;
+        if (!widget.historyOnly && view != null) {
+          return BridgeFocusTable(
+            view: view,
+            copy: copy,
+            boardNumber: session.board.number,
+            modeLabel: copy.t(session.mode == OpponentMode.demo
+                ? 'demoNotice' : 'liveNotice'),
+            actionsPaused: session.actionsPaused ||
+                session.saveFailed || session.recoveryNeedsConfirmation ||
+                (session.isBiddingPractice && session.biddingPracticeComplete),
+            error: session.errorCode == null
+                ? (session.recoveryNeedsConfirmation
+                    ? copy.t('recoveredOlderCheckpoint') : null)
+                : copy.t(session.errorCode!),
+            onRetry: session.recoveryNeedsConfirmation ? null
+                : session.saveFailed ? session.retrySave
+                : session.errorCode != null ? session.retryBots : null,
+            onPlayCard: session.submitCard,
+            onSubmitCall: session.submitCall,
+            sessionActions: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (session.recoveryNeedsConfirmation)
+                  FilledButton(
+                    key: const Key('ack_recovered_checkpoint'),
+                    onPressed: session.acknowledgeRecoveredCheckpoint,
+                    child: Text(copy.t('ackRecoveredCheckpoint')),
+                  ),
+                if (session.dailyPractice != null ||
+                    session.dailyHistory.isNotEmpty)
+                  DailyPracticePanel(
+                    copy: copy,
+                    today: session.todaysDaily,
+                    active: session.dailyPractice,
+                    history: session.dailyHistory,
+                    finished: session.finished,
+                    canAdvance: !session.busy && !session.saveFailed &&
+                        !session.dailySaveFailed && !session.historySaveFailed,
+                    canRestart: !session.busy && !session.saveFailed &&
+                        !session.dailySaveFailed,
+                    onNext: () {
+                      setState(() => _replayIndex = null);
+                      session.nextDailyBoard();
+                    },
+                    onRestart: () => _confirmDailyRestart(session, copy),
+                  ),
+                if (session.fourBoardPractice != null)
+                  _fourBoardPanel(session, copy),
+                if (session.isBiddingPractice)
+                  _biddingPracticePanel(session, copy),
+                if (session.finished && !session.isBiddingPractice) ...[
+                  _finishCard(view, copy),
+                  _completedBoardActions(session, copy),
+                  if (!_historyOpen) _replayPanel(session, copy),
+                ],
+                _practiceHub(session, copy),
+              ],
+            ),
+          );
+        }
         return SingleChildScrollView(
           child: Center(
             child: ConstrainedBox(
@@ -520,35 +580,6 @@ class _BridgeTableState extends State<BridgeTable> {
                           view: view,
                           busy: session.busy,
                           copy: copy,
-                        ),
-                        OutlinedButton.icon(
-                          key: const Key('focus_table_open'),
-                          icon: const Icon(Icons.fullscreen),
-                          label: Text(copy.t('focusTable')),
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(builder: (_) => AnimatedBuilder(
-                              animation: session,
-                              builder: (context, _) => BridgeFocusTable(
-                                view: session.view!, copy: copy,
-                                boardNumber: session.board.number,
-                                modeLabel: copy.t(session.mode == OpponentMode.demo
-                                    ? 'demoNotice' : 'liveNotice'),
-                                actionsPaused: session.actionsPaused ||
-                                    session.saveFailed ||
-                                    session.recoveryNeedsConfirmation ||
-                                    (session.isBiddingPractice && session.biddingPracticeComplete),
-                                error: session.errorCode == null ?
-                                    (session.recoveryNeedsConfirmation
-                                      ? copy.t('recoveredOlderCheckpoint') : null)
-                                    : copy.t(session.errorCode!),
-                                onRetry: session.recoveryNeedsConfirmation ? null
-                                    : session.saveFailed ? session.retrySave
-                                    : session.errorCode != null ? session.retryBots : null,
-                                onPlayCard: session.submitCard,
-                                onSubmitCall: session.submitCall,
-                              ),
-                            )),
-                          ),
                         ),
                         if (session.restoredFromStorage)
                           Text(

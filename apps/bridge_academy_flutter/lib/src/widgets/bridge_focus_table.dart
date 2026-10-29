@@ -30,6 +30,7 @@ class BridgeFocusTable extends StatefulWidget {
     required this.actionsPaused,
     required this.onPlayCard,
     required this.onSubmitCall,
+    this.sessionActions,
     this.error,
     this.onRetry,
   });
@@ -41,6 +42,7 @@ class BridgeFocusTable extends StatefulWidget {
   final bool actionsPaused;
   final ValueChanged<bridge.Card> onPlayCard;
   final ValueChanged<Call> onSubmitCall;
+  final Widget? sessionActions;
   final String? error;
   final VoidCallback? onRetry;
 
@@ -767,10 +769,12 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                           if (widget.actionsPaused)
                             const LinearProgressIndicator(),
                           const SizedBox(height: 6),
-                          if (fallback)
-                            _tableSurface(arenaHeight: large ? 500 : 260)
-                          else
-                            Expanded(child: _tableSurface()),
+                          KeyedSubtree(
+                            key: const Key('bridge_board'),
+                            child: fallback
+                                ? _tableSurface(arenaHeight: large ? 500 : 260)
+                                : Expanded(child: _tableSurface()),
+                          ),
                           SizedBox(
                             height: MediaQuery.textScalerOf(context).scale(24),
                             child: view.completedTricks.isEmpty
@@ -799,12 +803,17 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                               ),
                             ),
                           if (view.phase == Phase.finished)
-                            Text(
-                              view.nsScore == null
-                                  ? copy.t('passOut')
-                                  : copy.score(view.nsScore!),
-                              key: const Key('focus_result'),
+                            KeyedSubtree(
+                              key: const Key('focus_result_container'),
+                              child: Text(
+                                view.nsScore == null
+                                    ? copy.t('passOut')
+                                    : copy.score(view.nsScore!),
+                                key: const Key('focus_result'),
+                              ),
                             ),
+                          if (widget.sessionActions != null)
+                            widget.sessionActions!,
                         ],
                       ),
                     ),

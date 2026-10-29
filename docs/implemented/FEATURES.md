@@ -213,3 +213,9 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 一般牌桌與專注牌桌共用 `BridgeDummySuitPicker`：先顯示四個花色堆疊，點選後只呈現該花色完整牌列，可返回總覽。莊家控制明手時，只有 `PlayerView.legalCards` 有牌的花色可以展開；牌張仍由既有 action callback 送入 Core 驗證。玩家手牌兩種桌型都使用緊湊 FlatCardFan，窄牌扇的首次點選只選牌，獨立確認才出牌。牌面一律經 `BridgeCardFace` 轉換至 `playing_cards 0.4.1+11` 的完整 `PlayingCardView`，不再用舊的自繪 rank/suit 牌面。
 
 已執行定向 Flutter 測試：`flutter test --no-pub test/m2_focus_table_test.dart test/a3_table_components_test.dart test/bridge_app_test.dart --reporter expanded`，**28/28 PASS**；覆蓋兩種桌型的花色切換、返回、牌面互動及既有專注桌路徑。Analyzer、Web/Chrome、遠端 CI 或裝置 QA 本次未執行；Android/iOS QA 仍 HOLD。套件 Apache-2.0 程式授權不代表內附 Wikimedia 圖像權利已完成判定，正式發行前仍需素材盤點。狀態 **ENGINEERING_PASS（定向互動範圍）／LESSON_DELIVERED**；PRACTICED／MASTERED 需使用者實際練習確認。
+
+## M2-F72｜移除一般牌桌，活動牌局只保留單屏牌桌
+
+Local 與 Gateway 在牌局開始後直接進入 `BridgeFocusTable`，刪除「專注牌桌」跳轉與一般牌桌的重複手牌／叫牌／墩牌操作區。開局設定、歷史入口、存檔復原、重試、練習進度、完成後重打／下一副仍保留為牌桌周邊操作；Gateway 新局／刷新與公開叫牌複盤也保留。待遊戲狀態為 null 或使用者查看歷史時，仍顯示既有設定／歷史頁。沒有新增第二種牌桌模式。
+
+已執行 `flutter test --no-pub test/m2_focus_table_test.dart test/bridge_app_test.dart test/a4_gateway_integration_test.dart --reporter expanded`：31 個測試通過、1 個因仍使用舊一般桌牌張 key 而失敗；改成 focus 桌牌張 key 後，`flutter test --no-pub test/bridge_app_test.dart --plain-name "make bid -> demo lead -> exposed dummy card is playable" --reporter expanded` **1/1 PASS**。`flutter analyze --no-pub` **No issues found**；feature lesson gate、`git diff --check` PASS。沒有重跑整組 32 項。CI 與瀏覽器目視未執行；Android/iOS QA 保持 HOLD。狀態 ENGINEERING_PASS 限上述已通過範圍；LESSON_DELIVERED，PRACTICED／MASTERED 待使用者實際操作。

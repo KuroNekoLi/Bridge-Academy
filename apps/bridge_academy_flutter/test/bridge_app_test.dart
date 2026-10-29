@@ -62,14 +62,14 @@ void main() {
     await tapVisible(tester, 'new_game');
     await tapVisible(tester, 'make_bid');
     expect(session.view!.dummyExposed, true);
-    expect(find.byKey(const Key('dummy_revealed')), findsOneWidget);
+    final dummyId = session.view!.contract!.dummy.letter;
+    expect(find.byKey(Key('focus_${dummyId}_dummy_hand')), findsOneWidget);
     final chosenCard = session.view!.legalCards.first;
     final before = session.view!.version;
     await tapVisible(tester, 'focus_dummy_suit_${chosenCard.suit.name}');
-    final dummyId = session.view!.contract!.dummy.letter;
     expect(find.byKey(Key('focus_${dummyId}_dummy_suits')), findsNothing);
     expect(find.byKey(Key('focus_${dummyId}_dummy_choices')), findsOneWidget);
-    await tapVisible(tester, 'dummy_card_${chosenCard.code}');
+    await tapVisible(tester, 'focus_card_${dummyId}_${chosenCard.code}');
     expect(session.view!.version, greaterThan(before));
   });
 

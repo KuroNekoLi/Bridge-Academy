@@ -127,3 +127,7 @@ A3.5 玩家體驗、全 Web 發行安全與實機長期儲存測試。**Android 
 ## 更新與排序規則
 
 先核對 master 真正實作與最新 CI。優先修復使用者有感的 U3 體驗，再處理 U4 安全續局、A4.5 實機實測與權利確認，正式發行依 A7 Gate。每一個新功能仍要更新 [已實作功能](../implemented/FEATURES.md)、[工程導讀](../implemented/ENGINEERING_NOTES.md)。
+
+### 2026-10-30 單一活動牌桌 UI
+
+使用者要求移除一般桌、不要區分一般桌與專注桌。活動 Local 與 Gateway session 改為直接顯示同一 `BridgeFocusTable`；移除 focus 跳轉按鈕與重複牌局操作區。開局設定、歷史、session 重試／刷新、練習和已完成牌局操作仍保留。這不等於已通過真人或裝置驗收；owner-held Android/iOS QA HOLD。實作與驗證詳見 M2-F72。
