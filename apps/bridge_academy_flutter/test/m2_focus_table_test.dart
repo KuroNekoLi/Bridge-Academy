@@ -92,6 +92,13 @@ void main() {
         legalSuits.contains(suit) ? findsOneWidget : findsNothing,
       );
     }
+    final illegalSuit = b.Suit.values.firstWhere(
+      (suit) => !legalSuits.contains(suit),
+    );
+    await tester.tap(find.byKey(Key('focus_dummy_suit_${illegalSuit.name}')));
+    await tester.pump();
+    expect(find.byKey(const Key('focus_N_dummy_choices')), findsNothing);
+    expect(state.version, 1);
     semanticsHandle.dispose();
     await tester.tap(find.byKey(const Key('focus_tutorial')));
     for (var frame = 0; frame < 5; frame++) {

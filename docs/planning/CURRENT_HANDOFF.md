@@ -4,12 +4,13 @@
 
 - **使用者指示：** 跳過 X01–X04 參考圖幾何比對，繼續剩餘互動驗收並以玩家操作體驗為優先改善 UI/UX。
 - **配額起始檢查：** `get_usage_limits` primary used 5%／remaining **95%**、secondary used 11%／remaining **89%**。配額帳號共用。
-- **Git 起點：** `master`，`c2cbc361c38831cfc9294410d6e1526cd60dc708`，工作樹乾淨。
+- **Git：** `master`；M2-F70 功能與學習文件已提交並推送，SHA `7e48e2ea5d57b6017df4540afde522a3469e34a0`。本 handoff 狀態更新待提交。
 - **完成切片 M2-F70：** 明手合法花色現在以青綠邊框、淡底與勾記提示；不合法的非空花色在玩家控制明手的可操作回合淡化。語意啟用旗標及 zh-TW/en 標籤都與 `PlayerView.legalCards` 同源。大字體隱藏小勾記並限制標頭寬度，保留語意名稱，修正驗收中發現的橫向溢位。未改規則、資料或狀態。
-- **本輪驗證：** 最終 `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **21/21 PASS**；在 `apps/bridge_academy_flutter` 執行 `flutter analyze --no-pub` **No issues found**；lesson gate 與 `git diff --check` PASS。失敗後修復：最初大字體標頭溢出 41px，收斂後指定大字體案例通過，再跑全檔通過；semantics 編譯／句柄初次錯誤與 deprecated API 已修正。曾在 repo 根目錄誤執行 analyzer，因其他子專案依賴未安裝回報 1001 issues；該命令不作為 Flutter app 驗收依據，隨後 app 範圍分析通過。全量 suite、Web production build、真人 usability／Android/iOS QA 未執行。
+- **本輪驗證：** `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **21/21 PASS**，包含非法花色點擊不展開且不改牌局版本；`flutter test --no-pub test/bridge_app_test.dart --plain-name "make bid -> demo lead -> exposed dummy card is playable" --reporter expanded` **1/1 PASS**；在 app 目錄執行 `flutter analyze --no-pub` **No issues found**；lesson gate 與 `git diff --check` PASS。失敗後修復：最初大字體標頭溢出 41px，收斂後大字體案例及全檔通過；semantics 初次編譯／句柄錯誤與 deprecated API 已修正。曾在 repo 根目錄誤執行 analyzer，因其他子專案依賴未安裝回報 1001 issues；該命令不作為 Flutter app 驗收依據，app 範圍分析通過。`flutter test integration_test/browser_table_test.dart -d chrome --plain-name "REAL BROWSER: card renderer completes a full Demo board" --reporter expanded` **BLOCKED／NOT RUN**：Flutter 回覆 Web devices are not supported for integration tests yet。全量 suite、Web production build、真人 usability／Android/iOS QA 未執行。
 - **視覺／互動範圍：** 本輪未操作瀏覽器；依使用者要求跳過 X01–X04 幾何比對。widget 測試驗證 Core 合法集合對應的可用語意和視覺勾記，不宣稱真人可用性已驗收。
-- **下一步：** 以固定公開測試局補叫牌→首攻→揭露明手→選合法花色→選牌→四張收墩的互動走查；任何錯誤行動仍由 Bridge Core 拒絕。保留 X01–X04 為跳過，除非 owner 之後重新要求。接著核對本輪 SHA CI。
-- **狀態：** 功能與文件尚在本地工作樹；提交前檢查 quota、`git diff --check` 與改動範圍。裝置 QA HOLD。
+- **最新程式 SHA CI：** [Real ChromeDriver end-to-end (demo, not BEN)](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40815703808/job/123256124212)、[analyze-test-build](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40815703808/job/123256124041)、[Real BEN + Flutter Chrome UI](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40815703795/job/123256124114) 查詢時 **in_progress**；[feature-learning](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40815703729/job/123256123823) **success**。查詢時間 **2026-10-29 12:06 Asia/Taipei**；pending 不代表通過。
+- **下一步：** 等最新 SHA CI 完成後更新實際結果；Web ChromeDriver Demo workflow 正在驗證完整公開牌局。若需本地互動，從有 ChromeDriver 支援的既有流程執行，不再嘗試 Flutter `integration_test -d chrome`。保留 X01–X04 為跳過；Core 仍拒絕錯誤行動。裝置 QA HOLD。
+- **狀態：** 本地互動案例涵蓋叫牌→Demo 首攻→揭露明手→可打明手牌，以及 13 墩 Core fixture 互動；完整真 BEN／ChromeDriver CI 仍進行中。最新讀取配額 primary remaining **86%**、secondary **87%**（帳號共用）。
 
 ## 2026-10-29 延續 V3 驗收（11:14 Asia/Taipei）
 

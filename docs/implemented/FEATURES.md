@@ -206,4 +206,4 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 
 莊家控制明手時，四個花色欄依 `PlayerView.legalCards` 顯示可操作狀態：可出的花色以高亮邊框與勾記提示，不能跟出的非空花色淡化；語意標籤同時讀出「可從此花色出牌」。大字體時花色標頭可省略小勾記並以省略號限制文字寬度，完整花色／合法狀態保留在語意標籤，避免窄欄溢位。這只改善提示，不改 Core 合法判定或遊戲狀態。
 
-在 [專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證合法集合與語意啟用旗標相同、勾記只出現在合法花色，以及既有明手位置、出牌和大字體行為。最終本地 **21/21 PASS**、Flutter analyzer **No issues found**；此 SHA 的 CI 狀態與連結記在 [CURRENT_HANDOFF](../planning/CURRENT_HANDOFF.md)。狀態 **ENGINEERING_PASS（scoped）／LESSON_DELIVERED**；本地測試不等於真人 UX 驗收，裝置 QA 仍 HOLD。
+在 [專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證合法集合與語意啟用旗標相同、勾記只出現在合法花色；點擊非法花色不展開且不改牌局版本；也保留明手位置、出牌和大字體案例。最終本地 **21/21 PASS**、Flutter analyzer **No issues found**；此 SHA 的 CI 狀態與連結記在 [CURRENT_HANDOFF](../planning/CURRENT_HANDOFF.md)。狀態 **ENGINEERING_PASS（scoped）／LESSON_DELIVERED**；本地測試不等於真人 UX 驗收，裝置 QA 仍 HOLD。
