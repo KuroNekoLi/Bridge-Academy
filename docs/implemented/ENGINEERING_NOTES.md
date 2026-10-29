@@ -210,3 +210,21 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **驗證與回退：** 已執行 `flutter test --no-pub test/m2_focus_table_test.dart test/bridge_app_test.dart test/a4_gateway_integration_test.dart --reporter expanded`；31 PASS、1 FAIL（舊一般桌使用的 `dummy_card_*` key 在 focus 桌不存在）。只改該測試 selector 後，`flutter test --no-pub test/bridge_app_test.dart --plain-name "make bid -> demo lead -> exposed dummy card is playable" --reporter expanded` **1/1 PASS**；沒有重跑整組 32 項。`flutter analyze --no-pub` **No issues found**；feature lesson gate、`git diff --check` PASS。CI、瀏覽器目視及裝置 QA NOT RUN。無 Core／存檔／網路 schema 遷移；以本功能 commit `git revert` 回退。PRACTICED／MASTERED 尚未驗收。
 
 **5–15 分鐘練習：** 從 Local 開始一副牌並從 Gateway 開啟牌局，確認兩邊都直接進入同一桌面；完成一口叫牌並打開叫牌歷史，說明 session callback 如何保持不變而桌面切換被移除。
+
+## M2-F73｜共同樞紐放射扇形手牌
+
+**實作與取捨：** `BridgeCardStrip` 不再以 `FlatCardFan` 加獨立旋轉／弧形位移疊算。每張牌依正規化索引計算角度，底部沿共同虛擬中心的放射方向定位，再以 `Alignment.bottomCenter` 旋轉；寬度決定半徑，避免桌面超寬時牌扇壓縮墩牌。選牌置頂，抬升及端牌微調沿同一放射向量。牌面與 callbacks 沿用原元件，沒有改牌局規則或 `PlayerView`。
+
+**開源研究：** 檢視 [netgfx/playing_cards_layouts](https://github.com/netgfx/playing_cards_layouts) README 的 `fanCards()` 座標／角度輸出模型；來源 HEAD pin：`401eb837252a869a56da2068a07be761921fadd6`。其 [LICENSE](https://github.com/netgfx/playing_cards_layouts/blob/401eb837252a869a56da2068a07be761921fadd6/LICENSE) 為 MIT，README 說明其 layout 是 cardsJS 的直接移植。本功能未複製該 repository 程式碼或新增依賴，故未引入其 notice；`playing_cards 0.4.1+11` 仍用於牌面。幾何依共同樞紐需求在專案內自行實作。
+
+**驗證：** `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **21/21 PASS**；涵蓋 320–1280px、選牌／確認、明手位置、墩牌可讀及無垂直 overflow。桌面寬度曾測得墩牌低於最小可讀寬度，已限制扇形半徑後全檔通過。`flutter analyze --no-pub`（相關 source files）**No issues found**。瀏覽器實際畫面未驗證；Android/iOS QA 仍 HOLD。ENGINEERING_PASS／LESSON_DELIVERED；尚無學習者練習證據。無規則／存檔遷移；以本功能 commit `git revert` 回退。
+
+**5–15 分鐘練習：** 比較中心、左右端牌的角度與露出牌角，再點選端牌並確認出牌；說明共同 hub、繪製堆疊順序及 action callback 的關係。
+
+## M2-F74｜活動牌局不顯示開局練習面板
+
+**實作與邊界：** `BridgeApp` 活動牌局的 `BridgeFocusTable.sessionActions` 不再嵌入 `_practiceHub`。無活動牌局的開局頁保留面板；叫牌、Core phase transition、明手揭露與 play callbacks 未修改。避免開局面板擠壓牌桌與 Flex overflow。
+
+**驗證：** `flutter test --no-pub test/bridge_app_test.dart --plain-name "make bid -> demo lead -> exposed dummy card is playable" --reporter expanded` **1/1 PASS**；案例尺寸 1245×718，斷言牌桌存在、活動牌局不顯示開局面板且無 layout exception。`flutter analyze --no-pub`（相關 source files）**No issues found**。無 Core／資料遷移；以本功能 commit `git revert` 回退。ENGINEERING_PASS／LESSON_DELIVERED。
+
+**5–15 分鐘練習：** 在 1245×718 測試視窗開始牌局並完成叫牌，確認桌面仍顯示，且沒有開局練習面板或 overflow stripe。

@@ -647,7 +647,6 @@ class _BridgePlayerHandState extends State<BridgePlayerHand> {
             const SizedBox(height: 8),
             BridgeCardStrip(
               useFan: true,
-              compactFan: true,
               selectedIndex: _selected == null
                   ? null
                   : cards.indexOf(_selected!),

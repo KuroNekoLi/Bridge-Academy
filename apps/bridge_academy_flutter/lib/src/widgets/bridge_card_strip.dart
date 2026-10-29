@@ -1,5 +1,6 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:playing_cards/playing_cards.dart' show FlatCardFan;
 
 import '../app_copy.dart';
 
@@ -14,7 +15,6 @@ class BridgeCardStrip extends StatefulWidget {
     this.centerWhenFits = false,
     this.useFan = false,
     this.hintColor,
-    this.compactFan = false,
     this.selectedIndex,
   });
   final List<Widget> children;
@@ -23,7 +23,6 @@ class BridgeCardStrip extends StatefulWidget {
   final bool centerWhenFits;
   final bool useFan;
   final Color? hintColor;
-  final bool compactFan;
   final int? selectedIndex;
 
   @override
@@ -50,80 +49,83 @@ class _BridgeCardStripState extends State<BridgeCardStrip> {
       final cards = [
         for (final child in widget.children) SizedBox(width: 68, child: child),
       ];
-      // Compact fans require caller-owned selection/confirmation. The default
-      // keeps 48px exposed; large text always uses the accessible scroll layout.
-      final fanMinimum = 68 + (cards.length - 1) * 48;
+      // Keep tap/confirmation ownership in the caller. The fan itself is a
+      // radial layout: each card's long axis points away from one shared hub.
       if (widget.useFan &&
           cards.length > 1 &&
           constraints.hasBoundedWidth &&
-          (widget.compactFan
-              ? constraints.maxWidth >= 68
-              : constraints.maxWidth >= fanMinimum) &&
+          constraints.maxWidth >= 240 &&
           MediaQuery.textScalerOf(context).scale(14) <= 19) {
-        final width = contentWidth
-            .clamp(widget.compactFan ? 68 : fanMinimum, constraints.maxWidth)
-            .toDouble();
-        final middle = (cards.length - 1) / 2;
+        const cardWidth = 68.0;
+        const cardHeight = 100.0;
+        const maxAngle = 1.08; // 62 degrees either side, 124 total.
+        const selectedLift = 14.0;
+        final width = math.min(constraints.maxWidth, 440.0);
+        final half = (cards.length - 1) / 2;
+        final baseRadius =
+            (((width - cardWidth * math.cos(maxAngle)) /
+                        (2 * math.sin(maxAngle))) -
+                    cardHeight -
+                    selectedLift)
+                .clamp(8.0, 56.0);
+        final handHeight = baseRadius + cardHeight + selectedLift;
+        final order = List<int>.generate(cards.length, (index) => index);
+        final selectedIndex = widget.selectedIndex;
+        if (selectedIndex != null &&
+            selectedIndex >= 0 &&
+            selectedIndex < cards.length) {
+          order
+            ..remove(selectedIndex)
+            ..add(selectedIndex);
+        }
         return Align(
           alignment: widget.centerWhenFits
               ? Alignment.center
-              : Alignment.centerLeft,
+              : Alignment.topLeft,
           child: SizedBox(
             key: Key('${widget.id}_card_strip'),
             width: width,
-            height: widget.compactFan ? 148 : 100,
+            height: handHeight,
             child: Stack(
-              clipBehavior: Clip.none,
+              clipBehavior: Clip.hardEdge,
               children: [
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: widget.compactFan ? 32 : 0,
-                  height: 100,
-                  child: FlatCardFan(
-                    children: [
-                      for (var index = 0; index < cards.length; index++)
-                        Transform.translate(
-                          offset: Offset(
-                            0,
-                            widget.compactFan
-                                ? 25 *
-                                          (index - middle) *
-                                          (index - middle) /
-                                          (middle * middle) -
-                                      12
-                                : 6 *
-                                          (index - middle) *
-                                          (index - middle) /
-                                          (middle * middle) -
-                                      3,
-                          ),
-                          child: Transform.rotate(
-                            angle:
-                                (index - middle) /
-                                middle *
-                                (widget.compactFan ? .50 : .08),
-                            child: widget.selectedIndex == index
-                                ? const SizedBox(width: 68, height: 92)
-                                : cards[index],
+                for (final index in order)
+                  Builder(
+                    builder: (context) {
+                      final normalized = (index - half) / half;
+                      final angle = normalized * maxAngle;
+                      final relief = normalized.abs() * 5;
+                      final hubX = width / 2;
+                      final hubY = handHeight;
+                      final bottomX = hubX + math.sin(angle) * baseRadius;
+                      final bottomY = hubY - math.cos(angle) * baseRadius;
+                      final selected = widget.selectedIndex == index;
+                      final lift = selected ? selectedLift : 0.0;
+                      final radialNudge = relief + lift;
+                      return AnimatedPositioned(
+                        duration: const Duration(milliseconds: 150),
+                        curve: Curves.easeOutCubic,
+                        left:
+                            bottomX -
+                            cardWidth / 2 +
+                            math.sin(angle) * radialNudge,
+                        top:
+                            bottomY -
+                            cardHeight -
+                            (math.cos(angle) * radialNudge),
+                        width: cardWidth,
+                        height: cardHeight,
+                        child: Transform.rotate(
+                          angle: angle,
+                          alignment: Alignment.bottomCenter,
+                          child: SizedBox(
+                            width: cardWidth,
+                            height: cardHeight,
+                            child: cards[index],
                           ),
                         ),
-                    ],
-                  ),
-                ),
-                if (widget.selectedIndex case final int selected
-                    when selected >= 0 && selected < cards.length)
-                  Positioned(
-                    left: selected * (width - 68) / (cards.length - 1),
-                    top: 0,
-                    width: 68,
-                    child: Transform.rotate(
-                      angle:
-                          (selected - middle) /
-                          middle *
-                          (widget.compactFan ? .38 : .08),
-                      child: cards[selected],
-                    ),
+                      );
+                    },
                   ),
               ],
             ),

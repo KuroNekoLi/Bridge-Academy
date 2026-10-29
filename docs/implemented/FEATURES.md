@@ -219,3 +219,11 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 Local 與 Gateway 在牌局開始後直接進入 `BridgeFocusTable`，刪除「專注牌桌」跳轉與一般牌桌的重複手牌／叫牌／墩牌操作區。開局設定、歷史入口、存檔復原、重試、練習進度、完成後重打／下一副仍保留為牌桌周邊操作；Gateway 新局／刷新與公開叫牌複盤也保留。待遊戲狀態為 null 或使用者查看歷史時，仍顯示既有設定／歷史頁。沒有新增第二種牌桌模式。
 
 已執行 `flutter test --no-pub test/m2_focus_table_test.dart test/bridge_app_test.dart test/a4_gateway_integration_test.dart --reporter expanded`：31 個測試通過、1 個因仍使用舊一般桌牌張 key 而失敗；改成 focus 桌牌張 key 後，`flutter test --no-pub test/bridge_app_test.dart --plain-name "make bid -> demo lead -> exposed dummy card is playable" --reporter expanded` **1/1 PASS**。`flutter analyze --no-pub` **No issues found**；feature lesson gate、`git diff --check` PASS。沒有重跑整組 32 項。CI 與瀏覽器目視未執行；Android/iOS QA 保持 HOLD。狀態 ENGINEERING_PASS 限上述已通過範圍；LESSON_DELIVERED，PRACTICED／MASTERED 待使用者實際操作。
+
+## M2-F73｜以共同樞紐呈現放射扇形手牌
+
+活動牌桌手牌使用 13 張牌共用的虛擬樞紐，以響應式半徑與角度放射排列；兩側牌向外傾斜，中央牌接近直立。點選牌沿放射方向抬起並置頂，保留確認出牌與合法牌限制；牌面仍由 `playing_cards` 的 `PlayingCardView` 呈現。窄螢幕縮半徑，寬螢幕限制牌扇寬度；大字體保留可捲動替代版。
+
+## M2-F74｜叫牌後留在牌桌
+
+活動牌局不再重複顯示「下一次，想練什麼？」開局練習面板；該面板只在沒有活動牌局時顯示。叫牌轉入打牌後，同一個 `BridgeFocusTable` 持續呈現牌桌，明手與玩家手牌仍在桌面上下兩端。

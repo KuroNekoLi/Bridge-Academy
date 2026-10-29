@@ -56,11 +56,20 @@ void main() {
   testWidgets('make bid -> demo lead -> exposed dummy card is playable', (
     tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1245, 718);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
     await tapVisible(tester, 'new_game');
     await tapVisible(tester, 'make_bid');
+    final table = find.byKey(const Key('focus_table_surface'));
+    expect(table, findsOneWidget);
+    expect(tester.getRect(table).height, greaterThan(200));
+    expect(find.byKey(const Key('practice_hub')), findsNothing);
+    expect(tester.takeException(), isNull);
     expect(session.view!.dummyExposed, true);
     final dummyId = session.view!.contract!.dummy.letter;
     expect(find.byKey(Key('focus_${dummyId}_dummy_hand')), findsOneWidget);

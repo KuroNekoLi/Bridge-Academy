@@ -380,7 +380,6 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                   key: _handAnchor,
                   child: BridgeCardStrip(
                     useFan: !_wideHands,
-                    compactFan: !_wideHands,
                     selectedIndex: selectedIndex,
                     hintColor: Colors.white70,
                     centerWhenFits: true,

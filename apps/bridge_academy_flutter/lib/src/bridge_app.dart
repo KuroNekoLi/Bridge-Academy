@@ -430,7 +430,6 @@ class _BridgeTableState extends State<BridgeTable> {
                   _completedBoardActions(session, copy),
                   if (!_historyOpen) _replayPanel(session, copy),
                 ],
-                _practiceHub(session, copy),
               ],
             ),
           );
