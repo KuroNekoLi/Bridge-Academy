@@ -4,12 +4,12 @@
 
 - **目標／狀態：** 依 `AGENT_PROMPT.md` 繼續完成可在本機驗收的 V3 UI。已存在的 F66/F67 叫牌流程及 F68/F69 明手、教學功能未重做；本輪補齊明手上置／本人手牌下置的手機尺寸驗收。P4 仍未完成，不能稱為整份 V3 驗收完成。
 - **配額：** 最新 `get_usage_limits`：primary used 33%／remaining **67%**；secondary used 9%／remaining **91%**。帳號共用配額；未到本次任一視窗 remaining ≤10% 門檻。
-- **Git：** `master`，基底 `90c52c89773afc46f5c0b0bc36f02a2767fda55e`。本輪未提交變更：`apps/bridge_academy_flutter/test/m2_focus_table_test.dart`。尚未提交／推送。
+- **Git：** `master`，本輪已提交並直接推送 `4be368be08c7ccf0e697ae95606bbe8954b1da5c`；前一基底 `90c52c89773afc46f5c0b0bc36f02a2767fda55e`。推送後工作樹乾淨。
 - **本輪修改：** M2-F62 明手／本人相對牌桌位置測試由 `[320,1280]` 擴為 `[320,360,390,430,1280]`，涵蓋 V3 指定三種手機寬度；不改遊戲規則或 UI 程式碼。
 - **實際執行：** `flutter test --no-pub test/m2_focus_table_test.dart --plain-name "M2-F62 dummy is above table and own hand below" --reporter expanded` — **5/5 PASS**；`flutter test --no-pub test/a3_bidding_box_test.dart --reporter expanded` — **3/3 PASS**；`flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` — **21/21 PASS**。失敗測試：無。未執行：全量 Flutter suite、Web production build、完整 T01–T10 的端到端固定牌局、Android/iOS 或真人 QA（owner hold）。
 - **Web 視覺驗收：BLOCKED。** Flutter Chrome debug server 回 HTTP 200 且啟動 debug service，但瀏覽器擷取只得到空白頁；Windows Computer Use 隨後拒絕該視窗，原因是無法安全判定目前瀏覽器 URL。已停止 UI 操作，沒有繞過限制。故本輪沒有可用的 Flutter 牌桌截圖，也沒有 X01–X04 幾何差異量測；不能宣稱視覺比對通過。Android/iOS QA 仍 HOLD。
-- **最新 SHA CI：** 對基底 `90c52c89773afc46f5c0b0bc36f02a2767fda55e` 的 GitHub Checks 唯一回傳項目為 [Feature Learning Gate](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40807858023) **success**。此為既有 handoff-only SHA；本輪測試變更尚無 CI。CI 查詢時間 2026-10-29 11:14 Asia/Taipei。
-- **下一步：** 在受支援且可驗證 URL 的瀏覽器預覽中截取公開測試局，完成 X01–X04幾何比對及其餘 T01–T10 的固定局互動證據；不能以 widget 測試取代截圖／真 BEN 驗收。其後按 repo Git 政策提交並直接 push `master`（不 force push），檢查新 SHA 的相關 CI。若續作成本或 quota 接近 10%，先更新本 handoff。
+- **最新 SHA CI：** 新 SHA `4be368be08c7ccf0e697ae95606bbe8954b1da5c` 的 GitHub run [40811085964](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40811085964)：`analyze-test-build` **in_progress**；`Real ChromeDriver end-to-end (demo, not BEN)` **in_progress**。`feature-learning` [40811086230](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40811086230) **success**。查詢時間 2026-10-29 11:17 Asia/Taipei；pending 不代表通過。
+- **下一步：** 在受支援且可驗證 URL 的瀏覽器預覽中截取公開測試局，完成 X01–X04幾何比對及其餘 T01–T10 的固定局互動證據；不能以 widget 測試取代截圖／真 BEN 驗收。再查此 SHA 的相關 CI；若續作成本或 quota 接近 10%，先更新本 handoff。
 - **風險／回退：** 本輪僅改一個測試寬度清單，無 runtime、Core、資料格式或依賴變更；回退此輪可還原該清單至 `[320.0, 1280.0]`。若已提交則用 `git revert <本輪commit>`，不可 reset／force push。未保存 private deal、憑證或截圖。
 
 ## 2026-10-29 V3 UI 實作續接（最新狀態）
