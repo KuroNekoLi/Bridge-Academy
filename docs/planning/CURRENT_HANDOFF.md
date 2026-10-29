@@ -4,12 +4,12 @@
 
 - **目標：** 依使用者提供的 BBO／新睿手機參考與 `AGENT_PROMPT.md` 完成明手四花色選牌及可操作叫牌／出牌 spotlight 教學；沿用既有 Flutter 牌桌、Bridge Core 與 `PlayerView`，維持暗牌隔離與 owner-held 裝置 QA HOLD。依 repo AGENTS 只改七份 canonical docs，不採附件新增 `docs/ui/*` 的建議。
 - **配額：** 提交前最近讀取 `get_usage_limits`：primary used 27%（remaining **73%**），secondary used 8%（remaining **92%**）；未觸發本任務 10% handoff 門檻。帳號共用配額，不表示此專案獨佔消耗。
-- **Git：** branch `master`；目前 source commit `f603742`（上一個 source commit `0164474`）；`origin/master` 尚未接收本輪提交，push 待執行。此 handoff 更新尚未提交；除本 handoff 外工作樹無未提交檔案。localized strings 最終淨差異為只新增本功能所需字串，避免整檔格式化 churn。
+- **Git：** branch `master`；source commit `f603742`（功能 `0164474`，字串 diff 收斂 `f603742`），handoff／推送 checkpoint `845fac9d85c7a33c65dfaf002aa60eb9819da6e3` 已直接 push 至 `origin/master`。localized strings 最終淨差異只新增本功能所需字串，避免整檔格式化 churn。此次handoff更新待提交；除此之外工作樹乾淨。
 - **完成：** 明手桌上方四花色牌堆、選花色後展開牌列；合法性仍取自 `PlayerView.legalCards`；Overmark 0.2.0 spotlight 依牌桌實際操作提示叫牌、本人出牌或明手先選花色再選牌；叫品／牌步驟必須等新 PlayerView 明確包含該動作才前進；skip／關閉不改牌局。更新 F68/F69 feature／learning 記錄及 Overmark 授權來源。
 - **已執行：** `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **18/18 PASS**；`flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded --plain-name "tutorial"` **2/2 PASS**；`flutter analyze --no-pub` **No issues found**；`python scripts/check_feature_lessons.py --paths docs/implemented/FEATURES.md docs/implemented/ENGINEERING_NOTES.md` **PASS**；`git diff --check` **PASS**。
 - **失敗／修復：** 第一次完整牌桌測試因 dummy 堆疊過高把 320px 墩牌縮至 41.43px，調低牌堆高度後同檔通過；舊拖曳案例未先選花色而找不到未掛載牌，已調整。教學測試曾在 action gate 尚未 armed 前點擊，增加測試等待後通過；錯用 `Play` 類型的編譯錯已改為 Core `PlayedCard`。Skip 測試一度沿用錯誤起始 version 期望值，改正後完整測試通過。Lesson gate 無參數執行曾回 usage error，補 `--paths` 後 PASS。沒有未解決的測試失敗。
-- **未執行：** 完整 Flutter suite、Web build、Chrome E2E／新畫面截圖、Android/iOS 與真人 QA 未執行。未改 CI workflow。新功能尚未 commit/push，故新 SHA CI URL／狀態 **NOT RUN／無 URL**；不得沿用舊 SHA 的綠燈。
-- **接續：** 提交本 handoff 更新後，最後查 quota並直接 push `master`（禁止 force push），再查新 SHA CI。CI 若有失敗，只修本輪可重現的相關項目，不擴成全量測試維護。
+- **未執行：** 完整 Flutter suite、Web build、Chrome E2E／新畫面截圖、Android/iOS 與真人 QA 未執行。未改 CI workflow。推送後讀取 SHA `845fac9d85c7a33c65dfaf002aa60eb9819da6e3` 的 GitHub Checks：`analyze-test-build` 與 `Real ChromeDriver end-to-end (demo, not BEN)` **in_progress**（[run 40807812878](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40807812878)）；`Real BEN + Flutter Chrome UI` **in_progress**（[run 40807812820](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40807812820)）；`feature-learning` **success**（[run 40807812911](https://github.com/KuroNekoLi/Bridge-Academy/actions/runs/40807812911)）。這些是 GitHub 自動觸發工作，不代表本次本地執行；不要把 in_progress 說成 PASS。
+- **接續：** handoff 更新提交後直接 push `master`（禁止 force push）；若要核對新 handoff-only SHA，查該 SHA 的 GitHub Checks。CI 若有失敗，只修本輪可重現的相關項目，不擴成全量測試維護。失敗／影像證據仍未查，Android/iOS 與真人 QA 保持 HOLD。
 - **風險／回退：** Overmark 0.2.0 是較新、採用度有限的 MIT Flutter overlay 套件；來源與退回 Flutter `OverlayEntry` 方案記於 `RESEARCH_REPORTS.md`。本輪未改 Core／Gateway schema／存檔，無資料遷移；以本功能 commit 的 `git revert <sha>` 回退，勿 reset 或 force push。裝置 QA／release 仍 HOLD。
 
 ## V3 新睿風格 UI 任務狀態（2026-10-29；更新 10:21 Asia/Taipei）
