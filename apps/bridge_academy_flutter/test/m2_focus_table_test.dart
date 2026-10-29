@@ -332,7 +332,7 @@ void main() {
     );
   }
 
-  for (final width in [320.0, 1280.0]) {
+  for (final width in [320.0, 360.0, 390.0, 430.0, 1280.0]) {
     testWidgets('M2-F62 dummy is above table and own hand below at $width', (
       tester,
     ) async {
