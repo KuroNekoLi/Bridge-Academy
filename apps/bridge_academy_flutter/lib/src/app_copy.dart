@@ -16,8 +16,9 @@ class AppCopy {
   String dealer(String code) => '${t('dealer')}: ${seat(code)}';
   String vulnerability(String name) =>
       '${t('vulnerability')}: ${t('vul_$name')}';
-  String formatTurn(String? code) =>
-      code == null ? t('noTurn') : '${t('turn')}: ${seat(code)}';
+  String formatTurn(String? code) => code == null
+      ? t('noTurn')
+      : '${t('turn')}: ${seat(code)}';
   String replayProgress(int index, int total) =>
       '${t('replayStep')}: $index / $total';
   String replayWinner(String seatCode) =>
@@ -56,19 +57,16 @@ class AppCopy {
   String accessibleCard(String code, {required bool playable}) =>
       '${t(playable ? 'playableCard' : 'notPlayableCard')}: ${cardName(code)}';
 
-  String seatSummary(
-    String code, {
-    required bool active,
-    required bool viewer,
-    required bool dummy,
-    required int remaining,
-  }) => [
-    seat(code),
-    if (viewer) t('yourSeat'),
-    if (dummy) t('dummy'),
-    if (active) t('activeSeat'),
-    this.remaining(remaining),
-  ].join(', ');
+  String seatSummary(String code,
+      {required bool active, required bool viewer,
+      required bool dummy, required int remaining}) =>
+      [
+        seat(code),
+        if (viewer) t('yourSeat'),
+        if (dummy) t('dummy'),
+        if (active) t('activeSeat'),
+        this.remaining(remaining),
+      ].join(', ');
 
   static const Map<String, List<String>> _strings = {
     'biddingPaused': ['叫牌暫停中', 'Bidding is paused'],
@@ -76,10 +74,7 @@ class AppCopy {
     'confirmCall': ['確認叫牌', 'Confirm'],
     'submittingCall': ['正在送出叫品…', 'Submitting call…'],
     'moreBidLevels': ['展開更高階叫品', 'Show higher levels'],
-    'callMeaningUnknown': [
-      '尚未提供此叫品的已驗證說明。',
-      'A verified meaning for this call is not available.',
-    ],
+    'callMeaningUnknown': ['尚未提供此叫品的已驗證說明。', 'A verified meaning for this call is not available.'],
     'awaitingCall': ['等待此座位叫牌', 'Waiting for this seat to call'],
     'emptySuit': ['空門', 'Void'],
     'tutorialHelp': ['牌桌操作教學', 'Table tutorial'],
@@ -116,10 +111,7 @@ class AppCopy {
     'confirmPlay': ['確認出牌', 'Play card'],
     'wideHand': ['切換寬牌列', 'Use wider card targets'],
     'fanHand': ['切換扇形手牌', 'Show fan hand'],
-    'selectPlayHint': [
-      '點牌抬起查看，再點一次或按確認出牌；也可長按拖曳。',
-      'Tap to lift a card, then tap again or confirm. Hold to drag.',
-    ],
+    'selectPlayHint': ['點牌抬起查看，再點一次或按確認出牌；也可長按拖曳。', 'Tap to lift a card, then tap again or confirm. Hold to drag.'],
     'focusDragHint': [
       '點擊合法牌，或長按拖到牌桌中央；放在桌外即可取消。',
       'Tap a legal card, or hold and drag it to the table. Drop outside to cancel.',
@@ -177,10 +169,7 @@ class AppCopy {
     'licenses': ['開源授權', 'Open-source licenses'],
     'handScrollHint': ['左右滑動查看所有手牌', 'Scroll sideways to see all cards'],
     'replaceDealTitle': ['放棄目前牌局？', 'Leave this deal?'],
-    'replaceDealBody': [
-      '這副牌尚未完成。重新發牌會取代目前進度。',
-      'This deal is unfinished. Dealing again will replace your current progress.',
-    ],
+    'replaceDealBody': ['這副牌尚未完成。重新發牌會取代目前進度。', 'This deal is unfinished. Dealing again will replace your current progress.'],
     'keepDeal': ['繼續目前牌局', 'Keep playing'],
     'replaceDeal': ['放棄並重新發牌', 'Leave and deal again'],
     'title': ['Bridge Academy｜橋牌學院', 'Bridge Academy'],
@@ -224,7 +213,10 @@ class AppCopy {
     ],
     'b3ProfileLabel': ['叫牌約定版本', 'Convention profile'],
     'b3PreviewToggle': ['預覽新約定', 'Preview proposed agreements'],
-    'b3Unreviewed': ['教學草稿・未經專家審核', 'Educational draft · not expert-reviewed'],
+    'b3Unreviewed': [
+      '教學草稿・未經專家審核',
+      'Educational draft · not expert-reviewed',
+    ],
     'b3PreviewDisclaimer': [
       '預覽僅提供約定語義，不影響示範 Bot 或 BEN 的叫牌，亦不保證牌力。',
       'Preview only: no changes to the demo bot or BEN, and no guarantee of hand strength.',
@@ -276,10 +268,7 @@ class AppCopy {
     ],
     'justDeclareDeclarer': ['莊家', 'Declarer'],
     'justDeclareDummy': ['明手座位', 'Dummy seat'],
-    'justDeclareWonTricks': [
-      '莊家方已贏墩數／定約目標',
-      'Declarer tricks / contract target',
-    ],
+    'justDeclareWonTricks': ['莊家方已贏墩數／定約目標', 'Declarer tricks / contract target'],
     'justDeclareMade': ['練習成功：完成定約', 'Practice success: contract made'],
     'justDeclareDown': ['練習未達標：定約宕掉', 'Practice result: contract defeated'],
     'webCheckpointCaution': [
@@ -335,14 +324,8 @@ class AppCopy {
     'practiceFourCompleted': ['已完成副數', 'Deals completed'],
     'practiceFourHumanScore': ['練習累積分（玩家視角）', 'Practice net score (your side)'],
     'practiceFourNext': ['進入下一副練習牌', 'Next practice board'],
-    'practiceFourFinished': [
-      '四副牌練習完成！可從歷史牌局逐副複盤。',
-      'Four boards finished! Review each deal in History.',
-    ],
-    'practiceFourCurrent': [
-      '正在練習中；完成本副後可進入下一副。',
-      'Playing this board; finish it to continue.',
-    ],
+    'practiceFourFinished': ['四副牌練習完成！可從歷史牌局逐副複盤。', 'Four boards finished! Review each deal in History.'],
+    'practiceFourCurrent': ['正在練習中；完成本副後可進入下一副。', 'Playing this board; finish it to continue.'],
     'practiceFourScope': [
       '四副不同隨機發牌，顯示原始 Duplicate 得分加總；不是 MP、IMP 或賽事排名。',
       'Four fresh deals, sum of raw duplicate scores only; not MP, IMP or a ranking.',
@@ -442,15 +425,9 @@ class AppCopy {
     'ddsUnavailable': ['此環境沒有可用 DDS 引擎。', 'DDS unavailable on this runtime.'],
     'ddsLoading': ['分析中…', 'Analyzing…'],
     'ddsError': ['分析失敗，沒有產生推測資料。', 'Analysis failed; no fabricated results.'],
-    'ddsNotFinished': [
-      '必須先完成 13 墩牌局；Pass Out 不支援。',
-      'A full 13-trick board is required; Pass Out is unsupported.',
-    ],
+    'ddsNotFinished': ['必須先完成 13 墩牌局；Pass Out 不支援。', 'A full 13-trick board is required; Pass Out is unsupported.'],
     'ddsResult': ['起始 52 張之雙明手可取得墩數', 'Double-dummy tricks at initial deal'],
-    'ddsCaveat': [
-      '假設看見全部四家手牌；不是當時資訊條件下的最佳打法或逐張建議。',
-      'Assumes all four hands are known, not information-limited optimal play or card-by-card advice.',
-    ],
+    'ddsCaveat': ['假設看見全部四家手牌；不是當時資訊條件下的最佳打法或逐張建議。', 'Assumes all four hands are known, not information-limited optimal play or card-by-card advice.'],
     'ddsDeclarer': ['莊家', 'Declarer'],
     'ddsSolverVersion': ['DDS 版本', 'DDS version'],
     'replaySameBoard': ['重打同一副牌', 'Replay same board'],
@@ -504,16 +481,16 @@ class AppCopy {
     'currentTrick': ['本墩出牌', 'Current trick'],
     'historyOpen': ['歷史牌局', 'Deal history'],
     'historyClose': ['收起歷史', 'Close history'],
-    'historySearch': ["搜尋牌號、定約、分數或座位", "Search board, contract, score or seat"],
-    'historyFilter': ["篩選牌局", "Filter deals"],
-    'historyFilterAll': ["全部牌局", "All deals"],
-    'historyFilterContracts': ["有定約", "Contract deals"],
-    'historyFilterPassOut': ["四家不叫", "Pass Out"],
-    'historyFilterPractice': ["練習牌局", "Practice deals"],
-    'historyNoResults': ["沒有符合條件的牌局。", "No matching deals."],
-    'historyPage': ["頁數", "Page"],
-    'historyPagePrevious': ["上一頁", "Previous page"],
-    'historyPageNext': ["下一頁", "Next page"],
+    'historySearch': ["搜尋牌號、定約、分數或座位","Search board, contract, score or seat"],
+    'historyFilter': ["篩選牌局","Filter deals"],
+    'historyFilterAll': ["全部牌局","All deals"],
+    'historyFilterContracts': ["有定約","Contract deals"],
+    'historyFilterPassOut': ["四家不叫","Pass Out"],
+    'historyFilterPractice': ["練習牌局","Practice deals"],
+    'historyNoResults': ["沒有符合條件的牌局。","No matching deals."],
+    'historyPage': ["頁數","Page"],
+    'historyPagePrevious': ["上一頁","Previous page"],
+    'historyPageNext': ["下一頁","Next page"],
     'historyExportTitle': ['匯出已完成牌局 PBN', 'Export completed deal PBN'],
     'historyExportWarning': [
       'PBN 含這副已完成牌局的四家完整手牌、叫牌與結果。確認後會複製到系統剪貼簿，其他應用程式可能讀取，請只分享給信任的人。',
@@ -521,14 +498,8 @@ class AppCopy {
     ],
     'historyExportCancel': ['取消', 'Cancel'],
     'historyExportConfirm': ['了解，複製 PBN', 'Copy PBN'],
-    'historyExportSuccess': [
-      '已複製完整牌局 PBN 到剪貼簿',
-      'Completed deal PBN copied to clipboard',
-    ],
-    'historyExportFailure': [
-      '無法匯出 PBN，請稍後重試。',
-      'Could not export PBN. Please retry.',
-    ],
+    'historyExportSuccess': ['已複製完整牌局 PBN 到剪貼簿', 'Completed deal PBN copied to clipboard'],
+    'historyExportFailure': ['無法匯出 PBN，請稍後重試。', 'Could not export PBN. Please retry.'],
     'historyImportTitle': ['匯入已完成牌局 PBN', 'Import completed PBN'],
     'historyImportWarning': [
       '僅支援已完成的一副牌局，需包含 Deal、完整 Auction 與 13 墩 Play（或四家 Pass）。匯入資料含四家手牌，只儲存於本機加密歷史，不會傳送給 BEN。',
@@ -537,33 +508,19 @@ class AppCopy {
     'historyImportHint': ['貼上完整 PBN', 'Paste complete PBN'],
     'historyImportCancel': ['取消匯入', 'Cancel import'],
     'historyImportConfirm': ['檢查並匯入', 'Validate and import'],
-    'historyImportSuccess': [
-      '牌局已匯入，可從歷史列表開啟複盤。',
-      'Deal imported. Open it from history to review.',
-    ],
-    'historyImportFailure': [
-      'PBN 無效、重複，或本機儲存失敗；未新增牌局。',
-      'PBN is invalid, duplicated, or could not be stored. No deal was added.',
-    ],
-    'errorHistoryImport': [
-      'PBN 無法通過橋牌規則及計分驗證，或加密歷史儲存失敗。',
-      'PBN failed bridge-rule/score validation or encrypted history storage.',
-    ],
-    'errorHistoryDuplicate': [
-      '這副已完成牌局已有相同的歷史紀錄。',
-      'This completed deal already exists in history.',
-    ],
-    'historyDeleteTitle': ["刪除這副牌局？", "Delete this deal?"],
-    'historyDeleteWarning': [
-      "此動作將永久刪除此副歷史紀錄及複盤資料，不會中斷目前的牌局，也無法復原。",
-      "This permanently deletes this saved deal and its replay. Your current game is unaffected. This cannot be undone.",
-    ],
-    'historyDeleteCancel': ["取消", "Cancel"],
-    'historyDeleteConfirm': ["確認刪除", "Delete deal"],
-    'errorHistoryDelete': [
-      "無法刪除歷史牌局，請稍後重試。",
-      "Could not delete the saved deal. Please retry.",
-    ],
+    'historyImportSuccess': ['牌局已匯入，可從歷史列表開啟複盤。',
+      'Deal imported. Open it from history to review.'],
+    'historyImportFailure': ['PBN 無效、重複，或本機儲存失敗；未新增牌局。',
+      'PBN is invalid, duplicated, or could not be stored. No deal was added.'],
+    'errorHistoryImport': ['PBN 無法通過橋牌規則及計分驗證，或加密歷史儲存失敗。',
+      'PBN failed bridge-rule/score validation or encrypted history storage.'],
+    'errorHistoryDuplicate': ['這副已完成牌局已有相同的歷史紀錄。',
+      'This completed deal already exists in history.'],
+    'historyDeleteTitle': ["刪除這副牌局？","Delete this deal?"],
+    'historyDeleteWarning': ["此動作將永久刪除此副歷史紀錄及複盤資料，不會中斷目前的牌局，也無法復原。","This permanently deletes this saved deal and its replay. Your current game is unaffected. This cannot be undone."],
+    'historyDeleteCancel': ["取消","Cancel"],
+    'historyDeleteConfirm': ["確認刪除","Delete deal"],
+    'errorHistoryDelete': ["無法刪除歷史牌局，請稍後重試。","Could not delete the saved deal. Please retry."],
     'historyTitle': ['已完成的牌局', 'Completed deals'],
     'historyStatsTitle': ['近期牌局統計', 'Recent deal statistics'],
     'historyStatsScope': [
@@ -577,22 +534,16 @@ class AppCopy {
     'historyStatsPassOut': ['四家不叫', 'Pass Outs'],
     'historyStatsPractice': ['固定練習', 'Practice'],
     'historyStatsHumanScore': ['玩家視角累積分', 'Your net duplicate score'],
-    'historyEmpty': [
-      '還沒有完成的牌局，先打一副牌吧。',
-      'No finished boards yet. Play a deal to start your history.',
-    ],
+    'historyEmpty': ['還沒有完成的牌局，先打一副牌吧。',
+      'No finished boards yet. Play a deal to start your history.'],
     'historyReplayTitle': ['歷史牌局複盤', 'Replay saved deal'],
     'historyPractice': ['固定練習', 'Practice deal'],
     'historyPassOut': ['四家不叫', 'Pass out'],
     'historyRetry': ['重新儲存歷史', 'Retry saving history'],
-    'errorHistorySave': [
-      '已完成牌局，但歷史封存失敗。可重新儲存，切勿清除本機資料。',
-      'Board finished, but saving history failed. Retry without clearing local data.',
-    ],
-    'errorHistoryLoad': [
-      '無法讀取歷史牌局，先檢查本機儲存設定。',
-      'Could not read deal history. Check local storage settings.',
-    ],
+    'errorHistorySave': ['已完成牌局，但歷史封存失敗。可重新儲存，切勿清除本機資料。',
+      'Board finished, but saving history failed. Retry without clearing local data.'],
+    'errorHistoryLoad': ['無法讀取歷史牌局，先檢查本機儲存設定。',
+      'Could not read deal history. Check local storage settings.'],
     'replayTitle': ['牌局歷史回放', 'Deal replay'],
     'replayStep': ['事件步驟', 'Event step'],
     'replayStart': ['牌局開始（尚未叫牌）', 'Deal started (before auction)'],
@@ -605,10 +556,8 @@ class AppCopy {
     'nsScore': ['南北方分數', 'North–South score'],
     'end': ['牌局結算', 'Deal result'],
     'passOut': ['四家 Pass Out，0 分', 'Four passes: Pass Out, 0 points'],
-    'errorInvalid': [
-      '操作未被橋牌規則接受，請重新選擇。',
-      'The bridge rules rejected that action. Choose again.',
-    ],
+    'errorInvalid': ['操作未被橋牌規則接受，請重新選擇。',
+      'The bridge rules rejected that action. Choose again.'],
     'restoringGame': ['正在恢復上次牌局…', 'Restoring saved game…'],
     'restoredGame': ['已恢復上次牌局', 'Saved board restored'],
     'retrySave': ['重試儲存', 'Retry saving'],
@@ -617,31 +566,19 @@ class AppCopy {
       'The latest save was damaged. An older valid backup was restored. Recent bids or plays may be missing. Review the board before continuing.',
     ],
     'ackRecoveredCheckpoint': ['了解風險，繼續牌局', 'I understand, continue'],
-    'errorSave': [
-      '牌局尚未成功儲存，請重試後繼續。',
-      'Board could not be saved. Retry before continuing.',
-    ],
-    'errorStorage': [
-      '無法讀取本機牌局。可選擇開始新牌局。',
-      'Could not read local save. You can start a new board.',
-    ],
-    'errorCorruptSave': [
-      '舊牌局格式不支援或資料有誤，可開始新牌局。',
-      'Saved board is unsupported or invalid. Start a new board.',
-    ],
-    'errorBot': [
-      '無法完成電腦回合。檢查 BEN 服務或重試。',
-      'Could not complete the computer turn. Check BEN or retry.',
-    ],
+    'errorSave': ['牌局尚未成功儲存，請重試後繼續。',
+      'Board could not be saved. Retry before continuing.'],
+    'errorStorage': ['無法讀取本機牌局。可選擇開始新牌局。',
+      'Could not read local save. You can start a new board.'],
+    'errorCorruptSave': ['舊牌局格式不支援或資料有誤，可開始新牌局。',
+      'Saved board is unsupported or invalid. Start a new board.'],
+    'errorBot': ['無法完成電腦回合。檢查 BEN 服務或重試。',
+      'Could not complete the computer turn. Check BEN or retry.'],
     'retry': ['重試電腦回合', 'Retry computer turn'],
-    'demoNotice': [
-      '示範模式使用測試 Bot（不是 BEN），可選固定或隨機發牌。',
-      'Demo uses a test bot (NOT BEN), with fixed or shuffled deals.',
-    ],
-    'liveNotice': [
-      '真 BEN 模式需要可連線的 BEN API，手牌只送往受信任服務。',
-      'Live BEN mode requires a reachable, trusted BEN API.',
-    ],
+    'demoNotice': ['示範模式使用測試 Bot（不是 BEN），可選固定或隨機發牌。',
+      'Demo uses a test bot (NOT BEN), with fixed or shuffled deals.'],
+    'liveNotice': ['真 BEN 模式需要可連線的 BEN API，手牌只送往受信任服務。',
+      'Live BEN mode requires a reachable, trusted BEN API.'],
     'gatewayConventionNotice': [
       '開局前選擇南北／東西搭檔制度；每局開始後固定，精準制尚未開放。',
       'Choose NS/EW bidding systems before starting; profiles remain fixed. Precision is not available yet.',
@@ -651,48 +588,21 @@ class AppCopy {
       'Research only: native BBA interprets both auctions and estimates suit lengths; heuristic cardplay is not a competitive AI.',
     ],
     'm4Export': ['複製草稿備份', 'Copy draft backup'],
-    'm4ExportDone': [
-      '已複製本機草稿備份；這不是 AI 引擎核准。',
-      'Local draft copied; this is not AI engine approval.',
-    ],
+    'm4ExportDone': ['已複製本機草稿備份；這不是 AI 引擎核准。', 'Local draft copied; this is not AI engine approval.'],
     'm4ExportFailed': ['無法複製草稿備份。', 'Failed to copy draft backup.'],
     'm4Import': ['從剪貼簿匯入', 'Import from clipboard'],
     'm4ImportTitle': ['確認匯入草稿歷史', 'Confirm draft history import'],
-    'm4ImportConfirm': [
-      '僅接受與本機版本歷史相符的新版本。匯入後仍不可直接用於 AI 對局。',
-      'Only matching forward revisions are accepted. Imported drafts cannot be used in AI games.',
-    ],
-    'm4ImportInvalid': [
-      '草稿格式、指紋或內容無效；未修改現有資料。',
-      'Invalid draft data or fingerprint; existing data unchanged.',
-    ],
-    'm4ImportConflict': [
-      '備份與本機版本分岔或較舊；未覆蓋現有資料。',
-      'Backup is older or divergent; local revisions unchanged.',
-    ],
-    'm4ImportSame': [
-      '草稿版本相同，無需匯入。',
-      'Draft revision is identical; no import needed.',
-    ],
-    'm4ImportDone': [
-      '草稿版本已匯入並保存。仍未取得 AI 引擎支援。',
-      'Draft revision imported; AI engine support remains unverified.',
-    ],
+    'm4ImportConfirm': ['僅接受與本機版本歷史相符的新版本。匯入後仍不可直接用於 AI 對局。', 'Only matching forward revisions are accepted. Imported drafts cannot be used in AI games.'],
+    'm4ImportInvalid': ['草稿格式、指紋或內容無效；未修改現有資料。', 'Invalid draft data or fingerprint; existing data unchanged.'],
+    'm4ImportConflict': ['備份與本機版本分岔或較舊；未覆蓋現有資料。', 'Backup is older or divergent; local revisions unchanged.'],
+    'm4ImportSame': ['草稿版本相同，無需匯入。', 'Draft revision is identical; no import needed.'],
+    'm4ImportDone': ['草稿版本已匯入並保存。仍未取得 AI 引擎支援。', 'Draft revision imported; AI engine support remains unverified.'],
     'm4Cancel': ['取消', 'Cancel'],
     'm4Confirm': ['確認匯入', 'Confirm import'],
     'm4PreviewTitle': ['草稿叫牌含義預覽', 'Draft auction meaning preview'],
-    'm4PreviewUnknown': [
-      '目前草稿未定義此叫牌；不知道 AI 將如何理解。',
-      'This draft does not define the call; AI interpretation is unknown.',
-    ],
-    'm4PreviewUnverified': [
-      '僅顯示使用者編輯的含義，非 BEN／BBA 叫牌證據。',
-      'User-authored meaning only, not BEN/BBA evidence.',
-    ],
-    'm4EvidenceMissing': [
-      '引擎證據不足：自訂項目不可用於正式對局。',
-      'No engine evidence: customized rules cannot be played.',
-    ],
+    'm4PreviewUnknown': ['目前草稿未定義此叫牌；不知道 AI 將如何理解。', 'This draft does not define the call; AI interpretation is unknown.'],
+    'm4PreviewUnverified': ['僅顯示使用者編輯的含義，非 BEN／BBA 叫牌證據。', 'User-authored meaning only, not BEN/BBA evidence.'],
+    'm4EvidenceMissing': ['引擎證據不足：自訂項目不可用於正式對局。', 'No engine evidence: customized rules cannot be played.'],
     'm4ReviewTitle': ['專家驗證待辦', 'Expert validation checklist'],
     'm4ReviewTasks': ['待審情境數', 'Review scenarios'],
     'm4ReviewTarget': ['專家金標目標', 'Expert golden target'],
@@ -702,13 +612,14 @@ class AppCopy {
     ],
     'm4ReviewCopy': ['複製待審清單', 'Copy review checklist'],
     'm4ReviewCopied': ['已複製待審清單（不含手牌）', 'Copied review checklist (no cards)'],
-    'm4DiffHeading': ['版本修改紀錄', 'Revision change history'],
+    'm4DiffHeading': [
+      '版本修改紀錄', 'Revision change history',
+    ],
     'm4DiffBefore': ['修改前', 'Before'],
     'm4DiffAfter': ['修改後', 'After'],
     'm4DiffNone': ['未設定', 'Not set'],
     'm4DiffNoChanges': [
-      '這兩個版本的約定設定相同。',
-      'These revisions have the same rule selections.',
+      '這兩個版本的約定設定相同。', 'These revisions have the same rule selections.',
     ],
     'm4DiffUnverified': [
       '這是草稿設定差異，不代表 BEN 或 BBA 的 AI 行為差異。',
@@ -762,10 +673,7 @@ class AppCopy {
       'Stored on this device/browser only; not account sync or engine approval.',
     ],
     'm4Revision': ['草稿版本', 'Draft revision'],
-    'm4BaseOnly': [
-      '基礎制度未修改；不是新 AI 制度。',
-      'Base unchanged; not a new AI system.',
-    ],
+    'm4BaseOnly': ['基礎制度未修改；不是新 AI 制度。', 'Base unchanged; not a new AI system.'],
     'm4Unsupported': [
       '引擎相容性：未驗證（不可用於 AI 對局）',
       'Engine compatibility: unverified (not playable)',
@@ -773,10 +681,7 @@ class AppCopy {
     'm4Save': ['儲存新版本', 'Save revision'],
     'm4Remove': ['移除這項約定', 'Remove this convention'],
     'm4Auction': ['要修改的叫牌位置', 'Auction rule to customize'],
-    'm4Corrupt': [
-      '草稿資料無法驗證；未自動覆蓋舊資料。',
-      'Draft cannot be verified; existing data was not overwritten.',
-    ],
+    'm4Corrupt': ['草稿資料無法驗證；未自動覆蓋舊資料。', 'Draft cannot be verified; existing data was not overwritten.'],
     'm4SaveFailed': ['儲存失敗；未變更 AI 制度。', 'Save failed; AI system unchanged.'],
     'm4slot_oneNotrumpOpening': ['1NT 開叫點力', '1NT opening HCP range'],
     'm4slot_twoClubsOverOneNotrump': ['1NT–Pass–2♣', '1NT–Pass–2♣'],
@@ -789,10 +694,7 @@ class AppCopy {
     'm4choice_NATURAL': ['自然叫品', 'Natural bid'],
     'm4choice_TRANSFER_HEARTS': ['轉移到紅心', 'Transfer to hearts'],
     'm4choice_TRANSFER_SPADES': ['轉移到黑桃', 'Transfer to spades'],
-    'gatewaySystemLegacy': [
-      '現有 BEN（未確認制度）',
-      'Existing BEN (system unverified)',
-    ],
+    'gatewaySystemLegacy': ['現有 BEN（未確認制度）', 'Existing BEN (system unverified)'],
     'gatewaySystem21GF': ['2/1 進局迫叫', '2/1 Game Force'],
     'gatewaySystemSAYC': ['SAYC 標準黃卡', 'SAYC Standard American'],
     'gatewaySystemPrecisionResearch': [
@@ -850,3 +752,4 @@ class AppCopy {
     'notStarted': ['選擇座位及對手，開始練習。', 'Choose your seat and opponents.'],
   };
 }
+
