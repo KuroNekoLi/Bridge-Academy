@@ -15,8 +15,9 @@ Future<void> tapComponent(WidgetTester tester, String key) async {
 }
 
 void main() {
-  testWidgets('A3.1 header, seat, trick components preserve board metadata',
-      (tester) async {
+  testWidgets('A3.1 header, seat, trick components preserve board metadata', (
+    tester,
+  ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await session.newGame(boardNumber: 2, humanSeat: Seat.east);
@@ -38,8 +39,9 @@ void main() {
     expect(find.text('Vulnerability: N/S vulnerable'), findsOneWidget);
   });
 
-  testWidgets('A3.1 extracted cards keep Dummy action ownership and keys',
-      (tester) async {
+  testWidgets('A3.1 extracted cards keep Dummy action ownership and keys', (
+    tester,
+  ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -50,6 +52,10 @@ void main() {
     expect(find.byType(BridgePlayingCardButton), findsWidgets);
     final card = session.view!.legalCards.first;
     final oldVersion = session.view!.version;
+    await tapComponent(tester, 'focus_dummy_suit_${card.suit.name}');
+    final dummyId = session.view!.contract!.dummy.letter;
+    expect(find.byKey(Key('focus_${dummyId}_dummy_suits')), findsNothing);
+    expect(find.byKey(Key('focus_${dummyId}_dummy_choices')), findsOneWidget);
     await tapComponent(tester, 'dummy_card_${card.code}');
     expect(session.view!.version, greaterThan(oldVersion));
   });

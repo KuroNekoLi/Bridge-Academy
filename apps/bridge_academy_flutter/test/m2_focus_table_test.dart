@@ -70,9 +70,10 @@ void main() {
     Future<void> show() =>
         showTable(tester, state, onPlay: (card) => submitted = card);
     await show();
-    final legalSuits = b.PlayerView.forSeat(state, b.Seat.south).legalCards
-        .map((card) => card.suit)
-        .toSet();
+    final legalSuits = b.PlayerView.forSeat(
+      state,
+      b.Seat.south,
+    ).legalCards.map((card) => card.suit).toSet();
     expect(legalSuits.length, lessThan(4));
     final semanticsHandle = tester.ensureSemantics();
     for (final suit in b.Suit.values) {
@@ -99,6 +100,14 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('focus_N_dummy_choices')), findsNothing);
     expect(state.version, 1);
+    final legalSuit = legalSuits.first;
+    await tester.tap(find.byKey(Key('focus_dummy_suit_${legalSuit.name}')));
+    await tester.pump();
+    expect(find.byKey(const Key('focus_N_dummy_suits')), findsNothing);
+    expect(find.byKey(const Key('focus_N_dummy_choices')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('focus_N_show_all_suits')));
+    await tester.pump();
+    expect(find.byKey(const Key('focus_N_dummy_suits')), findsOneWidget);
     semanticsHandle.dispose();
     await tester.tap(find.byKey(const Key('focus_tutorial')));
     for (var frame = 0; frame < 5; frame++) {

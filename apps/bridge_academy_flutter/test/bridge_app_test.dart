@@ -13,8 +13,9 @@ Future<void> tapVisible(WidgetTester tester, String key) async {
 }
 
 void main() {
-  testWidgets('Traditional Chinese default and English language switch',
-      (tester) async {
+  testWidgets('Traditional Chinese default and English language switch', (
+    tester,
+  ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -27,8 +28,9 @@ void main() {
     expect(find.text('開始新牌局'), findsOneWidget);
   });
 
-  testWidgets('demo is visibly not BEN; hidden hands never rendered',
-      (tester) async {
+  testWidgets('demo is visibly not BEN; hidden hands never rendered', (
+    tester,
+  ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -40,8 +42,7 @@ void main() {
     expect(session.view!.ownCards.length, 13);
   });
 
-  testWidgets('four passes show final result without cards',
-      (tester) async {
+  testWidgets('four passes show final result without cards', (tester) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -52,8 +53,9 @@ void main() {
     expect(session.view!.completedTricks, isEmpty);
   });
 
-  testWidgets('make bid -> demo lead -> exposed dummy card is playable',
-      (tester) async {
+  testWidgets('make bid -> demo lead -> exposed dummy card is playable', (
+    tester,
+  ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -61,14 +63,19 @@ void main() {
     await tapVisible(tester, 'make_bid');
     expect(session.view!.dummyExposed, true);
     expect(find.byKey(const Key('dummy_revealed')), findsOneWidget);
-    final chosen = session.view!.legalCards.first.code;
+    final chosenCard = session.view!.legalCards.first;
     final before = session.view!.version;
-    await tapVisible(tester, 'dummy_card_$chosen');
+    await tapVisible(tester, 'focus_dummy_suit_${chosenCard.suit.name}');
+    final dummyId = session.view!.contract!.dummy.letter;
+    expect(find.byKey(Key('focus_${dummyId}_dummy_suits')), findsNothing);
+    expect(find.byKey(Key('focus_${dummyId}_dummy_choices')), findsOneWidget);
+    await tapVisible(tester, 'dummy_card_${chosenCard.code}');
     expect(session.view!.version, greaterThan(before));
   });
 
-  testWidgets('illegal X is disabled, game stays on same version',
-      (tester) async {
+  testWidgets('illegal X is disabled, game stays on same version', (
+    tester,
+  ) async {
     final session = BridgeSession();
     addTearDown(session.dispose);
     await tester.pumpWidget(BridgeAcademyApp(session: session));
@@ -76,7 +83,9 @@ void main() {
     await tapVisible(tester, 'double');
     expect(session.view!.version, 0);
     expect(find.byKey(const Key('error_message')), findsNothing);
-    expect(tester.widget<OutlinedButton>(find.byKey(const Key('double'))).onPressed, isNull);
+    expect(
+      tester.widget<OutlinedButton>(find.byKey(const Key('double'))).onPressed,
+      isNull,
+    );
   });
 }
-

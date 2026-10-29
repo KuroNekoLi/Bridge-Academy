@@ -78,6 +78,7 @@ class AppCopy {
     'awaitingCall': ['等待此座位叫牌', 'Waiting for this seat to call'],
     'emptySuit': ['空門', 'Void'],
     'legalDummySuit': ['可從此花色出牌', 'Playable suit'],
+    'showAllSuits': ['返回所有花色', 'Show all suits'],
     'tutorialHelp': ['牌桌操作教學', 'Table tutorial'],
     'tutorialBidTitle': ['選擇叫品', 'Choose a call'],
     'tutorialBidMessage': [

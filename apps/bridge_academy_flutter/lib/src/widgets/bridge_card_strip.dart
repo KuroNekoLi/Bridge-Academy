@@ -71,14 +71,14 @@ class _BridgeCardStripState extends State<BridgeCardStrip> {
           child: SizedBox(
             key: Key('${widget.id}_card_strip'),
             width: width,
-            height: widget.compactFan ? 120 : 100,
+            height: widget.compactFan ? 148 : 100,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: widget.compactFan ? 20 : 0,
+                  top: widget.compactFan ? 32 : 0,
                   height: 100,
                   child: FlatCardFan(
                     children: [
@@ -86,14 +86,23 @@ class _BridgeCardStripState extends State<BridgeCardStrip> {
                         Transform.translate(
                           offset: Offset(
                             0,
-                            6 *
-                                    (index - middle) *
-                                    (index - middle) /
-                                    (middle * middle) -
-                                3,
+                            widget.compactFan
+                                ? 25 *
+                                          (index - middle) *
+                                          (index - middle) /
+                                          (middle * middle) -
+                                      12
+                                : 6 *
+                                          (index - middle) *
+                                          (index - middle) /
+                                          (middle * middle) -
+                                      3,
                           ),
                           child: Transform.rotate(
-                            angle: (index - middle) / middle * .08,
+                            angle:
+                                (index - middle) /
+                                middle *
+                                (widget.compactFan ? .50 : .08),
                             child: widget.selectedIndex == index
                                 ? const SizedBox(width: 68, height: 92)
                                 : cards[index],
@@ -108,7 +117,13 @@ class _BridgeCardStripState extends State<BridgeCardStrip> {
                     left: selected * (width - 68) / (cards.length - 1),
                     top: 0,
                     width: 68,
-                    child: cards[selected],
+                    child: Transform.rotate(
+                      angle:
+                          (selected - middle) /
+                          middle *
+                          (widget.compactFan ? .38 : .08),
+                      child: cards[selected],
+                    ),
                   ),
               ],
             ),

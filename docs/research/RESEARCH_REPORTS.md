@@ -230,3 +230,9 @@ BidBox移植直接叫品、最低合法階4階窗口／高階展開、所有Call
 ### M2-F69 教學遮罩套件評估（2026-10-29）
 
 採用 `overmark 0.2.0`（MIT；[pub.dev 套件與版本](https://pub.dev/packages/overmark)、[授權](https://pub.dev/packages/overmark/license)、[GitHub 原始碼](https://github.com/Firdan16/overmark)）做 spotlight 與 action-gated 教學外殼。其 action step 能讓 spotlight 洞口接收原控制項輸入，並由宿主在真實操作完成後呼叫 `completeAction`；符合叫牌與出牌不能因單純點擊／送出 callback 就視為 Core 接受的需求。已釘版本並在 app dependency lock；未複製套件原始碼或資產。套件是新且採用度有限，這次只採用其教學 overlay，不依賴其狀態持久化；若套件 API 不適用，可退回 Flutter `OverlayEntry`，維持同一個投影 ack gate。此套件不是規則、牌面或 hand-fan 引擎。
+
+### M2-F71 Flutter 牌面套件實際整合（2026-10-30）
+
+依 Reuse First，使用 lockfile 中的 `playing_cards 0.4.1+11` `PlayingCardView` 呈現完整牌面，`BridgeCardFace` 只轉換已授權 Core card；FlatCardFan 繼續處理手牌排列。本次把標準桌與專注桌的明手流程統一為四欄花色總覽 → 單一花色完整牌列 → 返回總覽，玩家扇形手牌也共用。
+
+這是元件與互動整合，不是程式碼逐行移植 Nickel，也不宣稱與 BBO／新睿畫面相同。套件 Apache-2.0 授權只說明套件程式碼；其內附 Wikimedia 圖像的個別授權仍需釋出盤點。本次定向互動測試 28/28 PASS；analyzer、Web/Chrome、遠端 CI 與 owner-held 裝置 QA 未執行。

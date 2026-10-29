@@ -207,3 +207,9 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 莊家控制明手時，四個花色欄依 `PlayerView.legalCards` 顯示可操作狀態：可出的花色以高亮邊框與勾記提示，不能跟出的非空花色淡化；語意標籤同時讀出「可從此花色出牌」。大字體時花色標頭可省略小勾記並以省略號限制文字寬度，完整花色／合法狀態保留在語意標籤，避免窄欄溢位。這只改善提示，不改 Core 合法判定或遊戲狀態。
 
 在 [專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart) 驗證合法集合與語意啟用旗標相同、勾記只出現在合法花色；點擊非法花色不展開且不改牌局版本；也保留明手位置、出牌和大字體案例。最終本地 **21/21 PASS**、Flutter analyzer **No issues found**；此 SHA 的 CI 狀態與連結記在 [CURRENT_HANDOFF](../planning/CURRENT_HANDOFF.md)。狀態 **ENGINEERING_PASS（scoped）／LESSON_DELIVERED**；本地測試不等於真人 UX 驗收，裝置 QA 仍 HOLD。
+
+## M2-F71｜共用明手選花色與套件牌面
+
+一般牌桌與專注牌桌共用 `BridgeDummySuitPicker`：先顯示四個花色堆疊，點選後只呈現該花色完整牌列，可返回總覽。莊家控制明手時，只有 `PlayerView.legalCards` 有牌的花色可以展開；牌張仍由既有 action callback 送入 Core 驗證。玩家手牌兩種桌型都使用緊湊 FlatCardFan，窄牌扇的首次點選只選牌，獨立確認才出牌。牌面一律經 `BridgeCardFace` 轉換至 `playing_cards 0.4.1+11` 的完整 `PlayingCardView`，不再用舊的自繪 rank/suit 牌面。
+
+已執行定向 Flutter 測試：`flutter test --no-pub test/m2_focus_table_test.dart test/a3_table_components_test.dart test/bridge_app_test.dart --reporter expanded`，**28/28 PASS**；覆蓋兩種桌型的花色切換、返回、牌面互動及既有專注桌路徑。Analyzer、Web/Chrome、遠端 CI 或裝置 QA 本次未執行；Android/iOS QA 仍 HOLD。套件 Apache-2.0 程式授權不代表內附 Wikimedia 圖像權利已完成判定，正式發行前仍需素材盤點。狀態 **ENGINEERING_PASS（定向互動範圍）／LESSON_DELIVERED**；PRACTICED／MASTERED 需使用者實際練習確認。

@@ -19,13 +19,6 @@ class BridgeCardDrag {
   final bridge.Card card;
 }
 
-String _dummySuitSymbol(Suit suit) => switch (suit) {
-  Suit.spades => '♠',
-  Suit.hearts => '♥',
-  Suit.clubs => '♣',
-  Suit.diamonds => '♦',
-};
-
 /// Focused viewport, driven by an authorized projection. No Session or Deal.
 class BridgeFocusTable extends StatefulWidget {
   const BridgeFocusTable({
@@ -406,216 +399,34 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
       );
 
   Widget _dummyHand(Seat owner, List<bridge.Card> sorted) {
-    const suits = [Suit.spades, Suit.hearts, Suit.clubs, Suit.diamonds];
-    final selectedSuit = _selectedDummySuit;
-    final choices = selectedSuit == null
-        ? const <bridge.Card>[]
-        : sorted.where((card) => card.suit == selectedSuit).toList();
-    return Column(
-      key: Key('focus_${owner.letter}_dummy_hand'),
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        KeyedSubtree(
-          key: _dummySuitsAnchor,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final columnWidth = constraints.maxWidth / suits.length;
-              final cardWidth = (columnWidth - 6).clamp(36.0, 46.0).toDouble();
-              final cardHeight = cardWidth * 84 / 58;
-              // Keep the four suit stacks shallow enough to protect the central
-              // trick area on short mobile viewports; the selected suit expands
-              // into full cards below.
-              const overlap = 20.0;
-              return Row(
-                key: Key('focus_${owner.letter}_dummy_suits'),
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (final suit in suits)
-                    Expanded(
-                      child: _dummySuitColumn(
-                        owner: owner,
-                        suit: suit,
-                        cards: sorted
-                            .where((card) => card.suit == suit)
-                            .toList(),
-                        width: columnWidth,
-                        cardWidth: cardWidth,
-                        cardHeight: cardHeight,
-                        overlap: overlap,
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-        ),
-        if (selectedSuit != null && choices.isNotEmpty)
-          KeyedSubtree(
-            key: _dummyChoicesAnchor,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: BridgeCardStrip(
-                key: Key('focus_${owner.letter}_dummy_choices'),
-                centerWhenFits: true,
-                id: 'focus_${owner.letter}_dummy_choice',
-                copy: widget.copy,
-                children: [
-                  for (final card in choices)
-                    _draggable(
-                      BridgeCardDrag(widget.view.version, owner, card),
-                    ),
-                ],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _dummySuitColumn({
-    required Seat owner,
-    required Suit suit,
-    required List<bridge.Card> cards,
-    required double width,
-    required double cardWidth,
-    required double cardHeight,
-    required double overlap,
-  }) {
-    final selected = _selectedDummySuit == suit;
-    final hasLegalCard = cards.any(widget.view.legalCards.contains);
     final isDummyAction =
         widget.view.phase == Phase.play &&
         widget.view.canAct &&
         !widget.actionsPaused &&
         _submittedVersion != widget.view.version &&
         widget.view.turn == owner;
-    final canSelect = isDummyAction && hasLegalCard;
-    final dimmed = isDummyAction && cards.isNotEmpty && !hasLegalCard;
-    final suitLabel = widget.copy.t(switch (suit) {
-      Suit.spades => 'suitS',
-      Suit.hearts => 'suitH',
-      Suit.diamonds => 'suitD',
-      Suit.clubs => 'suitC',
-    });
-    return Semantics(
-      key: Key('focus_dummy_suit_semantics_${suit.name}'),
-      label:
-          '$suitLabel, ${widget.copy.remaining(cards.length)}'
-          '${canSelect ? ', ${widget.copy.t('legalDummySuit')}' : ''}',
-      button: true,
-      selected: selected,
-      enabled: canSelect,
-      child: Tooltip(
-        message: '$suitLabel · ${cards.length}',
-        child: InkWell(
-          key: Key('focus_dummy_suit_${suit.name}'),
-          borderRadius: BorderRadius.circular(8),
-          onTap: canSelect
-              ? () {
-                  setState(() => _selectedDummySuit = selected ? null : suit);
-                  if (_tutorial?.isAwaitingAction == true && !selected) {
-                    _tutorial!.completeAction();
-                  }
-                }
-              : null,
-          child: Opacity(
-            opacity: dimmed ? .42 : 1,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: selected
-                    ? const Color(0xFFB7E85B).withValues(alpha: .18)
-                    : canSelect
-                    ? const Color(0xFF70D9CA).withValues(alpha: .1)
-                    : Colors.transparent,
-                border: Border.all(
-                  color: selected
-                      ? const Color(0xFFB7E85B)
-                      : canSelect
-                      ? const Color(0xFF70D9CA)
-                      : Colors.white24,
-                  width: canSelect || selected ? 2 : 1,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            child: SizedBox(
-              width: width,
-              height:
-                  24 +
-                  (cards.isEmpty
-                      ? 0
-                      : cardHeight + (cards.length - 1) * overlap),
-              child: Stack(
-                clipBehavior: Clip.hardEdge,
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 22,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${_dummySuitSymbol(suit)}  ${cards.length}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color:
-                                  suit == Suit.hearts ||
-                                      suit == Suit.diamonds
-                                  ? const Color(0xFFFF8990)
-                                  : Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        if (canSelect &&
-                            MediaQuery.textScalerOf(context).scale(14) <= 19)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 2),
-                            child: Icon(
-                              Icons.check_circle,
-                              key: Key(
-                                'focus_dummy_legal_suit_${suit.name}',
-                              ),
-                              color: const Color(0xFF70D9CA),
-                              size: 12,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  if (cards.isEmpty)
-                    Positioned.fill(
-                      top: 22,
-                      child: Center(
-                        child: Text(
-                          widget.copy.t('emptySuit'),
-                          style: const TextStyle(color: Colors.white60),
-                        ),
-                      ),
-                    ),
-                  for (var index = 0; index < cards.length; index++)
-                    Positioned(
-                      left: (width - cardWidth) / 2,
-                      top: 22 + index * overlap,
-                      width: cardWidth,
-                      height: cardHeight,
-                      child: IgnorePointer(
-                        child: BridgeCardFace(
-                          card: cards[index],
-                          prominentIndex: true,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            ),
-          ),
-        ),
+    return KeyedSubtree(
+      key: Key('focus_${owner.letter}_dummy_hand'),
+      child: BridgeDummySuitPicker(
+        id: 'focus_${owner.letter}',
+        owner: owner,
+        cards: sorted,
+        legalCards: widget.view.legalCards,
+        canAct: isDummyAction,
+        copy: widget.copy,
+        selectedSuit: _selectedDummySuit,
+        onSuitSelected: (suit) {
+          final advancingTutorial =
+              suit != null &&
+              _tutorial?.isAwaitingAction == true &&
+              _selectedDummySuit == null;
+          setState(() => _selectedDummySuit = suit);
+          if (advancingTutorial) _tutorial!.completeAction();
+        },
+        cardBuilder: (card) =>
+            _draggable(BridgeCardDrag(widget.view.version, owner, card)),
+        suitsAnchor: _dummySuitsAnchor,
+        expandedAnchor: _dummyChoicesAnchor,
       ),
     );
   }
@@ -632,7 +443,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
         child: SizedBox(
           width: 58,
           height: 84,
-          child: BridgeCardFace(card: drag.card, prominentIndex: true),
+          child: BridgeCardFace(card: drag.card),
         ),
       ),
       childWhenDragging: Opacity(
@@ -640,13 +451,11 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
         child: SizedBox(
           width: 64,
           height: 92,
-          child: BridgeCardFace(card: drag.card, prominentIndex: true),
+          child: BridgeCardFace(card: drag.card),
         ),
       ),
       child: BridgePlayingCardButton(
         dragEnabled: true,
-        prominentIndex:
-            !(_selected?.card == drag.card && _selected?.owner == drag.owner),
         card: drag.card,
         prefix: 'focus_card_${drag.owner.letter}_',
         copy: widget.copy,

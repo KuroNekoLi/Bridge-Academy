@@ -190,3 +190,13 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 替代方案是只保留目前的點擊停用行為，或在 Flutter UI 重算跟牌規則；前者仍讓玩家猜測，後者會複製 Bridge Core 規則。採用同一份 `PlayerView.legalCards` 作視覺、輸入與輔助技術狀態，保留 Core 作唯一權威。改動位於 `bridge_focus_table.dart`、`app_copy.dart`，回歸位於 `m2_focus_table_test.dart`。已執行 `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **21/21 PASS**，驗證非法花色點擊不展開／不變更版本；`flutter analyze --no-pub` **No issues found**；曾發現並修正大字體下標頭橫向溢位，最終回歸已通過。遠端 CI 依新 SHA 狀態記於 CURRENT_HANDOFF；真人操作與裝置 QA 未執行。
 
 **5–15 分鐘練習：** 在 `_dummySuitColumn` 找出 `hasLegalCard`、`isDummyAction` 與 `dimmed` 三個狀態，說明為什麼「有牌可跟」和「現在輪到我且可以操作」要分開計算。再看測試如何用 `PlayerView.legalCards` 對照 `SemanticsFlags.isEnabled`，而不自行重寫橋牌規則。
+
+## M2-F71｜兩種牌桌共用明手選花色與套件牌面
+
+**情境與改動：** 使用者指出明手應先以四個花色堆疊摘要呈現；點某花色後，其他花色必須完全隱藏，只看該組完整牌面。一般桌與專注桌先前有不同互動，現在都使用 `BridgeDummySuitPicker`，花色選擇和返回路徑一致。自己的手牌也在兩種桌型使用緊湊 FlatCardFan。`BridgeCardFace` 是 Core `Card` 至 `playing_cards.PlayingCard` 的單向 adapter，再使用套件 `PlayingCardView` 畫點數、花色符號及人頭牌；它不發牌、不判定合法性、不讀取其他座位手牌。原 action callback 和 Core 驗證保持權威。
+
+**替代方案與邊界：** 不再沿用自繪點數／單一大花色牌面，也不複製 Nickel 的 React runtime；採用研究已核對版本的 Flutter 元件。`card_game` 拖放 probe 有已記錄的相容性缺口，本次沒有引進。`playing_cards` Apache-2.0 package license 與內附 Wikimedia 圖像各自授權是兩件事；工程驗證不代表正式素材權利已放行。明手資料仍限於揭露後的 scoped `PlayerView`。
+
+**驗證與回退：** 已執行 `flutter test --no-pub test/m2_focus_table_test.dart test/a3_table_components_test.dart test/bridge_app_test.dart --reporter expanded`，**28/28 PASS**。`flutter analyze`、Web/Chrome、CI、Android/iOS QA 本次未執行。回退以本功能變更的 `git revert`；無存檔或 API schema 遷移。人工視覺驗收與套件圖像 release inventory 尚未完成。
+
+**5–15 分鐘練習：** 在一般桌及專注桌各選一次明手花色，確認展開後只有該花色、返回後四組恢復；再找到 `BridgeDummySuitPicker` 的 `legalCards` 判斷，說明 UI 為何只表達操作意圖，而實際出牌仍需 Core 接受。狀態 ENGINEERING_PASS（scoped）／LESSON_DELIVERED；PRACTICED／MASTERED 待實際練習。
