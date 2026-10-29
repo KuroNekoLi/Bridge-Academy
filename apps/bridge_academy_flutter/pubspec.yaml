@@ -10,6 +10,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   playing_cards: 0.4.1+11
+  overmark: 0.2.0
   bridge_conventions:
     path: ../../packages/bridge_conventions
   bridge_core:

@@ -191,3 +191,13 @@ Intended game: four-player contract bridge, initially Duplicate scoring. Consult
 新增共享 [BridgeAuctionGrid](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_auction_grid.dart)：N/E/S/W固定欄頭、dealer首列前補空格、本人★、活動欄與待叫?、最後叫品高亮、內部捲到最新列；用於一般桌／專注桌／歷史對話框。叫品可點開查看公開座位與叫品；尚無可信制度解釋時明示未提供驗證說明，不冒用上游SAYC語義。一般字體於375px歷史對話框完整呈現4欄，大字體保留橫捲。
 
 來源是Nickel pinned AuctionGrid的排列／捲動／inspect契約，未複製TSX/CSS/資產。既有UI及真BEN/Chrome流程改為實際選叫品+確認。新增測試集中於非北dealer、跨列、長叫牌自動捲動、未知說明、窄對話框可見範圍；不新增每尺寸整副牌重播。實際Web初步驗證桌面與375px選取／確認及歷史；最終fresh-origin成品及CI證據見CURRENT_HANDOFF。ENGINEERING_PASS限工程範圍／LESSON_DELIVERED；不是已驗收的制度Coach或Production放行。
+
+## M2-F68｜明手按花色分組，先選花色再選牌
+
+明手位於桌面上方，改以四欄花色堆疊呈現；選取花色後才展開該組完整牌面。只有 Core `PlayerView.legalCards` 中有牌的花色可操作，明手出牌仍透過原 `_play` 驗證。緊湊重疊高度為中央墩牌保留可讀空間；小螢幕及 320px 墩牌尺寸回歸均在 [專注桌測試](../../apps/bridge_academy_flutter/test/m2_focus_table_test.dart)。本地目前專注桌案例 **16/16 PASS**。檔案：[BridgeFocusTable](../../apps/bridge_academy_flutter/lib/src/widgets/bridge_focus_table.dart)、[AppCopy](../../apps/bridge_academy_flutter/lib/src/app_copy.dart)。ENGINEERING_PASS（scoped）；真人／Android/iOS QA HOLD。
+
+## M2-F69｜叫牌與明手操作教學等待真實動作確認
+
+專注桌新增可略過的 spotlight 教學：叫牌時標示叫牌盒；打牌時標示手牌，若由玩家控制明手則依序要求選合法花色、再選牌。叫品與出牌教學只在新 `PlayerView` version 確認相同 call／card 已進入公開事件後前進；花色步驟僅改 UI 選取，跳過／關閉不改遊戲狀態。以 MIT `overmark 0.2.0` 實作 action gate；來源與限制見 [研究紀錄](../research/RESEARCH_REPORTS.md)。兩個教學互動測試 **2/2 PASS**（只驗 deterministic Core fixture；CI、Web及真人裝置驗收未執行）。ENGINEERING_PASS（scoped）／LESSON_DELIVERED；PRACTICED／MASTERED 待使用者實際操作。
+
+**5–15 分鐘練習：** 在叫牌畫面按燈泡教學，選一個合法叫品但先不更新 `PlayerView`，觀察提示仍停留；再讓 Core 接受叫品，觀察提示才結束。指出 `didUpdateWidget` 如何比對 version 與公開事件。

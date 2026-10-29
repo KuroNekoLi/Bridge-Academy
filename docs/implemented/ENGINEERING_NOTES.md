@@ -170,3 +170,15 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **證據：** 初版full suite226PASS/1FAIL是舊a3_table_components_test要求auction顯示BridgeCurrentTrick；更新為真實grid後227/227PASS。最後窄dialog／權限補強後既有代表檔8/8PASS，analysis0；先前Web releasePASS，最新build與fresh-origin／CI結果見CURRENT_HANDOFF。fixture覆蓋4個dealer的跨列、pending、長歷史最新列及未知說明。沒有以畫面測試推論制度正確或牌力。
 
 **5–15分鐘練習：** 以西家dealer的前5口叫牌手畫4欄，指出首列前3格為何必須留空，再對照測試的auction_call_0與W欄中心。ENGINEERING_PASS限工程驗證／LESSON_DELIVERED，未宣稱PRACTICED／MASTERED。回退用同批功能commit git revert。
+
+## M2-F68／F69｜明手花色選擇與依狀態確認的 spotlight 教學
+
+**操作與資料流：** 明手 `PlayerView.dummyCards` → `sortedVisibleCards` → 四個花色堆疊；點花色只設定 `_selectedDummySuit`，展開該花色的牌列；點牌進入既有 `_play`，仍以暫停、version、viewer、owner、turn、`canAct` 及 Core `legalCards` 驗證。新版本、暫停或 viewer 轉換清除未提交花色。明手測試確認面板在桌上方，自己的手牌在桌下方；牌面堆疊縮短後，320px 墩牌仍達原有最小可讀尺寸。
+
+**教學與確認邊界：** 使用 MIT `overmark 0.2.0` 對叫牌盒、手牌或明手花色／牌列開 action-gated spotlight。叫品／牌的 UI callback 不直接完成教學；記錄提交前 version 與動作，僅在下一個投影 version 增加且公開 auction entry／trick play 完全吻合時呼叫 `completeAction`。選花色是純本地檢視狀態，所以可在實際點擊後繼續；Skip／系統關閉只清本地教學狀態。Core reducer、合法性、PlayerView及事件 schema 未改。
+
+**取捨與常見陷阱：** 重用通用 spotlight action gate，保留原牌桌元件與 callback；沒有照搬 React、改造規則，也不另加教學狀態存檔。不能在 tap handler 立刻把「已送出」當作「已接受」：Gateway／Core 拒絕、失敗或尚未回覆時，提示應停留。明手教學只在明手公開且玩家有權控制時出現；其他回合不暴露手牌或解鎖動作。
+
+**EXECUTED：** `flutter test --no-pub test/m2_focus_table_test.dart --reporter expanded` **18/18 PASS**；同檔 `--plain-name "tutorial"` **2/2 PASS**；`flutter analyze --no-pub` **No issues found**；`python scripts/check_feature_lessons.py --paths docs/implemented/FEATURES.md docs/implemented/ENGINEERING_NOTES.md` **PASS**。教學測試驗證 Core 接受叫品／出牌前提示不前進、接受後結束，skip 不改動遊戲狀態。完整新 SHA CI、Web/Chrome、Android/iOS與真人 QA **NOT RUN**；不可沿用舊 SHA CI 宣稱本次通過。
+
+**5–15 分鐘練習：** 檢查 `BridgeFocusTable.didUpdateWidget` 的 call/card 比對，手動把測試 callback 改成不更新 state，確認教學不會假完成；再用原 Core reducer更新 view。回退以本功能 commit `git revert`，無 schema／存檔遷移。狀態 ENGINEERING_PASS（上述 scoped 行為）／LESSON_DELIVERED；PRACTICED、MASTERED 未驗收。

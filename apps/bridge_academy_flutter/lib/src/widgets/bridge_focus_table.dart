@@ -1,6 +1,7 @@
 import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:bridge_core/bridge_core.dart' as bridge show Card;
 import 'package:flutter/material.dart';
+import 'package:overmark/overmark.dart';
 
 import '../app_copy.dart';
 import 'bridge_bidding_box.dart';
@@ -17,6 +18,13 @@ class BridgeCardDrag {
   final Seat owner;
   final bridge.Card card;
 }
+
+String _dummySuitSymbol(Suit suit) => switch (suit) {
+  Suit.spades => '♠',
+  Suit.hearts => '♥',
+  Suit.clubs => '♣',
+  Suit.diamonds => '♦',
+};
 
 /// Focused viewport, driven by an authorized projection. No Session or Deal.
 class BridgeFocusTable extends StatefulWidget {
@@ -49,8 +57,18 @@ class BridgeFocusTable extends StatefulWidget {
 
 class _BridgeFocusTableState extends State<BridgeFocusTable>
     with SingleTickerProviderStateMixin {
+  final _bidAnchor = GlobalKey(debugLabel: 'focus_tutorial_bid');
+  final _handAnchor = GlobalKey(debugLabel: 'focus_tutorial_hand');
+  final _dummySuitsAnchor = GlobalKey(debugLabel: 'focus_tutorial_suits');
+  final _dummyChoicesAnchor = GlobalKey(debugLabel: 'focus_tutorial_choices');
   int? _submittedVersion;
   BridgeCardDrag? _selected;
+  Suit? _selectedDummySuit;
+  OvermarkController? _tutorial;
+  int? _tutorialVersion;
+  Call? _tutorialCall;
+  bridge.Card? _tutorialCard;
+  Seat? _tutorialCardOwner;
   bool _wideHands = false;
   late final AnimationController _collection;
   Trick? _collected;
@@ -70,8 +88,34 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     super.didUpdateWidget(oldWidget);
     final before = oldWidget.view;
     final after = widget.view;
+    if (_tutorial?.isAwaitingAction == true &&
+        _tutorialVersion == before.version &&
+        after.version > before.version) {
+      final callAccepted =
+          _tutorialCall != null &&
+          after.auction.length > before.auction.length &&
+          after.auction[before.auction.length].call.code == _tutorialCall!.code;
+      final cardAccepted =
+          _tutorialCard != null &&
+          <PlayedCard>[
+            ...after.currentTrick,
+            for (final trick in after.completedTricks) ...trick.plays,
+          ].any(
+            (play) =>
+                play.handOwner == _tutorialCardOwner &&
+                play.card == _tutorialCard,
+          );
+      if (callAccepted || cardAccepted) {
+        _tutorialVersion = null;
+        _tutorialCall = null;
+        _tutorialCard = null;
+        _tutorialCardOwner = null;
+        _tutorial!.completeAction();
+      }
+    }
     if (after.viewer != before.viewer) {
       _selected = null;
+      _selectedDummySuit = null;
       _submittedVersion = null;
       _collected = null;
       _collection.value = 1;
@@ -79,6 +123,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     }
     if (after.version != before.version || widget.actionsPaused) {
       _selected = null;
+      _selectedDummySuit = null;
     }
     if (after.version != before.version ||
         (oldWidget.actionsPaused && !widget.actionsPaused) ||
@@ -125,8 +170,161 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
       _submittedVersion = widget.view.version;
       _selected = null;
     });
+    if (_tutorial?.isAwaitingAction == true) {
+      _tutorialVersion = widget.view.version;
+      _tutorialCard = drag.card;
+      _tutorialCardOwner = drag.owner;
+    }
     widget.onPlayCard(drag.card);
   }
+
+  void _submitCall(Call call) {
+    if (_tutorial?.isAwaitingAction == true) {
+      _tutorialVersion = widget.view.version;
+      _tutorialCall = call;
+    }
+    widget.onSubmitCall(call);
+  }
+
+  Future<void> _startTutorial() async {
+    final view = widget.view;
+    if (widget.actionsPaused || !view.canAct || Overmark.isShowing) return;
+    final steps = <OvermarkStep>[];
+    if (view.phase == Phase.auction) {
+      steps.add(
+        _actionStep(_bidAnchor, 'tutorialBidTitle', 'tutorialBidMessage'),
+      );
+    } else if (view.phase == Phase.play &&
+        view.dummyExposed &&
+        view.contract?.dummy == view.turn &&
+        view.viewer != view.turn) {
+      final legalSuits = {for (final card in view.legalCards) card.suit};
+      if (legalSuits.isEmpty) return;
+      setState(() => _selectedDummySuit = null);
+      steps
+        ..add(
+          _actionStep(
+            _dummySuitsAnchor,
+            'tutorialSuitTitle',
+            'tutorialSuitMessage',
+          ),
+        )
+        ..add(
+          _actionStep(
+            _dummyChoicesAnchor,
+            'tutorialCardTitle',
+            'tutorialCardMessage',
+          ),
+        );
+    } else if (view.phase == Phase.play && view.turn == view.viewer) {
+      steps.add(
+        _actionStep(_handAnchor, 'tutorialCardTitle', 'tutorialCardMessage'),
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(widget.copy.t('tutorialWait'))));
+      return;
+    }
+    final controller = OvermarkController();
+    _tutorial = controller;
+    setState(() {});
+    try {
+      await Overmark.show(
+        context,
+        controller: controller,
+        steps: steps,
+        labels: OvermarkLabels(
+          next: widget.copy.t('tutorialNext'),
+          previous: widget.copy.t('tutorialBack'),
+          skip: widget.copy.t('tutorialSkip'),
+          done: widget.copy.t('tutorialDone'),
+        ),
+        config: const OvermarkConfig(
+          advanceOnBarrierTap: false,
+          showPrevious: false,
+          dismissible: true,
+        ),
+        theme: const OvermarkTheme(
+          spotlightBorderColor: Color(0xFFB7E85B),
+          spotlightBorderWidth: 3,
+          spotlightPulse: true,
+          cardMotion: OvermarkCardMotion.fadeSlide,
+        ),
+      );
+    } finally {
+      if (mounted && identical(_tutorial, controller)) {
+        setState(() {
+          _tutorial = null;
+          _tutorialVersion = null;
+          _tutorialCall = null;
+          _tutorialCard = null;
+          _tutorialCardOwner = null;
+          _selectedDummySuit = null;
+        });
+      }
+    }
+  }
+
+  OvermarkStep _actionStep(
+    GlobalKey anchor,
+    String titleKey,
+    String messageKey,
+  ) => OvermarkStep(
+    anchorKey: anchor,
+    title: widget.copy.t(titleKey),
+    message: widget.copy.t(messageKey),
+    gate: OvermarkStepGate.action,
+    shape: OvermarkShape.rrect,
+    padding: const EdgeInsets.all(4),
+    cardBuilder: (context, details) => Material(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(18),
+      elevation: 8,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.copy.t(titleKey),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(widget.copy.t(messageKey)),
+            if (details.isAwaitingAction) ...[
+              const SizedBox(height: 8),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.touch_app_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  Flexible(child: Text(widget.copy.t('tutorialTapToContinue'))),
+                ],
+              ),
+            ],
+            const SizedBox(height: 12),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              children: [
+                TextButton(
+                  onPressed: details.skip,
+                  child: Text(widget.copy.t('tutorialSkip')),
+                ),
+                if (!details.isAwaitingAction)
+                  FilledButton(
+                    onPressed: details.completeAction,
+                    child: Text(widget.copy.t('tutorialDone')),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 
   Widget _hand(Seat owner, List<bridge.Card> cards, String label) =>
       LayoutBuilder(
@@ -180,26 +378,211 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                   ],
                 ),
               ),
-              BridgeCardStrip(
-                useFan: !_wideHands,
-                compactFan: !_wideHands,
-                selectedIndex: selectedIndex,
-                hintColor: Colors.white70,
-                centerWhenFits: true,
-                id: 'focus_${owner.letter}',
-                copy: widget.copy,
-                children: [
-                  for (final card in sorted)
-                    _draggable(
-                      BridgeCardDrag(widget.view.version, owner, card),
-                      confirm: confirm,
-                    ),
-                ],
-              ),
+              if (owner != widget.view.viewer)
+                _dummyHand(owner, sorted)
+              else
+                KeyedSubtree(
+                  key: _handAnchor,
+                  child: BridgeCardStrip(
+                    useFan: !_wideHands,
+                    compactFan: !_wideHands,
+                    selectedIndex: selectedIndex,
+                    hintColor: Colors.white70,
+                    centerWhenFits: true,
+                    id: 'focus_${owner.letter}',
+                    copy: widget.copy,
+                    children: [
+                      for (final card in sorted)
+                        _draggable(
+                          BridgeCardDrag(widget.view.version, owner, card),
+                          confirm: confirm,
+                        ),
+                    ],
+                  ),
+                ),
             ],
           );
         },
       );
+
+  Widget _dummyHand(Seat owner, List<bridge.Card> sorted) {
+    const suits = [Suit.spades, Suit.hearts, Suit.clubs, Suit.diamonds];
+    final selectedSuit = _selectedDummySuit;
+    final choices = selectedSuit == null
+        ? const <bridge.Card>[]
+        : sorted.where((card) => card.suit == selectedSuit).toList();
+    return Column(
+      key: Key('focus_${owner.letter}_dummy_hand'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        KeyedSubtree(
+          key: _dummySuitsAnchor,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final columnWidth = constraints.maxWidth / suits.length;
+              final cardWidth = (columnWidth - 6).clamp(36.0, 46.0).toDouble();
+              final cardHeight = cardWidth * 84 / 58;
+              // Keep the four suit stacks shallow enough to protect the central
+              // trick area on short mobile viewports; the selected suit expands
+              // into full cards below.
+              const overlap = 20.0;
+              return Row(
+                key: Key('focus_${owner.letter}_dummy_suits'),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final suit in suits)
+                    Expanded(
+                      child: _dummySuitColumn(
+                        owner: owner,
+                        suit: suit,
+                        cards: sorted
+                            .where((card) => card.suit == suit)
+                            .toList(),
+                        width: columnWidth,
+                        cardWidth: cardWidth,
+                        cardHeight: cardHeight,
+                        overlap: overlap,
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+        if (selectedSuit != null && choices.isNotEmpty)
+          KeyedSubtree(
+            key: _dummyChoicesAnchor,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: BridgeCardStrip(
+                key: Key('focus_${owner.letter}_dummy_choices'),
+                centerWhenFits: true,
+                id: 'focus_${owner.letter}_dummy_choice',
+                copy: widget.copy,
+                children: [
+                  for (final card in choices)
+                    _draggable(
+                      BridgeCardDrag(widget.view.version, owner, card),
+                    ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _dummySuitColumn({
+    required Seat owner,
+    required Suit suit,
+    required List<bridge.Card> cards,
+    required double width,
+    required double cardWidth,
+    required double cardHeight,
+    required double overlap,
+  }) {
+    final selected = _selectedDummySuit == suit;
+    final canSelect =
+        widget.view.phase == Phase.play &&
+        widget.view.canAct &&
+        !widget.actionsPaused &&
+        _submittedVersion != widget.view.version &&
+        widget.view.turn == owner &&
+        cards.any(widget.view.legalCards.contains);
+    final suitLabel = widget.copy.t(switch (suit) {
+      Suit.spades => 'suitS',
+      Suit.hearts => 'suitH',
+      Suit.diamonds => 'suitD',
+      Suit.clubs => 'suitC',
+    });
+    return Semantics(
+      label: '$suitLabel, ${widget.copy.remaining(cards.length)}',
+      button: true,
+      selected: selected,
+      enabled: canSelect,
+      child: Tooltip(
+        message: '$suitLabel · ${cards.length}',
+        child: InkWell(
+          key: Key('focus_dummy_suit_${suit.name}'),
+          borderRadius: BorderRadius.circular(8),
+          onTap: canSelect
+              ? () {
+                  setState(() => _selectedDummySuit = selected ? null : suit);
+                  if (_tutorial?.isAwaitingAction == true && !selected) {
+                    _tutorial!.completeAction();
+                  }
+                }
+              : null,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: selected
+                  ? const Color(0xFFB7E85B).withValues(alpha: .18)
+                  : Colors.transparent,
+              border: Border.all(
+                color: selected ? const Color(0xFFB7E85B) : Colors.white24,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: SizedBox(
+              width: width,
+              height:
+                  24 +
+                  (cards.isEmpty
+                      ? 0
+                      : cardHeight + (cards.length - 1) * overlap),
+              child: Stack(
+                clipBehavior: Clip.hardEdge,
+                children: [
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 22,
+                    child: Center(
+                      child: Text(
+                        '${_dummySuitSymbol(suit)}  ${cards.length}',
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: suit == Suit.hearts || suit == Suit.diamonds
+                              ? const Color(0xFFFF8990)
+                              : Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (cards.isEmpty)
+                    Positioned.fill(
+                      top: 22,
+                      child: Center(
+                        child: Text(
+                          widget.copy.t('emptySuit'),
+                          style: const TextStyle(color: Colors.white60),
+                        ),
+                      ),
+                    ),
+                  for (var index = 0; index < cards.length; index++)
+                    Positioned(
+                      left: (width - cardWidth) / 2,
+                      top: 22 + index * overlap,
+                      width: cardWidth,
+                      height: cardHeight,
+                      child: IgnorePointer(
+                        child: BridgeCardFace(
+                          card: cards[index],
+                          prominentIndex: true,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _draggable(BridgeCardDrag drag, {bool confirm = false}) {
     final allowed = _allowed(drag);
@@ -279,7 +662,11 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
       builder: (context, constraints) {
         final arena = constraints.biggest;
         if (widget.view.phase == Phase.auction) {
-          return BridgeAuctionGrid(view: widget.view, copy: widget.copy, height: arena.height);
+          return BridgeAuctionGrid(
+            view: widget.view,
+            copy: widget.copy,
+            height: arena.height,
+          );
         }
         final side = arena.width < 560 ? 58.0 : 92.0;
         final geometry = BridgeTrickGeometry.fit(
@@ -328,12 +715,12 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
               ),
               Center(
                 child: BridgeCurrentTrick(
-                        view: widget.view,
-                        copy: widget.copy,
-                        compact: true,
-                        geometry: geometry,
-                        showHeading: false,
-                      ),
+                  view: widget.view,
+                  copy: widget.copy,
+                  compact: true,
+                  geometry: geometry,
+                  showHeading: false,
+                ),
               ),
               _collectionLayer(geometry, arena),
             ],
@@ -395,9 +782,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                               child: SizedBox(
                                 width: geometry.cardSize.width,
                                 height: geometry.cardSize.height,
-                                child: BridgeCardFace(
-                                  card: play.card,
-                                ),
+                                child: BridgeCardFace(card: play.card),
                               ),
                             ),
                           ),
@@ -464,6 +849,12 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
               _wideHands = !_wideHands;
               _selected = null;
             }),
+          ),
+          IconButton(
+            key: const Key('focus_tutorial'),
+            tooltip: copy.t('tutorialHelp'),
+            icon: const Icon(Icons.lightbulb_outline_rounded),
+            onPressed: _tutorial == null ? _startTutorial : null,
           ),
         ],
         title: Text(
@@ -553,11 +944,14 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                               style: Theme.of(context).textTheme.labelSmall,
                             ),
                           if (view.phase == Phase.auction)
-                            BridgeBiddingBox(
-                              copy: copy,
-                              view: view,
-                              canSubmit: view.canAct && !widget.actionsPaused,
-                              onSubmitCall: widget.onSubmitCall,
+                            KeyedSubtree(
+                              key: _bidAnchor,
+                              child: BridgeBiddingBox(
+                                copy: copy,
+                                view: view,
+                                canSubmit: view.canAct && !widget.actionsPaused,
+                                onSubmitCall: _submitCall,
+                              ),
                             ),
                           if (view.phase == Phase.finished)
                             Text(

@@ -226,3 +226,7 @@ BBO、新睿、BBO Trainer 可以當作練習分類、牌桌操作與玩家旅�
 **來源：** Nickel Bridge `92a81b5e81cb7aac2eabc147e82f18e0040b512e`，`web/src/components/game/BidBox.tsx`、`AuctionGrid.tsx`。本輪已實作成熟互動契約，不再只停留研究。新Flutter BridgeBiddingBox／BridgeAuctionGrid的檔頭有來源指引；沒有複製TSX/CSS/圖像，也無新第三方runtime。Owner修改授權聲明沿用；這不替模型、DDS、其他圖像授權作保證。
 
 BidBox移植直接叫品、最低合法階4階窗口／高階展開、所有Call先選再確認、等待整盒鎖與過期狀態清除；適配Flutter以固定短viewport內捲避免手機dock長高。合法集合不是上游規則，而由本專案Core同一validator產生，不改投影JSON。AuctionGrid移植N/E/S/W四欄、dealer padding、pending/本人、固定header、最新列追蹤、公開call inspector；最新call以背景高亮，未照搬上游逐口動畫排程或SAYC意義。第三方素材inventory仍是獨立待辦。實際測試／CI與限制以F66/F67工程導讀及CURRENT_HANDOFF為準；舊「尚未實作」段落是前一配額checkpoint，非現況。
+
+### M2-F69 教學遮罩套件評估（2026-10-29）
+
+採用 `overmark 0.2.0`（MIT；[pub.dev 套件與版本](https://pub.dev/packages/overmark)、[授權](https://pub.dev/packages/overmark/license)、[GitHub 原始碼](https://github.com/Firdan16/overmark)）做 spotlight 與 action-gated 教學外殼。其 action step 能讓 spotlight 洞口接收原控制項輸入，並由宿主在真實操作完成後呼叫 `completeAction`；符合叫牌與出牌不能因單純點擊／送出 callback 就視為 Core 接受的需求。已釘版本並在 app dependency lock；未複製套件原始碼或資產。套件是新且採用度有限，這次只採用其教學 overlay，不依賴其狀態持久化；若套件 API 不適用，可退回 Flutter `OverlayEntry`，維持同一個投影 ack gate。此套件不是規則、牌面或 hand-fan 引擎。
