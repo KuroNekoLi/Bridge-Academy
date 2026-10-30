@@ -695,6 +695,7 @@ class BridgePlayingCardButton extends StatelessWidget {
     required this.busy,
     required this.onTap,
     this.dragEnabled = false,
+    this.fanVisual = false,
   });
   final bridge.Card card;
   final String prefix;
@@ -703,6 +704,7 @@ class BridgePlayingCardButton extends StatelessWidget {
   final bool busy;
   final VoidCallback onTap;
   final bool dragEnabled;
+  final bool fanVisual;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -724,12 +726,14 @@ class BridgePlayingCardButton extends StatelessWidget {
           padding: const EdgeInsets.all(2),
           minimumSize: const Size(48, 48),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
-          side: BorderSide(
-            color: legal && !busy
-                ? Theme.of(context).colorScheme.primary
-                : const Color(0xFF9BAAA2),
-            width: legal && !busy ? 2 : 1,
-          ),
+          side: fanVisual
+              ? BorderSide.none
+              : BorderSide(
+                  color: legal && !busy
+                      ? Theme.of(context).colorScheme.primary
+                      : const Color(0xFF9BAAA2),
+                  width: legal && !busy ? 2 : 1,
+                ),
         ),
         // Preserve text geometry when legality changes mid-bot turn.
         child: SizedBox(
@@ -738,19 +742,20 @@ class BridgePlayingCardButton extends StatelessWidget {
           child: Stack(
             children: [
               Positioned.fill(child: BridgeCardFace(card: card)),
-              Positioned(
-                right: 2,
-                bottom: 2,
-                child: ExcludeSemantics(
-                  child: Icon(
-                    legal && !busy ? Icons.check_circle : Icons.lock_outline,
-                    size: 16,
-                    color: legal && !busy
-                        ? Theme.of(context).colorScheme.primary
-                        : const Color(0xFF62746A),
+              if (!fanVisual)
+                Positioned(
+                  right: 2,
+                  bottom: 2,
+                  child: ExcludeSemantics(
+                    child: Icon(
+                      legal && !busy ? Icons.check_circle : Icons.lock_outline,
+                      size: 16,
+                      color: legal && !busy
+                          ? Theme.of(context).colorScheme.primary
+                          : const Color(0xFF62746A),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

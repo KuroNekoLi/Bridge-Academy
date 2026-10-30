@@ -390,6 +390,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
                         _draggable(
                           BridgeCardDrag(widget.view.version, owner, card),
                           confirm: confirm,
+                          fanVisual: !_wideHands,
                         ),
                     ],
                   ),
@@ -432,7 +433,11 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     );
   }
 
-  Widget _draggable(BridgeCardDrag drag, {bool confirm = false}) {
+  Widget _draggable(
+    BridgeCardDrag drag, {
+    bool confirm = false,
+    bool fanVisual = false,
+  }) {
     final allowed = _allowed(drag);
     return LongPressDraggable<BridgeCardDrag>(
       key: Key('focus_drag_${drag.owner.letter}_${drag.card.code}'),
@@ -462,6 +467,7 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
         copy: widget.copy,
         legal: allowed,
         busy: widget.actionsPaused,
+        fanVisual: fanVisual,
         onTap: () {
           if (confirm &&
               (_selected?.card != drag.card ||
@@ -661,6 +667,79 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
               : MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 2,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        '${widget.copy.contract(view.contract?.label ?? widget.copy.t('notYet'))} · ${widget.copy.boardNumber(widget.boardNumber)}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        widget.copy.trickCount(view.completedTricks.length),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      Text(
+                        widget.copy.dealer(view.dealer.letter),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      Text(
+                        widget.copy.vulnerability(view.vulnerability.name),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      Text(
+                        widget.modeLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  key: const Key('focus_hand_layout'),
+                  visualDensity: VisualDensity.compact,
+                  tooltip: widget.copy.t(_wideHands ? 'fanHand' : 'wideHand'),
+                  color: Colors.white,
+                  icon: Icon(
+                    _wideHands ? Icons.style : Icons.view_carousel_outlined,
+                  ),
+                  onPressed: () => setState(() {
+                    _wideHands = !_wideHands;
+                    _selected = null;
+                  }),
+                ),
+                IconButton(
+                  key: const Key('focus_tutorial'),
+                  visualDensity: VisualDensity.compact,
+                  tooltip: widget.copy.t('tutorialHelp'),
+                  color: Colors.white,
+                  icon: const Icon(Icons.lightbulb_outline_rounded),
+                  onPressed: _tutorial == null ? _startTutorial : null,
+                ),
+              ],
+            ),
+            if (widget.error != null)
+              Wrap(
+                children: [
+                  Text(widget.error!, key: const Key('focus_error')),
+                  if (widget.onRetry != null)
+                    TextButton(
+                      key: const Key('focus_retry'),
+                      onPressed: widget.onRetry,
+                      child: Text(widget.copy.t('focusRetry')),
+                    ),
+                ],
+              ),
+            if (widget.actionsPaused) const LinearProgressIndicator(),
             if (view.dummyExposed &&
                 view.dummyCards != null &&
                 view.contract!.dummy != view.viewer)
@@ -674,6 +753,23 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
             else
               Expanded(child: _arena()),
             _hand(view.viewer, view.ownCards, widget.copy.t('cards')),
+            if (view.completedTricks.isNotEmpty)
+              Text(
+                widget.copy.replayWinner(
+                  view.completedTricks.last.winner.letter,
+                ),
+                style: const TextStyle(color: Colors.white70),
+              ),
+            if (view.phase == Phase.play)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.copy.t(
+                    _wideHands ? 'focusDragHint' : 'selectPlayHint',
+                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 11),
+                ),
+              ),
           ],
         ),
       ),
@@ -685,30 +781,6 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
     final view = widget.view;
     final copy = widget.copy;
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            key: const Key('focus_hand_layout'),
-            tooltip: copy.t(_wideHands ? 'fanHand' : 'wideHand'),
-            icon: Icon(_wideHands ? Icons.style : Icons.view_carousel_outlined),
-            onPressed: () => setState(() {
-              _wideHands = !_wideHands;
-              _selected = null;
-            }),
-          ),
-          IconButton(
-            key: const Key('focus_tutorial'),
-            tooltip: copy.t('tutorialHelp'),
-            icon: const Icon(Icons.lightbulb_outline_rounded),
-            onPressed: _tutorial == null ? _startTutorial : null,
-          ),
-        ],
-        title: Text(
-          '${copy.contract(view.contract?.label ?? copy.t('notYet'))} · ${copy.boardNumber(widget.boardNumber)}',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -719,103 +791,40 @@ class _BridgeFocusTableState extends State<BridgeFocusTable>
               key: const Key('focus_viewport'),
               child: SizedBox(
                 height: fallback ? null : constraints.maxHeight,
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1240),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                Text(
-                                  copy.trickCount(view.completedTricks.length),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(copy.dealer(view.dealer.letter)),
-                                const SizedBox(width: 12),
-                                Text(
-                                  copy.vulnerability(view.vulnerability.name),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            widget.modeLabel,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                          if (widget.error != null)
-                            Wrap(
-                              children: [
-                                Text(
-                                  widget.error!,
-                                  key: const Key('focus_error'),
-                                ),
-                                if (widget.onRetry != null)
-                                  TextButton(
-                                    key: const Key('focus_retry'),
-                                    onPressed: widget.onRetry,
-                                    child: Text(copy.t('focusRetry')),
-                                  ),
-                              ],
-                            ),
-                          if (widget.actionsPaused)
-                            const LinearProgressIndicator(),
-                          const SizedBox(height: 6),
-                          KeyedSubtree(
-                            key: const Key('bridge_board'),
-                            child: fallback
-                                ? _tableSurface(arenaHeight: large ? 500 : 260)
-                                : Expanded(child: _tableSurface()),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.textScalerOf(context).scale(24),
-                            child: view.completedTricks.isEmpty
-                                ? const SizedBox.shrink()
-                                : Text(
-                                    copy.replayWinner(
-                                      view.completedTricks.last.winner.letter,
-                                    ),
-                                  ),
-                          ),
-                          if (view.phase == Phase.play)
-                            Text(
-                              copy.t(
-                                _wideHands ? 'focusDragHint' : 'selectPlayHint',
-                              ),
-                              style: Theme.of(context).textTheme.labelSmall,
-                            ),
-                          if (view.phase == Phase.auction)
-                            KeyedSubtree(
-                              key: _bidAnchor,
-                              child: BridgeBiddingBox(
-                                copy: copy,
-                                view: view,
-                                canSubmit: view.canAct && !widget.actionsPaused,
-                                onSubmitCall: _submitCall,
-                              ),
-                            ),
-                          if (view.phase == Phase.finished)
-                            KeyedSubtree(
-                              key: const Key('focus_result_container'),
-                              child: Text(
-                                view.nsScore == null
-                                    ? copy.t('passOut')
-                                    : copy.score(view.nsScore!),
-                                key: const Key('focus_result'),
-                              ),
-                            ),
-                          if (widget.sessionActions != null)
-                            widget.sessionActions!,
-                        ],
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      KeyedSubtree(
+                        key: const Key('bridge_board'),
+                        child: fallback
+                            ? _tableSurface(arenaHeight: large ? 500 : 260)
+                            : Expanded(child: _tableSurface()),
                       ),
-                    ),
+                      if (view.phase == Phase.auction)
+                        KeyedSubtree(
+                          key: _bidAnchor,
+                          child: BridgeBiddingBox(
+                            copy: copy,
+                            view: view,
+                            canSubmit: view.canAct && !widget.actionsPaused,
+                            onSubmitCall: _submitCall,
+                          ),
+                        ),
+                      if (view.phase == Phase.finished)
+                        KeyedSubtree(
+                          key: const Key('focus_result_container'),
+                          child: Text(
+                            view.nsScore == null
+                                ? copy.t('passOut')
+                                : copy.score(view.nsScore!),
+                            key: const Key('focus_result'),
+                          ),
+                        ),
+                      if (widget.sessionActions != null) widget.sessionActions!,
+                    ],
                   ),
                 ),
               ),

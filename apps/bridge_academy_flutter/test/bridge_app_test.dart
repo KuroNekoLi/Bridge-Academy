@@ -82,6 +82,32 @@ void main() {
     expect(session.view!.version, greaterThan(before));
   });
 
+  testWidgets('M2-F75 active table fills desktop width under app shell', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1900, 865);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final session = BridgeSession();
+    addTearDown(session.dispose);
+    await tester.pumpWidget(BridgeAcademyApp(session: session));
+    await tapVisible(tester, 'new_game');
+    await tapVisible(tester, 'make_bid');
+
+    final table = find.byKey(const Key('focus_table_surface'));
+    expect(table, findsOneWidget);
+    expect(tester.getRect(table).width, greaterThan(1850));
+    expect(find.byKey(const Key('workspace_navigation')), findsOneWidget);
+    final view = session.view!;
+    final handCard = find.byKey(
+      Key('focus_card_${view.viewer.letter}_${view.ownCards.first.code}'),
+    );
+    final cardButton = tester.widget<OutlinedButton>(handCard);
+    expect(cardButton.style?.side?.resolve(const {})?.style, BorderStyle.none);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('illegal X is disabled, game stays on same version', (
     tester,
   ) async {

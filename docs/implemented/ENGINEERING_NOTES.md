@@ -228,3 +228,11 @@ Flutter 將打牌、學院、複盤、我的分開；現有遊戲跨頁保留。
 **驗證：** `flutter test --no-pub test/bridge_app_test.dart --plain-name "make bid -> demo lead -> exposed dummy card is playable" --reporter expanded` **1/1 PASS**；案例尺寸 1245×718，斷言牌桌存在、活動牌局不顯示開局面板且無 layout exception。`flutter analyze --no-pub`（相關 source files）**No issues found**。無 Core／資料遷移；以本功能 commit `git revert` 回退。ENGINEERING_PASS／LESSON_DELIVERED。
 
 **5–15 分鐘練習：** 在 1245×718 測試視窗開始牌局並完成叫牌，確認桌面仍顯示，且沒有開局練習面板或 overflow stripe。
+
+## M2-F75｜牌桌資訊內嵌與扇形牌面清框
+
+**實作與邊界：** `BridgeFocusTable` 移除桌外重複 metadata/status 列與內層 AppBar，讓既有根 AppBar／NavigationBar 保留，綠色桌面擴展至剩餘空間。牌桌表面上緣顯示合約、牌號、已完成墩數、發牌者、局況與模式；錯誤／重試與暫停進度也留在桌內。`BridgePlayingCardButton.fanVisual` 在放射扇形模式關閉按鈕描邊與角標，牌面、語意及 action callback 不變。Bridge Core 仍是合法行動與私有手牌資料唯一權威。
+
+**驗證／回退：** `flutter test --no-pub test/bridge_app_test.dart --plain-name "M2-F75 active table fills desktop width under app shell" --reporter expanded` **1/1 PASS**（1900px 寬、桌面寬度、根導覽及無扇形外框）；`flutter analyze --no-pub lib/src/widgets/bridge_focus_table.dart lib/src/widgets/bridge_table_components.dart` **No issues found**。Feature lesson gate、CI、瀏覽器目視與 Android/iOS QA 尚未執行；裝置 QA 仍 HOLD。沒有 Core／存檔／API 遷移，可用本功能變更的 `git revert` 回退。ENGINEERING_PASS（定向桌面佈局）／LESSON_DELIVERED；PRACTICED／MASTERED 尚待使用者實際練習。
+
+**5–15 分鐘練習：** 在 `BridgeFocusTable._tableSurface` 找出桌內 metadata 與 `fanVisual` 的條件式樣式；說明為什麼只隱藏視覺外框，仍保留按鈕語意和出牌 callback。
