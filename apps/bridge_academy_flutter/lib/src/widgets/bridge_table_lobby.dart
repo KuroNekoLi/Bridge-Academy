@@ -11,6 +11,7 @@ import 'bridge_history_section.dart';
 import 'bridge_completed_sections.dart';
 import 'bridge_daily_practice_section.dart';
 import 'bridge_practice_launcher.dart';
+import 'bridge_practice_selection.dart';
 import 'bridge_practice_result_panels.dart';
 
 /// Practice and history workspace, including the narrow/legacy table fallback.
