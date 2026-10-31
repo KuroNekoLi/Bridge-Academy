@@ -1,4 +1,3 @@
-import 'package:bridge_core/bridge_core.dart' hide Card;
 import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
@@ -115,7 +114,7 @@ class BridgePracticeLauncher extends StatelessWidget {
               ? null
               : () {
                   selection.setMode(OpponentMode.demo);
-                   selection.setBoard(BoardMode.fresh);
+                  selection.setBoard(BoardMode.fresh);
                   session.startDailyPractice(humanSeat: selection.seat);
                 },
           icon: const Icon(Icons.today),
@@ -145,7 +144,7 @@ class BridgePracticeLauncher extends StatelessWidget {
               ? null
               : () {
                   selection.setBoard(BoardMode.fresh);
-                   selection.setMode(OpponentMode.demo);
+                  selection.setMode(OpponentMode.demo);
                   session.startBiddingPractice(humanSeat: selection.seat);
                 },
           icon: const Icon(Icons.record_voice_over),
@@ -196,13 +195,11 @@ class BridgePracticeLauncher extends StatelessWidget {
       if (!context.mounted || confirmed != true) return;
     }
     if (!context.mounted || session.busy) return;
-    
     await session.newGame(
       humanSeat: selection.seat,
       mode: selection.mode,
       boardMode: selection.board,
     );
   }
-
-
 }
+
