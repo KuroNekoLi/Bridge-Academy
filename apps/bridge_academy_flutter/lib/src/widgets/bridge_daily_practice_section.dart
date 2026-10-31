@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_copy.dart';
 import '../bridge_session.dart';
-import 'bridge_practice_launcher.dart';
+import 'bridge_practice_selection.dart';
 import 'daily_practice_panel.dart';
 
 /// Presents a daily practice summary and owns its restart confirmation flow.
