@@ -11,7 +11,7 @@ class BridgeBiddingPracticePanel extends StatelessWidget {
   final AppCopy copy;
   @override
   Widget build(BuildContext context) {
-final view = session.view!;
+    final view = session.view!;
     final complete = session.biddingPracticeComplete;
     return Card(
       key: const Key('bidding_practice_panel'),
@@ -40,7 +40,6 @@ final view = session.view!;
         ),
       ),
     );
-  
   }
 }
 
@@ -50,7 +49,7 @@ class BridgeFourBoardPanel extends StatelessWidget {
   final AppCopy copy;
   @override
   Widget build(BuildContext context) {
-final practice = session.fourBoardPractice!;
+    final practice = session.fourBoardPractice!;
     return Card(
       key: const Key('four_board_panel'),
       child: Padding(
@@ -86,7 +85,6 @@ final practice = session.fourBoardPractice!;
         ),
       ),
     );
-  
   }
 }
 
