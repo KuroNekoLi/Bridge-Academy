@@ -11,6 +11,7 @@ import 'academy/academy_page.dart';
 import 'bridge_session.dart';
 import 'daily_practice_store.dart';
 import 'widgets/daily_practice_panel.dart';
+import 'widgets/bridge_practice_result_panels.dart';
 import 'widgets/bridge_table_components.dart';
 import 'widgets/bridge_focus_table.dart';
 import 'widgets/bridge_bidding_box.dart';
@@ -147,11 +148,11 @@ class _BridgeTableState extends State<BridgeTable> {
                     onRestart: () => _confirmDailyRestart(session, copy),
                   ),
                 if (session.fourBoardPractice != null)
-                  _fourBoardPanel(session, copy),
+                  BridgeFourBoardPanel(session: session, copy: copy),
                 if (session.isBiddingPractice)
-                  _biddingPracticePanel(session, copy),
+                  BridgeBiddingPracticePanel(session: session, copy: copy),
                 if (session.finished && !session.isBiddingPractice) ...[
-                  _finishCard(view, copy),
+                  BridgeFinalResultCard(view: view, copy: copy),
                   _completedBoardActions(session, copy),
                   if (!_historyOpen) _replayPanel(session, copy),
                 ],
@@ -221,10 +222,10 @@ class _BridgeTableState extends State<BridgeTable> {
                         ),
                       if (session.fourBoardPractice != null) ...[
                         const SizedBox(height: 8),
-                        _fourBoardPanel(session, copy),
+                        BridgeFourBoardPanel(session: session, copy: copy),
                       ],
                       if (session.isBiddingPractice)
-                        _biddingPracticePanel(session, copy),
+                        BridgeBiddingPracticePanel(session: session, copy: copy),
                       if (session.isJustDeclare) ...[
                         const SizedBox(height: 8),
                         Card(
@@ -389,7 +390,7 @@ class _BridgeTableState extends State<BridgeTable> {
                           _humanControls(view, session, copy)
                         else ...[
                           if (!session.isBiddingPractice)
-                            _finishCard(view, copy),
+                            BridgeFinalResultCard(view: view, copy: copy),
                           const SizedBox(height: 8),
                           if (!session.isBiddingPractice)
                             _completedBoardActions(session, copy),
@@ -816,77 +817,6 @@ class _BridgeTableState extends State<BridgeTable> {
     }
   }
 
-  Widget _biddingPracticePanel(BridgeSession session, AppCopy copy) {
-    final view = session.view!;
-    final complete = session.biddingPracticeComplete;
-    return Card(
-      key: const Key('bidding_practice_panel'),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(copy.t('biddingTitle'),
-                style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(copy.t('biddingScope')),
-            BiddingConventionPanel(
-              contextData: BidContext.fromView(view),
-              copy: copy,
-            ),
-            if (!complete && session.biddingSuggestion != null)
-              Text("${copy.t('biddingHint')}: ${session.biddingSuggestion!.code}",
-                  key: const Key('bidding_suggestion')),
-            if (complete) ...[
-              Text(copy.t('biddingFinished'),
-                  key: const Key('bidding_finished')),
-              Text(copy.contract(view.contract?.label ?? 'PASS OUT')),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _fourBoardPanel(BridgeSession session, AppCopy copy) {
-    final practice = session.fourBoardPractice!;
-    return Card(
-      key: const Key('four_board_panel'),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(copy.t('practiceFourTitle'),
-                style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 4),
-            Text('${copy.t('practiceFourCompleted')}: '
-                '${practice.completed} / 4',
-                key: const Key('four_board_progress')),
-            Text('${copy.t('practiceFourHumanScore')}: '
-                '${practice.humanNetScore > 0 ? '+' : ''}'
-                '${practice.humanNetScore}',
-                key: const Key('four_board_score')),
-            Text(copy.t('practiceFourScope')),
-            for (final result in practice.results)
-              ListTile(
-                dense: true,
-                title: Text('${copy.boardNumber(result.boardNumber)} · '
-                    '${result.contract}'),
-                trailing: Text('${practice.humanSeat.isNS
-                    ? result.nsScore : -result.nsScore}'),
-              ),
-            if (practice.isComplete)
-              Text(copy.t('practiceFourFinished'),
-                  key: const Key('four_board_finished'))
-            else if (!session.finished)
-              Text(copy.t('practiceFourCurrent')),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _completedBoardActions(BridgeSession session, AppCopy copy) =>
       Wrap(
         spacing: 12,
@@ -972,20 +902,5 @@ class _BridgeTableState extends State<BridgeTable> {
     );
   }
 
-  Widget _finishCard(PlayerView view, AppCopy copy) => Card(
-        key: const Key('final_result'),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(copy.t('end'), style: Theme.of(context).textTheme.titleLarge),
-              if (view.contract == null) Text(copy.t('passOut')),
-              if (view.contract != null)
-                Text(copy.contract(view.contract!.label)),
-              if (view.nsScore != null) Text(copy.score(view.nsScore!)),
-            ],
-          ),
-        ),
-      );
 
 }
