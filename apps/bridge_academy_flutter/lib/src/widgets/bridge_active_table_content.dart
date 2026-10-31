@@ -4,7 +4,7 @@ import '../bridge_session.dart';
 import 'bridge_focus_table.dart';
 import 'bridge_daily_practice_section.dart';
 import 'bridge_completed_sections.dart';
-import 'bridge_practice_launcher.dart';
+import 'bridge_practice_selection.dart';
 import 'bridge_practice_result_panels.dart';
 
 /// Active board presentation. No local mutable UI state or Bridge Core mutation.
