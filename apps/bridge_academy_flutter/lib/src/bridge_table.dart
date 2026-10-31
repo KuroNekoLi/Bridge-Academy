@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'app_copy.dart';
 import 'bridge_session.dart';
 import 'widgets/bridge_active_table_content.dart';
-import 'widgets/bridge_practice_launcher.dart';
+import 'widgets/bridge_practice_selection.dart';
 import 'widgets/bridge_table_lobby.dart';
 
 /// Coordinates the active board and the practice/history workspace.
