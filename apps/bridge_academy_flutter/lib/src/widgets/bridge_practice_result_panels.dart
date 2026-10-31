@@ -112,3 +112,60 @@ class BridgeFinalResultCard extends StatelessWidget {
   }
 }
 
+
+/// Contract goal and success state in just-declare practice.
+class BridgeJustDeclareProgressCard extends StatelessWidget {
+  const BridgeJustDeclareProgressCard({super.key, required this.session, required this.copy});
+  final BridgeSession session;
+  final AppCopy copy;
+
+  @override
+  Widget build(BuildContext context) {
+    final view = session.view;
+    final trainingContract = session.isJustDeclare ? view?.contract : null;
+    final declarerTricks = trainingContract == null || view == null
+        ? 0
+        : view.completedTricks.where(
+            (trick) => trick.winner.isNS == trainingContract.declarer.isNS,
+          ).length;
+    return Card(
+                          key: const Key('just_declare_active'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(copy.t('justDeclareActive')),
+                                if (trainingContract != null) ...[
+                                  Text(
+                                    '${copy.t('justDeclareDeclarer')}: '
+                                    '${copy.seat(trainingContract.declarer.letter)}',
+                                  ),
+                                  Text(
+                                    '${copy.t('justDeclareDummy')}: '
+                                    '${copy.seat(trainingContract.dummy.letter)}',
+                                  ),
+                                  Text(
+                                    copy.justDeclareProgress(
+                                      declarerTricks,
+                                      trainingContract.targetTricks,
+                                    ),
+                                    key: const Key('just_declare_goal'),
+                                  ),
+                                  if (session.finished)
+                                    Text(
+                                      copy.t(
+                                        declarerTricks >=
+                                                trainingContract.targetTricks
+                                            ? 'justDeclareMade'
+                                            : 'justDeclareDown',
+                                      ),
+                                      key: const Key('just_declare_outcome'),
+                                    ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        );
+  }
+}
